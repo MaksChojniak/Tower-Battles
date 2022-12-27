@@ -6,22 +6,36 @@ using PathCreation;
 public class Follower : MonoBehaviour
 {
     public PathCreator pathCreator;
-    public float speed = 5;
+    public Transform endPosition;
+
+
+    public float speed;
+    public int health;
+
+
     float distanceTravelled;
-    [SerializeField] Transform endPosition;
 
     private void Update()
     {
-        distanceTravelled += speed * 5 * Time.deltaTime;
+        DestroyEnemy();
+
+    }
+
+    public void DestroyEnemy()
+    {
+        distanceTravelled += speed * 2.5f * Time.deltaTime;
         transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled);
         transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled);
 
-        if(Vector3.Distance(this.transform.position, endPosition.position) < 1)
+        if (Vector3.Distance(this.transform.position, endPosition.position) < 1)
         {
             Debug.Log("End");
+
+            GameManager.instance.health -= health ;
+            GameManager.instance.enemies.Remove(this.gameObject);
+
             Destroy(this.gameObject);
         }
-
     }
 
 }
