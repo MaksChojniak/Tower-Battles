@@ -1,17 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
+//using Unity.VisualScripting;
 using System;
 using PathCreation;
+using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour//, IUnityAdsLoadListener, IUnityAdsShowListener
 {
     public static GameManager instance;
 
     public int health;
-
+    public int money;
 
     public List<StageData> stages = new List<StageData>();
 
@@ -25,6 +27,14 @@ public class GameManager : MonoBehaviour
 
     public bool nextStage;
 
+    public bool stageIsActive;
+
+    public Image healthImage;
+    public TMP_Text healthText;
+
+    public bool isLoadAds;
+
+
     //[SerializeField] Transform capsule;
     //[SerializeField] bool click = false;
     void Awake()
@@ -33,41 +43,46 @@ public class GameManager : MonoBehaviour
 
         currentStage = 0;
         nextStage = true;
+
+        isLoadAds = false;
     }
 
-    void Start()
-    {
-        
-    }
 
     void Update()
     {
         //if(click == false)
         //    StartCoroutine(Click());
+
+        healthImage.fillAmount = (float)health / 100;
+        healthText.text = health.ToString() + " HP";
+
+
         if(health <= 0)
         {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#endif
-            Application.Quit();
-        }
 
-        if(nextStage)
-        {
-            int enemiesCount = 0;
-            for ( int i = 0; i < stages[currentStage].enemiesCount.Count; i++ )
+            for(int i = 0; i < enemies.Count; i++)
             {
-                enemiesCount += stages[currentStage].enemiesCount[i];
+                Destroy(enemies[i].gameObject);
             }
 
-            print( enemiesCount);
+            health = 0;
 
-            StartCoroutine(SpawnAllEmeiesFromStage(enemiesCount));
+            if (!isLoadAds && AdsController.instance.adsLoaded == true)
+            {
+                //AdsController.instance.ShowAd();
+            }
 
-            nextStage = false;
+            SceneManager.LoadSceneAsync(0);
+
         }
 
-        if ( enemies.Count == 0 && stages.Count > currentStage + 1 )
+        if (nextStage && !stageIsActive)
+        {
+            stageIsActive = true;
+            StartCoroutine(NextStage());
+        }
+
+        if ( enemies.Count == 0 && stages.Count > currentStage + 1 && !nextStage && !stageIsActive)
         {
             currentStage += 1;
             nextStage = true;
@@ -76,8 +91,33 @@ public class GameManager : MonoBehaviour
 
     }
 
+    private IEnumerator NextStage()
+    {
+        yield return new WaitForSeconds(3f);
+
+        int enemiesCount = 0;
+        for (int i = 0; i < stages[currentStage].enemiesCount.Count; i++)
+        {
+            enemiesCount += stages[currentStage].enemiesCount[i];
+        }
+
+        StartCoroutine(SpawnAllEmeiesFromStage(enemiesCount));
+
+
+        yield return new WaitForSeconds(3f);
+
+        money += stages[currentStage].reward;
+
+        yield return new WaitForSeconds(4f);
+
+        nextStage = false;
+        stageIsActive = false;
+
+    }
+
     public IEnumerator SpawnAllEmeiesFromStage(int enemiesCount)
     {
+
         for (int i = 0; i < enemiesCount; i++)
         {
 
@@ -97,6 +137,7 @@ public class GameManager : MonoBehaviour
 
             yield return new WaitForSeconds(stages[currentStage].sleepTime[j]);
         }
+
     }
 
     public void SpawnEnemy(GameObject prefab, int health, float speed)
@@ -135,7 +176,6 @@ public class GameManager : MonoBehaviour
 
     //    }
     //}
-
 
 }
 

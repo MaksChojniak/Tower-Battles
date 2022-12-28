@@ -29,8 +29,6 @@ public class Follower : MonoBehaviour
 
         if (Vector3.Distance(this.transform.position, endPosition.position) < 1)
         {
-            Debug.Log("End");
-
             GameManager.instance.health -= health ;
             GameManager.instance.enemies.Remove(this.gameObject);
 
