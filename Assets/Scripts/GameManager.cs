@@ -15,9 +15,9 @@ public class GameManager : MonoBehaviour//, IUnityAdsLoadListener, IUnityAdsShow
     public int health;
     public int money;
 
-    public List<StageData> stages = new List<StageData>();
+    public List<StageData> waves = new List<StageData>();
 
-    public int currentStage;
+    public int currentWave;
 
     public Transform endPosition;
     public PathCreator pathCreator;
@@ -25,12 +25,16 @@ public class GameManager : MonoBehaviour//, IUnityAdsLoadListener, IUnityAdsShow
 
     public List<GameObject> enemies = new List<GameObject>();
 
-    public bool nextStage;
+    public bool nextWave;
 
-    public bool stageIsActive;
+    public bool waveIsActive;
 
     public Image healthImage;
     public TMP_Text healthText;
+
+    public TMP_Text waveText;
+
+    public TMP_Text moneyText;
 
     public bool isLoadAds;
 
@@ -41,8 +45,8 @@ public class GameManager : MonoBehaviour//, IUnityAdsLoadListener, IUnityAdsShow
     {
         instance = this;
 
-        currentStage = 0;
-        nextStage = true;
+        currentWave = -1;
+        nextWave = false;
 
         isLoadAds = false;
     }
@@ -56,8 +60,12 @@ public class GameManager : MonoBehaviour//, IUnityAdsLoadListener, IUnityAdsShow
         healthImage.fillAmount = (float)health / 100;
         healthText.text = health.ToString() + " HP";
 
+        waveText.text = "Wave " + ( currentWave + 1 ).ToString();
 
-        if(health <= 0)
+        moneyText.text = money.ToString() + " $";
+
+
+        if (health <= 0)
         {
 
             for(int i = 0; i < enemies.Count; i++)
@@ -67,55 +75,63 @@ public class GameManager : MonoBehaviour//, IUnityAdsLoadListener, IUnityAdsShow
 
             health = 0;
 
-            if (!isLoadAds && AdsController.instance.adsLoaded == true)
-            {
-                //AdsController.instance.ShowAd();
-            }
+            LoadAds();
 
             SceneManager.LoadSceneAsync(0);
 
         }
 
-        if (nextStage && !stageIsActive)
+        if (enemies.Count == 0 && currentWave + 1 == waves.Count && !nextWave && !waveIsActive)
         {
-            stageIsActive = true;
-            StartCoroutine(NextStage());
+            Debug.Log("You Win");
+
+            LoadAds();
+
+            SceneManager.LoadSceneAsync(0);
         }
 
-        if ( enemies.Count == 0 && stages.Count > currentStage + 1 && !nextStage && !stageIsActive)
+        if (nextWave && !waveIsActive)
         {
-            currentStage += 1;
-            nextStage = true;
+            waveIsActive = true;
+            StartCoroutine(NextWave());
         }
 
+        if ( enemies.Count == 0 && waves.Count > currentWave + 1 && !nextWave && !waveIsActive)
+        {
+            currentWave += 1;
+            nextWave = true;
+        }
 
     }
 
-    private IEnumerator NextStage()
+
+
+    private IEnumerator NextWave()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(0.5f);
+
+        //currentWave += 1;
+        money += waves[currentWave].reward;
+
+        yield return new WaitForSeconds(3.5f);
 
         int enemiesCount = 0;
-        for (int i = 0; i < stages[currentStage].enemiesCount.Count; i++)
+        for (int i = 0; i < waves[currentWave].enemiesCount.Count; i++)
         {
-            enemiesCount += stages[currentStage].enemiesCount[i];
+            enemiesCount += waves[currentWave].enemiesCount[i];
         }
 
-        StartCoroutine(SpawnAllEmeiesFromStage(enemiesCount));
+        StartCoroutine(SpawnAllEmeiesFromWave(enemiesCount));
 
-
-        yield return new WaitForSeconds(3f);
-
-        money += stages[currentStage].reward;
 
         yield return new WaitForSeconds(4f);
 
-        nextStage = false;
-        stageIsActive = false;
+        nextWave = false;
+        waveIsActive = false;
 
     }
 
-    public IEnumerator SpawnAllEmeiesFromStage(int enemiesCount)
+    public IEnumerator SpawnAllEmeiesFromWave(int enemiesCount)
     {
 
         for (int i = 0; i < enemiesCount; i++)
@@ -123,19 +139,19 @@ public class GameManager : MonoBehaviour//, IUnityAdsLoadListener, IUnityAdsShow
 
             int j = 0;
             int k = 0;
-            while ( stages[currentStage].enemiesCount[j] + k < i + 1 )
+            while ( waves[currentWave].enemiesCount[j] + k < i + 1 )
             {
-                k += stages[currentStage].enemiesCount[j];
+                k += waves[currentWave].enemiesCount[j];
                 j += 1;
             }
 
             SpawnEnemy(
-                stages[currentStage].enemies[j].enemyPrefab,
-                stages[currentStage].enemies[j].health,
-                stages[currentStage].enemies[j].speed
+                waves[currentWave].enemies[j].enemyPrefab,
+                waves[currentWave].enemies[j].health,
+                waves[currentWave].enemies[j].speed
                 );
 
-            yield return new WaitForSeconds(stages[currentStage].sleepTime[j]);
+            yield return new WaitForSeconds(waves[currentWave].sleepTime[j]);
         }
 
     }
@@ -150,6 +166,15 @@ public class GameManager : MonoBehaviour//, IUnityAdsLoadListener, IUnityAdsShow
         enemy.GetComponent<Follower>().health = health;
 
         enemies.Add(enemy);
+    }
+
+
+    public void LoadAds()
+    {
+        if (!isLoadAds && AdsController.instance.adsLoaded == true)
+        {
+            //AdsController.instance.ShowAd();
+        }
     }
 
 
