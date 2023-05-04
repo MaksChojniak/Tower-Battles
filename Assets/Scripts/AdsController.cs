@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +9,8 @@ using UnityEngine.SceneManagement;
 public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener, IUnityAdsInitializationListener
 {
     public static AdsController instance;
+
+    public static Action showAds;
 
     [SerializeField] string m_AndroidAdUnitId = "Interstitial_Android";
     public string AndroidAdUnitId => m_AndroidAdUnitId;
@@ -33,6 +36,8 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     {
         instance = this;
 
+        adsLoaded = false;
+
         InitializeAds();
 
         m_AdUnitId = m_AndroidAdUnitId;
@@ -41,8 +46,14 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
             m_AdUnitId = m_iOSAdUnitId;
         }
 
+        showAds += ShowAd;
+
     }
 
+    void OnDestroy()
+    {
+        showAds -= ShowAd;
+    }
 
     private void InitializeAds()
     {
@@ -80,6 +91,7 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     {
         Debug.Log("Loading Ad: " + m_AdUnitId);
         Advertisement.Load(m_AdUnitId, this);
+        adsLoaded = true;
     }
 
     #region IUnityAdsLoadListener
@@ -116,6 +128,7 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     {
         Debug.Log("Showing Ad: " + m_AdUnitId);
         Advertisement.Show(m_AdUnitId, this);
+        adsLoaded = false;
     }
     #region IUnityAdsShowListener
 

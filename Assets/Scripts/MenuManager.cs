@@ -8,6 +8,6 @@ public class MenuManager : MonoBehaviour
 {
     public void StartGame()
     {
-        SceneManager.LoadSceneAsync( Random.Range(1, 1) );
+        SceneManager.LoadSceneAsync( Random.Range(Scenes.gameScenes[0], Scenes.gameScenes[Scenes.gameScenes.Count - 1]) );
     }
 }
