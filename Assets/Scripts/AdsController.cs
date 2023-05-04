@@ -31,7 +31,6 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
 
 
 
-
     void Awake()
     {
         instance = this;

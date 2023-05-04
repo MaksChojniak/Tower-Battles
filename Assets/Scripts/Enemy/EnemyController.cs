@@ -1,22 +1,41 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using UnityEngine;
 using PathCreation;
+using UnityEngine.UI;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IDamageable
 {
+    public Enemy component;
+    
     public PathCreator pathCreator;
     public Transform endPosition;
-
+    
     public float speed;
     public int health;
-    
-    float distanceTravelled;
+
+    public float distanceTravelled;
+
+    RectTransform canvasHP;
+
+
+    void Awake()
+    {
+        canvasHP = transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
+    }
 
     private void Update()
     {
+        if(health <= 0)
+            WaveManager.destroyEnemy(this.gameObject);
+        
+        
         Move();
         DestroyEnemy();
+
+        canvasHP.transform.GetChild(0).GetComponent<Image>().fillAmount = ((float)health / (float)component.health);
     }
 
     
@@ -38,4 +57,8 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    public void Damage(int value)
+    {
+        health -= value;
+    }
 }
