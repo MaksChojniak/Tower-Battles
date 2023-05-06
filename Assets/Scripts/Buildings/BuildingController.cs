@@ -40,16 +40,18 @@ public class BuildingController : MonoBehaviour
 
         Shooting();
 
-        // CheckInfo();
+        CheckInfo();
     }
 
 
+    //Shows if tower can be placed
     void SetSpawnRangePlaneVisibility(GameObject selectedBuilidng, bool value)
     {
         if (this.gameObject != selectedBuilidng)
             spawnRangePlane.SetActive(value);
     }
     
+    //Shows the vievrange of the tower
     public void SetRangeImageActive(bool state)
     {
         viewRangeCanvas.gameObject.SetActive(state);
@@ -60,12 +62,13 @@ public class BuildingController : MonoBehaviour
         viewRangeCanvas.sizeDelta = new Vector2(value * 2, value * 2);
     }
 
-
+    //Shows Stats Of the Selected Tower
     void CheckInfo()
     {
         
-        if (Input.touchCount > 0)
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
+
             Vector3 pos = Input.GetTouch(0).position;
 
             Ray ray = Camera.main.ScreenPointToRay(pos);
@@ -74,9 +77,12 @@ public class BuildingController : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 1000))
             {
                 if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Building") && hit.transform.gameObject == this.gameObject)
-                {
-                    print("xdxdxdxdxdxd");
+                { 
                     SetRangeImageActive(true);
+                }
+                else
+                {
+                    SetRangeImageActive(false);
                 }
 
             }
@@ -84,7 +90,7 @@ public class BuildingController : MonoBehaviour
         
     }
     
-    
+    //Shooting of the "Soldier" tower type
     void Shooting()
     {
         if (component.type == TypeOfBuildng.soldier && !isShooting)
@@ -96,6 +102,7 @@ public class BuildingController : MonoBehaviour
         }
     }
 
+    //Dealing damage to nearest enemies in viewrange
     IEnumerator GiveDamage(double viewRange, int damage, float firerate)
     {
         

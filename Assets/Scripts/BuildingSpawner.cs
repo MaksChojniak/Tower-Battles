@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class BuildingSpawner : MonoBehaviour
@@ -22,7 +23,7 @@ public class BuildingSpawner : MonoBehaviour
         if(buildings[index].price > GamePlayerInformation.instance.balance)
             return;
         
-        selectedBuilidng = Instantiate(buildings[index].buildingPrefb, Input.GetTouch(0).position, Quaternion.identity, transform);
+        selectedBuilidng = Instantiate(buildings[index].buildingPrefab, Input.GetTouch(0).position, Quaternion.identity, transform);
         selectedBuilidng.AddComponent<BuildingController>().component = buildings[index];
         selectedBuilidng.GetComponent<BuildingController>().SetRangeImageActive(true);
 
@@ -71,8 +72,7 @@ public class BuildingSpawner : MonoBehaviour
             GamePlayerInformation.changeBalance(-buildings[index].price);
             
             selectedBuilidng.GetComponent<BuildingController>().SetRangeImageActive(false);
-            selectedBuilidng.layer = LayerMask.NameToLayer("Building");
-            selectedBuilidng.GetComponent<BuildingController>().isPlaced = true;
+            StartCoroutine(SetBuildingValues(selectedBuilidng));
             
             posibilityOfPlace = false;
             selectedBuilidng = null;
@@ -83,6 +83,14 @@ public class BuildingSpawner : MonoBehaviour
             selectedBuilidng = null;
         }
             
+    }
+
+    IEnumerator SetBuildingValues(GameObject building)
+    {
+        yield return new WaitForSeconds(1f);
+
+        building.layer = LayerMask.NameToLayer("Building");
+        building.GetComponent<BuildingController>().isPlaced = true;
     }
 
 }

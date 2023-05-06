@@ -7,7 +7,9 @@ public class Building : ScriptableObject
 {
    public string buildingName;
     
-    public GameObject buildingPrefb;
+    public GameObject buildingPrefab;
+
+    public Sprite buildingImage;
     
     public TypeOfBuildng type;
 

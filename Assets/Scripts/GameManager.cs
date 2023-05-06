@@ -57,7 +57,6 @@ public class GameManager : MonoBehaviour//, IUnityAdsLoadListener, IUnityAdsShow
         {
             lastCountdownValue = countdownValue;
             StartCoroutine(CountdownArrow(countdownValue));
-            print("xdxd");
         }
 
         
