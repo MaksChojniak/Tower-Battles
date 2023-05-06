@@ -2,11 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 
 public class BuildingController : MonoBehaviour
 {
     public static Action<GameObject, bool> ShowSpawnRange;
+
+    public int currentUpgradeLevel;
     
     public Building component;
     public bool isPlaced;
@@ -17,6 +20,8 @@ public class BuildingController : MonoBehaviour
 
     void Awake()
     {
+        currentUpgradeLevel = 0;
+        
         ShowSpawnRange += SetSpawnRangePlaneVisibility;
         viewRangeCanvas = transform.GetChild(0).GetComponent<RectTransform>();
         spawnRangePlane = transform.GetChild(1).gameObject;
@@ -28,12 +33,11 @@ public class BuildingController : MonoBehaviour
     void OnDestroy()
     {
         ShowSpawnRange -= SetSpawnRangePlaneVisibility;
-    } 
-    
-    
+    }
+
     void Update()
     {
-        SetViewRange((float)component.GetViewRange());
+        SetViewRange((float)component.GetViewRange(currentUpgradeLevel));
 
         if(!isPlaced)
             return;
@@ -68,27 +72,33 @@ public class BuildingController : MonoBehaviour
         
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
-
             Vector3 pos = Input.GetTouch(0).position;
+
+            GameObject UICOmponent = UIRaycast(ScreenPosToPointerData(pos));
+            if (UICOmponent != null && UICOmponent.layer == LayerMask.NameToLayer("UI"))
+                return;
 
             Ray ray = Camera.main.ScreenPointToRay(pos);
             RaycastHit hit;
-
+            
             if (Physics.Raycast(ray, out hit, 1000))
             {
                 if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Building") && hit.transform.gameObject == this.gameObject)
                 { 
                     SetRangeImageActive(true);
+                    ShowBuildingInformations.checkInfo(this.gameObject, true);
                 }
-                else
+                else if (viewRangeCanvas.gameObject.activeSelf == true)
                 {
                     SetRangeImageActive(false);
+                    ShowBuildingInformations.checkInfo(this.gameObject, false);
                 }
 
             }
         }
         
     }
+    
     
     //Shooting of the "Soldier" tower type
     void Shooting()
@@ -97,8 +107,8 @@ public class BuildingController : MonoBehaviour
         {
             isShooting = true;
             Soldier soldierComponent = (component as Soldier);
-            int damage = soldierComponent.GetDamage();
-            StartCoroutine(GiveDamage(component.GetViewRange(), damage, soldierComponent.GetFirerate()));
+            int damage = soldierComponent.GetDamage(currentUpgradeLevel);
+            StartCoroutine(GiveDamage(component.GetViewRange(currentUpgradeLevel), damage, soldierComponent.GetFirerate(currentUpgradeLevel)));
         }
     }
 
@@ -136,6 +146,20 @@ public class BuildingController : MonoBehaviour
         isShooting = false;
     }
 
+    
+    
+    
+    
+    static GameObject UIRaycast (PointerEventData pointerData)
+    {
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
+ 
+        return results.Count < 1 ? null : results[0].gameObject;
+    }
+    
+    static PointerEventData ScreenPosToPointerData (Vector2 screenPos)
+        => new(EventSystem.current){position = screenPos};
     
 }
 

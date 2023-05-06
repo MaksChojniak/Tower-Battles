@@ -12,8 +12,8 @@ public class Soldier : Building
     
     
     
-    public int GetDamage() => damage[currentUpgradeLevel];
+    public int GetDamage(int currentUpgradeLevel) => damage[currentUpgradeLevel];
 
-    public float GetFirerate() => firerate[currentUpgradeLevel];
+    public float GetFirerate(int currentUpgradeLevel) => firerate[currentUpgradeLevel];
 
 }

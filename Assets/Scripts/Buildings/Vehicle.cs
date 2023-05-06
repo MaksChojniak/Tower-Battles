@@ -10,6 +10,6 @@ public class Vehicle : Soldier
 
     
     
-    public int GetHealth() => health[currentUpgradeLevel];
+    public int GetHealth(int currentUpgradeLevel) => health[currentUpgradeLevel];
 
 }

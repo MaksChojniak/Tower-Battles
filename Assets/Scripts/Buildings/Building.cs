@@ -13,19 +13,29 @@ public class Building : ScriptableObject
     
     public TypeOfBuildng type;
 
-    public int currentUpgradeLevel;
-    
     public long price;
     
     public long[] upgradePrices;
+    
+    public long[] sellPrices;
+    
+    public string[] upgradeTitle;
+    
+    public string[] upgradeDescription;
     
     public double[] viewRange;
 
     
     
-    public long GetUpgradePrice() => upgradePrices[currentUpgradeLevel];
+    public long GetUpgradePrice(int currentUpgradeLevel) => upgradePrices[currentUpgradeLevel];
     
-    public double GetViewRange() => viewRange[currentUpgradeLevel];
+    public long GetSellPrice(int currentUpgradeLevel) => sellPrices[currentUpgradeLevel];
+    
+    public string GetUpgradeTitle(int currentUpgradeLevel) => upgradeTitle[currentUpgradeLevel];
+    
+    public string GetUpgradeDescription(int currentUpgradeLevel) => upgradeDescription[currentUpgradeLevel];
+    
+    public double GetViewRange(int currentUpgradeLevel) => viewRange[currentUpgradeLevel];
 
 }
 
