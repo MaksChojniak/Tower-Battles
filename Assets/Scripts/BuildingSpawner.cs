@@ -51,14 +51,20 @@ public class BuildingSpawner : MonoBehaviour
 
     public void PlaceBuilding(int index)
     {
-        BuildingController.ShowSpawnRange(selectedBuilidng, false);
-        
         if (buildings[index].price > GamePlayerInformation.instance.balance)
+            return;
+
+
+        BuildingController.ShowSpawnRange(selectedBuilidng, false);
+
+        
+        if (GameManager.instance.isBuildingsCountMax)
         {
             Destroy(selectedBuilidng);
             selectedBuilidng = null;
             return;
         }
+
 
         if (posibilityOfPlace)
         {
@@ -67,9 +73,6 @@ public class BuildingSpawner : MonoBehaviour
             selectedBuilidng.GetComponent<BuildingController>().SetRangeImageActive(false);
             selectedBuilidng.layer = LayerMask.NameToLayer("Building");
             selectedBuilidng.GetComponent<BuildingController>().isPlaced = true;
-            
-            
-            
             
             posibilityOfPlace = false;
             selectedBuilidng = null;

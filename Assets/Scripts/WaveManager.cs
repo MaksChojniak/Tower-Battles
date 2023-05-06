@@ -12,6 +12,8 @@ public class WaveManager : MonoBehaviour
 
     public bool endAllWaves;
     public int currentWave;
+    public double loadingGameSceneTime;
+    
     [SerializeField] WaveData[] waves;
     
     [SerializeField] Transform endPosition;
@@ -21,8 +23,8 @@ public class WaveManager : MonoBehaviour
     [SerializeField] List<GameObject> enemies;
 
     [SerializeField] bool stageIsActive;
-    [SerializeField] double timeAfterWave;
-    [SerializeField] double loadingGameSceneTime;
+    double timeAfterWave;
+    
     
     
     void Awake()
@@ -34,6 +36,9 @@ public class WaveManager : MonoBehaviour
 
         stageIsActive = false;
         currentWave = -1;
+
+        loadingGameSceneTime = 5;
+        timeAfterWave = 0;
     }
 
     void OnDestroy()
@@ -75,12 +80,12 @@ public class WaveManager : MonoBehaviour
 
     void CalculateWaves()
     {
-        double endCounting = 5;
-        if (loadingGameSceneTime < endCounting)
+        if (loadingGameSceneTime > 0)
         {
-            loadingGameSceneTime += Time.deltaTime;
+            loadingGameSceneTime -= Time.deltaTime;
             return;
         }
+
 
         if (currentWave + 1 >= waves.Length && enemies.Count <= 0 && stageIsActive == false)
         {
