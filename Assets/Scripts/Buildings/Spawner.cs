@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Spawner", menuName = "Spawner")]
+[CreateAssetMenu(fileName = "Spawner", menuName = "Buildings/Spawner")]
 public class Spawner : Building
 {
-    public Building spawnedBuildingPrefab;
+    public Vehicle spawnedBuilding;
 
     public double spawnInterval;
 }

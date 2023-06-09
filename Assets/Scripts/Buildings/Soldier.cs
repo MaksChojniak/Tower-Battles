@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Soldier", menuName = "Soldier")]
+[CreateAssetMenu(fileName = "Soldier", menuName = "Buildings/Soldier")]
 public class Soldier : Building
 {
     public int[] damage;
@@ -14,6 +14,6 @@ public class Soldier : Building
     
     public int GetDamage(int currentUpgradeLevel) => damage[currentUpgradeLevel];
 
-    public float GetFirerate(int currentUpgradeLevel) => firerate[currentUpgradeLevel];
+    public float GetFirerate(int currentUpgradeLevel, float multiplier) => firerate[currentUpgradeLevel] * multiplier;
 
 }

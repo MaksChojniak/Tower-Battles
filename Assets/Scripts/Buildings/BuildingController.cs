@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PathCreation;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,32 +8,61 @@ using UnityEngine.EventSystems;
 
 public class BuildingController : MonoBehaviour
 {
+    public static BuildingController instance;
+
     public static Action<GameObject, bool> ShowSpawnRange;
+    public static Action GetFarmReward;
 
     public int currentUpgradeLevel;
-    
+
+    Farm farm;
     public Building component;
     public bool isPlaced;
-    
+
+    public float upgradeDiscountMultiplier;
+    public float firerateBoostMultiplier;
+    public float IntervalBoostMultiplier;
+    public float IncomeBoostMultiplier;
+
+    public int totalDamage;
+    public int totalIncome;
+
     RectTransform viewRangeCanvas;
     GameObject spawnRangePlane;
+
     bool isShooting;
+    double timeToDeploy;
+
 
     void Awake()
     {
+        instance = this;
+
         currentUpgradeLevel = 0;
         
         ShowSpawnRange += SetSpawnRangePlaneVisibility;
-        viewRangeCanvas = transform.GetChild(0).GetComponent<RectTransform>();
-        spawnRangePlane = transform.GetChild(1).gameObject;
+        GetFarmReward += GetWaveFarmReward;
+
+        viewRangeCanvas = transform.GetChild(transform.childCount - 2).GetComponent<RectTransform>();
+        spawnRangePlane = transform.GetChild(transform.childCount - 1).gameObject;
 
         isShooting = false;
         isPlaced = false;
+        timeToDeploy = 0;
+
+        totalDamage = 0;
+        totalIncome = 0;
+
+        firerateBoostMultiplier = 1;
+        upgradeDiscountMultiplier = 1;
+        IntervalBoostMultiplier = 1;
+        IncomeBoostMultiplier = 1;
     }
 
     void OnDestroy()
     {
         ShowSpawnRange -= SetSpawnRangePlaneVisibility;
+        GetFarmReward -= GetWaveFarmReward;
     }
 
     void Update()
@@ -42,13 +72,33 @@ public class BuildingController : MonoBehaviour
         if(!isPlaced)
             return;
 
+        bool boosterBuildingIsPlaced = false;
+        foreach (var building in GameObject.FindObjectsOfType<BuildingController>())
+        {
+            if (building.component.type == TypeOfBuildng.booster)
+                boosterBuildingIsPlaced = true;
+        }
+        if(!boosterBuildingIsPlaced)
+        {
+            firerateBoostMultiplier = 1;
+            upgradeDiscountMultiplier = 1;
+            IntervalBoostMultiplier = 1;
+            IncomeBoostMultiplier = 1;
+        }
+
         Shooting();
 
         CheckInfo();
+
+        SpawnVehicle();
+
+        BoostTower();
+
+        CurrentUpgradeModel();
     }
 
 
-    //Shows if tower can be placed
+    //Shows the spacing barrier around the tower
     void SetSpawnRangePlaneVisibility(GameObject selectedBuilidng, bool value)
     {
         if (this.gameObject != selectedBuilidng)
@@ -66,7 +116,7 @@ public class BuildingController : MonoBehaviour
         viewRangeCanvas.sizeDelta = new Vector2(value * 2, value * 2);
     }
 
-    //Shows Stats Of the Selected Tower
+    //Shows Stats of the Selected Tower
     void CheckInfo()
     {
         
@@ -108,7 +158,7 @@ public class BuildingController : MonoBehaviour
             isShooting = true;
             Soldier soldierComponent = (component as Soldier);
             int damage = soldierComponent.GetDamage(currentUpgradeLevel);
-            StartCoroutine(GiveDamage(component.GetViewRange(currentUpgradeLevel), damage, soldierComponent.GetFirerate(currentUpgradeLevel)));
+            StartCoroutine(GiveDamage(component.GetViewRange(currentUpgradeLevel), damage, soldierComponent.GetFirerate(currentUpgradeLevel, firerateBoostMultiplier)));
         }
     }
 
@@ -139,15 +189,37 @@ public class BuildingController : MonoBehaviour
                 currentEnemy = enemy;
             }
         }
-        
+
+        this.transform.GetChild(currentUpgradeLevel).LookAt(currentEnemy.transform.position);
         currentEnemy.GetComponent<IDamageable>().Damage(damage);
+        totalDamage += damage;
+
+        GamePlayerInformation.changeBalance(damage);
 
         yield return new WaitForSeconds(firerate);
         isShooting = false;
     }
 
     
-    
+    void SpawnVehicle()
+    {
+        if (component.type != TypeOfBuildng.spawner) return;
+
+        Spawner spawnerComponent = component as Spawner;
+
+        if(timeToDeploy <= 0)
+        {
+            GameObject vehicle = Instantiate(spawnerComponent.spawnedBuilding.buildingPrefab, this.transform);
+            vehicle.AddComponent<VehicleController>().component = spawnerComponent.spawnedBuilding;
+            vehicle.GetComponent<VehicleController>().currentUpgradeLevel = currentUpgradeLevel;
+
+            timeToDeploy = spawnerComponent.spawnInterval * IntervalBoostMultiplier;
+        }
+        else
+        {
+            timeToDeploy -= Time.deltaTime;
+        }
+    }
     
     
     static GameObject UIRaycast (PointerEventData pointerData)
@@ -160,6 +232,56 @@ public class BuildingController : MonoBehaviour
     
     static PointerEventData ScreenPosToPointerData (Vector2 screenPos)
         => new(EventSystem.current){position = screenPos};
-    
+
+
+    void GetWaveFarmReward()
+    {
+        if (component.type == TypeOfBuildng.farm)
+        {
+            Farm farmComponent = (component as Farm);
+
+            GamePlayerInformation.changeBalance((int)(farmComponent.GetWaveReward(currentUpgradeLevel) * IncomeBoostMultiplier));
+            totalIncome += (int)(farmComponent.GetWaveReward(currentUpgradeLevel) * IncomeBoostMultiplier);
+        }
+    }
+
+    //Boost stats of nearby towers
+    void BoostTower()
+    {
+        if (component.type != TypeOfBuildng.booster) return;
+
+        Booster boosterComponent = (component as Booster);
+
+
+        List<BuildingController> buildingsInViewRange = new List<BuildingController>();
+        foreach (var building in GameObject.FindObjectsOfType<BuildingController>())
+        {
+            building.firerateBoostMultiplier = 1;
+            building.upgradeDiscountMultiplier = 1;
+
+            if (Vector3.Distance(this.transform.position, building.transform.position) <= boosterComponent.GetViewRange(currentUpgradeLevel))
+                buildingsInViewRange.Add(building);
+        }
+
+        foreach(var building in buildingsInViewRange)
+        {
+            if (building.component.type != TypeOfBuildng.booster)
+            {
+                building.firerateBoostMultiplier = boosterComponent.GetFirerateBoost(currentUpgradeLevel);
+                building.upgradeDiscountMultiplier = boosterComponent.GetUpgradeDiscount(currentUpgradeLevel);
+                building.IntervalBoostMultiplier = boosterComponent.GetIntervalBoost(currentUpgradeLevel);
+                building.IncomeBoostMultiplier = boosterComponent.GetIncomeBoost(currentUpgradeLevel);
+            }
+        }
+    }
+
+    //Shows current tower model accoding to its level
+    void CurrentUpgradeModel()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            this.transform.GetChild(i).gameObject.SetActive(currentUpgradeLevel == i);
+        }
+    }
 }
 

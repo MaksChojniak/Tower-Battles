@@ -5,7 +5,7 @@ using Object = System.Object;
 
 public class Building : ScriptableObject
 {
-   public string buildingName;
+    public string buildingName;
     
     public GameObject buildingPrefab;
 
@@ -27,7 +27,7 @@ public class Building : ScriptableObject
 
     
     
-    public long GetUpgradePrice(int currentUpgradeLevel) => upgradePrices[currentUpgradeLevel];
+    public long GetUpgradePrice(int currentUpgradeLevel, float multiplier) => (long)(upgradePrices[currentUpgradeLevel] * multiplier);
     
     public long GetSellPrice(int currentUpgradeLevel) => sellPrices[currentUpgradeLevel];
     
@@ -39,11 +39,12 @@ public class Building : ScriptableObject
 
 }
 
-
+//All possible types of Buildings
 public enum TypeOfBuildng
 {
     soldier,
     spawner,
     farm,
-    vehicle
+    vehicle,
+    booster
 }

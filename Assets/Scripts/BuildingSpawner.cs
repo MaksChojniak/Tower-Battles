@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
+using TMPro;
 
 public class BuildingSpawner : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class BuildingSpawner : MonoBehaviour
 
     [SerializeField] GameObject selectedBuilidng;
     [SerializeField] bool posibilityOfPlace;
+    [SerializeField] TMP_Text max1BoosterText;
 
     void Awake()
     {
@@ -20,9 +22,27 @@ public class BuildingSpawner : MonoBehaviour
 
     public void SpawnBuilding(int index)
     {
-        if(buildings[index].price > GamePlayerInformation.instance.balance)
+        if (buildings[index].price > GamePlayerInformation.instance.balance)
+        {
+            ShowBuildingInformations.showNotEnoughMoneyMessage();
             return;
-        
+        }
+
+        if (buildings[index].type == TypeOfBuildng.booster)
+        {
+            bool boosterBuildingIsPlaced = false;
+            foreach (var building in GameObject.FindObjectsOfType<BuildingController>())
+            {
+                if (building.component.type == TypeOfBuildng.booster)
+                    boosterBuildingIsPlaced = true;
+            }
+            if (boosterBuildingIsPlaced)
+            {
+                StartCoroutine(Max1Booster());
+                return;
+            }
+        }
+
         selectedBuilidng = Instantiate(buildings[index].buildingPrefab, Input.GetTouch(0).position, Quaternion.identity, transform);
         selectedBuilidng.AddComponent<BuildingController>().component = buildings[index];
         selectedBuilidng.GetComponent<BuildingController>().SetRangeImageActive(true);
@@ -34,7 +54,9 @@ public class BuildingSpawner : MonoBehaviour
     {
         if(buildings[index].price > GamePlayerInformation.instance.balance)
             return;
-        
+
+        if (selectedBuilidng == null) return;
+
         if (Input.touchCount > 0)
         {
             Vector3 pos = Input.GetTouch(0).position;
@@ -55,6 +77,7 @@ public class BuildingSpawner : MonoBehaviour
         if (buildings[index].price > GamePlayerInformation.instance.balance)
             return;
 
+        if (selectedBuilidng == null) return;
 
         BuildingController.ShowSpawnRange(selectedBuilidng, false);
 
@@ -92,5 +115,10 @@ public class BuildingSpawner : MonoBehaviour
         building.layer = LayerMask.NameToLayer("Building");
         building.GetComponent<BuildingController>().isPlaced = true;
     }
-
+    IEnumerator Max1Booster()
+    {
+        max1BoosterText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(1.25f);
+        max1BoosterText.gameObject.SetActive(false);
+    }
 }

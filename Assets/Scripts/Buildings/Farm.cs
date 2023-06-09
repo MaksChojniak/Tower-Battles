@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Farm", menuName = "Farm")]
+[CreateAssetMenu(fileName = "Farm", menuName = "Buildings/Farm")]
 public class Farm : Building
 {
     public long[] waveReward;

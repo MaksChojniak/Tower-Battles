@@ -9,14 +9,14 @@ using UnityEngine.UI;
 public class EnemyController : MonoBehaviour, IDamageable
 {
     public Enemy component;
-    
-    public PathCreator pathCreator;
-    public Transform endPosition;
-    
+        
     public float speed;
     public int health;
 
     public float distanceTravelled;
+    
+    [SerializeField] PathCreator pathCreator;
+    [SerializeField] Transform endPosition;
 
     RectTransform canvasHP;
 
@@ -24,6 +24,9 @@ public class EnemyController : MonoBehaviour, IDamageable
     void Awake()
     {
         canvasHP = transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
+
+        pathCreator = GameObject.FindGameObjectWithTag("Path").GetComponent<PathCreator>();
+        endPosition = GameObject.FindGameObjectWithTag("EnemyEndLoopPosition").transform; 
     }
 
     private void Update()

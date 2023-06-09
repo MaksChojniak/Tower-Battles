@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Vehicle", menuName = "Vehicle")]
+[CreateAssetMenu(fileName = "Vehicle", menuName = "Buildings/Vehicle")]
 public class Vehicle : Soldier
 {
-    public double speed;
+    public float speed;
 
     public int[] health;
 

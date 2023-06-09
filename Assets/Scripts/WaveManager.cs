@@ -16,8 +16,6 @@ public class WaveManager : MonoBehaviour
     
     [SerializeField] WaveData[] waves;
     
-    [SerializeField] Transform endPosition;
-    [SerializeField] PathCreator pathCreator;
     [SerializeField] Transform enemyStorage;
     
     [SerializeField] List<GameObject> enemies;
@@ -37,7 +35,7 @@ public class WaveManager : MonoBehaviour
         stageIsActive = false;
         currentWave = -1;
 
-        loadingGameSceneTime = 5;
+        loadingGameSceneTime = 15;
         timeAfterWave = 0;
     }
 
@@ -54,8 +52,6 @@ public class WaveManager : MonoBehaviour
         enemy.AddComponent<EnemyController>();
         
         enemy.GetComponent<EnemyController>().component = enemyValues;
-        enemy.GetComponent<EnemyController>().pathCreator = pathCreator;
-        enemy.GetComponent<EnemyController>().endPosition = endPosition;
         enemy.GetComponent<EnemyController>().speed = enemyValues.speed;
         enemy.GetComponent<EnemyController>().health = enemyValues.health;
 
@@ -139,7 +135,13 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator StartWave(int waveLevel)
     {
+        if (BuildingController.instance != null)
+        {
+            BuildingController.GetFarmReward();
+        }
+
         yield return new WaitForSeconds(2);
+
         for (int i = 0; i < waves[waveLevel].enemies.Count; i++)
         {
             int enemiesSpawned = 0;
