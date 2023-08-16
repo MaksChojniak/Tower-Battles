@@ -17,11 +17,13 @@ public class BuildingSpawner : MonoBehaviour
 
     void Awake()
     {
-        
+        buildings = PlayerTowerInventory.Instance.towerDeck;   
     }
 
     public void SpawnBuilding(int index)
     {
+        if (buildings[index] == null) return;
+
         if (buildings[index].price > GamePlayerInformation.instance.balance)
         {
             ShowBuildingInformations.showNotEnoughMoneyMessage();
@@ -52,7 +54,9 @@ public class BuildingSpawner : MonoBehaviour
 
     public void MoveBuilding(int index)
     {
-        if(buildings[index].price > GamePlayerInformation.instance.balance)
+        if (buildings[index] == null) return;
+
+        if (buildings[index].price > GamePlayerInformation.instance.balance)
             return;
 
         if (selectedBuilidng == null) return;
@@ -74,6 +78,8 @@ public class BuildingSpawner : MonoBehaviour
 
     public void PlaceBuilding(int index)
     {
+        if (buildings[index] == null) return;
+
         if (buildings[index].price > GamePlayerInformation.instance.balance)
             return;
 

@@ -36,6 +36,7 @@ public class WaveManager : MonoBehaviour
         currentWave = -1;
 
         loadingGameSceneTime = 15;
+
         timeAfterWave = 0;
     }
 

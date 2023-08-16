@@ -6,6 +6,8 @@ using Object = System.Object;
 public class Building : ScriptableObject
 {
     public string buildingName;
+
+    public int unlockPrice;
     
     public GameObject buildingPrefab;
 
