@@ -21,7 +21,7 @@ public class GamePlayerInformation : MonoBehaviour
         changeHP += ChangeHealth;
 
         health = 100;
-        balance = 1650;
+        balance = 16500;
     }
 
     void OnDestroy()
