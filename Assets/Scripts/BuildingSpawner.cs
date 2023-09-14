@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -120,6 +121,12 @@ public class BuildingSpawner : MonoBehaviour
 
         building.layer = LayerMask.NameToLayer("Building");
         building.GetComponent<BuildingController>().isPlaced = true;
+
+        for (int i = 0; i < building.transform.childCount; i++)
+        {
+            if(building.transform.GetChild(i).TryGetComponent(typeof(BuildingHitbox), out var hitbox))
+                hitbox.gameObject.layer = LayerMask.NameToLayer("Building");
+        }
     }
     IEnumerator Max1Booster()
     {

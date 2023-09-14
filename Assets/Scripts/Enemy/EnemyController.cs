@@ -55,7 +55,9 @@ public class EnemyController : MonoBehaviour, IDamageable
 
         if (Vector3.Distance(this.transform.position, endPosition.position) < 1)
         {
-            GamePlayerInformation.changeHP(-health);
+            if(GamePlayerInformation.instance != null)
+                GamePlayerInformation.changeHP(-health);
+            
             WaveManager.destroyEnemy(this.gameObject);
         }
     }

@@ -1,0 +1,53 @@
+﻿using System;
+using UnityEngine;
+
+namespace DefaultNamespace
+{
+    public class MenuBackground : MonoBehaviour
+    {
+        [Serializable]
+        class PointData
+        {
+            public Transform transform;
+            public float lerpValue;
+            public float delayedStart;
+        }
+
+        [SerializeField] Camera camera;
+        
+        [SerializeField] PointData[] points;
+        [SerializeField] int actuallyPointIndex;
+
+
+        void Awake()
+        {
+            actuallyPointIndex = 0;
+            currentDelayTime = 0;
+        }
+
+        void FixedUpdate()
+        {
+
+            MoveAnimation();
+        }
+
+        float currentDelayTime;
+        void MoveAnimation()
+        {
+            camera.transform.position = Vector3.Slerp( camera.transform.position,  points[actuallyPointIndex].transform.position,  points[actuallyPointIndex].lerpValue * Time.fixedDeltaTime );
+            camera.transform.rotation = Quaternion.Slerp( camera.transform.rotation,  points[actuallyPointIndex].transform.rotation,  points[actuallyPointIndex].lerpValue * Time.fixedDeltaTime );
+
+            if (Vector3.Distance(camera.transform.position, points[actuallyPointIndex].transform.position) < 0.1f)
+            {
+                currentDelayTime += Time.fixedDeltaTime;
+
+                int nextIndex = actuallyPointIndex + 1 < points.Length ? actuallyPointIndex + 1 : 0;
+                if (currentDelayTime >= points[nextIndex].delayedStart)
+                {
+                    actuallyPointIndex = nextIndex;
+                    currentDelayTime = 0;
+                }
+            }
+        }
+    }
+}

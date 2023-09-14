@@ -27,7 +27,7 @@ public class BuildingController : MonoBehaviour
     public int totalDamage;
     public int totalIncome;
 
-    RectTransform viewRangeCanvas;
+    [HideInInspector] public RectTransform viewRangeCanvas;
     GameObject spawnRangePlane;
 
     bool isShooting;
@@ -88,7 +88,7 @@ public class BuildingController : MonoBehaviour
 
         Shooting();
 
-        CheckInfo();
+        // CheckInfo();
 
         SpawnVehicle();
 
@@ -117,37 +117,37 @@ public class BuildingController : MonoBehaviour
     }
 
     //Shows Stats of the Selected Tower
-    void CheckInfo()
-    {
-        
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-        {
-            Vector3 pos = Input.GetTouch(0).position;
-
-            GameObject UICOmponent = UIRaycast(ScreenPosToPointerData(pos));
-            if (UICOmponent != null && UICOmponent.layer == LayerMask.NameToLayer("UI"))
-                return;
-
-            Ray ray = Camera.main.ScreenPointToRay(pos);
-            RaycastHit hit;
-            
-            if (Physics.Raycast(ray, out hit, 1000))
-            {
-                if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Building") && hit.transform.gameObject == this.gameObject)
-                { 
-                    SetRangeImageActive(true);
-                    ShowBuildingInformations.checkInfo(this.gameObject, true);
-                }
-                else if (viewRangeCanvas.gameObject.activeSelf == true)
-                {
-                    SetRangeImageActive(false);
-                    ShowBuildingInformations.checkInfo(this.gameObject, false);
-                }
-
-            }
-        }
-        
-    }
+    // void CheckInfo()
+    // {
+    //     
+    //     if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+    //     {
+    //         // Vector3 pos = Input.GetTouch(0).position;
+    //         //
+    //         // GameObject UICOmponent = UIRaycast(ScreenPosToPointerData(pos));
+    //         // if (UICOmponent != null && UICOmponent.layer == LayerMask.NameToLayer("UI"))
+    //         //     return;
+    //         //
+    //         // Ray ray = Camera.main.ScreenPointToRay(pos);
+    //         // RaycastHit hit;
+    //         //
+    //         // if (Physics.Raycast(ray, out hit, 1000))
+    //         // {
+    //         //     if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Building") && hit.transform.gameObject == this.gameObject)
+    //         //     { 
+    //         //         SetRangeImageActive(true);
+    //         //         ShowBuildingInformations.checkInfo(this.gameObject, true);
+    //         //     }
+    //         //     else if (viewRangeCanvas.gameObject.activeSelf == true)
+    //         //     {
+    //         //         SetRangeImageActive(false);
+    //         //         ShowBuildingInformations.checkInfo(this.gameObject, false);
+    //         //     }
+    //         //
+    //         // }
+    //     }
+    //     
+    // }
     
     
     //Shooting of the "Soldier" tower type
@@ -222,16 +222,16 @@ public class BuildingController : MonoBehaviour
     }
     
     
-    static GameObject UIRaycast (PointerEventData pointerData)
-    {
-        var results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointerData, results);
- 
-        return results.Count < 1 ? null : results[0].gameObject;
-    }
-    
-    static PointerEventData ScreenPosToPointerData (Vector2 screenPos)
-        => new(EventSystem.current){position = screenPos};
+    // static GameObject UIRaycast (PointerEventData pointerData)
+    // {
+    //     var results = new List<RaycastResult>();
+    //     EventSystem.current.RaycastAll(pointerData, results);
+    //
+    //     return results.Count < 1 ? null : results[0].gameObject;
+    // }
+    //
+    // static PointerEventData ScreenPosToPointerData (Vector2 screenPos)
+    //     => new(EventSystem.current){position = screenPos};
 
 
     void GetWaveFarmReward()
