@@ -24,6 +24,7 @@ namespace DefaultNamespace
 
         void OnClick()
         {
+            if(controller == null) return;
             
             if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
             {

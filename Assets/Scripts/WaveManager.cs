@@ -129,7 +129,9 @@ public class WaveManager : MonoBehaviour
     {
         if (!waves[currentWave].rewardIsCollected)
         {
-            GamePlayerInformation.changeBalance(waves[currentWave].stageReward);
+            if(GamePlayerInformation.instance != null)
+                GamePlayerInformation.changeBalance(waves[currentWave].stageReward);
+            
             waves[currentWave].rewardIsCollected = true;
         }
     }
