@@ -47,7 +47,7 @@ public class TowerDeckTileUI : MonoBehaviour
         tileSpriteImage.color = newTileSpriteColor;
 
 
-        newTileColor.a = 181/255f;
+        //newTileColor.a = 181/255f;
         tileImage.color = newTileColor;
 
     }

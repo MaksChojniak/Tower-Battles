@@ -8,6 +8,8 @@ public class Building : ScriptableObject
     public string buildingName;
 
     public int unlockPrice;
+
+    public bool unlocked;
     
     public GameObject buildingPrefab;
 

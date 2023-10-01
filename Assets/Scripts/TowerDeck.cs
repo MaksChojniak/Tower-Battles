@@ -21,12 +21,12 @@ public class TowerDeck : MonoBehaviour
 
     public void SelectSlot(int i)
     {
-        if (PlayerTowerInventory.Instance.towerDeck[i] != null)
-        {
-            PlayerTowerInventory.Instance.towerDeck[i] = null;
-            deckTiles[i].UpdateSprite(null);
-            deckTiles[i].ChangeColor(false);
-        }
+        //if (PlayerTowerInventory.Instance.towerDeck[i] != null)
+        //{
+        //    PlayerTowerInventory.Instance.towerDeck[i] = null;
+        //    deckTiles[i].UpdateSprite(null);
+        //    deckTiles[i].ChangeColor(false);
+        //}
 
         OnSelectSlot?.Invoke(i);
     }

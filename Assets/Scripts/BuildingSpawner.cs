@@ -41,6 +41,7 @@ public class BuildingSpawner : MonoBehaviour
             }
             if (boosterBuildingIsPlaced)
             {
+                StopAllCoroutines();
                 StartCoroutine(Max1Booster());
                 return;
             }

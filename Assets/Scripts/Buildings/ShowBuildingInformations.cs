@@ -137,7 +137,11 @@ public class ShowBuildingInformations : MonoBehaviour
 
     //Writes Message, when there is not enough money
 
-    void ShowNotEnoughMoneyMessage() => StartCoroutine(NotEnoughMoneyMessage());
+    void ShowNotEnoughMoneyMessage()
+    {
+        StopAllCoroutines();
+        StartCoroutine(NotEnoughMoneyMessage());
+    }
 
     IEnumerator NotEnoughMoneyMessage()
     {

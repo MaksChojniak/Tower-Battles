@@ -8,28 +8,19 @@ using UnityEngine.UI;
 
 public class TowerInventory : MonoBehaviour
 {
-    public static event Action<GameObject> OnSelectTile;
+    public static event Action<GameObject, int> OnSelectTile;
 
 
     [SerializeField] int selectedTower;
 
     public TowerInventoryData[] buildingsData;
 
-    [SerializeField] Transform tile1Container;
-    [SerializeField] Transform tile2Container;
-
-    [SerializeField] Image noEmptySlotsTXT;
+    [SerializeField] GameObject lockedWarningMessage;
 
 
     private void OnValidate()
     {
-        for(int i = 0; i < buildingsData.Length; i++)
-        {
-            if (i < tile1Container.childCount)
-                buildingsData[i].buildingTileUI = tile1Container.GetChild(i).gameObject.GetComponent<TowerTileUI>();
-            else
-                buildingsData[i].buildingTileUI = tile2Container.GetChild(i - tile1Container.childCount).gameObject.GetComponent<TowerTileUI>();
-        }
+
     }
 
     private void Awake()
@@ -55,8 +46,6 @@ public class TowerInventory : MonoBehaviour
         UpdateTileSprite();
 
         ChangeDeckTilesColor(false);
-
-        noEmptySlotsTXT.gameObject.SetActive(false);
     }
     
     public void SelectTower(int i)
@@ -70,22 +59,41 @@ public class TowerInventory : MonoBehaviour
         GameObject tile = buildingsData[i].buildingTileUI.gameObject;
         Building building = buildingsData[i].buildingSO;
 
-        OnSelectTile?.Invoke(tile);
-
-        UpdateTowerInformation(building);
+        OnSelectTile?.Invoke(tile, i);
 
         // Added
-        TowerDeck.OnSelectSlot += OnSelectDeckSlot;
-        OnEquipping();
+        if (building.unlocked)
+        {
+            TowerDeck.OnSelectSlot -= OnEquipLockedTower;
+
+            TowerDeck.OnSelectSlot -= testXDXDXD;
+            TowerDeck.OnSelectSlot += testXDXDXD;
+
+            TowerDeck.OnSelectSlot += OnSelectDeckSlot;
+            OnEquipping(); 
+        }
+        else
+        {
+            ChangeDeckTilesColor(false);
+
+            TowerDeck.OnSelectSlot -= testXDXDXD;
+
+            TowerDeck.OnSelectSlot -= OnEquipLockedTower;
+            TowerDeck.OnSelectSlot += OnEquipLockedTower;
+        }
     }
 
 
-
-    void UpdateTowerInformation(Building building)
+    void testXDXDXD(int index)
     {
-        Debug.Log($"Update Tower Info [Tower name - {building.buildingName}]");
-
+        if (PlayerTowerInventory.Instance.towerDeck[index] != null)
+        {
+            PlayerTowerInventory.Instance.towerDeck[index] = null;
+            TowerDeck.Instance.deckTiles[index].UpdateSprite(null);
+            TowerDeck.Instance.deckTiles[index].ChangeColor(false);
+        }
     }
+
 
     public void EquipTower()
     {
@@ -93,23 +101,33 @@ public class TowerInventory : MonoBehaviour
         //OnEquipping();
     }
 
+    void OnEquipLockedTower(int deckSlotIndex)
+    {
+        Debug.Log("Locked Tower");
+
+        StopAllCoroutines();
+        StartCoroutine(LockedWarningMessage());
+
+        //TowerDeck.OnSelectSlot -= OnEquipLockedTower;
+    }
+
+    IEnumerator LockedWarningMessage()
+    {
+        lockedWarningMessage.SetActive(true);
+
+        yield return new WaitForSeconds(1.25f);
+
+        lockedWarningMessage.SetActive(false);
+    }
+
+
+
     void OnSelectDeckSlot(int index)
     {
 
-        int emptyDeckSlots = PlayerTowerInventory.Instance.towerDeck.Length;
-        foreach (var deckTower in PlayerTowerInventory.Instance.towerDeck)
-        {
-            if (deckTower != null) emptyDeckSlots -= 1;
-        }
-
-        if (emptyDeckSlots == 0)
-        {
-            StartCoroutine(noEmptySlots());
-        }
-
         Debug.Log($"selected slot - {index}, seletced tower - {selectedTower}");
 
-        if (PlayerTowerInventory.Instance.towerDeck.Contains(buildingsData[selectedTower].buildingSO)) 
+        if (PlayerTowerInventory.Instance.towerDeck.Contains(buildingsData[selectedTower].buildingSO))
         {
             for (int i = 0; i < PlayerTowerInventory.Instance.towerDeck.Length; i++)
             {
@@ -138,6 +156,7 @@ public class TowerInventory : MonoBehaviour
             try
             {
                 buildingData.buildingTileUI.UpdateSprite(buildingData.buildingSO.buildingImage);
+                buildingData.buildingTileUI.UpdateName(buildingData.buildingSO.buildingName);
             }
             catch
             {
@@ -146,12 +165,6 @@ public class TowerInventory : MonoBehaviour
         }
     }
 
-    IEnumerator noEmptySlots()
-    {
-        noEmptySlotsTXT.gameObject.SetActive(true);
-        yield return new WaitForSeconds(1.25f);
-        noEmptySlotsTXT.gameObject.SetActive(false);
-    }
 
     //Change the deck color to Green while equipping towers
     private void OnEquipping()
