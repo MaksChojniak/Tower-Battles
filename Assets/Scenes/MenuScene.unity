@@ -11015,6 +11015,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
@@ -15500,7 +15505,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 473108171}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.35813177
+  m_Size: 0.37704358
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17753,6 +17758,8 @@ MonoBehaviour:
   TowerData:
   - towerSO: {fileID: 11400000, guid: 4224d44fee2a78b49acd223ae9595dba, type: 2}
     towerTileUI: {fileID: 664414634}
+  - towerSO: {fileID: 11400000, guid: 640fdf81da7080845aaaf2c9ee116121, type: 2}
+    towerTileUI: {fileID: 1740622119}
   tileContainer: {fileID: 27927594}
 --- !u!1001 &1495901634
 PrefabInstance:
@@ -19882,6 +19889,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1729436602}
   m_CullTransparentMesh: 1
+--- !u!114 &1740622119 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4609116739859727979, guid: b3473f76ad040af4e92b67412f9d31f5,
+    type: 3}
+  m_PrefabInstance: {fileID: 934116755}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5213daba2f0a8a444ae1f454c696cc9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1744182846
 GameObject:
   m_ObjectHideFlags: 0

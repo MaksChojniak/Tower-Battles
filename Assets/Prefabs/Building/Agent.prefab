@@ -202,6 +202,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6448862434079306773}
+  - component: {fileID: -3250470081144279652}
   m_Layer: 2
   m_Name: Agent
   m_TagString: Untagged
@@ -232,6 +233,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-3250470081144279652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6088797102554229474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d8b22026d5447fc9857cd29566f0151, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UpgradeLevel: 0
+  IsPlaced: 0
+  SpawnRange: {fileID: 4101449284925749849}
+  ViewRange: {fileID: 3910617793164674922}
+  soldierData: {fileID: 11400000, guid: 4224d44fee2a78b49acd223ae9595dba, type: 2}
 --- !u!1 &7315331490860711330
 GameObject:
   m_ObjectHideFlags: 0
@@ -322,7 +340,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c4ad0ecdbad4687b1cbd852d5345f7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 0}
 --- !u!1 &9042387962091972746
 GameObject:
   m_ObjectHideFlags: 0
@@ -482,6 +499,12 @@ PrefabInstance:
 --- !u!224 &3072281744798278122 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3002249851186178899, guid: 584daa7e390f5a7438bbb59fe5a0a705,
+    type: 3}
+  m_PrefabInstance: {fileID: 218650726492375737}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3910617793164674922 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3840870663389875667, guid: 584daa7e390f5a7438bbb59fe5a0a705,
     type: 3}
   m_PrefabInstance: {fileID: 218650726492375737}
   m_PrefabAsset: {fileID: 0}
