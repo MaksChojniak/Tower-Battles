@@ -13,7 +13,7 @@ namespace DefaultNamespace
             public float delayedStart;
         }
 
-        [SerializeField] Camera camera;
+        [SerializeField] Camera Camera;
         
         [SerializeField] PointData[] points;
         [SerializeField] int actuallyPointIndex;
@@ -34,10 +34,11 @@ namespace DefaultNamespace
         float currentDelayTime;
         void MoveAnimation()
         {
-            camera.transform.position = Vector3.Slerp( camera.transform.position,  points[actuallyPointIndex].transform.position,  points[actuallyPointIndex].lerpValue * Time.fixedDeltaTime );
-            camera.transform.rotation = Quaternion.Slerp( camera.transform.rotation,  points[actuallyPointIndex].transform.rotation,  points[actuallyPointIndex].lerpValue * Time.fixedDeltaTime );
+            Transform cameraTransform = Camera.transform;
+            cameraTransform.position = Vector3.Slerp( cameraTransform.position,  points[actuallyPointIndex].transform.position,  points[actuallyPointIndex].lerpValue * Time.fixedDeltaTime );
+            cameraTransform.rotation = Quaternion.Slerp( cameraTransform.rotation,  points[actuallyPointIndex].transform.rotation,  points[actuallyPointIndex].lerpValue * Time.fixedDeltaTime );
 
-            if (Vector3.Distance(camera.transform.position, points[actuallyPointIndex].transform.position) < 0.1f)
+            if (Vector3.Distance(cameraTransform.position, points[actuallyPointIndex].transform.position) < 0.1f)
             {
                 currentDelayTime += Time.fixedDeltaTime;
 

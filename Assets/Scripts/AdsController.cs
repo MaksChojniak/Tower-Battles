@@ -8,9 +8,7 @@ using UnityEngine.SceneManagement;
 
 public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener, IUnityAdsInitializationListener
 {
-    public static AdsController instance;
-
-    public static Action showAds;
+    // public static Action ShowAds;
 
     [SerializeField] string m_AndroidAdUnitId = "Interstitial_Android";
     public string AndroidAdUnitId => m_AndroidAdUnitId;
@@ -27,15 +25,13 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     public bool TestMode;
 
 
-    public bool adsLoaded;
+    public bool AdsLoaded;
 
 
 
     void Awake()
     {
-        instance = this;
-
-        adsLoaded = false;
+        AdsLoaded = false;
 
         InitializeAds();
 
@@ -45,13 +41,13 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
             m_AdUnitId = m_iOSAdUnitId;
         }
 
-        showAds += ShowAd;
+         // += ShowAds;
 
     }
 
     void OnDestroy()
     {
-        showAds -= ShowAd;
+         // -= ShowAds;
     }
 
     private void InitializeAds()
@@ -90,7 +86,7 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     {
         Debug.Log("Loading Ad: " + m_AdUnitId);
         Advertisement.Load(m_AdUnitId, this);
-        adsLoaded = true;
+        AdsLoaded = true;
     }
 
     #region IUnityAdsLoadListener
@@ -103,7 +99,7 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     {
         // Optionally execute code if the Ad Unit successfully loads content.
         //ShowAd();
-        adsLoaded = true;
+        AdsLoaded = true;
     }
 
     /// <summary>
@@ -123,11 +119,11 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     /// <summary>
     /// Show an ad on the screen
     /// </summary>
-    public void ShowAd()
+    public void ShowAds()
     {
         Debug.Log("Showing Ad: " + m_AdUnitId);
         Advertisement.Show(m_AdUnitId, this);
-        adsLoaded = false;
+        AdsLoaded = false;
     }
     #region IUnityAdsShowListener
 

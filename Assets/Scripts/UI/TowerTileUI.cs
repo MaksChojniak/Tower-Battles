@@ -38,7 +38,7 @@ public class TowerTileUI : MonoBehaviour
         buildingNameText.text = name;
     }
 
-    void OnSelectTile(GameObject selectedTile, int index)
+    void OnSelectTile(int index, GameObject selectedTile)
     {
         if (selectedTile != this.gameObject)
         {

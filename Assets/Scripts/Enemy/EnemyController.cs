@@ -1,69 +1,80 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
 using UnityEngine;
 using PathCreation;
 using UnityEngine.UI;
 
-public class EnemyController : MonoBehaviour, IDamageable
+public class EnemyController : MonoBehaviour
 {
-    public Enemy component;
-        
-    public float speed;
-    public int health;
-
-    public float distanceTravelled;
+    public static event Action OnDestroyEnemy;
+    public event Action OnMove;
+    public Action<float> TakeDamage;
     
-    [SerializeField] PathCreator pathCreator;
-    [SerializeField] Transform endPosition;
+    public float DistanceTravelled;
 
-    RectTransform canvasHP;
+    [Space(18)]
+    [SerializeField] Enemy EnemyData;
+    [SerializeField] RectTransform HealthBar;
 
+    [Space(18)]
+    [SerializeField] float Health;
+
+    PathCreator pathCreator;
+    
 
     void Awake()
     {
-        canvasHP = transform.GetChild(0).GetChild(0).GetComponent<RectTransform>();
-
+        TakeDamage += Damage;
+        
         pathCreator = GameObject.FindGameObjectWithTag("Path").GetComponent<PathCreator>();
-        endPosition = GameObject.FindGameObjectWithTag("EnemyEndLoopPosition").transform; 
+
+        Health = EnemyData.GetBaseHealth();
     }
 
-    private void Update()
+    void OnDestroy()
     {
-        if(health <= 0)
-            WaveManager.destroyEnemy(this.gameObject);
-        
-        
-        Move();
-        DestroyEnemy();
-
-        canvasHP.transform.GetChild(0).GetComponent<Image>().fillAmount = ((float)health / (float)component.health);
+        TakeDamage -= Damage;
     }
 
-    
+    void Update()
+    {
+        Move();
+        
+    }
+
     void Move()
     {
-        distanceTravelled += speed * 2.5f * Time.deltaTime;
-        transform.position = pathCreator.path.GetPointAtDistance(distanceTravelled);
-        transform.rotation = pathCreator.path.GetRotationAtDistance(distanceTravelled);
+        DistanceTravelled += EnemyData.Speed * 2.5f * Time.deltaTime;
+        transform.position = pathCreator.path.GetPointAtDistance(DistanceTravelled);
+        transform.rotation = pathCreator.path.GetRotationAtDistance(DistanceTravelled);
+        
+        OnMove?.Invoke();
     }
-    
-    
-    void DestroyEnemy()
-    {
 
-        if (Vector3.Distance(this.transform.position, endPosition.position) < 1)
+    public float GetDistanceTravelled() => DistanceTravelled;
+
+    public void Damage(float value)
+    {
+        Health -= value;
+
+        OnTakeDamage();
+    }
+
+    void OnTakeDamage()
+    {
+        UpdateHealthBar();
+
+        if (Health <= 0)
         {
-            if(GamePlayerInformation.instance != null)
-                GamePlayerInformation.changeHP(-health);
-            
-            WaveManager.destroyEnemy(this.gameObject);
+            OnDestroyEnemy?.Invoke();
+            Destroy(this.gameObject);
         }
     }
 
-    public void Damage(int value)
+    void UpdateHealthBar()
     {
-        health -= value;
+        HealthBar.GetComponent<Image>().fillAmount = Health <= 0 ? 0 : (float)Health / (float)EnemyData.GetBaseHealth();
     }
+    
+
+    
 }

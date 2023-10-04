@@ -1,26 +1,53 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using DefaultNamespace;
+using DefaultNamespace.ScriptableObjects;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class TowerInventory : MonoBehaviour
 {
-    public static event Action<GameObject, int> OnSelectTile;
+    public static event Action<int, GameObject> OnSelectTile;
 
 
     [SerializeField] int selectedTower;
 
-    public TowerInventoryData[] buildingsData;
+    public TowerInventoryData[] TowerData;
 
-    [SerializeField] GameObject lockedWarningMessage;
-
-
+    [SerializeField] Transform tileContainer;
+    
     private void OnValidate()
     {
+        List<Transform> childs = GetAllChilds(tileContainer);
+        List<TowerTileUI> tiles = new List<TowerTileUI>();
 
+        foreach (var child in childs)
+        {
+            if (child.TryGetComponent(typeof(TowerTileUI), out var tile))
+            {
+                tiles.Add(tile.GetComponent<TowerTileUI>());
+            }
+        }
+
+        for (int i = 0; i < TowerData.Length; i++)
+        {
+            TowerData[i].towerTileUI = tiles[i];
+        }
+    }
+    
+    List<Transform> GetAllChilds(Transform root)
+    {
+        List<Transform> childs = new List<Transform>();
+
+        foreach (Transform child in root)
+        {
+            childs.Add(child);
+            if (child.childCount > 0)
+                childs.AddRange(GetAllChilds(child));
+        }
+
+        return childs;
     }
 
     private void Awake()
@@ -45,29 +72,29 @@ public class TowerInventory : MonoBehaviour
 
         UpdateTileSprite();
 
-        ChangeDeckTilesColor(false);
+        // ChangeDeckTilesColor(false);
     }
     
     public void SelectTower(int i)
     {
         TowerDeck.OnSelectSlot -= OnSelectDeckSlot;
 
-        Debug.Log($"{i}");
+        //Debug.Log($"{i}");
 
         selectedTower = i;
 
-        GameObject tile = buildingsData[i].buildingTileUI.gameObject;
-        Building building = buildingsData[i].buildingSO;
+        GameObject tile = TowerData[i].towerTileUI.gameObject;
+        Tower tower = TowerData[i].towerSO;
 
-        OnSelectTile?.Invoke(tile, i);
+        OnSelectTile?.Invoke(i, tile);
 
         // Added
-        if (building.unlocked)
+        if (tower.IsUnlocked())
         {
             TowerDeck.OnSelectSlot -= OnEquipLockedTower;
 
-            TowerDeck.OnSelectSlot -= testXDXDXD;
-            TowerDeck.OnSelectSlot += testXDXDXD;
+            TowerDeck.OnSelectSlot -= RemoveFromDeck;
+            TowerDeck.OnSelectSlot += RemoveFromDeck;
 
             TowerDeck.OnSelectSlot += OnSelectDeckSlot;
             OnEquipping(); 
@@ -76,7 +103,7 @@ public class TowerInventory : MonoBehaviour
         {
             ChangeDeckTilesColor(false);
 
-            TowerDeck.OnSelectSlot -= testXDXDXD;
+            TowerDeck.OnSelectSlot -= RemoveFromDeck;
 
             TowerDeck.OnSelectSlot -= OnEquipLockedTower;
             TowerDeck.OnSelectSlot += OnEquipLockedTower;
@@ -84,11 +111,11 @@ public class TowerInventory : MonoBehaviour
     }
 
 
-    void testXDXDXD(int index)
+    void RemoveFromDeck(int index)
     {
-        if (PlayerTowerInventory.Instance.towerDeck[index] != null)
+        if (PlayerTowerInventory.Instance.TowerDeck[index] != null)
         {
-            PlayerTowerInventory.Instance.towerDeck[index] = null;
+            PlayerTowerInventory.Instance.TowerDeck[index] = null;
             TowerDeck.Instance.deckTiles[index].UpdateSprite(null);
             TowerDeck.Instance.deckTiles[index].ChangeColor(false);
         }
@@ -103,44 +130,32 @@ public class TowerInventory : MonoBehaviour
 
     void OnEquipLockedTower(int deckSlotIndex)
     {
-        Debug.Log("Locked Tower");
-
-        StopAllCoroutines();
-        StartCoroutine(LockedWarningMessage());
+        WarningSystem.ShowWarning(WarningSystem.WarningType.LockedTower);
 
         //TowerDeck.OnSelectSlot -= OnEquipLockedTower;
     }
-
-    IEnumerator LockedWarningMessage()
-    {
-        lockedWarningMessage.SetActive(true);
-
-        yield return new WaitForSeconds(1.25f);
-
-        lockedWarningMessage.SetActive(false);
-    }
-
+    
 
 
     void OnSelectDeckSlot(int index)
     {
 
-        Debug.Log($"selected slot - {index}, seletced tower - {selectedTower}");
+        //Debug.Log($"selected slot - {index}, seletced tower - {selectedTower}");
 
-        if (PlayerTowerInventory.Instance.towerDeck.Contains(buildingsData[selectedTower].buildingSO))
+        if (PlayerTowerInventory.Instance.TowerDeck.Contains(TowerData[selectedTower].towerSO))
         {
-            for (int i = 0; i < PlayerTowerInventory.Instance.towerDeck.Length; i++)
+            for (int i = 0; i < PlayerTowerInventory.Instance.TowerDeck.Length; i++)
             {
-                if (PlayerTowerInventory.Instance.towerDeck[i] == buildingsData[selectedTower].buildingSO)
+                if (PlayerTowerInventory.Instance.TowerDeck[i] == TowerData[selectedTower].towerSO)
                 {
-                    PlayerTowerInventory.Instance.towerDeck[i] = null;
+                    PlayerTowerInventory.Instance.TowerDeck[i] = null;
                     TowerDeck.Instance.deckTiles[i].UpdateSprite(null);
                 }
             }
         }
 
-        PlayerTowerInventory.Instance.towerDeck[index] = buildingsData[selectedTower].buildingSO;
-        TowerDeck.Instance.deckTiles[index].UpdateSprite(buildingsData[selectedTower].buildingSO.buildingImage);
+        PlayerTowerInventory.Instance.TowerDeck[index] = TowerData[selectedTower].towerSO;
+        TowerDeck.Instance.deckTiles[index].UpdateSprite(TowerData[selectedTower].towerSO.TowerSprite);
 
         TowerDeck.OnSelectSlot -= OnSelectDeckSlot;
 
@@ -151,16 +166,16 @@ public class TowerInventory : MonoBehaviour
 
     void UpdateTileSprite()
     {
-        foreach (var buildingData in buildingsData)
+        foreach (var buildingData in TowerData)
         {
             try
             {
-                buildingData.buildingTileUI.UpdateSprite(buildingData.buildingSO.buildingImage);
-                buildingData.buildingTileUI.UpdateName(buildingData.buildingSO.buildingName);
+                buildingData.towerTileUI.UpdateSprite(buildingData.towerSO.TowerSprite);
+                buildingData.towerTileUI.UpdateName(buildingData.towerSO.TowerName);
             }
-            catch
+            catch(Exception exception)
             {
-          
+                Debug.Log(exception);
             }
         }
     }
@@ -185,13 +200,13 @@ public class TowerInventory : MonoBehaviour
 [Serializable]
 public class TowerInventoryData
 {
-    public Building buildingSO;
-    public TowerTileUI buildingTileUI;
+    public Tower towerSO;
+    public TowerTileUI towerTileUI;
 
-    public TowerInventoryData(Building buildingSO, TowerTileUI buildingTileUI)
+    public TowerInventoryData(Tower towerSO, TowerTileUI towerTileUI)
     {
-        this.buildingSO = buildingSO;
-        this.buildingTileUI = buildingTileUI;
+        this.towerSO = towerSO;
+        this.towerTileUI = towerTileUI;
     }
 }
 

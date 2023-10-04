@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuildingsBarTile : MonoBehaviour
+public class TowersBarTile : MonoBehaviour
 {
     public Action<Sprite> UpdateSprite;
 

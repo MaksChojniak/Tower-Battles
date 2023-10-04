@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
+using DefaultNamespace.ScriptableObjects;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,6 +27,7 @@ public class TowerPreviewUI : MonoBehaviour
 
     [SerializeField] Color[] colors;
 
+    int lastSelectedTowerIndex;
 
     private void Awake()
     {
@@ -36,14 +39,14 @@ public class TowerPreviewUI : MonoBehaviour
         TowerInventory.OnSelectTile -= UpdateTowerInformations;
     }
 
-    void UpdateTowerInformations(GameObject tile, int index)
+    void UpdateTowerInformations(int index, GameObject tile = null)
     {
-        Building building = inventory.buildingsData[index].buildingSO;
+        Tower tower = inventory.TowerData[index].towerSO;
 
-        towerNameText.text = building.buildingName;
-        towerImage.sprite = building.buildingImage;
+        towerNameText.text = tower.TowerName;
+        towerImage.sprite = tower.TowerSprite;
 
-        startingPriceText.text = $"{building.price}$";
+        startingPriceText.text = $"{tower.GetPrice()}$";
         damageTypeText.text = "Single/Splash";
 
         damageImage.fillAmount = 0.2f;
@@ -55,9 +58,26 @@ public class TowerPreviewUI : MonoBehaviour
 
         placementText.text = "Ground/Cliff";
 
-        ownedPanel.SetActive(building.unlocked);
-        unlockPanel.SetActive(!building.unlocked);
-        unlockPrice.text = $"{building.unlockPrice} Credits";
+        ownedPanel.SetActive(tower.IsUnlocked());
+        unlockPanel.SetActive(!tower.IsUnlocked());
+        unlockPrice.text = $"{tower.GetUnlockedPrice()} Credits";
+
+        lastSelectedTowerIndex = index;
+    }
+
+    public void BuyTower()
+    {
+        Tower towerData = inventory.TowerData[lastSelectedTowerIndex].towerSO;
+        if (towerData.GetUnlockedPrice() > PlayerTowerInventory.Instance.GetBalance())
+        {
+            WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+            return;
+        }
+
+        PlayerTowerInventory.ChangeBalance(-towerData.GetUnlockedPrice());
+        towerData.UnlockTower();
+        
+        inventory.SelectTower(lastSelectedTowerIndex);
     }
 
     void UpdateImageColor(Image image)

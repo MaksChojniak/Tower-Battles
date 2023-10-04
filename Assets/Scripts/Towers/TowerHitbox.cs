@@ -5,14 +5,14 @@ using UnityEngine.EventSystems;
 
 namespace DefaultNamespace
 {
-    public class BuildingHitbox : MonoBehaviour
+    public class TowerHitbox : MonoBehaviour
     {
 
-        [SerializeField] BuildingController controller;
+        TowerController controller;
 
         void Start()
         {
-            controller = transform.parent.GetComponent<BuildingController>();
+            controller = transform.parent.GetComponent<TowerController>();
         }
 
         void Update()
@@ -39,15 +39,17 @@ namespace DefaultNamespace
             
                 if (Physics.Raycast(ray, out hit, 1000))
                 {
-                    if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Building") && hit.transform.gameObject == this.gameObject)
+                    if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Tower") && hit.transform.gameObject == this.gameObject)
                     { 
-                        controller.SetRangeImageActive(true);
-                        ShowBuildingInformations.checkInfo(controller.gameObject, true);
+                        controller.ShowTowerViewRange(true);
+                        controller.ShowTowerInformation(true);
+                        // TowerController.ShowTowerInformation(controller.gameObject, true);
                     }
-                    else if (controller.viewRangeCanvas.gameObject.activeSelf == true)
+                    else if (controller.ViewRangeIsActive == true)
                     {
-                        controller.SetRangeImageActive(false);
-                        ShowBuildingInformations.checkInfo(controller.gameObject, false);
+                        controller.ShowTowerViewRange(false);
+                        controller.ShowTowerInformation(false);
+                        // TowerController.ShowTowerInformation(controller.gameObject, false);
                     }
 
                 }

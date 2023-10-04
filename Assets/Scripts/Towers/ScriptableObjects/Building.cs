@@ -14,8 +14,6 @@ public class Building : ScriptableObject
     public GameObject buildingPrefab;
 
     public Sprite buildingImage;
-    
-    public TypeOfBuildng type;
 
     public long price;
     
@@ -44,11 +42,3 @@ public class Building : ScriptableObject
 }
 
 //All possible types of Buildings
-public enum TypeOfBuildng
-{
-    soldier,
-    spawner,
-    farm,
-    vehicle,
-    booster
-}

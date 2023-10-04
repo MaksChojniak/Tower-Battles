@@ -1,16 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using DefaultNamespace.ScriptableObjects;
 using UnityEngine;
 
 public class PlayerTowerInventory : MonoBehaviour
 {
     public static PlayerTowerInventory Instance;
 
-    public int balance;
-    public int winCount;
-    public int defeatCount;
+    public static Action<int> ChangeBalance;
+    public static Action AddWin;
+    public static Action AddDefeat;
 
-    public Building[] towerDeck = new Building[5];
+    [SerializeField] int Balance;
+    [SerializeField] int WinCount;
+    [SerializeField] int DefeatCount;
+
+    public Tower[] TowerDeck = new Tower[5];
 
     private void Awake()
     {
@@ -25,9 +29,39 @@ public class PlayerTowerInventory : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
 
+        ChangeBalance += OnChangeBalance;
+        AddWin += OnAddWin;
+        AddDefeat += OnAddDefeat;
 
     }
 
+    void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            ChangeBalance -= OnChangeBalance;
+            AddWin -= OnAddWin;
+            AddDefeat -= OnAddDefeat;
+        }
+    }
 
+
+
+    public int GetBalance() => Balance;
+
+    void OnChangeBalance(int value)
+    {
+        Balance += value;
+    }
+
+    void OnAddWin()
+    {
+        WinCount += 1;
+    }
+
+    void OnAddDefeat()
+    {
+        DefeatCount += 1;
+    }
 
 }
