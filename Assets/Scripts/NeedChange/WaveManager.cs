@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WaveManager : MonoBehaviour
@@ -8,10 +7,95 @@ public class WaveManager : MonoBehaviour
     // public static WaveManager instance;
     public static event Action<int> UpdateWaveCount;
     public static event Action<int> UpdateCountdown;
-    public static event Action OnStartWave;
-    public static event Action OnEndWave;
+    public static event Action OnStartWave; // farm give money
+    public static event Action<uint> OnEndWave;
+
+    [SerializeField] WaveData[] Waves;
+    [SerializeField] int ActualyWeveIndex;
+
+    [SerializeField] int StartCountdown;
+
+    void Awake()
+    {
+
+        ActualyWeveIndex = -1;
+    }
+
+    void OnDestroy()
+    {
+        
+    }
+
+    void Start()
+    {
+        StartCoroutine(PrepareWaves());
+    }
 
 
+    IEnumerator PrepareWaves()
+    {
+        float time = StartCountdown;
+        while (time >= 0)
+        {
+            float delay = Time.fixedDeltaTime;
+            time -= delay;
+
+            UpdateCountdown?.Invoke(Mathf.RoundToInt(time));
+            
+            yield return new WaitForSeconds(delay);
+        }
+        UpdateCountdown?.Invoke(-1);
+
+        UpdateWaves();
+    }
+
+    void UpdateWaves()
+    {
+        if (ActualyWeveIndex + 1 < Waves.Length)
+        {
+            StartWave();
+        }
+    }
+    
+
+    void StartWave()
+    {
+        OnStartWave?.Invoke();
+        ActualyWeveIndex += 1;
+        UpdateWaveCount?.Invoke(ActualyWeveIndex);
+
+        StartCoroutine(ProcessWave(Waves[ActualyWeveIndex]));
+    }
+    
+    IEnumerator ProcessWave(WaveData wave)
+    {
+
+        for (int i = 0; i < wave.stages.Length; i++)
+        {
+            StageWaveData stage = wave.stages[i];
+
+            StageData stageData = stage.stagesData;
+            for(int j = 0; j < stageData.enemyCount; j++)
+            {
+                GameObject enemy = Instantiate(stageData.enemy.EnemyPrefab, Vector3.zero, Quaternion.identity);
+
+                yield return new WaitForSeconds(stageData.sleepTime);
+            }
+
+            yield return new WaitForSeconds(stage.stageSleepTime);
+        }
+
+        yield return new WaitUntil(new Func<bool>(() => GameObject.FindGameObjectsWithTag("Enemy").Length <= 0));
+
+        OnEndWave?.Invoke(wave.waveReward);
+
+        yield return new WaitForSeconds(wave.waveSleepTime);
+        
+        UpdateWaves();
+    }
+
+
+    
     // public bool endAllWaves;
     // public int currentWave;
     // public double loadingGameSceneTime;
@@ -165,20 +249,32 @@ public class WaveManager : MonoBehaviour
     //
     //
     // void EndAllWaves() => endAllWaves = true;
-    
-    
+
+
 }
 
 
 [Serializable]
 public class WaveData
 {
-    public List<Enemy> enemies;
-    public List<int> enemiesCount;
+    public StageWaveData[] stages;
+    public float waveSleepTime;    
 
-    public List<float> sleepTime;
-
-    public uint stageReward;
-    public bool rewardIsCollected;
+    public uint waveReward;
 }
+
+[Serializable]
+public class StageWaveData
+{
+    public StageData stagesData;
+    public float stageSleepTime;
+}
+
+[Serializable]
+public class StageData
+{
+    public Enemy enemy;
+    public int enemyCount;
+    public float sleepTime;
+} 
 

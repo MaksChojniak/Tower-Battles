@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 4169576883652928190}
   - component: {fileID: 2873113575792464072}
   - component: {fileID: 8644925205290547256}
+  - component: {fileID: 1713711833466893730}
   m_Layer: 2
   m_Name: Enemy1
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -99,6 +100,22 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1713711833466893730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2360409592460211268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e470f88542fc34f92c3c6457575011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DistanceTravelled: 0
+  EnemyData: {fileID: 11400000, guid: d94333aad07a0d0468d54f848b818ecd, type: 2}
+  HealthBar: {fileID: 3059836637483129572}
+  Health: 15
 --- !u!1001 &5133384928052644474
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -153,6 +170,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c97a838ea44550f42956f582842216ac, type: 3}
+--- !u!224 &3059836637483129572 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7875611922878714014, guid: c97a838ea44550f42956f582842216ac,
+    type: 3}
+  m_PrefabInstance: {fileID: 5133384928052644474}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8891564287549382049 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4348327663719552987, guid: c97a838ea44550f42956f582842216ac,

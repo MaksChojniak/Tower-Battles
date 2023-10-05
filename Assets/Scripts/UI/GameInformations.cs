@@ -46,6 +46,7 @@ namespace DefaultNamespace
         
         void UpdateCountdown(int value)
         {
+            CountdownText.gameObject.SetActive(value >= 0);
             CountdownText.text = $"{value}";
         }
         

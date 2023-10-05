@@ -24,7 +24,7 @@ namespace DefaultNamespace.ScriptableObjects
         
 #region Base Properties
         
-        public int GetUnlockedPrice() => BaseProperties.UnlockePrice;
+        public int GetUnlockedPrice() => BaseProperties.UnlockPrice;
         public bool IsUnlocked() => BaseProperties.IsUnlocked;
         public void UnlockTower() =>  BaseProperties.IsUnlocked = true;
 
@@ -41,7 +41,7 @@ namespace DefaultNamespace.ScriptableObjects
     [Serializable]
     public class BaseProperties
     {
-        public int UnlockePrice;
+        public int UnlockPrice;
         public bool IsUnlocked;
     }
     

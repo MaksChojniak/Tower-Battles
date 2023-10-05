@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections;
 using DefaultNamespace.ScriptableObjects;
-using UnityEditor.Media;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace DefaultNamespace
 {
@@ -20,6 +17,7 @@ namespace DefaultNamespace
         public int UpgradeLevel;
         public bool IsPlaced;
 
+        [SerializeField] protected GameObject CurrentTowerObject;
         [SerializeField] GameObject SpawnRange;
         [SerializeField] GameObject ViewRange;
         
@@ -30,6 +28,8 @@ namespace DefaultNamespace
             ShowTowerSpawnRange += SetActiveSpawnRange;
             ShowTowerViewRange += SetActiveViewRange;
             PlaceTower += OnPlaceTower;
+
+            // OnUpgradeTower += ;
 
             UpgradeLevel = 0;
         }
@@ -44,7 +44,7 @@ namespace DefaultNamespace
         
         public virtual void Start()
         {
-            
+            UpdateTower();
         }
 
         public virtual void Update()
@@ -57,6 +57,27 @@ namespace DefaultNamespace
             
         }
 
+
+
+        protected virtual void OnUpgradeTower()
+        {
+            UpgradeLevel += 1;
+            
+            UpdateTower();
+        }
+
+        protected virtual void UpdateTower()
+        {
+            CurrentTowerObject = this.transform.GetChild(UpgradeLevel).gameObject;
+
+            for (int i = 0; i < 5; i++)
+            {
+                this.transform.GetChild(i).gameObject.SetActive(false);
+            }
+
+            CurrentTowerObject.SetActive(true);
+        }
+        
 
         public bool ViewRangeIsActive => ViewRange.activeSelf;
 

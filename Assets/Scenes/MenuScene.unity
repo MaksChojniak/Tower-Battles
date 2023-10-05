@@ -7764,7 +7764,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &679079439
 AudioListener:
   m_ObjectHideFlags: 0
@@ -7789,7 +7789,7 @@ Camera:
   m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 50
+  m_FocalLength: 20.78461
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -7798,7 +7798,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 60.000004
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -7813,7 +7813,7 @@ Camera:
   m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
-  m_OcclusionCulling: 1
+  m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
 --- !u!4 &679079441
@@ -7843,13 +7843,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderShadows: 1
+  m_RenderShadows: 0
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
   m_Cameras:
   - {fileID: 694749904}
-  m_RendererIndex: -1
+  m_RendererIndex: 0
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 1
@@ -7962,10 +7962,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_RenderShadows: 0
+  m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
   m_RequiresOpaqueTextureOption: 2
-  m_CameraType: 1
+  m_CameraType: 0
   m_Cameras: []
   m_RendererIndex: -1
   m_VolumeLayerMask:
@@ -7978,7 +7978,7 @@ MonoBehaviour:
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
-  m_ClearDepth: 1
+  m_ClearDepth: 0
   m_AllowXRRendering: 1
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
@@ -8006,15 +8006,15 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
+  near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 75
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 215
+    m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -8945,7 +8945,7 @@ MonoBehaviour:
       - 0
       globalNormalsAngle: 90
       flipNormals: 0
-    vertexPathUpToDate: 1
+    vertexPathUpToDate: 0
     vertexPathMaxAngleError: 0.3
     vertexPathMinVertexSpacing: 0.01
     showTransformTool: 1
@@ -15505,7 +15505,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 473108171}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.37704358
+  m_Size: 0.3825361
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -17880,7 +17880,7 @@ Light:
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -22606,6 +22606,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 385ac8874444413fb827aac64d48a7fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Waves:
+  - stages:
+    - stagesData:
+        enemy: {fileID: 11400000, guid: d94333aad07a0d0468d54f848b818ecd, type: 2}
+        enemyCount: 5
+        sleepTime: 0.9
+      stageSleepTime: 0.5
+    - stagesData:
+        enemy: {fileID: 11400000, guid: 1c0c27060c490494e89d6690acfa8fb7, type: 2}
+        enemyCount: 10
+        sleepTime: 0.5
+      stageSleepTime: 1
+    - stagesData:
+        enemy: {fileID: 11400000, guid: d94333aad07a0d0468d54f848b818ecd, type: 2}
+        enemyCount: 5
+        sleepTime: 0.9
+      stageSleepTime: 0.5
+    waveSleepTime: 1.5
+    waveReward: 0
+  ActualyWeveIndex: 0
+  StartCountdown: 0
 --- !u!1 &2090833163
 GameObject:
   m_ObjectHideFlags: 0

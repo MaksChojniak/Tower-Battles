@@ -23,6 +23,8 @@ public class GamePlayerInformation : MonoBehaviour
         
         ChangeHP += OnChangeHealth;
 
+        WaveManager.OnEndWave += GetWaveReward;
+
         Health = 100;
         Balance = 16500;
     }
@@ -38,6 +40,14 @@ public class GamePlayerInformation : MonoBehaviour
         ChangeBalance -= OnChangeBalance;
 
         ChangeHP -= OnChangeHealth;
+        
+        WaveManager.OnEndWave -= GetWaveReward;
+    }
+    
+    
+    void GetWaveReward(uint reward)
+    {
+        ChangeBalance(reward);
     }
 
     public long GetBalance() => Balance;

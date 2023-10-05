@@ -18,9 +18,8 @@ namespace DefaultNamespace.ScriptableObjects
     
     public enum WeaponType
     {
-        SingleRifle,
-        DoubleRifle,
-        Melee
+        SingleWeapon,
+        DualWield,
     }
 
     public enum DamageType

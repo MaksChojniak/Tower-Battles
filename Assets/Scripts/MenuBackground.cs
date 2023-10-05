@@ -25,7 +25,7 @@ namespace DefaultNamespace
             currentDelayTime = 0;
         }
 
-        void FixedUpdate()
+        void LateUpdate()
         {
 
             MoveAnimation();
