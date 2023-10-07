@@ -187,38 +187,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &4431721198078422667
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7418283491032520238}
-  m_Layer: 0
-  m_Name: Soldier 4
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &7418283491032520238
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4431721198078422667}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7185320040471112170}
-  m_Father: {fileID: 4309083318234562620}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4778849576660784343
 GameObject:
   m_ObjectHideFlags: 0
@@ -248,7 +216,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6372832605424861869}
-  - {fileID: 7418283491032520238}
   m_Father: {fileID: 6448862434079306773}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -352,6 +319,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   UpgradeLevel: 0
+  IsPlaced: 0
+  CurrentTowerObject: {fileID: 0}
   SpawnRange: {fileID: 4101449284925749849}
   ViewRange: {fileID: 4886912425524374682}
   soldierData: {fileID: 11400000, guid: 4224d44fee2a78b49acd223ae9595dba, type: 2}
@@ -434,12 +403,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 1ab468c6fef05a340b5f3598e0254c61,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1ab468c6fef05a340b5f3598e0254c61,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.2
+      value: -2.201
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1ab468c6fef05a340b5f3598e0254c61,
         type: 3}
@@ -509,17 +478,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 937b0a325bee1ad47b5e02e9e975b7ce,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.025
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 937b0a325bee1ad47b5e02e9e975b7ce,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.631
+      value: -2.201
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 937b0a325bee1ad47b5e02e9e975b7ce,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.233
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 937b0a325bee1ad47b5e02e9e975b7ce,
         type: 3}
@@ -561,6 +530,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Roblox_Soldier5
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 937b0a325bee1ad47b5e02e9e975b7ce,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 937b0a325bee1ad47b5e02e9e975b7ce, type: 3}
 --- !u!4 &4500584505463261289 stripped
@@ -584,12 +558,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: c6d7d347ab27cb44fb6e1a0782c4f830,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c6d7d347ab27cb44fb6e1a0782c4f830,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.2
+      value: -2.201
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c6d7d347ab27cb44fb6e1a0782c4f830,
         type: 3}
@@ -664,17 +638,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.025
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.631
+      value: -2.201
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.233
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
         type: 3}
@@ -716,6 +690,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Roblox_Soldier4
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9c6f3d82e14c1544fafc0b2bfba755f8, type: 3}
 --- !u!4 &5576358702980638439 stripped
@@ -739,12 +718,12 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 08caa22622050ee4bbd7ad56c17731c7,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 08caa22622050ee4bbd7ad56c17731c7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.2
+      value: -2.201
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 08caa22622050ee4bbd7ad56c17731c7,
         type: 3}
@@ -803,81 +782,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 08caa22622050ee4bbd7ad56c17731c7,
     type: 3}
   m_PrefabInstance: {fileID: 6915945731263898950}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &7223171255426076161
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 7418283491032520238}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.025
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.631
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.233
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: -0.71404916
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.6952178
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0.05678314
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.059847325
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: -91.546
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 184.511
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 166.02701
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-        type: 3}
-      propertyPath: m_Name
-      value: Roblox_Soldier4
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 9c6f3d82e14c1544fafc0b2bfba755f8, type: 3}
---- !u!4 &7185320040471112170 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9c6f3d82e14c1544fafc0b2bfba755f8,
-    type: 3}
-  m_PrefabInstance: {fileID: 7223171255426076161}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8546793540603093321
 PrefabInstance:
