@@ -39,19 +39,10 @@ namespace DefaultNamespace
             
                 if (Physics.Raycast(ray, out hit, 1000))
                 {
-                    if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Tower") && hit.transform.gameObject == this.gameObject)
-                    { 
-                        controller.ShowTowerViewRange(true);
-                        controller.ShowTowerInformation(true);
-                        // TowerController.ShowTowerInformation(controller.gameObject, true);
-                    }
-                    else if (controller.ViewRangeIsActive == true)
-                    {
-                        controller.ShowTowerViewRange(false);
-                        controller.ShowTowerInformation(false);
-                        // TowerController.ShowTowerInformation(controller.gameObject, false);
-                    }
-
+                    bool state = hit.transform.gameObject.layer == LayerMask.NameToLayer("Tower") && hit.transform.gameObject == this.gameObject;
+                    controller.ShowTowerViewRange(state);
+                    controller.ShowTowerInformation(state);
+                    
                 }
             }
         }

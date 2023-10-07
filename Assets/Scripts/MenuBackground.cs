@@ -27,7 +27,7 @@ namespace DefaultNamespace
 
         void LateUpdate()
         {
-
+            
             MoveAnimation();
         }
 

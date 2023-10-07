@@ -29,7 +29,7 @@ namespace DefaultNamespace
             ShowTowerViewRange += SetActiveViewRange;
             PlaceTower += OnPlaceTower;
 
-            // OnUpgradeTower += ;
+            GameTowerInformations.OnUpgradeTower += OnUpgradeTower;
 
             UpgradeLevel = 0;
         }
@@ -40,6 +40,8 @@ namespace DefaultNamespace
             ShowTowerSpawnRange -= SetActiveSpawnRange;
             ShowTowerViewRange -= SetActiveViewRange;
             PlaceTower -= OnPlaceTower;
+            
+            GameTowerInformations.OnUpgradeTower -= OnUpgradeTower;
         }
         
         public virtual void Start()
@@ -59,11 +61,15 @@ namespace DefaultNamespace
 
 
 
-        protected virtual void OnUpgradeTower()
+        protected virtual void OnUpgradeTower(TowerController towerController)
         {
+            if(towerController != this || UpgradeLevel >= 4)
+                return;
+            
             UpgradeLevel += 1;
             
             UpdateTower();
+            ShowTowerInformation(true);
         }
 
         protected virtual void UpdateTower()

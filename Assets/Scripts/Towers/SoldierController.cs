@@ -35,8 +35,15 @@ namespace DefaultNamespace
             
             TowerShootProcess();
         }
-        
-        
+
+        protected override void OnUpgradeTower(TowerController towerController)
+        {
+            base.OnUpgradeTower(towerController);
+            
+            if(GamePlayerInformation.Instance != null)
+                GamePlayerInformation.ChangeBalance(-soldierData.GetPrice());
+        }
+
         void TowerShootProcess()
         {
             if(!IsPlaced || IsShooting)

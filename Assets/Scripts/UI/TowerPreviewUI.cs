@@ -44,7 +44,7 @@ public class TowerPreviewUI : MonoBehaviour
         Tower tower = inventory.TowerData[index].towerSO;
 
         towerNameText.text = tower.TowerName;
-        towerImage.sprite = tower.TowerSprite;
+        // towerImage.sprite = tower.TowerSprite;
 
         startingPriceText.text = $"{tower.GetPrice()}$";
         damageTypeText.text = "Single/Splash";
