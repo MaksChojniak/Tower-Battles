@@ -55,11 +55,11 @@ namespace DefaultNamespace.ScriptableObjects
     public class UpgradeDataBase
     {
         public string UpgradeTitle;
-        public string UpgradeDescription;
+        //public string UpgradeDescription;
         public Sprite UpgradeIcon;
 
         public long UpgradePrice;
-        public long SellPrice;
+        //public long SellPrice;
         
         public Weapon Weapon;
     }

@@ -1255,6 +1255,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
@@ -1365,6 +1370,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b3473f76ad040af4e92b67412f9d31f5, type: 3}
+--- !u!114 &115271693 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4609116739859727979, guid: b3473f76ad040af4e92b67412f9d31f5,
+    type: 3}
+  m_PrefabInstance: {fileID: 115271692}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5213daba2f0a8a444ae1f454c696cc9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &116763836
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1401,6 +1418,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: TowerInventory, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -1864,6 +1886,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b3473f76ad040af4e92b67412f9d31f5, type: 3}
+--- !u!114 &116763837 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4609116739859727979, guid: b3473f76ad040af4e92b67412f9d31f5,
+    type: 3}
+  m_PrefabInstance: {fileID: 116763836}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116763838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5213daba2f0a8a444ae1f454c696cc9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &116763838 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4938551801405053930, guid: b3473f76ad040af4e92b67412f9d31f5,
@@ -7757,7 +7791,6 @@ GameObject:
   - component: {fileID: 679079440}
   - component: {fileID: 679079439}
   - component: {fileID: 679079442}
-  - component: {fileID: 679079443}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -7865,18 +7898,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!114 &679079443
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 679079438}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3663ffe2b2aabb448adb4a09437ed16f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &694749900
 GameObject:
   m_ObjectHideFlags: 0
@@ -7889,6 +7910,7 @@ GameObject:
   - component: {fileID: 694749904}
   - component: {fileID: 694749903}
   - component: {fileID: 694749902}
+  - component: {fileID: 694749905}
   m_Layer: 0
   m_Name: Main Camera (1)
   m_TagString: MainCamera
@@ -8026,6 +8048,18 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &694749905
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 694749900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3663ffe2b2aabb448adb4a09437ed16f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &697800121
 GameObject:
   m_ObjectHideFlags: 0
@@ -17878,6 +17912,12 @@ MonoBehaviour:
     towerTileUI: {fileID: 664414634}
   - towerSO: {fileID: 11400000, guid: 640fdf81da7080845aaaf2c9ee116121, type: 2}
     towerTileUI: {fileID: 1740622119}
+  - towerSO: {fileID: 11400000, guid: 9efad8e700b8518448c01241dcd297bb, type: 2}
+    towerTileUI: {fileID: 115271693}
+  - towerSO: {fileID: 11400000, guid: 55dd55f26e0d11648a5d935871185fc2, type: 2}
+    towerTileUI: {fileID: 1655672598}
+  - towerSO: {fileID: 11400000, guid: 3b2e8865a5978ec46b05d8e8dcefdcf5, type: 2}
+    towerTileUI: {fileID: 116763837}
   tileContainer: {fileID: 27927594}
 --- !u!1001 &1495901634
 PrefabInstance:
@@ -18841,6 +18881,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
@@ -18951,6 +18996,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b3473f76ad040af4e92b67412f9d31f5, type: 3}
+--- !u!114 &1655672598 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4609116739859727979, guid: b3473f76ad040af4e92b67412f9d31f5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1655672597}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5213daba2f0a8a444ae1f454c696cc9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1658017641
 GameObject:
   m_ObjectHideFlags: 0

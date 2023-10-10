@@ -11,7 +11,7 @@ namespace DefaultNamespace.ScriptableObjects
         public WeaponType WeaponType;
         public DamageType DamageType;
         
-        public float Damage;
+        public int Damage;
         public float Firerate;
     }
     

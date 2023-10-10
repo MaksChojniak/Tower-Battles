@@ -7,7 +7,7 @@ public class EnemyController : MonoBehaviour
 {
     public static event Action OnDestroyEnemy;
     public event Action OnMove;
-    public Action<float> TakeDamage;
+    public Action<int> TakeDamage;
     
     public float DistanceTravelled;
 
@@ -16,7 +16,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField] RectTransform HealthBar;
 
     [Space(18)]
-    [SerializeField] float Health;
+    [SerializeField] int Health;
 
     PathCreator pathCreator;
     
@@ -52,9 +52,11 @@ public class EnemyController : MonoBehaviour
 
     public float GetDistanceTravelled() => DistanceTravelled;
 
-    public void Damage(float value)
+    public void Damage(int value)
     {
         Health -= value;
+        if (Health < 0)
+            Health = 0;
 
         OnTakeDamage();
     }
@@ -69,6 +71,8 @@ public class EnemyController : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
+    public int GetHealth() => Health;
 
     void UpdateHealthBar()
     {

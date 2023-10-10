@@ -12,39 +12,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b1185db10fa4a32b9b14ec7cc363a1e, type: 3}
   m_Name: Sheriff
   m_EditorClassIdentifier: 
-  buildingName: Ranger
-  unlockPrice: 0
-  unlocked: 0
-  buildingPrefab: {fileID: 6088797102554229474, guid: 250ff0b44a35483499561c55e1169d10,
+  TowerName: Sheriff
+  TowerSprite: {fileID: 21300000, guid: 07661953689c92b4eaac786844b19abe, type: 3}
+  TowerPrefab: {fileID: 6088797102554229474, guid: b8a88649c45229847bd33c7c35362dd8,
     type: 3}
-  buildingImage: {fileID: 21300000, guid: f16a78e46f596f64ba6fe00908ea8394, type: 3}
-  type: 0
-  price: 150
-  upgradePrices: 64000000000000009600000000000000c800000000000000fa000000000000000000000000000000
-  sellPrices: 4b000000000000007d000000000000009600000000000000af00000000000000c800000000000000
-  upgradeTitle:
-  - UpgradeTo2
-  - UpgradeTo3
-  - UpgradeTo4
-  - UpgradeTo5
-  - Maxed Out
-  upgradeDescription:
-  - DescriptionLVL2
-  - DescriptionLVL3
-  - DescriptionLVL4
-  - DescriptionLVL5
-  - Maxed Out
-  viewRange:
-  - 6
-  - 8
-  - 10
-  - 12
-  - 14
-  damage: 0500000007000000090000000b0000000d000000
-  firerate:
-  - 1
-  - 0.9
-  - 0.8
-  - 0.7
-  - 0.6
-  haveBinoculars: 0
+  Type: 0
+  PlacementType: 0
+  BaseProperties:
+    UnlockPrice: 0
+    IsUnlocked: 1
+  GameProperties:
+    Price: 0
+  UpgradesData:
+  - UpgradeTitle: Upgrade 1
+    UpgradeIcon: {fileID: 21300000, guid: 07661953689c92b4eaac786844b19abe, type: 3}
+    UpgradePrice: 100
+    Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
+    ViewRange: 2.5
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 2
+    UpgradeIcon: {fileID: 21300000, guid: d9e33d6eb39c81a45b015e6875d76c29, type: 3}
+    UpgradePrice: 150
+    Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
+    ViewRange: 3
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 3
+    UpgradeIcon: {fileID: 21300000, guid: cd403f207207eb94683311c16da78420, type: 3}
+    UpgradePrice: 200
+    Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
+    ViewRange: 3.5
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 4
+    UpgradeIcon: {fileID: 21300000, guid: 7220c284f9f07b041b23ff19237d9203, type: 3}
+    UpgradePrice: 200
+    Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
+    ViewRange: 4
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 5
+    UpgradeIcon: {fileID: 21300000, guid: 9f4f5a4c9975b8b438ffa4121eb9e903, type: 3}
+    UpgradePrice: 250
+    Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
+    ViewRange: 4
+    HasBinoculars: 1

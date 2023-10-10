@@ -13,22 +13,44 @@ MonoBehaviour:
   m_Name: Terrorist
   m_EditorClassIdentifier: 
   TowerName: Terrorist
-  TowerSprite: {fileID: 21300000, guid: 92b204cca46037444ab18ba6701f86f7, type: 3}
+  TowerSprite: {fileID: 21300000, guid: 96e03909d3b573c4db8ef720f054b9a5, type: 3}
   TowerPrefab: {fileID: 6088797102554229474, guid: 0a6cd4a90620fd94db92434b0a9013d7,
     type: 3}
   Type: 0
   PlacementType: 0
   BaseProperties:
-    UnlockePrice: 1
+    UnlockPrice: 0
     IsUnlocked: 1
   GameProperties:
     Price: 200
   UpgradesData:
-  - UpgradeTitle: 2w
-    UpgradeDescription: qw
-    UpgradeIcon: {fileID: 21300000, guid: 23743f0c0ed1e6546808a5d645c2a6a5, type: 3}
-    UpgradePrice: 12
-    SellPrice: 12
+  - UpgradeTitle: Upgrade 1
+    UpgradeIcon: {fileID: 21300000, guid: 96e03909d3b573c4db8ef720f054b9a5, type: 3}
+    UpgradePrice: 100
     Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
-    ViewRange: 5
+    ViewRange: 2.5
     HasBinoculars: 0
+  - UpgradeTitle: Upgrade 2
+    UpgradeIcon: {fileID: 21300000, guid: e804957f4a0bc0848b7b1dc779c4ab61, type: 3}
+    UpgradePrice: 150
+    Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
+    ViewRange: 3
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 3
+    UpgradeIcon: {fileID: 21300000, guid: 2327ce3135eab5a47aeeeaee870890e6, type: 3}
+    UpgradePrice: 200
+    Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
+    ViewRange: 3.5
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 4
+    UpgradeIcon: {fileID: 21300000, guid: 7ab0765ce7ed0d9469d040937ba960ba, type: 3}
+    UpgradePrice: 200
+    Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
+    ViewRange: 4
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 5
+    UpgradeIcon: {fileID: 21300000, guid: 1d93d3528ca66ed4d802f3583f8d429a, type: 3}
+    UpgradePrice: 250
+    Weapon: {fileID: 11400000, guid: 1067c7e5d9a5aad4893465cf6d3e3c43, type: 2}
+    ViewRange: 4.5
+    HasBinoculars: 1

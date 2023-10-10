@@ -12,6 +12,8 @@ namespace DefaultNamespace
         
         public Soldier soldierData;
 
+        public int TotalDamage;
+
         bool IsShooting;
 
 
@@ -25,6 +27,8 @@ namespace DefaultNamespace
         public override void Awake()
         {
             base.Awake();
+
+            TotalDamage = 0;
         }
 
         public override void Update()
@@ -38,10 +42,13 @@ namespace DefaultNamespace
 
         protected override void OnUpgradeTower(TowerController towerController)
         {
+            if (towerController != this || UpgradeLevel >= 4)
+                return;
+
             base.OnUpgradeTower(towerController);
-            
-            if(GamePlayerInformation.Instance != null)
-                GamePlayerInformation.ChangeBalance(-soldierData.GetPrice());
+
+            if (GamePlayerInformation.Instance != null)
+                GamePlayerInformation.ChangeBalance(-soldierData.GetUpgradePrice(UpgradeLevel));
         }
 
         void TowerShootProcess()
@@ -104,8 +111,14 @@ namespace DefaultNamespace
                 StopCoroutine(lastFollowCourtine);
             
             lastFollowCourtine = StartCoroutine(LookAtEnemy(enemy.transform));
-            
-            enemy.TakeDamage(soldierData.GetWeapon(UpgradeLevel).Damage);
+
+            int enemyHealth = enemy.GetHealth();
+            int damage = soldierData.GetWeapon(UpgradeLevel).Damage;
+            enemy.TakeDamage(damage);
+
+            int giveDamage = enemyHealth - enemy.GetHealth();
+            TotalDamage += giveDamage;
+            GamePlayerInformation.ChangeBalance(giveDamage);
             Debug.Log("OnShoot");
 
             yield return new WaitForSeconds(soldierData.GetWeapon(UpgradeLevel).Firerate);

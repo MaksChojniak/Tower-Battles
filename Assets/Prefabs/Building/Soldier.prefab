@@ -260,7 +260,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6448862434079306773}
-  - component: {fileID: 8572713303771785811}
   - component: {fileID: 8436483204743392042}
   m_Layer: 2
   m_Name: Soldier
@@ -292,20 +291,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &8572713303771785811
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6088797102554229474}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8436483204743392042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -324,6 +309,7 @@ MonoBehaviour:
   SpawnRange: {fileID: 4101449284925749849}
   ViewRange: {fileID: 4886912425524374682}
   soldierData: {fileID: 11400000, guid: 4224d44fee2a78b49acd223ae9595dba, type: 2}
+  TotalDamage: 0
 --- !u!1 &7315331490860711330
 GameObject:
   m_ObjectHideFlags: 0
