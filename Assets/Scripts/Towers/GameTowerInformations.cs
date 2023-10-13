@@ -119,7 +119,7 @@ namespace DefaultNamespace
             string nextValueColorHEX = $"#{ColorUtility.ToHtmlStringRGB(nextValueColor)}";
 
             TowerNameText.text = soldierSO.TowerName;
-            TowerImage.sprite = soldierSO.GetUpgradeIcon(upgradeLevel);
+            TowerImage.sprite = soldierSO.GetUpgradeIcon(nextUpgradeLevel);
             activCoroutine = StartCoroutine(UpdateTotalDamage(soldierController));
 
             long totalTowerValue = soldierSO.GetPrice();
@@ -141,15 +141,15 @@ namespace DefaultNamespace
                     {
                         case PropertyType.Damage:
                             propertyUI.propertyValueText.text = "Damage: " + (isMaxLevel ? $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Damage}</color>" : 
-                                $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Damage}</color> <color={nextValueColorHEX}>=> {soldierSO.GetWeapon(nextUpgradeLevel).Damage}</color>");
+                                $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Damage}</color> <color={nextValueColorHEX}><sprite=0, color={nextValueColorHEX}> {soldierSO.GetWeapon(nextUpgradeLevel).Damage}</color>");
                             break; 
                         case PropertyType.Firerate:
                             propertyUI.propertyValueText.text = "Firearate: " + (isMaxLevel ? $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Firerate}</color>" : 
-                                $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Firerate}</color> <color={nextValueColorHEX}>=> {soldierSO.GetWeapon(nextUpgradeLevel).Firerate}</color>");
+                                $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Firerate}</color> <color={nextValueColorHEX}><sprite=0, color={nextValueColorHEX}> {soldierSO.GetWeapon(nextUpgradeLevel).Firerate}</color>");
                             break;
                         case PropertyType.ViewRange:
                             propertyUI.propertyValueText.text = "Range: " + (isMaxLevel ? $"<color={normalColorHEX}>{soldierSO.GetViewRange(upgradeLevel)}</color>" : 
-                                $"<color={normalColorHEX}>{soldierSO.GetViewRange(upgradeLevel)}</color> <color={nextValueColorHEX}>=> {soldierSO.GetViewRange(nextUpgradeLevel)}</color>");
+                                $"<color={normalColorHEX}>{soldierSO.GetViewRange(upgradeLevel)}</color> <color={nextValueColorHEX}><sprite=0, color={nextValueColorHEX}> {soldierSO.GetViewRange(nextUpgradeLevel)}</color>");
                             break;
                     }
                 }
