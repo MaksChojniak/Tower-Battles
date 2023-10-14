@@ -28,6 +28,8 @@ namespace DefaultNamespace
 
         [SerializeField] GameObject InforamtionPanel;
 
+        [SerializeField] Image MaxedOutUI;
+
         [Space(18)]
         [SerializeField] TMP_Text TowerNameText;
         [SerializeField] Image TowerImage;
@@ -43,6 +45,7 @@ namespace DefaultNamespace
 
         [SerializeField] Color normalColor;
         [SerializeField] Color nextValueColor;
+        [SerializeField] Color MaxedOutColor;
 
         void Awake()
         {
@@ -117,9 +120,13 @@ namespace DefaultNamespace
 
             string normalColorHEX = $"#{ColorUtility.ToHtmlStringRGB(normalColor)}";
             string nextValueColorHEX = $"#{ColorUtility.ToHtmlStringRGB(nextValueColor)}";
+            string MaxedOutColorHEX = $"#{ColorUtility.ToHtmlStringRGB(MaxedOutColor)}";
+
+            //MaxedOut UI layer when 5 level
+            MaxedOutUI.enabled = isMaxLevel;
 
             TowerNameText.text = soldierSO.TowerName;
-            TowerImage.sprite = soldierSO.GetUpgradeIcon(nextUpgradeLevel);
+            TowerImage.sprite = soldierSO.GetUpgradeIcon(upgradeLevel);
             activCoroutine = StartCoroutine(UpdateTotalDamage(soldierController));
 
             long totalTowerValue = soldierSO.GetPrice();
@@ -144,7 +151,7 @@ namespace DefaultNamespace
                                 $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Damage}</color> <color={nextValueColorHEX}><sprite=0, color={nextValueColorHEX}> {soldierSO.GetWeapon(nextUpgradeLevel).Damage}</color>");
                             break; 
                         case PropertyType.Firerate:
-                            propertyUI.propertyValueText.text = "Firearate: " + (isMaxLevel ? $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Firerate}</color>" : 
+                            propertyUI.propertyValueText.text = "Firerate: " + (isMaxLevel ? $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Firerate}</color>" : 
                                 $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Firerate}</color> <color={nextValueColorHEX}><sprite=0, color={nextValueColorHEX}> {soldierSO.GetWeapon(nextUpgradeLevel).Firerate}</color>");
                             break;
                         case PropertyType.ViewRange:
@@ -153,9 +160,9 @@ namespace DefaultNamespace
                             break;
                     }
                 }
-            }
+            } 
 
-            UpgradeCostText.text = $"${soldierSO.GetUpgradePrice(nextUpgradeLevel)}";
+            UpgradeCostText.text = isMaxLevel ? $"<color={MaxedOutColorHEX}>" + "Maxed Out" + "</color>" : $"${soldierSO.GetUpgradePrice(nextUpgradeLevel)}";
             UpgradeLevelImage.fillAmount = (float)(upgradeLevel + 1) / 5f;  
             //TowerDamageText.text = isMaxLevel ? $"<color={normalColorHEX}>{soldierSO.GetViewRange(upgradeLevel)}</color>" : 
             //    $"<color={normalColorHEX}>{soldierSO.GetViewRange(upgradeLevel)}</color> <color={nextValueColorHEX}>=> {soldierSO.GetViewRange(nextUpgradeLevel)}</color>";

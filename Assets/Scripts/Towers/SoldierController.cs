@@ -37,6 +37,7 @@ namespace DefaultNamespace
 
             UpdateViewRange((float)soldierData.GetViewRange(UpgradeLevel));
             
+
             TowerShootProcess();
         }
 

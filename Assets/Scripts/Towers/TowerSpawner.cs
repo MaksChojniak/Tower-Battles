@@ -17,12 +17,16 @@ public class TowerSpawner : MonoBehaviour
  
     [SerializeField] GameObject selectedBuilidng;
     [SerializeField] bool posibilityOfPlace;
-    
+
     public const int MaxTowersCount = 10;
+
+    Vector2 offset;
 
     void Awake()
     {
-        towers = PlayerTowerInventory.Instance.TowerDeck;   
+        towers = PlayerTowerInventory.Instance.TowerDeck;
+
+        offset = new Vector2(3 * (float)Screen.width, 2 * (float)Screen.height) * 1.5f / 100;
     }
 
     public void SpawnBuilding(int index)
@@ -60,8 +64,8 @@ public class TowerSpawner : MonoBehaviour
         }
 
         selectedBuilidng = Instantiate(towers[index].TowerPrefab, Input.GetTouch(0).position, Quaternion.identity, transform);
+        
         selectedBuilidng.GetComponent<TowerController>().ShowTowerViewRange(true);
-
         TowerController.ShowTowerSpawnRange(selectedBuilidng, true);
     }
 
@@ -78,13 +82,21 @@ public class TowerSpawner : MonoBehaviour
         {
             Vector3 pos = Input.GetTouch(0).position;
 
-            Ray ray = Camera.main.ScreenPointToRay(pos);
+            Ray ray = Camera.main.ScreenPointToRay(pos + (Vector3)offset);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, 1000)) //, 1 << 6))
             {
-                posibilityOfPlace = hit.transform.gameObject.layer == 6;
+                posibilityOfPlace = hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground");
+
                 selectedBuilidng.transform.position = new Vector3(hit.point.x, 1f, hit.point.z);
+
+
+                if (posibilityOfPlace)
+                    posibilityOfPlace = selectedBuilidng.GetComponent<TowerController>().SpawnRange.IsAble();
+
+                selectedBuilidng.GetComponent<TowerController>().SpawnRange.SetState(posibilityOfPlace);
+                selectedBuilidng.GetComponent<TowerController>().ViewRange.SetState(posibilityOfPlace);
             }
         }
     }

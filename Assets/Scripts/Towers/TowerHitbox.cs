@@ -39,7 +39,7 @@ namespace DefaultNamespace
             
                 if (Physics.Raycast(ray, out hit, 1000))
                 {
-                    bool state = hit.transform.gameObject.layer == LayerMask.NameToLayer("Tower") && hit.transform.gameObject == this.gameObject;
+                    bool state = hit.transform.gameObject.layer == LayerMask.NameToLayer("Hitbox") && hit.transform.gameObject == this.gameObject;
                     controller.ShowTowerViewRange(state);
                     controller.ShowTowerInformation(state);
                     

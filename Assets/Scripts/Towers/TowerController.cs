@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Schema;
 using DefaultNamespace.ScriptableObjects;
 using UnityEngine;
 
@@ -18,9 +19,10 @@ namespace DefaultNamespace
         public bool IsPlaced;
 
         [SerializeField] protected GameObject CurrentTowerObject;
-        [SerializeField] GameObject SpawnRange;
-        [SerializeField] GameObject ViewRange;
-        
+        public TowerViewRange ViewRange;
+        public TowerSpawnRange SpawnRange;
+        [SerializeField] GameObject SelectedRingImage;
+
 
         public virtual void Awake()
         {
@@ -85,12 +87,14 @@ namespace DefaultNamespace
         }
         
 
-        public bool ViewRangeIsActive => ViewRange.activeSelf;
+        public bool ViewRangeIsActive => ViewRange.IsActive();
 
         void ShowTowerInfo(bool state)
         {
             (object, TypeOfBuildng) data = GetTowerData();
             OnShowTowerInformation?.Invoke(data.Item1, data.Item2, state, this);
+
+            SelectedRingImage.SetActive(state);
         }
 
         protected virtual (object, TypeOfBuildng) GetTowerData()
@@ -103,27 +107,34 @@ namespace DefaultNamespace
         {
             this.gameObject.layer = LayerMask.NameToLayer("Tower");
             IsPlaced = true;
+            SpawnRange.Place();
 
             for (int i = 0; i < this.gameObject.transform.childCount; i++)
             {
                 if(this.gameObject.transform.GetChild(i).TryGetComponent(typeof(TowerHitbox), out var hitbox))
-                    hitbox.gameObject.layer = LayerMask.NameToLayer("Tower");
+                    hitbox.gameObject.layer = LayerMask.NameToLayer("Hitbox");
             }
         }
 
         protected void UpdateViewRange(float range)
         {
-            ViewRange.GetComponent<RectTransform>().sizeDelta = new Vector2(range * 2, range * 2);
+            ViewRange.ViewRange = range;
         }
 
         void SetActiveSpawnRange(GameObject currentTower, bool state)
         {
-            if(this.gameObject != currentTower)
-                SpawnRange.SetActive(state);
+            SpawnRange.SetActive(state);
+
+            if (!state)
+                return;
+
+            SpawnRange.SetState(this.gameObject == currentTower);
+            ViewRange.SetState(this.gameObject == currentTower);
         }
 
         void SetActiveViewRange(bool state)
         {
+            ViewRange.SetState(state);
             ViewRange.SetActive(state);
         }
 
