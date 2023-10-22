@@ -26,6 +26,8 @@ namespace DefaultNamespace.ScriptableObjects
         
         public int GetUnlockedPrice() => BaseProperties.UnlockPrice;
         public bool IsUnlocked() => BaseProperties.IsUnlocked;
+        public int GetRequiredWinsCount() => BaseProperties.RequiredWinsCount;
+        public bool IsRequiredWinsCount(int currentWinsCount) => currentWinsCount >= BaseProperties.RequiredWinsCount;
         public void UnlockTower() =>  BaseProperties.IsUnlocked = true;
 
 #endregion
@@ -42,6 +44,7 @@ namespace DefaultNamespace.ScriptableObjects
     public class BaseProperties
     {
         public int UnlockPrice;
+        public int RequiredWinsCount;
         public bool IsUnlocked;
     }
     

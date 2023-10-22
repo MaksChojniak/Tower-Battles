@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,7 +42,17 @@ namespace DefaultNamespace
         void UpdateHealthInformation(int value)
         {
             HealthText.text = $"{value} HP";
-            HealthBarImage.fillAmount = (float)value / 100;
+            StartCoroutine(HealthBarAnimation(0.5f, (float)value / 100) );
+        }
+
+        IEnumerator HealthBarAnimation(float speed, float targetHealthFillAmount)
+        {
+            while (Math.Abs(HealthBarImage.fillAmount - targetHealthFillAmount) > 0.01f)
+            {
+                HealthBarImage.fillAmount = Mathf.Lerp(HealthBarImage.fillAmount, targetHealthFillAmount, speed);
+
+                yield return new WaitForSeconds(0.01f);
+            }
         }
         
         void UpdateCountdown(int value)

@@ -12,7 +12,9 @@ namespace DefaultNamespace
             LockedTower,
             SecondBooster,
             NotEnoughtMoney,
-            MaxTowersCountPlaced
+            MaxTowersCountPlaced,
+            DeckIsEmpty,
+            NotEnoughtWins
         }
 
         public static WarningSystem Instance;
@@ -59,13 +61,19 @@ namespace DefaultNamespace
                     message = "First You Need to Buy This Tower";
                     break;
                 case WarningType.SecondBooster:
-                    message = "Only 1 building of the booster type can be placed!";
+                    message = "Only 1 Building of the Booster Type Can be Placed!";
                     break;
                 case WarningType.NotEnoughtMoney:
                     message = "Not Enough Money!";
                     break;
                 case WarningType.MaxTowersCountPlaced:
                     message = $"{TowerSpawner.MaxTowersCount}/{TowerSpawner.MaxTowersCount} Towers are Placed";
+                    break;
+                case WarningType.DeckIsEmpty:
+                    message = $"Before Starting, Create Your Deck. Click the 'Towers' Button to Open up Your Inventory";
+                    break;
+                case WarningType.NotEnoughtWins:
+                    message = "Not Enough Wins!";
                     break;
                 default:
                     message = "Error!!";
@@ -77,14 +85,19 @@ namespace DefaultNamespace
             warningMessageText.text = message;
             
             StopAllCoroutines();
-            StartCoroutine(ShowMessage());
+            StartCoroutine(ShowMessage(GetTimeDelayFromText(message)));
         }
 
-        IEnumerator ShowMessage()
+        float GetTimeDelayFromText(string message)
+        {
+            return message.Length * 0.07f;
+        }
+
+        IEnumerator ShowMessage(float timeDelay)
         {
             warningMessagePanel.SetActive(true);
 
-            yield return new WaitForSeconds(1.25f);
+            yield return new WaitForSeconds(timeDelay);
 
             warningMessagePanel.SetActive(false);
         }

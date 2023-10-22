@@ -8,17 +8,25 @@ using UnityEngine.UI;
 public class TowerTileUI : MonoBehaviour
 {
     public Action<Sprite> UpdateSprite;
+    public Action<bool> UpdateLockedState;
     public Action<string> UpdateName;
 
     [SerializeField] GameObject spriteObject;
     [SerializeField] TMP_Text buildingNameText;
-    [SerializeField] GameObject lockStatePanel;
+    
+    [SerializeField] GameObject lockedMaskPanel;
+
+    [SerializeField] bool isUnlocked;
+
+    [SerializeField] Color lockedColor;
+    [SerializeField] Color unlockedColor;
 
     private void Awake()
     {
         TowerInventory.OnSelectTile += OnSelectTile;
         UpdateSprite += OnUpdateSprite;
         UpdateName += OnUpdateName;
+        UpdateLockedState += OnUpdateLockedState;
     }
 
     private void OnDestroy()
@@ -26,8 +34,16 @@ public class TowerTileUI : MonoBehaviour
         TowerInventory.OnSelectTile -= OnSelectTile;
         UpdateSprite -= OnUpdateSprite;
         UpdateName -= OnUpdateName;
+        UpdateLockedState -= OnUpdateLockedState;
     }
 
+    void OnUpdateLockedState(bool state)
+    {
+        isUnlocked = state;
+
+        UpdateLockedUI();
+    }
+    
     void OnUpdateSprite(Sprite sprite)
     {
         spriteObject.GetComponent<Image>().sprite = sprite;
@@ -38,15 +54,25 @@ public class TowerTileUI : MonoBehaviour
         buildingNameText.text = name;
     }
 
-    void OnSelectTile(int index, GameObject selectedTile)
+    void OnSelectTile(int index, GameObject selectedTile, bool isUnlocked)
     {
-        if (selectedTile != this.gameObject)
-        {
-            this.GetComponent<Image>().enabled = false;
-            return; 
-        }
+        Image border = this.GetComponent<Image>();
+        
+        border.enabled = selectedTile == this.gameObject;
 
-        this.GetComponent<Image>().enabled = true;
+        if (selectedTile == this.gameObject)
+            UpdateLockedState(isUnlocked);
+
+        UpdateLockedUI();
+    }
+
+    void UpdateLockedUI()
+    {
+        Image border = this.GetComponent<Image>();
+        
+        lockedMaskPanel.SetActive(!isUnlocked);
+        
+        border.color = isUnlocked ? unlockedColor : lockedColor;
     }
 
 

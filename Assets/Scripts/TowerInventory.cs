@@ -3,61 +3,32 @@ using System.Linq;
 using System.Collections.Generic;
 using DefaultNamespace;
 using DefaultNamespace.ScriptableObjects;
+using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class TowerInventory : MonoBehaviour
 {
-    public static event Action<int, GameObject> OnSelectTile;
+    public static event Action<int, GameObject, bool> OnSelectTile;
 
 
     [SerializeField] int selectedTower;
-
-    public TowerInventoryData[] TowerData;
-
-    [SerializeField] Transform tileContainer;
     
-    private void OnValidate()
-    {
-        List<Transform> childs = GetAllChilds(tileContainer);
-        List<TowerTileUI> tiles = new List<TowerTileUI>();
-
-        foreach (var child in childs)
-        {
-            if (child.TryGetComponent(typeof(TowerTileUI), out var tile))
-            {
-                tiles.Add(tile.GetComponent<TowerTileUI>());
-            }
-        }
-
-        for (int i = 0; i < TowerData.Length; i++)
-        {
-            TowerData[i].towerTileUI = tiles[i];
-        }
-    }
+    [ReadOnly] public AllTowerInventoryData BaseTowerData;
+    public AllTowerInventoryData TowerData;
     
-    List<Transform> GetAllChilds(Transform root)
-    {
-        List<Transform> childs = new List<Transform>();
-
-        foreach (Transform child in root)
-        {
-            childs.Add(child);
-            if (child.childCount > 0)
-                childs.AddRange(GetAllChilds(child));
-        }
-
-        return childs;
-    }
-
     private void Awake()
     {
+        TowerData = new AllTowerInventoryData(BaseTowerData);
+        
         NextTowerPageButton.OnChangePage += UpdateTileSprite;
+        OnSelectTile += OnOnSelectTile;
     }
 
     private void OnDestroy()
     {
         NextTowerPageButton.OnChangePage -= UpdateTileSprite;
+        OnSelectTile -= OnOnSelectTile;
     }
 
     private void OnDisable()
@@ -83,10 +54,10 @@ public class TowerInventory : MonoBehaviour
 
         selectedTower = i;
 
-        GameObject tile = TowerData[i].towerTileUI.gameObject;
-        Tower tower = TowerData[i].towerSO;
+        GameObject tile = TowerData.GetAllTowerInventoryData()[i].towerTileUI.gameObject;
+        Tower tower = TowerData.GetAllTowerInventoryData()[i].towerSO;
 
-        OnSelectTile?.Invoke(i, tile);
+        OnSelectTile?.Invoke(i, tile, tower.IsUnlocked());
 
         // Added
         if (tower.IsUnlocked())
@@ -142,11 +113,11 @@ public class TowerInventory : MonoBehaviour
 
         //Debug.Log($"selected slot - {index}, seletced tower - {selectedTower}");
 
-        if (PlayerTowerInventory.Instance.TowerDeck.Contains(TowerData[selectedTower].towerSO))
+        if (PlayerTowerInventory.Instance.TowerDeck.Contains(TowerData.GetAllTowerInventoryData()[selectedTower].towerSO))
         {
             for (int i = 0; i < PlayerTowerInventory.Instance.TowerDeck.Length; i++)
             {
-                if (PlayerTowerInventory.Instance.TowerDeck[i] == TowerData[selectedTower].towerSO)
+                if (PlayerTowerInventory.Instance.TowerDeck[i] == TowerData.GetAllTowerInventoryData()[selectedTower].towerSO)
                 {
                     PlayerTowerInventory.Instance.TowerDeck[i] = null;
                     TowerDeck.Instance.deckTiles[i].UpdateSprite(null);
@@ -154,8 +125,8 @@ public class TowerInventory : MonoBehaviour
             }
         }
 
-        PlayerTowerInventory.Instance.TowerDeck[index] = TowerData[selectedTower].towerSO;
-        TowerDeck.Instance.deckTiles[index].UpdateSprite(TowerData[selectedTower].towerSO.TowerSprite);
+        PlayerTowerInventory.Instance.TowerDeck[index] = TowerData.GetAllTowerInventoryData()[selectedTower].towerSO;
+        TowerDeck.Instance.deckTiles[index].UpdateSprite(TowerData.GetAllTowerInventoryData()[selectedTower].towerSO.TowerSprite);
 
         TowerDeck.OnSelectSlot -= OnSelectDeckSlot;
 
@@ -166,12 +137,13 @@ public class TowerInventory : MonoBehaviour
 
     void UpdateTileSprite()
     {
-        foreach (var buildingData in TowerData)
+        foreach (var buildingData in TowerData.GetAllTowerInventoryData())
         {
             try
             {
                 buildingData.towerTileUI.UpdateSprite(buildingData.towerSO.TowerSprite);
                 buildingData.towerTileUI.UpdateName(buildingData.towerSO.TowerName);
+                buildingData.towerTileUI.UpdateLockedState(buildingData.towerSO.IsUnlocked());
             }
             catch(Exception exception)
             {
@@ -194,8 +166,97 @@ public class TowerInventory : MonoBehaviour
             deckTower.ChangeColor(isEquipped);
         }
     }
+    
+    
+    void OnOnSelectTile(int index, GameObject selectedTile, bool isUnlocked)
+    {
+        TowerData.SortAllTowersInventoryData(BaseTowerData);
+        UpdateTileSprite();
+    }
+    
+    
 }
 
+[Serializable]
+public class AllTowerInventoryData
+{
+    public TowerInventoryData[] commonTowers;
+    public TowerInventoryData[] exclusiveTowers;
+    public TowerInventoryData[] trophyTowers;
+
+    public AllTowerInventoryData(AllTowerInventoryData baseData)
+    {
+        commonTowers = new TowerInventoryData[baseData.commonTowers.Length];
+        baseData.commonTowers.CopyTo(commonTowers, 0);
+        
+        exclusiveTowers = new TowerInventoryData[baseData.exclusiveTowers.Length];
+        baseData.exclusiveTowers.CopyTo(exclusiveTowers, 0);
+        
+        trophyTowers = new TowerInventoryData[baseData.trophyTowers.Length];
+        baseData.trophyTowers.CopyTo(trophyTowers, 0);
+    }
+
+    public TowerInventoryData[] GetAllTowerInventoryData()
+    {
+        TowerInventoryData[] allData = new TowerInventoryData[commonTowers.Length + exclusiveTowers.Length + trophyTowers.Length];
+
+        for (int i = 0; i < allData.Length; i++)
+        {
+            if (i < commonTowers.Length)
+            {
+                allData[i] = commonTowers[i];
+            }
+            else if (i < commonTowers.Length + exclusiveTowers.Length)
+            {
+                allData[i] = exclusiveTowers[i - commonTowers.Length];
+            }
+            else
+            {
+                allData[i] = trophyTowers[i - (commonTowers.Length + exclusiveTowers.Length)];
+            }
+        }
+
+        return allData;
+    }
+
+    public void SortAllTowersInventoryData(AllTowerInventoryData baseAllTowerInventoryData)
+    {
+        AllTowerInventoryData baseData = new AllTowerInventoryData(baseAllTowerInventoryData);
+        
+        SortTowersInventoryData(baseData.commonTowers, ref commonTowers);
+        SortTowersInventoryData(baseData.exclusiveTowers, ref exclusiveTowers);
+        SortTowersInventoryData(baseData.trophyTowers, ref trophyTowers);
+    }
+
+    public void SortTowersInventoryData(TowerInventoryData[] baseTowersData, ref TowerInventoryData[] actuallyTowersData)
+    {
+        TowerInventoryData[] sortedTowers = new TowerInventoryData[baseTowersData.Length];
+        List<TowerInventoryData> unlockedTowers = new List<TowerInventoryData>();
+        List<TowerInventoryData> lockedTowers = new List<TowerInventoryData>();
+
+        for (int i = 0; i < baseTowersData.Length; i++)
+        {
+            if(baseTowersData[i].towerSO.IsUnlocked() && baseTowersData[i].towerSO.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount))
+                unlockedTowers.Add(baseTowersData[i]);
+            else
+                lockedTowers.Add(baseTowersData[i]);
+        }
+
+        for (int i = 0; i < unlockedTowers.Count; i++)
+        {
+            sortedTowers[i] = new TowerInventoryData(unlockedTowers[i].towerSO, baseTowersData[i].towerTileUI) ;
+        }
+
+        for (int i = 0; i < lockedTowers.Count; i++)
+        {
+            int index = i + unlockedTowers.Count;
+            sortedTowers[index] = new TowerInventoryData(lockedTowers[i].towerSO, baseTowersData[index].towerTileUI);
+        }
+
+        actuallyTowersData = sortedTowers;
+    }
+
+}
 
 [Serializable]
 public class TowerInventoryData

@@ -48,6 +48,8 @@ public class PlayerTowerInventory : MonoBehaviour
 
 
     public int GetBalance() => Balance;
+    public int GetWinsCount => WinCount;
+    public int GetDefeatCount => DefeatCount;
 
     void OnChangeBalance(int value)
     {

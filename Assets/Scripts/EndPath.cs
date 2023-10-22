@@ -15,8 +15,6 @@ public class EndPath : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("OnTriggerEnter xd");
-
         if(type == EndPathType.Enemy)
         {
             OnEnemyTriggerEnter(other);

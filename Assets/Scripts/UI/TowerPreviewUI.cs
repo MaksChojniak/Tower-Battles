@@ -21,6 +21,8 @@ public class TowerPreviewUI : MonoBehaviour
     [SerializeField] Image rangeImage;
     [SerializeField] TMP_Text placementText;
 
+    [SerializeField] GameObject lockedPanel;
+    [SerializeField] TMP_Text lockedPrice;
     [SerializeField] GameObject ownedPanel;
     [SerializeField] GameObject unlockPanel;
     [SerializeField] TMP_Text unlockPrice;
@@ -39,9 +41,9 @@ public class TowerPreviewUI : MonoBehaviour
         TowerInventory.OnSelectTile -= UpdateTowerInformations;
     }
 
-    void UpdateTowerInformations(int index, GameObject tile = null)
+    void UpdateTowerInformations(int index, GameObject tile, bool isUnlocked)
     {
-        Tower tower = inventory.TowerData[index].towerSO;
+        Tower tower = inventory.TowerData.GetAllTowerInventoryData()[index].towerSO;
 
         towerNameText.text = tower.TowerName;
         // towerImage.sprite = tower.TowerSprite;
@@ -58,8 +60,12 @@ public class TowerPreviewUI : MonoBehaviour
 
         placementText.text = "Ground/Cliff";
 
-        ownedPanel.SetActive(tower.IsUnlocked());
-        unlockPanel.SetActive(!tower.IsUnlocked());
+        lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount));
+        lockedPrice.text = $"{tower.GetRequiredWinsCount()} Wins";
+        
+        unlockPanel.SetActive(!isUnlocked && !lockedPanel.activeSelf);
+        
+        ownedPanel.SetActive(isUnlocked);
         unlockPrice.text = $"{tower.GetUnlockedPrice()} Credits";
 
         lastSelectedTowerIndex = index;
@@ -67,7 +73,15 @@ public class TowerPreviewUI : MonoBehaviour
 
     public void BuyTower()
     {
-        Tower towerData = inventory.TowerData[lastSelectedTowerIndex].towerSO;
+        Tower towerData = inventory.TowerData.GetAllTowerInventoryData()[lastSelectedTowerIndex].towerSO;
+        PlayerTowerInventory playerTowerInventory = PlayerTowerInventory.Instance;
+
+        if (!towerData.IsRequiredWinsCount(playerTowerInventory.GetWinsCount))
+        {
+            WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtWins);
+            return;
+        }
+        
         if (towerData.GetUnlockedPrice() > PlayerTowerInventory.Instance.GetBalance())
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);

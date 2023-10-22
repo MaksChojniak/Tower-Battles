@@ -12,14 +12,18 @@ namespace DefaultNamespace
     {
         Damage,
         Firerate,
-        ViewRange
+        ViewRange,
+        Detection,
+        UpgradeDiscount,
+        IncreasePower,
+        Health
     }
     [Serializable]
     public struct TowerPropertyUI
     {
         public PropertyType type;
         public GameObject propertyPanel;
-        public TMP_Text propertyValueText;
+        public GameObject propertyValueObject;
     }
 
     public class GameTowerInformations : MonoBehaviour
@@ -137,26 +141,58 @@ namespace DefaultNamespace
             totalTowerValue /= 2;
             SellPriceText.text = $"Sell ${totalTowerValue}";
 
-            List<PropertyType> propertyTypes = new List<PropertyType>() {PropertyType.Damage, PropertyType.Firerate, PropertyType.ViewRange };
+            List<PropertyType> propertyTypes = new List<PropertyType>() {PropertyType.Damage, PropertyType.Firerate, PropertyType.ViewRange, PropertyType.Detection };
             foreach(var propertyUI in towerPropertiesUI)
             {
                 if (propertyTypes.Contains(propertyUI.type))
                 {
                     propertyUI.propertyPanel.SetActive(true);
-                   
+
+                    bool valueIsChanged = false;
+                    
                     switch (propertyUI.type)
                     {
                         case PropertyType.Damage:
-                            propertyUI.propertyValueText.text = "Damage: " + (isMaxLevel ? $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Damage}</color>" : 
+                            valueIsChanged = !isMaxLevel && soldierSO.GetWeapon(upgradeLevel).Damage != soldierSO.GetWeapon(nextUpgradeLevel).Damage;
+                            TMP_Text damageValueText = propertyUI.propertyValueObject.GetComponent<TMP_Text>();
+                            
+                            damageValueText.text = "Damage: " + (!valueIsChanged ? $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Damage}</color>" : 
                                 $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Damage}</color> <color={nextValueColorHEX}><sprite=0, color={nextValueColorHEX}> {soldierSO.GetWeapon(nextUpgradeLevel).Damage}</color>");
                             break; 
+                        
+                        
                         case PropertyType.Firerate:
-                            propertyUI.propertyValueText.text = "Firerate: " + (isMaxLevel ? $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Firerate}</color>" : 
+                            valueIsChanged = !isMaxLevel && Math.Abs(soldierSO.GetWeapon(upgradeLevel).Firerate - soldierSO.GetWeapon(nextUpgradeLevel).Firerate) > 0.01f;
+                            TMP_Text firerateValueText = propertyUI.propertyValueObject.GetComponent<TMP_Text>();
+                            
+                            firerateValueText.text = "Firerate: " + (!valueIsChanged ? $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Firerate}</color>" : 
                                 $"<color={normalColorHEX}>{soldierSO.GetWeapon(upgradeLevel).Firerate}</color> <color={nextValueColorHEX}><sprite=0, color={nextValueColorHEX}> {soldierSO.GetWeapon(nextUpgradeLevel).Firerate}</color>");
                             break;
+                        
+                        
                         case PropertyType.ViewRange:
-                            propertyUI.propertyValueText.text = "Range: " + (isMaxLevel ? $"<color={normalColorHEX}>{soldierSO.GetViewRange(upgradeLevel)}</color>" : 
+                            valueIsChanged = !isMaxLevel && Math.Abs(soldierSO.GetViewRange(upgradeLevel) - soldierSO.GetViewRange(nextUpgradeLevel)) > 0.01f;
+                            TMP_Text viewRangeValueText = propertyUI.propertyValueObject.GetComponent<TMP_Text>();
+                            
+                            viewRangeValueText.text = "Range: " + (!valueIsChanged ? $"<color={normalColorHEX}>{soldierSO.GetViewRange(upgradeLevel)}</color>" : 
                                 $"<color={normalColorHEX}>{soldierSO.GetViewRange(upgradeLevel)}</color> <color={nextValueColorHEX}><sprite=0, color={nextValueColorHEX}> {soldierSO.GetViewRange(nextUpgradeLevel)}</color>");
+                            break;
+                        
+                        
+                        case PropertyType.Detection:
+                            valueIsChanged = !isMaxLevel && soldierSO.GetHasBinoculars(upgradeLevel) != soldierSO.GetHasBinoculars(nextUpgradeLevel);
+                            CustomToggle checkbox = propertyUI.propertyValueObject.GetComponent<CustomToggle>();
+
+                            TMP_Text iconText = checkbox.transform.GetChild(checkbox.transform.childCount-1).GetComponent<TMP_Text>();
+                            CustomToggle nextCheckboxValue = iconText.transform.GetChild(iconText.transform.childCount-1).GetComponent<CustomToggle>();
+
+                            checkbox.IsOn = soldierSO.GetHasBinoculars(upgradeLevel);
+                            nextCheckboxValue.IsOn = soldierSO.GetHasBinoculars(nextUpgradeLevel);
+
+                            iconText.enabled = valueIsChanged;
+                            iconText.text = $"<sprite=0, color={nextValueColorHEX}>";
+                            nextCheckboxValue.gameObject.SetActive(valueIsChanged);
+                            
                             break;
                     }
                 }

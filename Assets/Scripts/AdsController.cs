@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener, IUnityAdsInitializationListener
 {
     // public static Action ShowAds;
+    public static AdsController Instance;
 
     [SerializeField] string m_AndroidAdUnitId = "Interstitial_Android";
     public string AndroidAdUnitId => m_AndroidAdUnitId;
@@ -25,12 +26,26 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     public bool TestMode;
 
 
+    const int requiredAdsInARow = 2;
+    [SerializeField] int playedAdsInARow;
     public bool AdsLoaded;
 
 
 
     void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
+        else
+        {
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        
+        playedAdsInARow = 0;
         AdsLoaded = false;
 
         InitializeAds();
@@ -41,13 +56,17 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
             m_AdUnitId = m_iOSAdUnitId;
         }
 
-         // += ShowAds;
-
+        GamePlayerInformation.OnEndGame += ShowAds;
     }
 
     void OnDestroy()
     {
-         // -= ShowAds;
+        if (Instance == this)
+        {
+            Instance = null;
+            
+            GamePlayerInformation.OnEndGame -= ShowAds;
+        }
     }
 
     private void InitializeAds()
@@ -121,10 +140,24 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     /// </summary>
     public void ShowAds()
     {
-        Debug.Log("Showing Ad: " + m_AdUnitId);
-        Advertisement.Show(m_AdUnitId, this);
-        AdsLoaded = false;
+        playedAdsInARow += 1;
+        
+        if (playedAdsInARow >= requiredAdsInARow)
+        {
+            playedAdsInARow = 0;
+            
+            Debug.Log("Showing Ad: " + m_AdUnitId);
+            Advertisement.Show(m_AdUnitId, this);
+            AdsLoaded = false;
+        }
+        else
+        {
+            OnUnityAdsShowComplete("", UnityAdsShowCompletionState.COMPLETED);
+        }
+        
+        
     }
+    
     #region IUnityAdsShowListener
 
     /// <summary>
@@ -134,9 +167,13 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     /// <param name="showCompletionState"></param>
     public void OnUnityAdsShowComplete(string adUnitId, UnityAdsShowCompletionState showCompletionState) 
     {
-        SceneManager.LoadSceneAsync(0);
-
-        //GameManager.instance.isLoadAds = false;
+        if(showCompletionState == UnityAdsShowCompletionState.COMPLETED || showCompletionState == UnityAdsShowCompletionState.SKIPPED)
+            SceneManager.LoadSceneAsync(0);
+        else
+        {
+            playedAdsInARow = requiredAdsInARow;
+            ShowAds();
+        }
     }
 
     /// <summary>

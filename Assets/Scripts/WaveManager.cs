@@ -9,6 +9,7 @@ public class WaveManager : MonoBehaviour
     public static event Action<int> UpdateCountdown;
     public static event Action OnStartWave; // farm give money
     public static event Action<uint> OnEndWave;
+    public static event Action OnEndAllWaves;
 
     [SerializeField] WaveData[] Waves;
     [SerializeField] int ActualyWeveIndex;
@@ -56,6 +57,11 @@ public class WaveManager : MonoBehaviour
         if (ActualyWeveIndex + 1 < Waves.Length)
         {
             StartWave();
+        }
+        else
+        {
+            Debug.Log($"All waves are ended hihi");
+            OnEndAllWaves?.Invoke();
         }
     }
     

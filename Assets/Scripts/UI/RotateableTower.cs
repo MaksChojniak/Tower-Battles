@@ -30,9 +30,9 @@ namespace DefaultNamespace
         }
 
         
-        void OnSelectTile(int index, GameObject tileUI)
+        void OnSelectTile(int index, GameObject tileUI, bool isUnlocked)
         {
-            GameObject towerPrefab = TowerInventory.TowerData[index].towerSO.TowerPrefab;
+            GameObject towerPrefab = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.TowerPrefab;
             SpawnTower(towerPrefab);
         }
         
