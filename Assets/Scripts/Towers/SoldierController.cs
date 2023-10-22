@@ -41,6 +41,25 @@ namespace DefaultNamespace
             TowerShootProcess();
         }
 
+
+        protected override void Destroy()
+        {
+            
+            long totalTowerValue = soldierData.GetPrice();
+            for (int i = 1; i <= UpgradeLevel; i++)
+            {
+                totalTowerValue += soldierData.GetUpgradePrice(i);
+            }
+            totalTowerValue /= 2;
+            GamePlayerInformation.ChangeBalance(totalTowerValue);
+
+            this.ShowTowerInformation(false);
+            Destroy(this.gameObject);
+
+            base.Destroy();
+        }
+
+
         protected override void OnUpgradeTower(TowerController towerController)
         {
             if (towerController != this || UpgradeLevel >= 4)

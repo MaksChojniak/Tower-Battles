@@ -16,11 +16,13 @@ public class TowerBarUI : MonoBehaviour
     void Awake()
     {
         TowerSpawner.OnPlaceTower += OnUpdateTowersCount;
+        TowerController.OnDestroyTower += OnUpdateTowersCount;
     }
 
     void OnDestroy()
     {
         TowerSpawner.OnPlaceTower -= OnUpdateTowersCount;
+        TowerController.OnDestroyTower -= OnUpdateTowersCount;
     }
 
 
@@ -41,6 +43,14 @@ public class TowerBarUI : MonoBehaviour
 
     void OnUpdateTowersCount()
     {
-        TowersCount.text = $"{GameObject.FindObjectsOfType<TowerController>().Length}/{TowerSpawner.MaxTowersCount} Towers";
+        Invoke(nameof(DelayedUpdateTowersCount), 0.1f);
+
+    }
+
+    void DelayedUpdateTowersCount()
+    {
+        Debug.Log($"to xd xd {GameObject.FindGameObjectsWithTag("Tower").Length}");
+        //TowersCount.text = $"{GameObject.FindObjectsOfType<TowerController>().Length}/{TowerSpawner.MaxTowersCount} Towers";
+        TowersCount.text = $"{GameObject.FindGameObjectsWithTag("Tower").Length}/{TowerSpawner.MaxTowersCount} Towers";
     }
 }

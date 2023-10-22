@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 using TMPro;
+using Unity.Burst.CompilerServices;
 
 public class TowerSpawner : MonoBehaviour
 {
@@ -64,7 +65,9 @@ public class TowerSpawner : MonoBehaviour
         }
 
         selectedBuilidng = Instantiate(towers[index].TowerPrefab, Input.GetTouch(0).position, Quaternion.identity, transform);
-        
+
+        posibilityOfPlace = false;
+
         selectedBuilidng.GetComponent<TowerController>().ShowTowerViewRange(true);
         TowerController.ShowTowerSpawnRange(selectedBuilidng, true);
     }
@@ -103,13 +106,15 @@ public class TowerSpawner : MonoBehaviour
 
     public void PlaceBuilding(int index)
     {
-        if (towers[index] == null) return;
-
+        if (towers[index] == null)
+            return;
+        
         if (towers[index].GetPrice() > GamePlayerInformation.Instance.GetBalance())
             return;
-
-        if (selectedBuilidng == null) return;
-
+        
+        if (selectedBuilidng == null)
+            return;
+        
         TowerController.ShowTowerSpawnRange(selectedBuilidng, false);
         
 

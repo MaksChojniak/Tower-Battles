@@ -204,5 +204,13 @@ namespace DefaultNamespace
                 
             OnUpgradeTower?.Invoke(LastCheckedTower);
         }
+
+        public void SellTower()
+        {
+            if (LastCheckedTower == null)
+                return;
+
+            LastCheckedTower.DestroyTower();
+        }
     }
 }

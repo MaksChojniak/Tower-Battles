@@ -62,7 +62,10 @@ public class GamePlayerInformation : MonoBehaviour
 
     void OnChangeHealth(int value)
     {
-        Health += value; 
+        Health += value;
+        
+        if(Health <= 0)
+            Health = 0;
         
         UpdateHealth?.Invoke(Health);
     }

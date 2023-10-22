@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Threading.Tasks;
 using System.Xml.Schema;
 using DefaultNamespace.ScriptableObjects;
 using UnityEngine;
@@ -9,7 +11,9 @@ namespace DefaultNamespace
     {
         public static event Action<object, TypeOfBuildng, bool, TowerController> OnShowTowerInformation;
         public static Action<GameObject, bool> ShowTowerSpawnRange;
-        
+        public static event Action OnDestroyTower;
+
+        public Action DestroyTower;
         public Action<bool> ShowTowerInformation;
         public Action PlaceTower;
         public Action<bool> ShowTowerViewRange;
@@ -30,6 +34,7 @@ namespace DefaultNamespace
             ShowTowerSpawnRange += SetActiveSpawnRange;
             ShowTowerViewRange += SetActiveViewRange;
             PlaceTower += OnPlaceTower;
+            DestroyTower += Destroy;
 
             GameTowerInformations.OnUpgradeTower += OnUpgradeTower;
 
@@ -42,7 +47,9 @@ namespace DefaultNamespace
             ShowTowerSpawnRange -= SetActiveSpawnRange;
             ShowTowerViewRange -= SetActiveViewRange;
             PlaceTower -= OnPlaceTower;
-            
+            DestroyTower -= Destroy;
+
+
             GameTowerInformations.OnUpgradeTower -= OnUpgradeTower;
         }
         
@@ -61,7 +68,11 @@ namespace DefaultNamespace
             
         }
 
-
+        protected virtual void Destroy()
+        {
+            Debug.Log("xd xd");
+            OnDestroyTower?.Invoke();
+        }
 
         protected virtual void OnUpgradeTower(TowerController towerController)
         {
@@ -96,6 +107,7 @@ namespace DefaultNamespace
 
             SelectedRingImage.SetActive(state);
         }
+
 
         protected virtual (object, TypeOfBuildng) GetTowerData()
         {
@@ -140,4 +152,7 @@ namespace DefaultNamespace
 
         
     }
+
+
+
 }
