@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
 using UnityEngine.SocialPlatforms;
 using UnityEngine.UI;
@@ -23,6 +24,7 @@ public class TowerViewRange : MonoBehaviour
             _viewRange = value;
 
             Debug.Log(_viewRange);
+            this.transform.GetChild(0).GetComponent<ViewRangeController>().UpdateRadius(_viewRange);
             ViewRangeObject.GetComponent<RectTransform>().sizeDelta = new Vector2(_viewRange * 2, _viewRange * 2);
         }
         get
