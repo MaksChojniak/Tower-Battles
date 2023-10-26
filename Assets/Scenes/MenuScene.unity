@@ -1791,6 +1791,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b3473f76ad040af4e92b67412f9d31f5, type: 3}
+--- !u!114 &116763837 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4609116739859727979, guid: b3473f76ad040af4e92b67412f9d31f5,
+    type: 3}
+  m_PrefabInstance: {fileID: 116763836}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 116763838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5213daba2f0a8a444ae1f454c696cc9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &116763838 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4938551801405053930, guid: b3473f76ad040af4e92b67412f9d31f5,
@@ -10176,6 +10188,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
+        type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
@@ -17652,7 +17669,7 @@ PrefabInstance:
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -18888,6 +18905,8 @@ MonoBehaviour:
       towerTileUI: {fileID: 115271693}
     - towerSO: {fileID: 11400000, guid: 4224d44fee2a78b49acd223ae9595dba, type: 2}
       towerTileUI: {fileID: 1655672598}
+    - towerSO: {fileID: 11400000, guid: 27ed6e4e5c144134eb58e1fdf2738390, type: 2}
+      towerTileUI: {fileID: 116763837}
     exclusiveTowers: []
     trophyTowers:
     - towerSO: {fileID: 11400000, guid: 9efad8e700b8518448c01241dcd297bb, type: 2}
