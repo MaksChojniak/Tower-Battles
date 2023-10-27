@@ -14,7 +14,8 @@ namespace DefaultNamespace
         public float radius;
         [SerializeField] Material ringMaterialExample;
         [SerializeField] Color materialColor;
-        
+        [SerializeField] float radiusOffset;
+
         [Header("Debug UI")]
         [SerializeField] int steps;
         
@@ -37,7 +38,7 @@ namespace DefaultNamespace
             ringMaterial.SetVector("_Tilling", new Vector2(steps, 1) );
             ringMaterial.SetColor("_Color", materialColor);
             LineRenderer.material = ringMaterial;
-            DrawRing(steps, radius);
+            DrawRing(steps, radius - radiusOffset);
         }
 
         void UpdateSteps(float _radius)
@@ -61,7 +62,7 @@ namespace DefaultNamespace
                 float x = xScaled * _radius;
                 float z = zScaled * _radius;
 
-                Vector3 currentPosition = LineRenderer.transform.position + new Vector3(x, LineRenderer.transform.position.y, z);
+                Vector3 currentPosition = LineRenderer.transform.position + new Vector3(x, 0, z);
                 
                 LineRenderer.SetPosition(i, currentPosition);
             }
