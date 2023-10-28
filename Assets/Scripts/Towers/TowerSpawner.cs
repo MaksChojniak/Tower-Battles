@@ -19,6 +19,8 @@ public class TowerSpawner : MonoBehaviour
     [SerializeField] GameObject selectedBuilidng;
     [SerializeField] bool posibilityOfPlace;
 
+    [SerializeField] GameObject cancelationTrashCan;
+
     public const int MaxTowersCount = 10;
 
     Vector2 offset;
@@ -28,6 +30,11 @@ public class TowerSpawner : MonoBehaviour
         towers = PlayerTowerInventory.Instance.TowerDeck;
 
         offset = new Vector2(3 * (float)Screen.width, 2 * (float)Screen.height) * 1.5f / 100;
+    }
+
+    void Update()
+    {
+        cancelationTrashCan.SetActive(selectedBuilidng != null);
     }
 
     public void SpawnBuilding(int index)
@@ -140,4 +147,12 @@ public class TowerSpawner : MonoBehaviour
     }
 
 
+    public void CancelPlacingBuilding()
+    {
+        if(selectedBuilidng == null)
+            return;
+        
+        Destroy(selectedBuilidng);
+        posibilityOfPlace = false;
+    }
 }

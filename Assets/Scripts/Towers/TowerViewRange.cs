@@ -17,6 +17,8 @@ public class TowerViewRange : MonoBehaviour
     [SerializeField] GameObject ViewRangeObject;
     [SerializeField] Image ViewRangeImage;
 
+    [SerializeField] ViewRangeController ViewRangeController;
+
 
     public float ViewRange {
         set 
@@ -24,8 +26,8 @@ public class TowerViewRange : MonoBehaviour
             _viewRange = value;
 
             Debug.Log(_viewRange);
-            this.transform.GetChild(0).GetComponent<ViewRangeController>().UpdateRadius(_viewRange);
             ViewRangeObject.GetComponent<RectTransform>().sizeDelta = new Vector2(_viewRange * 2, _viewRange * 2);
+            ViewRangeController.UpdateRadius(_viewRange);
         }
         get
         {
@@ -55,6 +57,8 @@ public class TowerViewRange : MonoBehaviour
     void OnSetState(bool state)
     {
         ViewRangeImage.color = state ? ViewRangeAble : ViewRangeUnable;
+        
+        ViewRangeController.UpdateRingColor(ViewRangeImage.color);
     }
 
     void OnSetActive(bool state)

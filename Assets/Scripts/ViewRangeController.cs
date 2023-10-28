@@ -13,7 +13,6 @@ namespace DefaultNamespace
         [Header("Properties")]
         public float radius;
         [SerializeField] Material ringMaterialExample;
-        [SerializeField] Color materialColor;
         [SerializeField] float radiusOffset;
 
         [Header("Debug UI")]
@@ -31,13 +30,16 @@ namespace DefaultNamespace
             UpdateRing();
         }
 
-        [ContextMenu(nameof(UpdateRing))]
-        public void UpdateRing()
+        public void UpdateRingColor(Color color)
         {
             ringMaterial = new Material(ringMaterialExample);
             ringMaterial.SetVector("_Tilling", new Vector2(steps, 1) );
-            ringMaterial.SetColor("_Color", materialColor);
+            ringMaterial.SetColor("_Color", color);
             LineRenderer.material = ringMaterial;
+        }
+
+        public void UpdateRing()
+        {
             DrawRing(steps, radius - radiusOffset);
         }
 

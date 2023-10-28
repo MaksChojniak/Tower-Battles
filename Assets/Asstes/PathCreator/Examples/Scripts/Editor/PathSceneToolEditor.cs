@@ -5,7 +5,7 @@ using PathCreation;
 namespace PathCreation.Examples
 {
     [CustomEditor(typeof(PathSceneTool), true)]
-    public class PathSceneToolEditor : Editor
+    public class PathSceneToolEditor : UnityEditor.Editor
     {
         protected PathSceneTool pathTool;
         bool isSubscribed;

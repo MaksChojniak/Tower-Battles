@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace DefaultNamespace.ScriptableObjects
@@ -13,6 +14,9 @@ namespace DefaultNamespace.ScriptableObjects
         
         public int Damage;
         public float Firerate;
+        
+        public float SplashDamageSpread;
+        public int MaxEnemiesInSpread;
     }
     
     

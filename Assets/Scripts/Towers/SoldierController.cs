@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DefaultNamespace.ScriptableObjects;
 using UnityEngine;
 
@@ -131,14 +132,11 @@ namespace DefaultNamespace
                 StopCoroutine(lastFollowCourtine);
             
             lastFollowCourtine = StartCoroutine(LookAtEnemy(enemy.transform));
-
-            int enemyHealth = enemy.GetHealth();
-            int damage = soldierData.GetWeapon(UpgradeLevel).Damage;
-            enemy.TakeDamage(damage);
-
-            int giveDamage = enemyHealth - enemy.GetHealth();
-            TotalDamage += giveDamage;
-            GamePlayerInformation.ChangeBalance(giveDamage);
+            
+            
+            int givenDamage = soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Single ? GiveDamge(enemy, soldierData.GetWeapon(UpgradeLevel).Damage) : GiveSplashDamage(enemy);
+            
+            GamePlayerInformation.ChangeBalance(givenDamage);
             Debug.Log("OnShoot");
 
             yield return new WaitForSeconds(soldierData.GetWeapon(UpgradeLevel).Firerate);
@@ -146,6 +144,86 @@ namespace DefaultNamespace
             IsShooting = false;
         }
 
+        int GiveDamge(EnemyController enemy, int damage)
+        {
+            int enemyHealth = enemy.GetHealth();
+            enemy.TakeDamage(damage);
+
+            int giveDamage = enemyHealth - enemy.GetHealth();
+            TotalDamage += giveDamage;
+
+            return giveDamage;
+        }
+
+        int GiveSplashDamage(EnemyController firstEnemy)
+        {
+            int givenDamage = 0;
+            
+            List<Transform> enemiesInSpreadRangeTransform = FindEnemiesInSplashRange(firstEnemy, soldierData.GetWeapon(UpgradeLevel).SplashDamageSpread);
+
+            int step = soldierData.GetWeapon(UpgradeLevel).MaxEnemiesInSpread;
+            for(int i = 0; i< enemiesInSpreadRangeTransform.Count; i++)
+            {
+                EnemyController enemy = enemiesInSpreadRangeTransform[i].GetComponent<EnemyController>();
+
+                int damage = soldierData.GetWeapon(UpgradeLevel).Damage * (step);
+
+                givenDamage += GiveDamge(enemy, damage);
+                step -= 1;
+            }
+
+            return givenDamage;
+        }
+
+        List<Transform> FindEnemiesInSplashRange(EnemyController firstEnemy, float spreadRadius)
+        {
+            List<Transform> enemiesInRange = new List<Transform>();
+            foreach (var enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+            {
+                if (Vector3.Distance(firstEnemy.transform.position, enemy.transform.position) <= spreadRadius)
+                {
+                    enemiesInRange.Add(enemy.transform);
+                }
+            }
+
+            if(enemiesInRange.Count <= 0)
+                return new List<Transform>();
+
+            Transform[] sortedEnemies = new Transform[soldierData.GetWeapon(UpgradeLevel).MaxEnemiesInSpread];
+            for (int i = 0; i < enemiesInRange.Count; i++)
+            {
+                for(int j = 0; j < sortedEnemies.Length; j++)
+                {
+                    if (sortedEnemies[j] == null)
+                    {
+                        sortedEnemies[j] = enemiesInRange[i];
+                        break;
+                    }
+
+                    if (Vector3.Distance(firstEnemy.transform.position, enemiesInRange[i].position) < Vector3.Distance(firstEnemy.transform.position, sortedEnemies[j].position))
+                    {
+                        for (int k = sortedEnemies.Length - 1; k > j ; k--)
+                        {
+                            sortedEnemies[k] = sortedEnemies[k - 1];
+                        }
+                        
+                        sortedEnemies[j] = enemiesInRange[i];
+                        break;
+                    }
+                }
+            }
+
+            List<Transform> fixedSortedEnemies = new List<Transform>();
+            for (int i = 0; i < sortedEnemies.Length; i++)
+            {
+                if(sortedEnemies[i] != null)
+                    fixedSortedEnemies.Add(sortedEnemies[i]);
+            }
+
+            return fixedSortedEnemies;
+        }
+        
+        
         const float followTime = 0.2f;
         Coroutine lastFollowCourtine;
         IEnumerator LookAtEnemy(Transform enemy)
