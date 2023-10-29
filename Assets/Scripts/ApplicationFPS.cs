@@ -6,7 +6,7 @@ public class ApplicationFPS : MonoBehaviour
 {
     void Awake()
     {
-        Application.targetFrameRate = 140;
+        Application.targetFrameRate = 144;
         QualitySettings.vSyncCount = 0;
     }
 }

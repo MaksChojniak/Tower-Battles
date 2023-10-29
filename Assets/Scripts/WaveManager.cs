@@ -18,6 +18,8 @@ public class WaveManager : MonoBehaviour
 
     [SerializeField] Transform enemyStorage;
 
+    [SerializeField] GameObject waveIndicator;
+
     void Awake()
     {
 
@@ -37,6 +39,9 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator PrepareWaves()
     {
+        if(waveIndicator != null)        
+           waveIndicator.SetActive(true);
+
         float time = StartCountdown;
         while (time >= 0)
         {
@@ -48,6 +53,9 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(delay);
         }
         UpdateCountdown?.Invoke(-1);
+
+        if (waveIndicator != null)
+            waveIndicator.SetActive(false);
 
         UpdateWaves();
     }
