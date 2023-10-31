@@ -144,6 +144,13 @@ public class MenuAnimations : MonoBehaviour
             case 5:
                 animator.SetBool("Info", false);
                 break;
+            
+            case 6:
+                animator.SetBool("Lobby", true);
+                break;
+            case 7:
+                animator.SetBool("Lobby", false);
+                break;
         }
 
         
