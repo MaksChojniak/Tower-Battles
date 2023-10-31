@@ -121,28 +121,31 @@ public class MenuAnimations : MonoBehaviour
 
     public void SetActivePanel(int i)
     {
-        //StopAllCoroutines();
-
-        //bool openMenuPanel = false;
+        
         switch (i)
         {
             case 0:
-                //menuPanelIsCurrent = true;
-                //towersPanelIsCurrent = false;
-                //openMenuPanel = true;
-                animator.SetBool("Towers", false);
-                animator.SetBool("Menu", true);
+                animator.SetBool("Tower", true);
                 break;
             case 1:
-                //menuPanelIsCurrent = false;
-                //towersPanelIsCurrent = true;
-                //openMenuPanel = false;
-                animator.SetBool("Menu", false);
-                animator.SetBool("Towers", true);
+                animator.SetBool("Tower", false);
+                break;
+
+            case 2:
+                animator.SetBool("Settings", true);
+                break;
+            case 3:
+                animator.SetBool("Settings", false);
+                break;
+
+            case 4:
+                animator.SetBool("Info", true);
+                break;
+            case 5:
+                animator.SetBool("Info", false);
                 break;
         }
 
-        //Debug.Log($"{nameof(SetActivePanel)}");
-        //StartCoroutine(OnSetActivePanel(openMenuPanel));
+        
     }
 }

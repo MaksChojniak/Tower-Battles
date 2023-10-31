@@ -25,6 +25,7 @@ public class FPS : MonoBehaviour
 
         DontDestroyOnLoad(this.gameObject);
 
+        StopAllCoroutines();
         StartCoroutine(ShowFPS());
     }
 
@@ -32,7 +33,7 @@ public class FPS : MonoBehaviour
     {
         if(Instance == this)
         {
-
+            StopAllCoroutines();
         }
     }
 

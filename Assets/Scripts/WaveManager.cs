@@ -39,8 +39,7 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator PrepareWaves()
     {
-        if(waveIndicator != null)        
-           waveIndicator.SetActive(true);
+        SetActiveIndicator(true);
 
         float time = StartCountdown;
         while (time >= 0)
@@ -54,8 +53,7 @@ public class WaveManager : MonoBehaviour
         }
         UpdateCountdown?.Invoke(-1);
 
-        if (waveIndicator != null)
-            waveIndicator.SetActive(false);
+        SetActiveIndicator(false);
 
         UpdateWaves();
     }
@@ -105,12 +103,21 @@ public class WaveManager : MonoBehaviour
 
         OnEndWave?.Invoke(wave.waveReward);
 
+        SetActiveIndicator(true);
+
         yield return new WaitForSeconds(wave.waveSleepTime);
-        
+
+        SetActiveIndicator(false);
+
         UpdateWaves();
     }
 
 
+    void SetActiveIndicator(bool state)
+    {
+        if (waveIndicator != null)
+            waveIndicator.SetActive(state);
+    }
     
     // public bool endAllWaves;
     // public int currentWave;
