@@ -51,11 +51,12 @@ public class TowerPreviewUI : MonoBehaviour
         startingPriceText.text = $"{tower.GetPrice()}$";
         damageTypeText.text = "Single/Splash";
 
-        damageImage.fillAmount = 0.2f;
+        float[] fillAmounts = new[] { 0.2f, 0.4f, 0.6f, 0.8f, 1f };
+        damageImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
         UpdateImageColor(damageImage);
-        firerateImage.fillAmount = 0.4f;
+        firerateImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
         UpdateImageColor(firerateImage);
-        rangeImage.fillAmount = 1f;
+        rangeImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
         UpdateImageColor(rangeImage);
 
         placementText.text = "Ground/Cliff";
@@ -99,13 +100,13 @@ public class TowerPreviewUI : MonoBehaviour
         float fillAmount = image.fillAmount;
         int colorIndex = 0;
 
-        if (fillAmount < 0.2f)
+        if (fillAmount <= 0.2f)
             colorIndex = 0;
-        else if (fillAmount < 0.4f)
+        else if (fillAmount <= 0.4f)
             colorIndex = 1;
-        else if (fillAmount < 0.6f)
+        else if (fillAmount <= 0.6f)
             colorIndex = 2;
-        else if (fillAmount < 0.8f)
+        else if (fillAmount <= 0.8f)
             colorIndex = 3;
         else
             colorIndex = 4;

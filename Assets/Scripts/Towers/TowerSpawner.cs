@@ -77,6 +77,8 @@ public class TowerSpawner : MonoBehaviour
 
         selectedBuilidng.GetComponent<TowerController>().ShowTowerViewRange(true);
         TowerController.ShowTowerSpawnRange(selectedBuilidng, true);
+
+        Ground.UpdateGround(towers[index].PlacementType);
     }
 
     public void MoveBuilding(int index)
@@ -97,7 +99,7 @@ public class TowerSpawner : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 1000)) //, 1 << 6))
             {
-                posibilityOfPlace = hit.transform.gameObject.layer == LayerMask.NameToLayer("Ground");
+                posibilityOfPlace = hit.transform.gameObject.TryGetComponent<Ground>(out var ground);
 
                 selectedBuilidng.transform.position = new Vector3(hit.point.x, 1f, hit.point.z);
 
@@ -113,6 +115,8 @@ public class TowerSpawner : MonoBehaviour
 
     public void PlaceBuilding(int index)
     {
+        Ground.OnStopPlacingTower();
+        
         if (towers[index] == null)
             return;
         
