@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TowerDeck : MonoBehaviour
@@ -17,7 +18,32 @@ public class TowerDeck : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
     }
+
+
+    private void OnEnable()
+    {
+        StartCoroutine(UpdateDeckUI());
+    }
+
+    IEnumerator UpdateDeckUI()
+    {
+        yield return new WaitForEndOfFrame();
+
+        for (int i = 0; i < PlayerTowerInventory.Instance.TowerDeck.Length; i++)
+        {
+            if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
+            {
+                Debug.Log("Update Tower Sprite onStart");
+                deckTiles[i].UpdateSprite(PlayerTowerInventory.Instance.TowerDeck[i].TowerSprite);
+                deckTiles[i].ChangeColor(true);
+            }
+
+        }
+       
+    }
+
 
     public void SelectSlot(int i)
     {
@@ -29,5 +55,8 @@ public class TowerDeck : MonoBehaviour
         //}
 
         OnSelectSlot?.Invoke(i);
+
     }
+
+
 }

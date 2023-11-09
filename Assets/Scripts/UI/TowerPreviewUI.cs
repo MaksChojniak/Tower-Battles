@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts;
 using DefaultNamespace;
 using DefaultNamespace.ScriptableObjects;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +14,7 @@ public class TowerPreviewUI : MonoBehaviour
 
     [Space(18)]
     [SerializeField] TMP_Text towerNameText;
-    [SerializeField] Image towerImage;
+    //[SerializeField] Image towerImage;
 
     [SerializeField] TMP_Text startingPriceText;
     [SerializeField] TMP_Text damageTypeText;
@@ -29,7 +31,7 @@ public class TowerPreviewUI : MonoBehaviour
 
     [SerializeField] Color[] colors;
 
-    int lastSelectedTowerIndex;
+    public int lastSelectedTowerIndex { get; private set; }
 
     private void Awake()
     {
@@ -48,7 +50,7 @@ public class TowerPreviewUI : MonoBehaviour
         towerNameText.text = tower.TowerName;
         // towerImage.sprite = tower.TowerSprite;
 
-        startingPriceText.text = $"{tower.GetPrice()}$";
+        startingPriceText.text = $"{tower.GetPrice()}";
         damageTypeText.text = "Single/Splash";
 
         float[] fillAmounts = new[] { 0.2f, 0.4f, 0.6f, 0.8f, 1f };
@@ -61,13 +63,13 @@ public class TowerPreviewUI : MonoBehaviour
 
         placementText.text = "Ground/Cliff";
 
-        lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount));
-        lockedPrice.text = $"{tower.GetRequiredWinsCount()} Wins";
+        lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()));
+        lockedPrice.text = $"Locked:  {StringFormatter.PriceFormat(tower.GetRequiredWinsCount())}";
         
         unlockPanel.SetActive(!isUnlocked && !lockedPanel.activeSelf);
         
         ownedPanel.SetActive(isUnlocked);
-        unlockPrice.text = $"{tower.GetUnlockedPrice()} Credits";
+        unlockPrice.text = $"{tower.GetUnlockedPrice()}";
 
         lastSelectedTowerIndex = index;
     }
@@ -77,7 +79,7 @@ public class TowerPreviewUI : MonoBehaviour
         Tower towerData = inventory.TowerData.GetAllTowerInventoryData()[lastSelectedTowerIndex].towerSO;
         PlayerTowerInventory playerTowerInventory = PlayerTowerInventory.Instance;
 
-        if (!towerData.IsRequiredWinsCount(playerTowerInventory.GetWinsCount))
+        if (!towerData.IsRequiredWinsCount(playerTowerInventory.GetWinsCount()))
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtWins);
             return;
@@ -91,6 +93,18 @@ public class TowerPreviewUI : MonoBehaviour
 
         PlayerTowerInventory.ChangeBalance(-towerData.GetUnlockedPrice());
         towerData.UnlockTower();
+
+        inventory.UpdateTiles();
+
+        var allTowersInventoryData = inventory.TowerData.GetAllTowerInventoryData();
+        for (int i = 0; i < allTowersInventoryData.Length; i++)
+        {
+            if (allTowersInventoryData[i].towerSO == towerData)
+            {
+                lastSelectedTowerIndex = i;
+                break;
+            }
+        }
         
         inventory.SelectTower(lastSelectedTowerIndex);
     }

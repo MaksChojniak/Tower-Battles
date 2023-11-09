@@ -16,6 +16,8 @@ namespace DefaultNamespace
 
         [SerializeField] TMP_Text CountdownText;
 
+        [SerializeField] Animator Animator;
+
         void Awake()
         {
             GamePlayerInformation.UpdateHealth += UpdateHealthInformation;
@@ -36,16 +38,19 @@ namespace DefaultNamespace
 
         void UpdateBalanceInformation(long value)
         {
-            BalanceText.text = $"{value} $";
+            BalanceText.text = $"{value}";
         }
-        
+
         void UpdateHealthInformation(int value)
         {
             HealthText.text = $"{value} HP";
-            StartCoroutine(HealthBarAnimation(0.5f, (float)value / 100) );
+            StartCoroutine(HealthBarValueAnimation(0.5f, (float)value / 100) );
+
+            if(value < 100)
+                Animator.SetTrigger("TakeDamage");
         }
 
-        IEnumerator HealthBarAnimation(float speed, float targetHealthFillAmount)
+        IEnumerator HealthBarValueAnimation(float speed, float targetHealthFillAmount)
         {
             while (Math.Abs(HealthBarImage.fillAmount - targetHealthFillAmount) > 0.01f)
             {
@@ -54,7 +59,9 @@ namespace DefaultNamespace
                 yield return new WaitForSeconds(0.01f);
             }
         }
-        
+
+
+
         void UpdateCountdown(int value)
         {
             CountdownText.gameObject.SetActive(value >= 0);
@@ -63,7 +70,7 @@ namespace DefaultNamespace
         
         void UpdateWave(int value)
         {
-            WaveCountText.text = $"Wave {value}";
+            WaveCountText.text = $"Wave {value + 1}";
         }
 
     }

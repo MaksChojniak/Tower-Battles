@@ -17,10 +17,12 @@ namespace DefaultNamespace
         public Action<bool> ShowTowerInformation;
         public Action PlaceTower;
         public Action<bool> ShowTowerViewRange;
+        public Action<TargetMode> UpdateTargetMode;
 
         [Range(0,4)]
         public int UpgradeLevel;
         public bool IsPlaced;
+        public TargetMode targetMode;
 
         [SerializeField] protected GameObject CurrentTowerObject;
         public TowerViewRange ViewRange;
@@ -35,6 +37,7 @@ namespace DefaultNamespace
             ShowTowerViewRange += SetActiveViewRange;
             PlaceTower += OnPlaceTower;
             DestroyTower += Destroy;
+            UpdateTargetMode += OnUpdateTargetMode;
 
             GameTowerInformations.OnUpgradeTower += OnUpgradeTower;
 
@@ -48,6 +51,7 @@ namespace DefaultNamespace
             ShowTowerViewRange -= SetActiveViewRange;
             PlaceTower -= OnPlaceTower;
             DestroyTower -= Destroy;
+            UpdateTargetMode -= OnUpdateTargetMode;
 
 
             GameTowerInformations.OnUpgradeTower -= OnUpgradeTower;
@@ -150,7 +154,13 @@ namespace DefaultNamespace
             ViewRange.SetActive(state);
         }
 
-        
+
+        protected virtual void OnUpdateTargetMode(TargetMode mode)
+        {
+            targetMode = mode;
+        }
+
+
     }
 
 

@@ -21,7 +21,7 @@ public class ButtonExtension : MonoBehaviour
             return;
         }
         
-        DontDestroyOnLoad(this.gameObject);
+        //DontDestroyOnLoad(this.gameObject);
 
         Singleton = this;
     }
@@ -30,7 +30,7 @@ public class ButtonExtension : MonoBehaviour
     {
         if (Singleton == this)
         {
-            
+            Singleton = null;
         }
     }
 

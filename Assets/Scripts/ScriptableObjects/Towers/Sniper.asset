@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b1185db10fa4a32b9b14ec7cc363a1e, type: 3}
+  m_Name: Sniper
+  m_EditorClassIdentifier: 
+  TowerName: Sniper
+  TowerSprite: {fileID: 21300000, guid: 6c903a8189e00e14b8ef49ed2f654f92, type: 3}
+  TowerPrefab: {fileID: 6088797102554229474, guid: 46ac0086a18edd64ba0d22ae05318451,
+    type: 3}
+  OriginPointOffset: {x: 0, y: 0.85, z: 0}
+  Type: 0
+  PlacementType: 1
+  BaseProperties:
+    UnlockPrice: 400
+    RequiredWinsCount: 0
+    IsUnlocked: 0
+  GameProperties:
+    Price: 650
+  UpgradesData:
+  - UpgradeTitle: Upgrade 1
+    UpgradeIcon: {fileID: 21300000, guid: 6c903a8189e00e14b8ef49ed2f654f92, type: 3}
+    UpgradePrice: 300
+    Weapon: {fileID: 11400000, guid: bf31bcc29df84174fbecf611fa44d1d9, type: 2}
+    ViewRange: 18
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 2
+    UpgradeIcon: {fileID: 21300000, guid: b9bea709648137d4a90f0fb7613ba275, type: 3}
+    UpgradePrice: 400
+    Weapon: {fileID: 11400000, guid: bf31bcc29df84174fbecf611fa44d1d9, type: 2}
+    ViewRange: 19
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 3
+    UpgradeIcon: {fileID: 21300000, guid: 283dbc5136cacf845b28ce5b48f9f380, type: 3}
+    UpgradePrice: 450
+    Weapon: {fileID: 11400000, guid: bf31bcc29df84174fbecf611fa44d1d9, type: 2}
+    ViewRange: 20
+    HasBinoculars: 0
+  - UpgradeTitle: Upgrade 4
+    UpgradeIcon: {fileID: 21300000, guid: 75f4817e87bca6a4d91c76cd7acb6bd0, type: 3}
+    UpgradePrice: 650
+    Weapon: {fileID: 11400000, guid: 5a35686f4a52e5442b9c11125ad88999, type: 2}
+    ViewRange: 22
+    HasBinoculars: 1
+  - UpgradeTitle: Upgrade 5
+    UpgradeIcon: {fileID: 21300000, guid: 562f9e6132e20c7469f9b11fd184f046, type: 3}
+    UpgradePrice: 1000
+    Weapon: {fileID: 11400000, guid: 5a35686f4a52e5442b9c11125ad88999, type: 2}
+    ViewRange: 23
+    HasBinoculars: 1

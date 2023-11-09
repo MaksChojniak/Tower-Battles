@@ -14,7 +14,8 @@ namespace DefaultNamespace
             NotEnoughtMoney,
             MaxTowersCountPlaced,
             DeckIsEmpty,
-            NotEnoughtWins
+            NotEnoughtWins,
+            MaxedOut
         }
 
         public static WarningSystem Instance;
@@ -74,6 +75,9 @@ namespace DefaultNamespace
                     break;
                 case WarningType.NotEnoughtWins:
                     message = "Not Enough Wins!";
+                    break;
+                case WarningType.MaxedOut:
+                    message = "Tower Maxed Out!";
                     break;
                 default:
                     message = "Error!!";

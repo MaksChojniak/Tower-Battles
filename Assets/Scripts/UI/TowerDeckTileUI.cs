@@ -25,6 +25,8 @@ public class TowerDeckTileUI : MonoBehaviour
     {
         Image tileImage = this.GetComponent<Image>();
 
+        Debug.Log("Update Tower Sprit");
+
         tileImage.sprite = sprite;
     }
 

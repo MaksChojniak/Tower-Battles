@@ -6,6 +6,10 @@ public class PlayerTowerInventory : MonoBehaviour
 {
     public static PlayerTowerInventory Instance;
 
+    public static event Action<int> OnChangeBalance;
+    public static event Action<int> OnChangeWinCount;
+    public static event Action<int> OnChangeDefeatCount;
+
     public static Action<int> ChangeBalance;
     public static Action AddWin;
     public static Action AddDefeat;
@@ -29,9 +33,9 @@ public class PlayerTowerInventory : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
 
-        ChangeBalance += OnChangeBalance;
-        AddWin += OnAddWin;
-        AddDefeat += OnAddDefeat;
+        ChangeBalance += BalanceChanged;
+        AddWin += WinCountChanged;
+        AddDefeat += DefeatCountChanged;
 
     }
 
@@ -39,31 +43,37 @@ public class PlayerTowerInventory : MonoBehaviour
     {
         if (Instance == this)
         {
-            ChangeBalance -= OnChangeBalance;
-            AddWin -= OnAddWin;
-            AddDefeat -= OnAddDefeat;
+            ChangeBalance -= BalanceChanged;
+            AddWin -= WinCountChanged;
+            AddDefeat -= DefeatCountChanged;
         }
     }
 
 
 
     public int GetBalance() => Balance;
-    public int GetWinsCount => WinCount;
-    public int GetDefeatCount => DefeatCount;
+    public int GetWinsCount() => WinCount;
+    public int GetDefeatCount() => DefeatCount;
 
-    void OnChangeBalance(int value)
+    void BalanceChanged(int value)
     {
         Balance += value;
+
+        OnChangeBalance?.Invoke(Balance);
     }
 
-    void OnAddWin()
+    void WinCountChanged()
     {
         WinCount += 1;
+
+        OnChangeWinCount?.Invoke(WinCount);
     }
 
-    void OnAddDefeat()
+    void DefeatCountChanged()
     {
         DefeatCount += 1;
+
+        OnChangeDefeatCount?.Invoke(DefeatCount);
     }
 
 }

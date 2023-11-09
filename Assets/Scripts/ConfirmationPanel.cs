@@ -1,0 +1,93 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using static Assets.Scripts.ConfirmationPanel;
+
+namespace Assets.Scripts
+{
+    public class ConfirmationPanel : MonoBehaviour
+    {
+        public enum TowerType
+        {
+            Common,
+            Exclusive,
+            Trophy
+        }
+
+        [SerializeField] TMP_Text TitleText;
+        [SerializeField] Image TowerSprite;
+        [SerializeField] TMP_Text PriceText;
+
+        [SerializeField] Color CommonColor;
+        [SerializeField] Color ExclusiveColor;
+        [SerializeField] Color TrophyColor;
+        [SerializeField] Color PriceTextColor;
+
+        [SerializeField] TowerPreviewUI TowerPreviewUI;
+        [SerializeField] TowerInventory TowerInventory;
+
+        public void Cancel()
+        {
+
+        }
+
+        public void Buy()
+        {
+            TowerPreviewUI.BuyTower();
+        }
+
+        public void UpdateConfirmationPanel()
+        {
+            TowerInventoryData towerInventoryData = TowerInventory.TowerData.GetAllTowerInventoryData()[TowerPreviewUI.lastSelectedTowerIndex];
+
+            TowerType towerType = GetTowerType(towerInventoryData);
+
+            TitleText.text = $"Unlock " + $"<color={GetHexColor(GetColor(towerType))}>" + $"{towerInventoryData.towerSO.TowerName}" + "</color>";
+            TowerSprite.sprite = towerInventoryData.towerSO.TowerSprite;
+            PriceText.text = "<smallcaps>" + $"Price:  " + "<b>" + $"<color={GetHexColor(PriceTextColor)}>" + $"{StringFormatter.PriceFormat(towerInventoryData.towerSO.BaseProperties.UnlockPrice)}" + "</color>";
+        }
+
+        TowerType GetTowerType(TowerInventoryData towerInventoryData)
+        {
+            if (TowerInventory.TowerData.commonTowers.Contains(towerInventoryData))
+                return TowerType.Common;
+            else if (TowerInventory.TowerData.exclusiveTowers.Contains(towerInventoryData))
+                return TowerType.Exclusive;
+            else if (TowerInventory.TowerData.trophyTowers.Contains(towerInventoryData))
+                return TowerType.Trophy;
+
+            return TowerType.Common;
+        }
+
+        string GetHexColor(Color color)
+        {
+            return $"#{ColorUtility.ToHtmlStringRGB(color)}";
+        }
+
+        Color GetColor(TowerType towerType)
+        {
+            switch (towerType)
+            {
+                case TowerType.Common:
+                    return CommonColor;
+                    break;
+                case TowerType.Exclusive:
+                    return ExclusiveColor;
+                    break;
+                case TowerType.Trophy:
+                    return TrophyColor;
+                    break;
+                default:
+                    return Color.white;
+                    break;
+
+            }
+        }
+    }
+}

@@ -26,7 +26,12 @@ public class TowerViewRange : MonoBehaviour
             _viewRange = value;
 
             Debug.Log(_viewRange);
-            ViewRangeObject.GetComponent<RectTransform>().sizeDelta = new Vector2(_viewRange * 2, _viewRange * 2);
+            RectTransform ViewRangeRectTransform = ViewRangeObject.GetComponent<RectTransform>();
+            
+            ViewRangeRectTransform.sizeDelta = new Vector2(_viewRange * 2, _viewRange * 2);
+
+            ViewRangeRectTransform.position = new Vector3(ViewRangeRectTransform.position.x, 1f - 0.8f, ViewRangeRectTransform.position.z);
+            
             ViewRangeController.UpdateRadius(_viewRange);
         }
         get

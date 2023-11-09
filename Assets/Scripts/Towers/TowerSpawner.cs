@@ -99,10 +99,9 @@ public class TowerSpawner : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 1000)) //, 1 << 6))
             {
-                posibilityOfPlace = hit.transform.gameObject.TryGetComponent<Ground>(out var ground);
+                posibilityOfPlace = hit.transform.gameObject.TryGetComponent<Ground>(out var ground) && ground.groundType == towers[index].PlacementType;
 
-                selectedBuilidng.transform.position = new Vector3(hit.point.x, 1f, hit.point.z);
-
+                selectedBuilidng.transform.position = new Vector3(hit.point.x, hit.point.y + 1f, hit.point.z);
 
                 if (posibilityOfPlace)
                     posibilityOfPlace = selectedBuilidng.GetComponent<TowerController>().SpawnRange.IsAble();

@@ -66,10 +66,16 @@ namespace DefaultNamespace
             if (towerController != this || UpgradeLevel >= 4)
                 return;
 
+            if (GamePlayerInformation.Instance == null || GamePlayerInformation.Instance.GetBalance() < soldierData.GetUpgradePrice(UpgradeLevel))
+            {
+                WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+                return;
+            }
+
+            GamePlayerInformation.ChangeBalance(-soldierData.GetUpgradePrice(UpgradeLevel));
+
             base.OnUpgradeTower(towerController);
 
-            if (GamePlayerInformation.Instance != null)
-                GamePlayerInformation.ChangeBalance(-soldierData.GetUpgradePrice(UpgradeLevel));
         }
 
         void TowerShootProcess()
@@ -78,37 +84,156 @@ namespace DefaultNamespace
                 return;
 
 
-            EnemyController farthestEnemy = GetFarthestEnemy();
+            EnemyController farthestEnemy = GetEnemy(targetMode);// GetFarthestEnemy();
             
             if(farthestEnemy != null)
                 TowerShoot(farthestEnemy);
         }
 
-        EnemyController GetFarthestEnemy()
+
+        EnemyController GetEnemy(TargetMode mode)
+        {
+            List<Transform> enemiesInRange = GetEnemiesInRange();
+
+            switch (mode)
+            {
+                case TargetMode.First:
+                    return GetFirstEnemy(enemiesInRange);
+                case TargetMode.Last:
+                    return GetLastEnemy(enemiesInRange);
+                case TargetMode.Closest:
+                    return GetClosestEnemy(enemiesInRange);
+                case TargetMode.Weakest:
+                    return GetWeakestEnemy(enemiesInRange);
+                case TargetMode.Strongest:
+                    return GetStrongestEnemy(enemiesInRange);
+                default:
+                    return null;
+            }
+        }
+
+        List<Transform> GetEnemiesInRange()
         {
             List<Transform> enemiesInRange = new List<Transform>();
             foreach (var enemy in GameObject.FindGameObjectsWithTag("Enemy"))
             {
-                if (Vector3.Distance(this.transform.position, enemy.transform.position) <= soldierData.GetViewRange(UpgradeLevel))
+                if (Vector3.Distance(new Vector3(this.transform.position.x, 1f, this.transform.position.z), enemy.transform.position) <= soldierData.GetViewRange(UpgradeLevel))
                 {
                     enemiesInRange.Add(enemy.transform);
                 }
             }
 
+            return enemiesInRange;
+        }
+
+        EnemyController GetFirstEnemy(List<Transform> enemiesInRange)
+        {
+
             if(enemiesInRange.Count <= 0)
                 return null;
             
-            EnemyController farthestEnemy = enemiesInRange[0].GetComponent<EnemyController>();
+            EnemyController firstEnemy = enemiesInRange[0].GetComponent<EnemyController>();
             foreach (var enemy in enemiesInRange)
             {
-                if (enemy.GetComponent<EnemyController>().GetDistanceTravelled() > farthestEnemy.GetComponent<EnemyController>().GetDistanceTravelled())
+                if (enemy.GetComponent<EnemyController>().GetDistanceTravelled() > firstEnemy.GetComponent<EnemyController>().GetDistanceTravelled())
                 {
-                    farthestEnemy = enemy.GetComponent<EnemyController>();
+                    firstEnemy = enemy.GetComponent<EnemyController>();
                 }
             }
 
-            return farthestEnemy;
+            return firstEnemy;
         }
+
+        EnemyController GetLastEnemy(List<Transform> enemiesInRange)
+        {
+
+            if (enemiesInRange.Count <= 0)
+                return null;
+
+            EnemyController lastEnemy = enemiesInRange[0].GetComponent<EnemyController>();
+            foreach (var enemy in enemiesInRange)
+            {
+                if (enemy.GetComponent<EnemyController>().GetDistanceTravelled() < lastEnemy.GetComponent<EnemyController>().GetDistanceTravelled())
+                {
+                    lastEnemy = enemy.GetComponent<EnemyController>();
+                }
+            }
+
+            return lastEnemy;
+        }
+
+        EnemyController GetClosestEnemy(List<Transform> enemiesInRange)
+        {
+
+            if (enemiesInRange.Count <= 0)
+                return null;
+
+            EnemyController closestEnemy = enemiesInRange[0].GetComponent<EnemyController>();
+            foreach (var enemy in enemiesInRange)
+            {
+                if (Vector3.Distance(enemy.position, this.transform.position) < Vector3.Distance(closestEnemy.transform.position, this.transform.position) )
+                {
+                    closestEnemy = enemy.GetComponent<EnemyController>();
+                }
+            }
+
+            return closestEnemy;
+        }
+
+        EnemyController GetWeakestEnemy(List<Transform> enemiesInRange)
+        {
+
+            if (enemiesInRange.Count <= 0)
+                return null;
+
+            EnemyController weakestEnemy = enemiesInRange[0].GetComponent<EnemyController>();
+            foreach (var enemy in enemiesInRange)
+            {
+                if (enemy.GetComponent<EnemyController>().GetHealth() < weakestEnemy.GetHealth())
+                {
+                    weakestEnemy = enemy.GetComponent<EnemyController>();
+                }
+                else if (enemy.GetComponent<EnemyController>().GetHealth() == weakestEnemy.GetHealth())
+                {
+                    if (enemy.GetComponent<EnemyController>().GetDistanceTravelled() > weakestEnemy.GetComponent<EnemyController>().GetDistanceTravelled())
+                    {
+                        weakestEnemy = enemy.GetComponent<EnemyController>();
+                    }
+                }
+            }
+
+            return weakestEnemy;
+        }
+
+        EnemyController GetStrongestEnemy(List<Transform> enemiesInRange)
+        {
+
+            if (enemiesInRange.Count <= 0)
+                return null;
+
+            EnemyController strongestEnemy = enemiesInRange[0].GetComponent<EnemyController>();
+            foreach (var enemy in enemiesInRange)
+            {
+                if ( enemy.GetComponent<EnemyController>().GetHealth() > strongestEnemy.GetHealth() )
+                {
+                    strongestEnemy = enemy.GetComponent<EnemyController>();
+                }
+                else if ( enemy.GetComponent<EnemyController>().GetHealth() == strongestEnemy.GetHealth() )
+                {
+                    if (enemy.GetComponent<EnemyController>().GetDistanceTravelled() > strongestEnemy.GetComponent<EnemyController>().GetDistanceTravelled())
+                    {
+                        strongestEnemy = enemy.GetComponent<EnemyController>();
+                    }
+                }
+            }
+
+            return strongestEnemy;
+        }
+
+
+
+
+
 
         int lastRifleIndex;
         void TowerShoot(EnemyController enemy)
@@ -230,7 +355,7 @@ namespace DefaultNamespace
         {
             // float time = 0;
             // while (time <= followTime)
-            while (enemy != null && Vector3.Distance(this.transform.position, enemy.position) <= soldierData.GetViewRange(UpgradeLevel))
+            while (enemy != null && Vector3.Distance(new Vector3(this.transform.position.x, 1f, this.transform.position.z), enemy.position) <= soldierData.GetViewRange(UpgradeLevel))
             {
                 // if(enemy == null)
                 //     yield break;
@@ -243,7 +368,7 @@ namespace DefaultNamespace
                 yield return new WaitForSeconds(delay);
             }
 
-            EnemyController enemyController = GetFarthestEnemy();
+            EnemyController enemyController = GetEnemy(targetMode);
             if(enemyController != null)
                 lastFollowCourtine = StartCoroutine(LookAtEnemy(enemyController.transform));
         }

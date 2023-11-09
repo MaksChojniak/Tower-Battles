@@ -39,6 +39,16 @@ namespace DefaultNamespace
         void SetGroundHighlightedState(bool state)
         {
             highlighted = state;
+
+            float scaleValue = highlighted ? 1.05f : 0f;
+            float emissionPowerValue = highlighted ? 0.5f : 0f;
+
+            if (this.TryGetComponent<MeshRenderer>(out var renderer))
+            {
+                renderer.materials[1].SetFloat("_Scale", scaleValue);
+
+                renderer.materials[2].SetFloat("_EmissionPower", emissionPowerValue);
+            }
         }
     }
 }

@@ -167,8 +167,10 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
     /// <param name="showCompletionState"></param>
     public void OnUnityAdsShowComplete(string adUnitId, UnityAdsShowCompletionState showCompletionState) 
     {
-        if(showCompletionState == UnityAdsShowCompletionState.COMPLETED || showCompletionState == UnityAdsShowCompletionState.SKIPPED)
+        if (showCompletionState == UnityAdsShowCompletionState.COMPLETED || showCompletionState == UnityAdsShowCompletionState.SKIPPED)
+        {
             SceneManager.LoadSceneAsync(0);
+        }
         else
         {
             playedAdsInARow = requiredAdsInARow;

@@ -9,6 +9,7 @@ namespace DefaultNamespace.ScriptableObjects
         public string TowerName;
         public Sprite TowerSprite;
         public GameObject TowerPrefab;
+        public Vector3 OriginPointOffset;
         public TypeOfBuildng Type;
 
         [Space(18)]

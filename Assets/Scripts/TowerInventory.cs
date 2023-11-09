@@ -6,10 +6,12 @@ using DefaultNamespace.ScriptableObjects;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections;
 
 public class TowerInventory : MonoBehaviour
 {
     public static event Action<int, GameObject, bool> OnSelectTile;
+    public Action UpdateTiles;
 
 
     [SerializeField] int selectedTower;
@@ -23,12 +25,14 @@ public class TowerInventory : MonoBehaviour
         
         NextTowerPageButton.OnChangePage += UpdateTileSprite;
         OnSelectTile += OnOnSelectTile;
+        UpdateTiles += OnUpdateTiles;
     }
 
     private void OnDestroy()
     {
         NextTowerPageButton.OnChangePage -= UpdateTileSprite;
         OnSelectTile -= OnOnSelectTile;
+        UpdateTiles -= OnUpdateTiles;
     }
 
     private void OnDisable()
@@ -37,13 +41,20 @@ public class TowerInventory : MonoBehaviour
     }
 
 
-    private void Start()
+    private void OnEnable()
     {
+        StartCoroutine(AfterOnEnable());
+    }
+
+    IEnumerator AfterOnEnable()
+    {
+        yield return new WaitForEndOfFrame();
+        //yield return new WaitForEndOfFrame();
+        //yield return new WaitForEndOfFrame();
+
+        UpdateTiles();// UpdateTileSprite();
+
         SelectTower(0);
-
-        UpdateTileSprite();
-
-        // ChangeDeckTilesColor(false);
     }
     
     public void SelectTower(int i)
@@ -137,6 +148,9 @@ public class TowerInventory : MonoBehaviour
 
     void UpdateTileSprite()
     {
+        if (TowerData == null)
+            return;
+
         foreach (var buildingData in TowerData.GetAllTowerInventoryData())
         {
             try
@@ -166,9 +180,14 @@ public class TowerInventory : MonoBehaviour
             deckTower.ChangeColor(isEquipped);
         }
     }
-    
-    
+
+
     void OnOnSelectTile(int index, GameObject selectedTile, bool isUnlocked)
+    {
+        UpdateTiles();
+    }
+
+    void OnUpdateTiles()
     {
         TowerData.SortAllTowersInventoryData(BaseTowerData);
         UpdateTileSprite();
@@ -236,7 +255,7 @@ public class AllTowerInventoryData
 
         for (int i = 0; i < baseTowersData.Length; i++)
         {
-            if(baseTowersData[i].towerSO.IsUnlocked() && baseTowersData[i].towerSO.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount))
+            if(baseTowersData[i].towerSO.IsUnlocked() && baseTowersData[i].towerSO.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()))
                 unlockedTowers.Add(baseTowersData[i]);
             else
                 lockedTowers.Add(baseTowersData[i]);

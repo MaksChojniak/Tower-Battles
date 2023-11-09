@@ -33,11 +33,12 @@ namespace DefaultNamespace
         void OnSelectTile(int index, GameObject tileUI, bool isUnlocked)
         {
             GameObject towerPrefab = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.TowerPrefab;
-            SpawnTower(towerPrefab);
+            Vector3 towerOffset = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.OriginPointOffset;
+            SpawnTower(towerPrefab, towerOffset);
         }
         
 
-        void SpawnTower(GameObject towerPrefab)
+        void SpawnTower(GameObject towerPrefab, Vector3 offset)
         {
             if(Tower != null)
                 Destroy(Tower.gameObject);
@@ -47,7 +48,7 @@ namespace DefaultNamespace
 
             Tower = towerObject.transform;
 
-            Tower.localPosition = Vector3.zero;
+            Tower.localPosition = Vector3.zero + offset;
             Tower.localRotation = Quaternion.Euler(BaseRotation);
         }
         

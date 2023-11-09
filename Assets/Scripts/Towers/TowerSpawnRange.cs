@@ -27,7 +27,7 @@ public class TowerSpawnRange : MonoBehaviour
 
     IEnumerator Start()
     {
-        SpawnRange.gameObject.layer = LayerMask.NameToLayer("Ground");
+        //SpawnRange.gameObject.layer = LayerMask.NameToLayer("Ground");
 
         yield return new WaitUntil(new Func<bool>( () => IsPlaced));
 
@@ -57,11 +57,20 @@ public class TowerSpawnRange : MonoBehaviour
 
     public bool IsAble()
     {
+        if (!SpawnPointCheck())
+            return false;
+
         bool isAble = true;
 
         Collider[] colliders = new Collider[20];
         int collidersCount = Physics.OverlapBoxNonAlloc(SpawnRange.transform.position, SpawnRange.transform.lossyScale / 2,
             colliders, Quaternion.identity);
+
+        if(collidersCount > 1)
+        {
+            Debug.Log("collidersCount > 1");
+            return false;
+        }
 
         for(int i = 0; i < collidersCount; i++)
         { 
@@ -78,5 +87,32 @@ public class TowerSpawnRange : MonoBehaviour
 
         return isAble;
     }
+    
+    bool SpawnPointCheck()
+    {
+        Vector3 SpawnRangePosition = SpawnRange.transform.position;
+
+        Vector3 localScale = SpawnRange.transform.localScale;
+
+        Vector3 pointA = SpawnRangePosition + new Vector3(-0.5f * localScale.x, 0, -0.5f * localScale.z);
+        Vector3 pointB = SpawnRangePosition + new Vector3(0.5f * localScale.x, 0, -0.5f * localScale.z);
+        Vector3 pointC = SpawnRangePosition + new Vector3(0.5f * localScale.x, 0, 0.5f * localScale.z);
+        Vector3 pointD = SpawnRangePosition + new Vector3(-0.5f * localScale.x, 0, 0.5f * localScale.z);
+
+        Vector3[] points = { pointA, pointB, pointC, pointD };
+
+        for(int i = 0; i < points.Length; i++)
+        {
+            RaycastHit hit;
+            Ray ray = new Ray(points[i], Vector3.down);
+            if (!Physics.Raycast(ray, out hit, 0.5f))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
 }

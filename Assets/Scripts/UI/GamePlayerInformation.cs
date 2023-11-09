@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Data.SqlTypes;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 public class GamePlayerInformation : MonoBehaviour
 {
     public static GamePlayerInformation Instance;
@@ -30,7 +32,7 @@ public class GamePlayerInformation : MonoBehaviour
         WaveManager.OnEndAllWaves += OnEndAllWaves;
 
         Health = 100;
-        Balance = 16500;
+        Balance = 10500;
     }
 
     void Start()
@@ -51,7 +53,7 @@ public class GamePlayerInformation : MonoBehaviour
 
     void OnEndAllWaves()
     {
-        StartCoroutine(EndGameProcess(true));
+        EndGame(true, 5f);
     }
     
     void GetWaveReward(uint reward)
@@ -76,16 +78,21 @@ public class GamePlayerInformation : MonoBehaviour
         if (Health <= 0)
         {
             Health = 0;
-            
-            if (EndGameCoroutine == null) 
-                EndGameCoroutine = StartCoroutine(EndGameProcess(false));
+
+            EndGame(false, 5f);
         }
 
         UpdateHealth?.Invoke(Health);
     }
 
+    public void EndGame(bool state, float time)
+    {
+        if (EndGameCoroutine == null)
+            EndGameCoroutine = StartCoroutine(EndGameProcess(state, time));
+    }
+
     Coroutine EndGameCoroutine;
-    IEnumerator EndGameProcess(bool isWinner)
+    IEnumerator EndGameProcess(bool isWinner, float timeDelay)
     {
         if (isWinner)
         {
@@ -98,8 +105,9 @@ public class GamePlayerInformation : MonoBehaviour
             PlayerTowerInventory.AddDefeat();
         }
 
-        yield return new WaitForSeconds(5f);
-        
+        yield return new WaitForSeconds(timeDelay);
+
+        SceneManager.LoadSceneAsync(Scenes.mainMenuScene);
 
         OnEndGame?.Invoke();
 

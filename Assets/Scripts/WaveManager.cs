@@ -15,15 +15,24 @@ public class WaveManager : MonoBehaviour
     [SerializeField] int ActualyWeveIndex;
 
     [SerializeField] int StartCountdown;
-
+    
+    [Space(18)]
     [SerializeField] Transform enemyStorage;
 
+    [Space(18)]
     [SerializeField] GameObject waveIndicator;
+
+    [Space(18)]
+    [SerializeField] GameObject skipWavePanel;
+    [SerializeField] bool skipWave;
 
     void Awake()
     {
 
         ActualyWeveIndex = -1;
+
+        if(skipWavePanel != null)
+            skipWavePanel.SetActive(false);
     }
 
     void OnDestroy()
@@ -99,7 +108,15 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(stage.stageSleepTime);
         }
 
-        yield return new WaitUntil(new Func<bool>(() => GameObject.FindGameObjectsWithTag("Enemy").Length <= 0));
+        if(skipWavePanel != null && ActualyWeveIndex + 1 < Waves.Length)
+            skipWavePanel.SetActive(true);
+
+
+        yield return new WaitUntil(new Func<bool>(() => IsReadyToNextWave() ));
+
+        skipWave = false;
+        if (skipWavePanel != null)
+            skipWavePanel.SetActive(false);
 
         OnEndWave?.Invoke(wave.waveReward);
 
@@ -110,6 +127,23 @@ public class WaveManager : MonoBehaviour
         SetActiveIndicator(false);
 
         UpdateWaves();
+    }
+
+    bool IsReadyToNextWave()
+    {
+        return (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0) || skipWave;
+    }
+
+    public void SetSkipWaveState(bool state)
+    {
+        skipWave = state;
+
+        if (!state)
+        {
+            if (skipWavePanel != null)
+                skipWavePanel.SetActive(false);
+        }
+
     }
 
 
