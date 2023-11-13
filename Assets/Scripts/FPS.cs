@@ -1,3 +1,4 @@
+using DefaultNamespace;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -49,7 +50,7 @@ public class FPS : MonoBehaviour
         {
             yield return new WaitForSeconds(1);
 
-            FPSText.text = $"{frames} FPS";
+            FPSText.text = $"{frames} FPS / {Application.targetFrameRate}";
 
             frames = 0;
         }

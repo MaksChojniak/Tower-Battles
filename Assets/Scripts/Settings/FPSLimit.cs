@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -22,13 +24,13 @@ namespace DefaultNamespace
         [Space(18)]
         [Header("Debug")]
         [SerializeField] int currentDataIndex;
-        
 
         void Awake()
         {
             currentDataIndex = FPSDatas.Length - 1;
             OnDataChanged();
         }
+
 
         public void FPSDataChange(int direction)
         {
@@ -68,10 +70,16 @@ namespace DefaultNamespace
                 RightButton.alpha = 1f;
             }
             
-            int FPSLimitValue = FPSDatas[currentDataIndex].FPSValue;
-            FPSLimitText.text = $"{(FPSLimitValue <= 0 ? "Unlimited" : $"{FPSLimitValue}")} FPS";
+            int FPSLimitValue = currentDataIndex == FPSDatas.Length - 1 ? Screen.currentResolution.refreshRate : FPSDatas[currentDataIndex].FPSValue;
+            FPSLimitText.text = $"{(currentDataIndex == FPSDatas.Length - 1 ? "Unlimited" : $"{FPSLimitValue}")} FPS";
 
+            Debug.Log($"{FPSLimitValue}");
             Application.targetFrameRate = FPSLimitValue;
+
+            QualitySettings.vSyncCount = 0;
         }
+
     }
+    
+
 }
