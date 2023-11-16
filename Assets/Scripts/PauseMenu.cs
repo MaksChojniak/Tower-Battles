@@ -10,13 +10,7 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] GameObject OptionsPanelUI;
     [SerializeField] GameObject ExitPanelUI;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        CloseAllPanels();
-    }
-
-    // Update is called once per frame
+    
     void Update()
     {
         

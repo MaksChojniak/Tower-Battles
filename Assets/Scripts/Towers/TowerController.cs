@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using DefaultNamespace;
 using DefaultNamespace.ScriptableObjects;
 using UnityEngine;
 
@@ -74,7 +75,6 @@ namespace DefaultNamespace
 
         protected virtual void Destroy()
         {
-            Debug.Log("xd xd");
             OnDestroyTower?.Invoke();
         }
 
@@ -165,4 +165,61 @@ namespace DefaultNamespace
 
 
 
+}
+
+public static class TowerControllerUtility
+{
+    public static long GetTowerSellValue(TowerController controler, TypeOfBuildng type)
+    {
+        switch (type)
+        {
+            case TypeOfBuildng.Soldier:
+                SoldierController soldierController = ((SoldierController)controler);
+                return GetTowerRealValue( soldierController.soldierData, controler.UpgradeLevel);
+                break;
+            case TypeOfBuildng.Farm:
+                FarmController farmController = ((FarmController)controler);
+                return GetTowerRealValue( farmController.farmData, controler.UpgradeLevel);
+                break;
+            case TypeOfBuildng.Booster:
+                // return GetTowerRealValue();
+                break;
+            case TypeOfBuildng.Spawner:
+                // return GetTowerRealValue();
+                break;
+            case TypeOfBuildng.Vehicle:
+                // return GetTowerRealValue();
+                break;
+            default:
+                // return GetTowerRealValue();
+                break;
+        }
+
+        return 0;
+    }
+
+    static long GetTowerRealValue(Farm data, int UpgradeLevel)
+    {
+        long totalTowerValue = data.GetPrice();
+        for (int i = 1; i <= UpgradeLevel; i++)
+        {
+            totalTowerValue += data.GetUpgradePrice(i);
+        }
+        totalTowerValue /= 2;
+
+        return totalTowerValue;
+    }
+
+    static long GetTowerRealValue(Soldier data, int UpgradeLevel)
+    {
+        long totalTowerValue = data.GetPrice();
+        for (int i = 1; i <= UpgradeLevel; i++)
+        {
+            totalTowerValue += data.GetUpgradePrice(i);
+        }
+        totalTowerValue /= 2;
+
+        return totalTowerValue;
+    }
+  
 }

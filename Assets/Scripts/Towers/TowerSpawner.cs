@@ -154,6 +154,8 @@ public class TowerSpawner : MonoBehaviour
     {
         if(selectedBuilidng == null)
             return;
+
+        TowerController.ShowTowerSpawnRange(null, false);
         
         Destroy(selectedBuilidng);
         posibilityOfPlace = false;

@@ -157,12 +157,7 @@ namespace DefaultNamespace
             TowerImage.sprite = soldierSO.GetUpgradeIcon(upgradeLevel);
             activCoroutine = StartCoroutine(UpdateTotalDamage(soldierController));
 
-            long totalTowerValue = soldierSO.GetPrice();
-            for (int i = 1; i <= upgradeLevel; i++)
-            {
-                totalTowerValue += soldierSO.GetUpgradePrice(i);
-            }
-            totalTowerValue /= 2;
+            long totalTowerValue = TowerControllerUtility.GetTowerSellValue(soldierController, soldierSO.Type);
             SellPriceText.text = $"<b>Sell: " + $"<color={cashColorHEX}>{totalTowerValue}</color>";
 
             OnUpdateMode(GetIndexByMode(soldierController.targetMode));

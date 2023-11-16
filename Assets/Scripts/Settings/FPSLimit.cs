@@ -27,7 +27,18 @@ namespace DefaultNamespace
 
         void Awake()
         {
-            currentDataIndex = FPSDatas.Length - 1;
+            SettingsManager.ShareSettingsData += OnUpdateData;
+            
+        }
+
+        void OnDestroy()
+        {
+            SettingsManager.ShareSettingsData -= OnUpdateData;
+        }
+        
+        void OnUpdateData(SettingsData data)
+        {
+            currentDataIndex = (data.FPSLimitIndex >= FPSDatas.Length) ? FPSDatas.Length - 1 : data.FPSLimitIndex;
             OnDataChanged();
         }
 
@@ -47,7 +58,18 @@ namespace DefaultNamespace
                 currentDataIndex += direction;
             }
 
+            ShareData();
+
             OnDataChanged();
+        }
+
+        void ShareData()
+        {
+            SettingsData data = SettingsManager.Instance.SettingsData;
+
+            data.FPSLimitIndex = currentDataIndex;
+        
+            SettingsManager.UpdateSettingsData(data);
         }
 
         void OnDataChanged()

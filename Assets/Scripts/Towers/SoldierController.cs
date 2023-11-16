@@ -45,14 +45,7 @@ namespace DefaultNamespace
 
         protected override void Destroy()
         {
-            
-            long totalTowerValue = soldierData.GetPrice();
-            for (int i = 1; i <= UpgradeLevel; i++)
-            {
-                totalTowerValue += soldierData.GetUpgradePrice(i);
-            }
-            totalTowerValue /= 2;
-            GamePlayerInformation.ChangeBalance(totalTowerValue);
+            GamePlayerInformation.ChangeBalance(TowerControllerUtility.GetTowerSellValue(this, soldierData.Type));
 
             this.ShowTowerInformation(false);
             Destroy(this.gameObject);

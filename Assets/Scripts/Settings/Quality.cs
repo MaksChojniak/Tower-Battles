@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using DefaultNamespace;
 using TMPro;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
@@ -24,12 +27,22 @@ public class Quality : MonoBehaviour
     [SerializeField] CanvasGroup LeftButton;
     [SerializeField] CanvasGroup RightButton;
 
-    private void Awake()
+    void Awake()
     {
-        CurrentQualityLevel = 2;
-        OnQualityLevelChange();
+        SettingsManager.ShareSettingsData += OnUpdateData;
     }
 
+    void OnDestroy()
+    {
+        SettingsManager.ShareSettingsData -= OnUpdateData;
+    }
+
+
+    void OnUpdateData(SettingsData data)
+    {
+        CurrentQualityLevel = QualityLevels.ToList().FindIndex(level => level == data.QualityLevel);
+        OnQualityLevelChange();
+    }
 
     void Update()
     {
@@ -42,7 +55,18 @@ public class Quality : MonoBehaviour
         if(CurrentQualityLevel + direction < QualityLevels.Length && CurrentQualityLevel + direction >= 0)
             CurrentQualityLevel += direction;
 
+        ShareData();
+
         OnQualityLevelChange();
+    }
+
+    void ShareData()
+    {
+        SettingsData data = SettingsManager.Instance.SettingsData;
+
+        data.QualityLevel = QualityLevels[CurrentQualityLevel];
+        
+        SettingsManager.UpdateSettingsData(data);
     }
 
     void OnQualityLevelChange()
