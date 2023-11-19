@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Data;
+using Assets.Scripts;
+using TMPro;
 using UnityEngine;
 
 public class WaveManager : MonoBehaviour
@@ -21,7 +24,11 @@ public class WaveManager : MonoBehaviour
 
     [Space(18)]
     [SerializeField] GameObject waveIndicator;
-
+    
+    [Space(18)]
+    [SerializeField] GameObject waveRewardPanel;
+    [SerializeField] TMP_Text waveRewardText;
+    
     [Space(18)]
     [SerializeField] GameObject skipWavePanel;
     [SerializeField] bool skipWave;
@@ -33,6 +40,9 @@ public class WaveManager : MonoBehaviour
 
         if(skipWavePanel != null)
             skipWavePanel.SetActive(false);
+        
+        if(waveRewardPanel != null)
+            waveRewardPanel.SetActive(false);
     }
 
     void OnDestroy()
@@ -118,7 +128,9 @@ public class WaveManager : MonoBehaviour
         if (skipWavePanel != null)
             skipWavePanel.SetActive(false);
 
-        OnEndWave?.Invoke(wave.waveReward);
+        uint waveReward = wave.waveReward;
+        StartCoroutine(ShowWaveReward(waveReward));
+        OnEndWave?.Invoke(waveReward);
 
         SetActiveIndicator(true);
 
@@ -128,6 +140,22 @@ public class WaveManager : MonoBehaviour
 
         UpdateWaves();
     }
+
+    IEnumerator ShowWaveReward(uint waveReward)
+    {
+        int.TryParse(waveReward.ToString(), out int fixedWaveReward);
+        if(waveRewardText != null)
+            waveRewardText.text = $"+ {StringFormatter.PriceFormat(fixedWaveReward)}";
+        
+        if(waveRewardPanel != null)
+            waveRewardPanel.SetActive(true);
+
+        yield return new WaitForSeconds(2.25f);
+        
+        if(waveRewardPanel != null)
+            waveRewardPanel.SetActive(false);
+    }
+    
 
     bool IsReadyToNextWave()
     {
