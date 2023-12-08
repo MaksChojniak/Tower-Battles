@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Settings;
+using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -35,7 +36,8 @@ namespace DefaultNamespace
                 ShadowsActive = false,
                 ParticlesActive = false,
                 FPSLimitIndex = 5,
-                Language = Language.LanguageType.Poland
+                Language = Language.LanguageType.Poland,
+                HandMode = HandModeType.Right
             };
 
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -92,5 +94,6 @@ namespace DefaultNamespace
 
         [Space(10)]
         public Language.LanguageType Language;
+        public HandModeType HandMode;
     }
 }

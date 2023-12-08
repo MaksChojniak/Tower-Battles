@@ -325,7 +325,7 @@ namespace DefaultNamespace
             foreach (var button in TargetModeButtonsImage)
                 button.color = targetModeButtonNormalColor;
 
-            TargettingModeText.text = $"Targets:\n[{LastCheckedTower.targetMode.ToString()}]";
+            TargettingModeText.text = $"Targets:\n<b><color=#26761D>[{LastCheckedTower.targetMode.ToString()}]</color></b>";
             TargetModeButtonsImage[index].color = targetModeButtonHighlightedColor;
         }
 

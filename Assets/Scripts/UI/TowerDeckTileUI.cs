@@ -8,17 +8,20 @@ public class TowerDeckTileUI : MonoBehaviour
 {
     public Action<Sprite> UpdateSprite;
     public Action<bool> ChangeColor;
+    public Action<Color> ChangeColorOnRemove;
 
     private void Awake()
     {
         UpdateSprite += OnUpdateSprite;
         ChangeColor += OnChangeColor;
+        ChangeColorOnRemove += OnChangeColorOnRemove;
     }
 
     private void OnDestroy()
     {
         UpdateSprite -= OnUpdateSprite;
         ChangeColor -= OnChangeColor;
+        ChangeColorOnRemove -= OnChangeColorOnRemove;
     }
 
     void OnUpdateSprite(Sprite sprite)
@@ -52,5 +55,12 @@ public class TowerDeckTileUI : MonoBehaviour
         //newTileColor.a = 181/255f;
         tileImage.color = newTileColor;
 
+    }
+
+    void OnChangeColorOnRemove(Color color) 
+    {
+        Image tileImage = this.transform.parent.GetComponent<Image>();
+
+        tileImage.color = color;
     }
 }

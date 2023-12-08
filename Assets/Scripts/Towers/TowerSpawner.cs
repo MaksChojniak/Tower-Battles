@@ -22,19 +22,21 @@ public class TowerSpawner : MonoBehaviour
     [SerializeField] GameObject cancelationTrashCan;
 
     public const int MaxTowersCount = 10;
+    int offsetDirection = 1;
 
     Vector2 offset;
 
     void Awake()
     {
         towers = PlayerTowerInventory.Instance.TowerDeck;
-
-        offset = new Vector2(3 * (float)Screen.width, 2 * (float)Screen.height) * 1.5f / 100;
     }
 
     void Update()
     {
         cancelationTrashCan.SetActive(selectedBuilidng != null);
+
+        offsetDirection = SettingsManager.Instance.SettingsData.HandMode == Assets.Scripts.Settings.HandModeType.Right ? -1 : 1;
+        offset = new Vector2(offsetDirection * 3 * (float)Screen.width, 2 * (float)Screen.height) * 1.5f / 100;
     }
 
     public void SpawnBuilding(int index)

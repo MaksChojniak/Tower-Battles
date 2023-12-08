@@ -10,10 +10,10 @@ public class PauseMenu : MonoBehaviour
     [SerializeField] GameObject OptionsPanelUI;
     [SerializeField] GameObject ExitPanelUI;
 
-    
-    void Update()
+
+    private void Start()
     {
-        
+        PauseStateChange();
     }
 
     public void PauseStateChange()

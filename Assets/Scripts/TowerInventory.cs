@@ -200,6 +200,7 @@ public class TowerInventory : MonoBehaviour
 public class AllTowerInventoryData
 {
     public TowerInventoryData[] commonTowers;
+    public TowerInventoryData[] rareTowers;
     public TowerInventoryData[] exclusiveTowers;
     public TowerInventoryData[] trophyTowers;
 
@@ -207,17 +208,20 @@ public class AllTowerInventoryData
     {
         commonTowers = new TowerInventoryData[baseData.commonTowers.Length];
         baseData.commonTowers.CopyTo(commonTowers, 0);
-        
+
+        rareTowers = new TowerInventoryData[baseData.rareTowers.Length];
+        baseData.rareTowers.CopyTo(rareTowers, 0);
+
         exclusiveTowers = new TowerInventoryData[baseData.exclusiveTowers.Length];
         baseData.exclusiveTowers.CopyTo(exclusiveTowers, 0);
-        
+
         trophyTowers = new TowerInventoryData[baseData.trophyTowers.Length];
         baseData.trophyTowers.CopyTo(trophyTowers, 0);
     }
 
     public TowerInventoryData[] GetAllTowerInventoryData()
     {
-        TowerInventoryData[] allData = new TowerInventoryData[commonTowers.Length + exclusiveTowers.Length + trophyTowers.Length];
+        TowerInventoryData[] allData = new TowerInventoryData[commonTowers.Length + rareTowers.Length + exclusiveTowers.Length + trophyTowers.Length];
 
         for (int i = 0; i < allData.Length; i++)
         {
@@ -225,13 +229,17 @@ public class AllTowerInventoryData
             {
                 allData[i] = commonTowers[i];
             }
-            else if (i < commonTowers.Length + exclusiveTowers.Length)
+            else if (i < commonTowers.Length + rareTowers.Length)
             {
-                allData[i] = exclusiveTowers[i - commonTowers.Length];
+                allData[i] = rareTowers[i - commonTowers.Length];
+            }
+            else if (i < rareTowers.Length + commonTowers.Length + exclusiveTowers.Length)
+            {
+                allData[i] = exclusiveTowers[i - rareTowers.Length - commonTowers.Length];
             }
             else
             {
-                allData[i] = trophyTowers[i - (commonTowers.Length + exclusiveTowers.Length)];
+                allData[i] = trophyTowers[i - (commonTowers.Length + rareTowers.Length + exclusiveTowers.Length)];
             }
         }
 
@@ -243,6 +251,7 @@ public class AllTowerInventoryData
         AllTowerInventoryData baseData = new AllTowerInventoryData(baseAllTowerInventoryData);
         
         SortTowersInventoryData(baseData.commonTowers, ref commonTowers);
+        SortTowersInventoryData(baseData.rareTowers, ref rareTowers);
         SortTowersInventoryData(baseData.exclusiveTowers, ref exclusiveTowers);
         SortTowersInventoryData(baseData.trophyTowers, ref trophyTowers);
     }

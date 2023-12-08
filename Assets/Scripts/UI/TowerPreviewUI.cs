@@ -29,6 +29,8 @@ public class TowerPreviewUI : MonoBehaviour
     [SerializeField] GameObject unlockPanel;
     [SerializeField] TMP_Text unlockPrice;
 
+    [SerializeField] GameObject skinChangeButton;
+
     [SerializeField] Color[] colors;
 
     public int lastSelectedTowerIndex { get; private set; }
@@ -46,6 +48,8 @@ public class TowerPreviewUI : MonoBehaviour
     void UpdateTowerInformations(int index, GameObject tile, bool isUnlocked)
     {
         Tower tower = inventory.TowerData.GetAllTowerInventoryData()[index].towerSO;
+
+        skinChangeButton.SetActive(tower.BaseProperties.IsUnlocked);
 
         towerNameText.text = tower.TowerName;
         // towerImage.sprite = tower.TowerSprite;

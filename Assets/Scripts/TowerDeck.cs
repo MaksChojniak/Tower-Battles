@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TowerDeck : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public class TowerDeck : MonoBehaviour
     public TowerDeckTileUI[] deckTiles;
 
     public Color isEquippedTileColor;
+    public Color removeTileColor;
     public Color defaultTileColor;
 
     private void Awake()
@@ -56,6 +58,26 @@ public class TowerDeck : MonoBehaviour
 
         OnSelectSlot?.Invoke(i);
 
+    }
+
+    [SerializeField] Color CurrentButtonLastcolor;
+    public void OnPointerDown(int i)
+    {
+        CurrentButtonLastcolor = deckTiles[i].transform.parent.GetComponent<Image>().color;
+
+        if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
+        {
+            deckTiles[i].ChangeColorOnRemove(removeTileColor);
+        }
+       
+    }
+
+    public void OnPointerUp(int i)
+    {
+        if (CurrentButtonLastcolor == removeTileColor)
+            CurrentButtonLastcolor = defaultTileColor;
+
+        deckTiles[i].ChangeColorOnRemove(CurrentButtonLastcolor);
     }
 
 

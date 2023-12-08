@@ -16,6 +16,7 @@ namespace Assets.Scripts
         public enum TowerType
         {
             Common,
+            Rare,
             Exclusive,
             Trophy
         }
@@ -25,6 +26,7 @@ namespace Assets.Scripts
         [SerializeField] TMP_Text PriceText;
 
         [SerializeField] Color CommonColor;
+        [SerializeField] Color RareColor;
         [SerializeField] Color ExclusiveColor;
         [SerializeField] Color TrophyColor;
         [SerializeField] Color PriceTextColor;
@@ -57,6 +59,8 @@ namespace Assets.Scripts
         {
             if (TowerInventory.TowerData.commonTowers.Contains(towerInventoryData))
                 return TowerType.Common;
+            else if (TowerInventory.TowerData.rareTowers.Contains(towerInventoryData))
+                return TowerType.Rare;
             else if (TowerInventory.TowerData.exclusiveTowers.Contains(towerInventoryData))
                 return TowerType.Exclusive;
             else if (TowerInventory.TowerData.trophyTowers.Contains(towerInventoryData))
@@ -76,6 +80,9 @@ namespace Assets.Scripts
             {
                 case TowerType.Common:
                     return CommonColor;
+                    break;
+                case TowerType.Rare:
+                    return RareColor;
                     break;
                 case TowerType.Exclusive:
                     return ExclusiveColor;
