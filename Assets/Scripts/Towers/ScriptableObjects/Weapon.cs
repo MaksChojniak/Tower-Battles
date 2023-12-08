@@ -13,7 +13,12 @@ namespace DefaultNamespace.ScriptableObjects
         public DamageType DamageType;
         
         public int Damage;
-        public float Firerate;
+        public float Firerate
+        {
+            get => Mathf.RoundToInt(firerate * TowerControllerUtility.GetBoosterData().FirerateBoost);
+            set => firerate = value;
+        }
+        [SerializeField] float firerate;
         
         public float SplashDamageSpread;
         public int MaxEnemiesInSpread;

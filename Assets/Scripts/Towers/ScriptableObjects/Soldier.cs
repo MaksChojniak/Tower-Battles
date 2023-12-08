@@ -15,12 +15,10 @@ public class Soldier : Tower
     public Weapon GetWeapon(int index) => GetUpgradeData(index).Weapon;
 
     public string GetUpgradeTitle(int index) => GetUpgradeData(index).UpgradeTitle;
-    //public string GetUpgradeDescription(int index) => GetUpgradeData(index).UpgradeDescription;
     public Sprite GetUpgradeIcon(int index) => GetUpgradeData(index).UpgradeIcon;
 
-    public long GetUpgradePrice(int index) => GetUpgradeData(index).UpgradePrice;
-    //public long GetSellPrice(int index) => GetUpgradeData(index).SellPrice;
-    
+    public long GetUpgradePrice(int index) => Mathf.RoundToInt(GetUpgradeData(index).UpgradePrice * TowerControllerUtility.GetBoosterData().UpgradeDiscount);
+
     public double GetViewRange(int index) => GetUpgradeData(index).ViewRange;
     public bool GetHasBinoculars(int index) => GetUpgradeData(index).HasBinoculars;
 }

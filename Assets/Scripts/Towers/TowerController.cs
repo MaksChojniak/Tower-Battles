@@ -169,20 +169,21 @@ namespace DefaultNamespace
 
 public static class TowerControllerUtility
 {
-    public static long GetTowerSellValue(TowerController controler, TypeOfBuildng type)
+    public static long GetTowerSellValue(this TowerController controler, TypeOfBuildng type)
     {
         switch (type)
         {
             case TypeOfBuildng.Soldier:
                 SoldierController soldierController = ((SoldierController)controler);
-                return GetTowerRealValue( soldierController.soldierData, controler.UpgradeLevel);
+                return soldierController.soldierData.GetTowerRealValue(controler.UpgradeLevel);
                 break;
             case TypeOfBuildng.Farm:
                 FarmController farmController = ((FarmController)controler);
-                return GetTowerRealValue( farmController.farmData, controler.UpgradeLevel);
+                return farmController.farmData.GetTowerRealValue(controler.UpgradeLevel);
                 break;
             case TypeOfBuildng.Booster:
-                // return GetTowerRealValue();
+                BoosterController boosterController = ((BoosterController)controler);
+                return boosterController.boosterData.GetTowerRealValue(controler.UpgradeLevel);
                 break;
             case TypeOfBuildng.Spawner:
                 // return GetTowerRealValue();
@@ -198,7 +199,7 @@ public static class TowerControllerUtility
         return 0;
     }
 
-    static long GetTowerRealValue(Farm data, int UpgradeLevel)
+    static long GetTowerRealValue(this Farm data, int UpgradeLevel)
     {
         long totalTowerValue = data.GetPrice();
         for (int i = 1; i <= UpgradeLevel; i++)
@@ -210,7 +211,7 @@ public static class TowerControllerUtility
         return totalTowerValue;
     }
 
-    static long GetTowerRealValue(Soldier data, int UpgradeLevel)
+    static long GetTowerRealValue(this Soldier data, int UpgradeLevel)
     {
         long totalTowerValue = data.GetPrice();
         for (int i = 1; i <= UpgradeLevel; i++)
@@ -221,5 +222,35 @@ public static class TowerControllerUtility
 
         return totalTowerValue;
     }
-  
+    
+    static long GetTowerRealValue(this Booster data, int UpgradeLevel)
+    {
+        long totalTowerValue = data.GetPrice();
+        for (int i = 1; i <= UpgradeLevel; i++)
+        {
+            totalTowerValue += data.GetUpgradePrice(i);
+        }
+        totalTowerValue /= 2;
+
+        return totalTowerValue;
+    }
+
+
+    public static BoosterData GetBoosterData()
+    {
+        BoosterController boosterController = GameObject.FindObjectOfType<BoosterController>();
+        if (boosterController != null)
+            return boosterController.GetBoosterData();
+
+        return new BoosterData()
+        {
+            UpgradeDiscount = 1f,
+            FirerateBoost = 1f,
+            SpwnIntervalBoost = 1f,
+            IncomeBoost = 1f
+        };
+    }
+    
+    
+    
 }

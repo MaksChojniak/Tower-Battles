@@ -1,20 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using DefaultNamespace.ScriptableObjects;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Booster", menuName = "Buildings/Booster")]
-public class Booster : Building
+
+[CreateAssetMenu(fileName = "Booster", menuName = "Towers/Booster", order = 2)]
+public class Booster : Tower
 {
-    public float[] upgradeDiscount;
-    public float[] firerateBoost;
-    public float[] intervalBoost;
-    public float[] incomeBoost;
+    [Space(18)]
+    public BoosterUpgradeData[] UpgradesData;
 
-    public float GetUpgradeDiscount(int currentUpgradeLevel) => upgradeDiscount[currentUpgradeLevel];
 
-    public float GetFirerateBoost(int currentUpgradeLevel) => firerateBoost[currentUpgradeLevel];
+    BoosterUpgradeData GetUpgradeData(int index) => UpgradesData[index];
 
-    public float GetIntervalBoost(int currentUpgradeLevel) => intervalBoost[currentUpgradeLevel];
+    public string GetUpgradeTitle(int index) => GetUpgradeData(index).UpgradeTitle;
 
-    public float GetIncomeBoost(int currentUpgradeLevel) => incomeBoost[currentUpgradeLevel];
+    public Sprite GetUpgradeIcon(int index) => GetUpgradeData(index).UpgradeIcon;
+
+    public long GetUpgradePrice(int index) => GetUpgradeData(index).UpgradePrice;
+    
+    public float GetUpgradeDiscount(int index) => GetUpgradeData(index).UpgradeDiscount;
+    public float GetFirerateBoost(int index) => GetUpgradeData(index).FirerateBoost;
+    public float GetSpwnIntervalBoost(int index) => GetUpgradeData(index).SpwnIntervalBoost;
+    public float GetIncomeBoost(int index) => GetUpgradeData(index).IncomeBoost;
 }
+
+
+[Serializable]
+public class BoosterUpgradeData : UpgradeDataBase
+{
+
+    public float UpgradeDiscount;
+    public float FirerateBoost;
+    public float SpwnIntervalBoost;
+    public float IncomeBoost;
+}
+

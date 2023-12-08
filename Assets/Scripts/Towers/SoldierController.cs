@@ -45,9 +45,10 @@ namespace DefaultNamespace
 
         protected override void Destroy()
         {
-            GamePlayerInformation.ChangeBalance(TowerControllerUtility.GetTowerSellValue(this, soldierData.Type));
+            GamePlayerInformation.ChangeBalance(this.GetTowerSellValue(soldierData.Type));
 
             this.ShowTowerInformation(false);
+            
             Destroy(this.gameObject);
 
             base.Destroy();

@@ -12,15 +12,13 @@ public class Farm : Tower
     
     FarmUpgradeData GetUpgradeData(int index) => UpgradesData[index];
 
-    public Weapon GetWeapon(int index) => GetUpgradeData(index).Weapon;
-
     public string GetUpgradeTitle(int index) => GetUpgradeData(index).UpgradeTitle;
 
     public Sprite GetUpgradeIcon(int index) => GetUpgradeData(index).UpgradeIcon;
 
-    public long GetUpgradePrice(int index) => GetUpgradeData(index).UpgradePrice;
+    public long GetUpgradePrice(int index) => Mathf.RoundToInt(GetUpgradeData(index).UpgradePrice * TowerControllerUtility.GetBoosterData().UpgradeDiscount);
 
-    public long GetWaveReward(int index) => GetUpgradeData(index).WaveReward;
+    public long GetWaveReward(int index) => Mathf.RoundToInt(GetUpgradeData(index).WaveReward * TowerControllerUtility.GetBoosterData().IncomeBoost);
 
 }
 
