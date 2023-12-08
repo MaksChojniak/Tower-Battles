@@ -2035,12 +2035,12 @@ PrefabInstance:
     - target: {fileID: 2847670529288359735, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -2075,7 +2075,7 @@ PrefabInstance:
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -4887,7 +4887,7 @@ PrefabInstance:
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -17307,12 +17307,12 @@ PrefabInstance:
     - target: {fileID: 2847670529288359735, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -17347,7 +17347,7 @@ PrefabInstance:
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -23564,6 +23564,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: TowerInventory, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -36240,18 +36245,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 115271692}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1421358973 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4609116739859727979, guid: b3473f76ad040af4e92b67412f9d31f5,
-    type: 3}
-  m_PrefabInstance: {fileID: 115271692}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5213daba2f0a8a444ae1f454c696cc9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1424822595
 GameObject:
   m_ObjectHideFlags: 0
@@ -38385,8 +38378,6 @@ MonoBehaviour:
       towerTileUI: {fileID: 664414634}
     - towerSO: {fileID: 11400000, guid: 4224d44fee2a78b49acd223ae9595dba, type: 2}
       towerTileUI: {fileID: 1740622119}
-    - towerSO: {fileID: 11400000, guid: e7e727593595d164db882b8b7ff223d3, type: 2}
-      towerTileUI: {fileID: 1421358973}
     rareTowers:
     - towerSO: {fileID: 11400000, guid: 55dd55f26e0d11648a5d935871185fc2, type: 2}
       towerTileUI: {fileID: 334848647}
@@ -38397,6 +38388,8 @@ MonoBehaviour:
     exclusiveTowers:
     - towerSO: {fileID: 11400000, guid: 804e81f8e1fc75f489369cb63eb1e392, type: 2}
       towerTileUI: {fileID: 107800947}
+    - towerSO: {fileID: 11400000, guid: 51b1448c25e938249be9d320d8b977db, type: 2}
+      towerTileUI: {fileID: 1987336703}
     trophyTowers:
     - towerSO: {fileID: 11400000, guid: 640fdf81da7080845aaaf2c9ee116121, type: 2}
       towerTileUI: {fileID: 855472563}
@@ -42000,7 +41993,7 @@ PrefabInstance:
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -42431,7 +42424,7 @@ PrefabInstance:
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -47681,7 +47674,7 @@ PrefabInstance:
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_IntArgument
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3156252826799451449, guid: b3473f76ad040af4e92b67412f9d31f5,
         type: 3}
@@ -50275,6 +50268,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 768969173}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1987336703 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4609116739859727979, guid: b3473f76ad040af4e92b67412f9d31f5,
+    type: 3}
+  m_PrefabInstance: {fileID: 768969173}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5213daba2f0a8a444ae1f454c696cc9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1992159445
 GameObject:
   m_ObjectHideFlags: 0

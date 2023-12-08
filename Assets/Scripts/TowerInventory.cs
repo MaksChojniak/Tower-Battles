@@ -6,7 +6,9 @@ using DefaultNamespace.ScriptableObjects;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.Events;
 
 public class TowerInventory : MonoBehaviour
 {
@@ -45,6 +47,7 @@ public class TowerInventory : MonoBehaviour
     {
         StartCoroutine(AfterOnEnable());
     }
+
 
     IEnumerator AfterOnEnable()
     {

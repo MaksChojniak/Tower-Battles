@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a40edc11ab73411697470b8eb36b8feb, type: 3}
+  m_Name: Farm
+  m_EditorClassIdentifier: 
+  TowerName: Farm
+  TowerSprite: {fileID: 21300000, guid: 4030fb8133056954881debe065d6b682, type: 3}
+  TowerPrefab: {fileID: 4143877711466309256, guid: d565e07faae7a4e4b8a02ccc5acb9244,
+    type: 3}
+  OriginPointOffset: {x: 0, y: 0.85, z: 0}
+  Type: 2
+  PlacementType: 0
+  BaseProperties:
+    UnlockPrice: 1200
+    RequiredWinsCount: 0
+    IsUnlocked: 1
+  GameProperties:
+    Price: 400
+  UpgradesData:
+  - UpgradeTitle: Upgrade 1
+    UpgradeIcon: {fileID: 21300000, guid: 4030fb8133056954881debe065d6b682, type: 3}
+    UpgradePrice: 250
+    Weapon: {fileID: 0}
+    WaveReward: 50
+  - UpgradeTitle: Upgrade 2
+    UpgradeIcon: {fileID: 21300000, guid: 4cac73cd6e3c8924db5ede7725aa6cd9, type: 3}
+    UpgradePrice: 350
+    Weapon: {fileID: 0}
+    WaveReward: 150
+  - UpgradeTitle: Upgrade 3
+    UpgradeIcon: {fileID: 21300000, guid: 8c8f208ce86754040b8ca4325dd3bbbb, type: 3}
+    UpgradePrice: 500
+    Weapon: {fileID: 0}
+    WaveReward: 300
+  - UpgradeTitle: Upgrade 4
+    UpgradeIcon: {fileID: 21300000, guid: 1ed4e300280f5f2478eb9101576ba805, type: 3}
+    UpgradePrice: 600
+    Weapon: {fileID: 0}
+    WaveReward: 500
+  - UpgradeTitle: Upgrade 5
+    UpgradeIcon: {fileID: 21300000, guid: 1d198e45876688d47b055cd16ee66489, type: 3}
+    UpgradePrice: 750
+    Weapon: {fileID: 0}
+    WaveReward: 100
