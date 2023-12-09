@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Settings;
 using System;
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -37,7 +38,8 @@ namespace DefaultNamespace
                 ParticlesActive = false,
                 FPSLimitIndex = 5,
                 Language = Language.LanguageType.Poland,
-                HandMode = HandModeType.Right
+                HandMode = HandModeType.Right,
+                Font = FontAsset.secondFont
             };
 
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -73,6 +75,8 @@ namespace DefaultNamespace
         void OnUpdateData(SettingsData newData)
         {
             SettingsData = newData;
+
+            ShareSettingsData?.Invoke(SettingsData);
         }
         
         
@@ -95,5 +99,6 @@ namespace DefaultNamespace
         [Space(10)]
         public Language.LanguageType Language;
         public HandModeType HandMode;
+        public FontAsset Font;
     }
 }

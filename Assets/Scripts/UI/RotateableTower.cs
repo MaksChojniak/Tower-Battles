@@ -44,6 +44,9 @@ namespace DefaultNamespace
                 Destroy(Tower.gameObject);
             
             var towerObject = Instantiate(towerPrefab, TowerContainer);
+
+            Destroy(towerObject.GetComponent<TowerController>());
+
             towerObject.transform.GetChild(0).GetChild(0).gameObject.layer = LayerMask.NameToLayer("Tower");
 
             Tower = towerObject.transform;

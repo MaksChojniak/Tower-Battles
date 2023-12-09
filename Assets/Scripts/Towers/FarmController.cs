@@ -27,13 +27,16 @@ namespace DefaultNamespace
             UpdateViewRange(0f);
         }
 
+        private void OnDestroy()
+        {
+            WaveManager.OnStartWave -= EarnFarmBonusProcess;
+        }
+
         protected override void Destroy()
         {
             GamePlayerInformation.ChangeBalance(this.GetTowerSellValue(farmData.Type));
 
             this.ShowTowerInformation(false);
-            
-            WaveManager.OnStartWave -= EarnFarmBonusProcess;
             
             Destroy(this.gameObject);
             
