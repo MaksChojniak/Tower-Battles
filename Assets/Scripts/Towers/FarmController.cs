@@ -27,9 +27,11 @@ namespace DefaultNamespace
             UpdateViewRange(0f);
         }
 
-        private void OnDestroy()
+        public override void OnDestroy()
         {
             WaveManager.OnStartWave -= EarnFarmBonusProcess;
+            
+            base.OnDestroy();
         }
 
         protected override void Destroy()

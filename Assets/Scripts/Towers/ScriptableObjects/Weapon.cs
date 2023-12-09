@@ -15,7 +15,7 @@ namespace DefaultNamespace.ScriptableObjects
         public int Damage;
         public float Firerate
         {
-            get => Mathf.RoundToInt(firerate * TowerControllerUtility.GetBoosterData().FirerateBoost);
+            get => firerate * TowerControllerUtility.GetBoosterData().FirerateBoost;
             set => firerate = value;
         }
         [SerializeField] float firerate;
