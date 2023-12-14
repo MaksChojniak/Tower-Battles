@@ -47,7 +47,12 @@ namespace DefaultNamespace
 
             Destroy(towerObject.GetComponent<TowerController>());
 
-            towerObject.transform.GetChild(0).GetChild(0).gameObject.layer = LayerMask.NameToLayer("Tower");
+            Transform towerModel = towerObject.transform.GetChild(0).GetChild(0);
+            towerModel.gameObject.layer = LayerMask.NameToLayer("Tower");
+            foreach(Transform towerModelChild in towerModel.transform)
+            {
+                towerModelChild.gameObject.layer = LayerMask.NameToLayer("Tower");
+            }
 
             Tower = towerObject.transform;
 

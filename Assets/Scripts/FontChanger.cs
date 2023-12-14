@@ -30,6 +30,7 @@ namespace Assets.Scripts
             }
 
             DontDestroyOnLoad(this.gameObject);
+            Instance = this;
 
             SettingsManager.ShareSettingsData += UpdateFont;
         }

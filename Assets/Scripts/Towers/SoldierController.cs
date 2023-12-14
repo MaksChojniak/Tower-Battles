@@ -17,7 +17,7 @@ namespace DefaultNamespace
 
         bool IsShooting;
 
-
+   
         protected override (object, TypeOfBuildng) GetTowerData()
         {
             return (soldierData, soldierData.Type);
@@ -240,6 +240,7 @@ namespace DefaultNamespace
                 lastRifleIndex = lastRifleIndex == 1 ? 0 : 1;
                 StartCoroutine(OnTowerShoot(enemy, lastRifleIndex));
             }
+
         }
 
         IEnumerator OnTowerShoot( EnemyController enemy, int RifleIndex = 0 )
@@ -247,18 +248,23 @@ namespace DefaultNamespace
             IsShooting = true;
             OnShoot?.Invoke(RifleIndex);
 
-            if(lastFollowCourtine != null)
+
+            if (lastFollowCourtine != null)
+            {
                 StopCoroutine(lastFollowCourtine);
-            
+            }
+
+   
             lastFollowCourtine = StartCoroutine(LookAtEnemy(enemy.transform));
-            
-            
+
             int givenDamage = soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Single ? GiveDamge(enemy, soldierData.GetWeapon(UpgradeLevel).Damage) : GiveSplashDamage(enemy);
             
             GamePlayerInformation.ChangeBalance(givenDamage);
             Debug.Log("OnShoot");
 
             yield return new WaitForSeconds(soldierData.GetWeapon(UpgradeLevel).Firerate);
+
+ 
 
             IsShooting = false;
         }

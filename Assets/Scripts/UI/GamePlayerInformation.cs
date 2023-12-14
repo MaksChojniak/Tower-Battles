@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts;
+using System;
 using System.Collections;
 using System.Data.SqlTypes;
 using UnityEngine;
@@ -94,23 +95,41 @@ public class GamePlayerInformation : MonoBehaviour
     Coroutine EndGameCoroutine;
     IEnumerator EndGameProcess(bool isWinner, float timeDelay)
     {
+        int moneyReward = 10;
+        int trophyReward = 0;
+        int defeatReward = 0;
+
         if (isWinner)
         {
             Debug.Log($"WIN");
             PlayerTowerInventory.AddWin();
+            trophyReward += 1;
         }
         else
         {
             Debug.Log($"LOSE");
             PlayerTowerInventory.AddDefeat();
+
+            defeatReward += 1;
         }
+
+
+        Assets.Scripts.EndGame.OnEndGame(isWinner);
 
         yield return new WaitForSeconds(timeDelay);
 
-        SceneManager.LoadSceneAsync(Scenes.mainMenuScene);
+        DontDestroyOnLoad(this.gameObject);
+
+        var scene = SceneManager.LoadSceneAsync(Scenes.mainMenuScene);
 
         OnEndGame?.Invoke();
 
+        yield return new WaitUntil(new Func<bool>( () => scene.isDone ));
+
+        GameRewardPanel.OpenRewardPanel(isWinner, moneyReward, trophyReward, defeatReward);
+
         EndGameCoroutine = null;
+
+        Destroy(this.gameObject);
     }
 }
