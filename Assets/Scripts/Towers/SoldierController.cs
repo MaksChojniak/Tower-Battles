@@ -16,6 +16,8 @@ namespace DefaultNamespace
         public int TotalDamage;
 
         bool IsShooting;
+        
+        static int ShootBoolHash = Animator.StringToHash("ShootBool");
 
    
         protected override (object, TypeOfBuildng) GetTowerData()
@@ -248,10 +250,15 @@ namespace DefaultNamespace
             IsShooting = true;
             OnShoot?.Invoke(RifleIndex);
 
+            bool hasAnimator = this.transform.GetChild(UpgradeLevel).TryGetComponent<Animator>(out var animator);
+
 
             if (lastFollowCourtine != null)
             {
                 StopCoroutine(lastFollowCourtine);
+                
+                if(hasAnimator)
+                    animator.SetBool(ShootBoolHash, false);
             }
 
    
@@ -261,10 +268,14 @@ namespace DefaultNamespace
             
             GamePlayerInformation.ChangeBalance(givenDamage);
             Debug.Log("OnShoot");
+            
+            if(hasAnimator)
+                animator.SetBool(ShootBoolHash, true);
 
             yield return new WaitForSeconds(soldierData.GetWeapon(UpgradeLevel).Firerate);
 
- 
+            if(hasAnimator)
+                animator.SetBool(ShootBoolHash, false);
 
             IsShooting = false;
         }
