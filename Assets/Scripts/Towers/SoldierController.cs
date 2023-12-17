@@ -17,7 +17,7 @@ namespace DefaultNamespace
 
         bool IsShooting;
 
-   
+
         protected override (object, TypeOfBuildng) GetTowerData()
         {
             return (soldierData, soldierData.Type);
@@ -249,9 +249,23 @@ namespace DefaultNamespace
             OnShoot?.Invoke(RifleIndex);
 
 
+            bool hasAnimator = this.transform.GetChild(UpgradeLevel).TryGetComponent<Animator>(out var animator);
+
+            string currentBool = RifleIndex == 0 ? "Shoot_R" : "Shoot_L";
+            Debug.Log(currentBool);
+
+
             if (lastFollowCourtine != null)
             {
                 StopCoroutine(lastFollowCourtine);
+
+                if (hasAnimator)
+                {
+                    if(currentBool == "Shoot_L")
+                        animator.SetBool("Shoot_R", false);
+                    else
+                        animator.SetBool("Shoot_L", false);
+                }
             }
 
    
@@ -262,9 +276,13 @@ namespace DefaultNamespace
             GamePlayerInformation.ChangeBalance(givenDamage);
             Debug.Log("OnShoot");
 
+            if (hasAnimator)
+                animator.SetBool(currentBool, true);
+
             yield return new WaitForSeconds(soldierData.GetWeapon(UpgradeLevel).Firerate);
 
- 
+            if (hasAnimator)
+                animator.SetBool(currentBool, false);
 
             IsShooting = false;
         }

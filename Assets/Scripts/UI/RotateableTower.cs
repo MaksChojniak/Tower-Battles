@@ -54,6 +54,10 @@ namespace DefaultNamespace
                 towerModelChild.gameObject.layer = LayerMask.NameToLayer("Tower");
             }
 
+            if (towerObject.transform.GetChild(0).TryGetComponent<Animator>(out var animator))
+                animator.SetBool("Shoot_R", true);
+
+
             Tower = towerObject.transform;
 
             Tower.localPosition = Vector3.zero + offset;

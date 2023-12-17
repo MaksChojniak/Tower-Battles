@@ -102,13 +102,13 @@ public class GamePlayerInformation : MonoBehaviour
         if (isWinner)
         {
             Debug.Log($"WIN");
-            PlayerTowerInventory.AddWin();
+            //PlayerTowerInventory.AddWin();
             trophyReward += 1;
         }
         else
         {
             Debug.Log($"LOSE");
-            PlayerTowerInventory.AddDefeat();
+            //PlayerTowerInventory.AddDefeat();
 
             defeatReward += 1;
         }
