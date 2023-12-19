@@ -43,6 +43,9 @@ namespace Assets.Scripts.Towers
 
         void OnShoot(int RifleIndex)
         {
+            if(!SettingsManager.Instance.SettingsData.ParticlesActive)
+                return;
+                
             if(muzzleFlashParticles.Length <= RifleIndex)
                 return;
 

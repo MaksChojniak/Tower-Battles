@@ -31,11 +31,11 @@ namespace DefaultNamespace
 
             SettingsData = new SettingsData()
             {
-                MusicVolume = 0,
-                EffectVolume = 0,
+                MusicVolume = 100,
+                EffectVolume = 100,
                 QualityLevel = Quality.QualityLevelsType.Medium,
-                ShadowsActive = false,
-                ParticlesActive = false,
+                ShadowsActive = true,
+                ParticlesActive = true,
                 FPSLimitIndex = 5,
                 Language = Language.LanguageType.Poland,
                 HandMode = HandModeType.Right,
