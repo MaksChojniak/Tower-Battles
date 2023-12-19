@@ -9,7 +9,8 @@ namespace DefaultNamespace
 {
     public class SoldierController : TowerController
     {
-        public event Action<int> OnShoot; 
+        public event Action<int> OnShoot;
+        public event Action<Transform> OnHitEnemy;
         
         public Soldier soldierData;
 
@@ -247,6 +248,9 @@ namespace DefaultNamespace
         {
             IsShooting = true;
             OnShoot?.Invoke(RifleIndex);
+
+            if(soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Splash)
+                OnHitEnemy?.Invoke(enemy.transform);
 
 
             bool hasAnimator = this.transform.GetChild(UpgradeLevel).TryGetComponent<Animator>(out var animator);
