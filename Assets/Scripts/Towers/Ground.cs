@@ -41,7 +41,7 @@ namespace DefaultNamespace
             highlighted = state;
 
             float scaleValue = highlighted ? 1.05f : 0f;
-            float emissionPowerValue = highlighted ? 0.5f : 0f;
+            float emissionPowerValue = highlighted ? 2.8f : 0f;
 
             if (this.TryGetComponent<MeshRenderer>(out var renderer))
             {

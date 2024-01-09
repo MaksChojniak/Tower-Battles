@@ -34,6 +34,7 @@ namespace DefaultNamespace.ScriptableObjects
     public enum DamageType
     {
         Single,
+        Spraed,
         Splash
     }
     

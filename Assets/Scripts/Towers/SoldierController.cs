@@ -3,14 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DefaultNamespace.ScriptableObjects;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace DefaultNamespace
 {
     public class SoldierController : TowerController
     {
-        public event Action<int> OnShoot;
-        public event Action<Transform> OnHitEnemy;
+        public event Action<int, Vector3> OnShoot;
+        public event Action<Transform, bool> OnHitEnemy;
         
         public Soldier soldierData;
 
@@ -246,18 +247,10 @@ namespace DefaultNamespace
 
         IEnumerator OnTowerShoot( EnemyController enemy, int RifleIndex = 0 )
         {
-            IsShooting = true;
-            OnShoot?.Invoke(RifleIndex);
-
-            if(soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Splash)
-                OnHitEnemy?.Invoke(enemy.transform);
-
-
-            bool hasAnimator = this.transform.GetChild(UpgradeLevel).TryGetComponent<Animator>(out var animator);
-
             string currentBool = RifleIndex == 0 ? "Shoot_R" : "Shoot_L";
             Debug.Log(currentBool);
 
+            bool hasAnimator = this.transform.GetChild(UpgradeLevel).TryGetComponent<Animator>(out var animator);
 
             if (lastFollowCourtine != null)
             {
@@ -265,18 +258,40 @@ namespace DefaultNamespace
 
                 if (hasAnimator)
                 {
-                    if(currentBool == "Shoot_L")
+                    if (currentBool == "Shoot_L")
                         animator.SetBool("Shoot_R", false);
                     else
                         animator.SetBool("Shoot_L", false);
                 }
             }
 
-   
+
             lastFollowCourtine = StartCoroutine(LookAtEnemy(enemy.transform));
 
-            int givenDamage = soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Single ? GiveDamge(enemy, soldierData.GetWeapon(UpgradeLevel).Damage) : GiveSplashDamage(enemy);
+
+            IsShooting = true;
             
+
+            int enemyHealthValue = enemy.GetHealth() - soldierData.GetWeapon(UpgradeLevel).Damage;
+            OnHitEnemy?.Invoke(enemy.transform, enemyHealthValue > 0);
+
+
+            int givenDamage = 0;
+            if (soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Single)
+            {
+                givenDamage = GiveDamge(enemy, soldierData.GetWeapon(UpgradeLevel).Damage, RifleIndex);
+                OnShoot?.Invoke(RifleIndex, enemy.transform.position);
+            }
+            else if (soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Spraed)
+            {
+                givenDamage =GiveSpreadDamage(enemy);
+            }
+            else
+            {
+                givenDamage = GiveSplashDamage(enemy);
+                OnShoot?.Invoke(RifleIndex, enemy.transform.position);
+            }
+
             GamePlayerInformation.ChangeBalance(givenDamage);
             Debug.Log("OnShoot");
 
@@ -291,7 +306,7 @@ namespace DefaultNamespace
             IsShooting = false;
         }
 
-        int GiveDamge(EnemyController enemy, int damage)
+        int GiveDamge(EnemyController enemy, int damage, int RifleIndex = 0)
         {
             int enemyHealth = enemy.GetHealth();
             enemy.TakeDamage(damage);
@@ -300,6 +315,28 @@ namespace DefaultNamespace
             TotalDamage += giveDamage;
 
             return giveDamage;
+        }
+
+        int GiveSpreadDamage(EnemyController firstEnemy)
+        {
+            int givenDamage = 0;
+
+            List<Transform> enemiesInSpreadRangeTransform = FindEnemiesInSplashRange(firstEnemy, soldierData.GetWeapon(UpgradeLevel).SplashDamageSpread);
+
+            int step = soldierData.GetWeapon(UpgradeLevel).MaxEnemiesInSpread;
+            for (int i = 0; i < enemiesInSpreadRangeTransform.Count; i++)
+            {
+                EnemyController enemy = enemiesInSpreadRangeTransform[i].GetComponent<EnemyController>();
+
+                int damage = soldierData.GetWeapon(UpgradeLevel).Damage * (step);
+
+                givenDamage += GiveDamge(enemy, damage);
+                step -= 1;
+
+                OnShoot?.Invoke(0, enemy.transform.position);
+            }
+
+            return givenDamage;
         }
 
         int GiveSplashDamage(EnemyController firstEnemy)
@@ -375,18 +412,32 @@ namespace DefaultNamespace
         Coroutine lastFollowCourtine;
         IEnumerator LookAtEnemy(Transform enemy)
         {
-            // float time = 0;
-            // while (time <= followTime)
-            while (enemy != null && Vector3.Distance(new Vector3(this.transform.position.x, 1f, this.transform.position.z), enemy.position) <= soldierData.GetViewRange(UpgradeLevel))
+            Vector3 enemyPos = enemy.position;
+
+            //(float)Math.Sqrt(this.transform.position.x * enemyPos.x + this.transform.position.z * enemyPos.z)
+            
+            while (Vector2.Distance(this.transform.position, enemyPos) <= soldierData.GetViewRange(UpgradeLevel))
             {
-                // if(enemy == null)
-                //     yield break;
-                
+
                 float delay = Time.fixedDeltaTime;
-                // time += delay;
-                
-                CurrentTowerObject.transform.LookAt(enemy.position);
-                
+
+                float speed = 0.4f;
+
+                //CurrentTowerObject.transform.LookAt(enemy.position);
+
+                Transform currentTowerTransform = CurrentTowerObject.transform;
+
+                Vector3 directionToEnemy = (enemyPos - currentTowerTransform.position);
+
+                //currentTowerTransform.LookAt(enemyPos);
+
+                currentTowerTransform.rotation = Quaternion.Slerp(
+                    currentTowerTransform.rotation,
+                    Quaternion.LookRotation(directionToEnemy, Vector3.up),
+                    speed
+            );
+
+
                 yield return new WaitForSeconds(delay);
             }
 
