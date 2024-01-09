@@ -120,6 +120,9 @@ namespace Assets.Scripts.Towers
 
         void OnHitEnemy(Transform enemy, bool isAlive)
         {
+            if (!SettingsManager.Instance.SettingsData.ParticlesActive)
+                return;
+            
             if (!isAlive)
             {
                 Debug.Log($"{nameof(PlayBloodSpray)} is alive");

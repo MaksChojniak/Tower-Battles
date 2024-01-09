@@ -272,10 +272,6 @@ namespace DefaultNamespace
             IsShooting = true;
             
 
-            int enemyHealthValue = enemy.GetHealth() - soldierData.GetWeapon(UpgradeLevel).Damage;
-            OnHitEnemy?.Invoke(enemy.transform, enemyHealthValue > 0);
-
-
             int givenDamage = 0;
             if (soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Single)
             {
@@ -308,6 +304,9 @@ namespace DefaultNamespace
 
         int GiveDamge(EnemyController enemy, int damage, int RifleIndex = 0)
         {
+            int enemyHealthValue = enemy.GetHealth() - damage;
+            OnHitEnemy?.Invoke(enemy.transform, enemyHealthValue >= 0);
+            
             int enemyHealth = enemy.GetHealth();
             enemy.TakeDamage(damage);
 
