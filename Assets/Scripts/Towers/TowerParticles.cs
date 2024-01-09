@@ -69,6 +69,8 @@ namespace Assets.Scripts.Towers
         //Coroutine BulletAnimationCoroutine;
         void OnShoot(int RifleIndex, Vector3 targetPos)
         {
+            if (!SettingsManager.Instance.SettingsData.ParticlesActive)
+                return;
 
             bulletSpeed = Vector3.Distance(this.transform.position, targetPos) / maxBulletTrailLenght;
 

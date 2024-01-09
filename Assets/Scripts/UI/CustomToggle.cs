@@ -28,7 +28,8 @@ public class CustomToggle : MonoBehaviour
         set 
         {
             isOn = value;
-            OnToggleValueChanged?.Invoke(isOn);
+            
+            SetupToggleImages(isOn);
         } 
         get 
         {
@@ -45,17 +46,17 @@ public class CustomToggle : MonoBehaviour
     [Header("Events")]
     public UnityEvent<bool> OnToggleValueChanged;
 
-    private void OnValidate()
-    {
-        IsOn = isOn;
-    }
+    // private void OnValidate()
+    // {
+    //     IsOn = isOn;
+    // }
 
 
     private void Awake()
     { 
         OnToggleValueChanged.AddListener(SetupToggleImages);
 
-        IsOn = false;
+        // IsOn = false;
     }
 
     private void OnDestroy()
@@ -63,6 +64,12 @@ public class CustomToggle : MonoBehaviour
         OnToggleValueChanged.RemoveListener(SetupToggleImages);
     }
 
+    public void ChangeValue()
+    {
+        IsOn = !IsOn;
+        
+        OnToggleValueChanged?.Invoke(IsOn);
+    }
 
     void SetupToggleImages(bool value)
     {

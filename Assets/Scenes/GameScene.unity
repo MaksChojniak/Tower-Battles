@@ -9743,15 +9743,35 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 927315719}
     m_Modifications:
+    - target: {fileID: 5358940241616097601, guid: f783f62e2d7ff824bbb2b08c21120482,
+        type: 3}
+      propertyPath: OnToggleValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5358940241616097601, guid: f783f62e2d7ff824bbb2b08c21120482,
+        type: 3}
+      propertyPath: OnToggleValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1079187137}
+    - target: {fileID: 5358940241616097601, guid: f783f62e2d7ff824bbb2b08c21120482,
+        type: 3}
+      propertyPath: OnToggleValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ParticleDataChange
+      objectReference: {fileID: 0}
+    - target: {fileID: 5358940241616097601, guid: f783f62e2d7ff824bbb2b08c21120482,
+        type: 3}
+      propertyPath: OnToggleValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: DefaultNamespace.Particles, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 5358940241616097601, guid: f783f62e2d7ff824bbb2b08c21120482,
+        type: 3}
+      propertyPath: OnToggleValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 6222318382532982268, guid: f783f62e2d7ff824bbb2b08c21120482,
         type: 3}
       propertyPath: m_Color.a
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6222318383154497932, guid: f783f62e2d7ff824bbb2b08c21120482,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6222318383154497934, guid: f783f62e2d7ff824bbb2b08c21120482,
         type: 3}
@@ -9915,6 +9935,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f783f62e2d7ff824bbb2b08c21120482, type: 3}
+--- !u!114 &959453704 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5358940241616097601, guid: f783f62e2d7ff824bbb2b08c21120482,
+    type: 3}
+  m_PrefabInstance: {fileID: 959453703}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88ba9fedacc95b4469d027214ba59b30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &959453705 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7368316043236500088, guid: f783f62e2d7ff824bbb2b08c21120482,
+    type: 3}
+  m_PrefabInstance: {fileID: 959453703}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &961348374
 GameObject:
   m_ObjectHideFlags: 0
@@ -11233,6 +11271,20 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 959453703}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1079187137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 959453705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15ebe48d08504e489471692462c0bf36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customToggle: {fileID: 959453704}
+  isActive: 0
 --- !u!1 &1083937412
 GameObject:
   m_ObjectHideFlags: 0
