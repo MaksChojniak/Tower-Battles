@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using DefaultNamespace;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public class Quality : MonoBehaviour
 {
