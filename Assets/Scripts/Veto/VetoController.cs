@@ -113,9 +113,9 @@ public class VetoController : MonoBehaviour
         selectedButton = index;
     }
 
-    public void Veto()
+    public void Veto(bool repetitions)
     {
-        GenerateScenesList(false);
+        GenerateScenesList(repetitions);
     }
 
 
