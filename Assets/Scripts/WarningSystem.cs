@@ -15,7 +15,8 @@ namespace DefaultNamespace
             MaxTowersCountPlaced,
             DeckIsEmpty,
             NotEnoughtWins,
-            MaxedOut
+            MaxedOut,
+            MapNotSelected
         }
 
         public static WarningSystem Instance;
@@ -78,6 +79,9 @@ namespace DefaultNamespace
                     break;
                 case WarningType.MaxedOut:
                     message = "Tower Maxed Out!";
+                    break;
+                case WarningType.MapNotSelected:
+                    message = "You Have To Select Map";
                     break;
                 default:
                     message = "Error!!";

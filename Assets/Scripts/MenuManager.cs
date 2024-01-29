@@ -21,6 +21,6 @@ public class MenuManager : MonoBehaviour
             return;
         }
 
-        SceneManager.LoadSceneAsync( Random.Range(Scenes.gameScenes[0], Scenes.gameScenes[Scenes.gameScenes.Count - 1]) );
+        SceneManager.LoadSceneAsync(Scenes.vetoScene);// Random.Range(Scenes.gameScenes[0], Scenes.gameScenes[Scenes.gameScenes.Count - 1]) );
     }
 }

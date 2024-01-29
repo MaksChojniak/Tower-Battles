@@ -110,7 +110,7 @@ public class WaveManager : MonoBehaviour
             StageData stageData = stage.stagesData;
             for(int j = 0; j < stageData.enemyCount; j++)
             {
-                GameObject enemy = Instantiate(stageData.enemy.EnemyPrefab, Vector3.zero, Quaternion.identity, enemyStorage);
+                GameObject enemy = Instantiate(stageData.enemy.EnemyPrefab, Vector3.one * -1000, Quaternion.identity, enemyStorage);
 
                 yield return new WaitForSeconds(stageData.sleepTime);
             }
