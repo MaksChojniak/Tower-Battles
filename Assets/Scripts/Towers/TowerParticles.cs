@@ -118,7 +118,7 @@ namespace Assets.Scripts.Towers
         }
 
 
-        void OnHitEnemy(Transform enemy, bool isAlive)
+        void OnHitEnemy(Transform enemy, bool isAlive, bool isTraced)
         {
             if (!SettingsManager.Instance.SettingsData.ParticlesActive)
                 return;
@@ -129,8 +129,8 @@ namespace Assets.Scripts.Towers
                 PlayBloodSpray(enemy);
             }
 
-            PlayExplosionParticle(enemy);
-
+            if(isTraced)
+                PlayExplosionParticle(enemy);
         }
 
         void PlayExplosionParticle(Transform enemy)
@@ -138,20 +138,29 @@ namespace Assets.Scripts.Towers
             if (explosionParticle == null)
                 return;
 
+            StartCoroutine(SpawnExplosionParticle(enemy));
+        }
+        
+        IEnumerator SpawnExplosionParticle(Transform enemy)
+        {
+            Debug.Log($"{nameof(SpawnExplosionParticle)}");
+
             Vector3 enemyPosition = enemy.position;
 
-            explosionParticle.transform.position = enemyPosition;
-            explosionParticle.Play();
+            var _explosionParticle = Instantiate(explosionParticle, enemyPosition, Quaternion.identity);
+            _explosionParticle.transform.position = enemyPosition;
+
+            _explosionParticle.Play();
+
+            Destroy(_explosionParticle.gameObject, 5f);
+
+            yield break;
         }
 
         void PlayBloodSpray(Transform enemy)
         {
-            Debug.Log($"{nameof(PlayBloodSpray)} 1");
-
             if (bloodParticle == null)
                 return;
-
-            Debug.Log($"{nameof(PlayBloodSpray)} 2");
 
             StartCoroutine(SpawnBloodSpray(enemy));
         }

@@ -11,7 +11,7 @@ namespace DefaultNamespace
     public class SoldierController : TowerController
     {
         public event Action<int, Vector3> OnShoot;
-        public event Action<Transform, bool> OnHitEnemy;
+        public event Action<Transform, bool, bool> OnHitEnemy;
         
         public Soldier soldierData;
 
@@ -275,7 +275,7 @@ namespace DefaultNamespace
             int givenDamage = 0;
             if (soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Single)
             {
-                givenDamage = GiveDamge(enemy, soldierData.GetWeapon(UpgradeLevel).Damage, RifleIndex);
+                givenDamage = GiveDamge(enemy, soldierData.GetWeapon(UpgradeLevel).Damage, true, RifleIndex);
                 OnShoot?.Invoke(RifleIndex, enemy.transform.position);
             }
             else if (soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Spraed)
@@ -302,10 +302,10 @@ namespace DefaultNamespace
             IsShooting = false;
         }
 
-        int GiveDamge(EnemyController enemy, int damage, int RifleIndex = 0)
+        int GiveDamge(EnemyController enemy, int damage, bool isTraced, int RifleIndex = 0)
         {
             int enemyHealthValue = enemy.GetHealth() - damage;
-            OnHitEnemy?.Invoke(enemy.transform, enemyHealthValue >= 0);
+            OnHitEnemy?.Invoke(enemy.transform, enemyHealthValue >= 0, isTraced);
             
             int enemyHealth = enemy.GetHealth();
             enemy.TakeDamage(damage);
@@ -329,7 +329,7 @@ namespace DefaultNamespace
 
                 int damage = soldierData.GetWeapon(UpgradeLevel).Damage * (step);
 
-                givenDamage += GiveDamge(enemy, damage);
+                givenDamage += GiveDamge(enemy, damage, enemy == firstEnemy);
                 step -= 1;
 
                 OnShoot?.Invoke(0, enemy.transform.position);
@@ -351,7 +351,7 @@ namespace DefaultNamespace
 
                 int damage = soldierData.GetWeapon(UpgradeLevel).Damage * (step);
 
-                givenDamage += GiveDamge(enemy, damage);
+                givenDamage += GiveDamge(enemy, damage, enemy == firstEnemy);
                 step -= 1;
             }
 
