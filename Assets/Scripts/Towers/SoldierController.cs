@@ -5,6 +5,7 @@ using System.Linq;
 using DefaultNamespace.ScriptableObjects;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace DefaultNamespace
 {
@@ -17,7 +18,7 @@ namespace DefaultNamespace
 
         public int TotalDamage;
 
-        bool IsShooting;
+        [SerializeField] bool IsShooting;
 
 
         protected override (object, TypeOfBuildng) GetTowerData()
@@ -71,6 +72,8 @@ namespace DefaultNamespace
             GamePlayerInformation.ChangeBalance(-soldierData.GetUpgradePrice(UpgradeLevel));
 
             base.OnUpgradeTower(towerController);
+
+            IsShooting = false;
 
         }
 
@@ -234,8 +237,8 @@ namespace DefaultNamespace
         int lastRifleIndex;
         void TowerShoot(EnemyController enemy)
         {
-            
-            if(soldierData.GetWeapon(UpgradeLevel).WeaponType == WeaponType.SingleWeapon)
+
+            if (soldierData.GetWeapon(UpgradeLevel).WeaponType == WeaponType.SingleWeapon)
                 StartCoroutine(OnTowerShoot(enemy));
             else
             {
@@ -245,8 +248,10 @@ namespace DefaultNamespace
 
         }
 
-        IEnumerator OnTowerShoot( EnemyController enemy, int RifleIndex = 0 )
+        IEnumerator OnTowerShoot(EnemyController enemy, int RifleIndex = 0)
         {
+            Vector3 enemyPos = enemy.transform.position;
+
             string currentBool = RifleIndex == 0 ? "Shoot_R" : "Shoot_L";
             Debug.Log(currentBool);
 
@@ -270,40 +275,68 @@ namespace DefaultNamespace
 
 
             IsShooting = true;
-            
+
+            float delayTime = 0;
+
+
 
             int givenDamage = 0;
             if (soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Single)
             {
                 givenDamage = GiveDamge(enemy, soldierData.GetWeapon(UpgradeLevel).Damage, true, RifleIndex);
-                OnShoot?.Invoke(RifleIndex, enemy.transform.position);
+                OnShoot?.Invoke(RifleIndex, enemyPos);
+
             }
             else if (soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Spraed)
             {
-                givenDamage =GiveSpreadDamage(enemy);
+                givenDamage = GiveSpreadDamage(enemy);
             }
             else
             {
+                if (soldierData.GetWeapon(UpgradeLevel).ShootingType == ShootingType.Throwable)
+                {
+                    if (hasAnimator)
+                        animator.SetBool(currentBool, true);
+
+                    yield return new WaitForEndOfFrame();
+                    yield return new WaitUntil(new Func<bool>(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !animator.IsInTransition(0)));
+
+                    delayTime = soldierData.GetWeapon(UpgradeLevel).Firerate - animator.GetCurrentAnimatorStateInfo(0).length;
+                    Debug.Log($"Time to delay = {delayTime}");
+                }
+
+
                 givenDamage = GiveSplashDamage(enemy);
-                OnShoot?.Invoke(RifleIndex, enemy.transform.position);
+                OnShoot?.Invoke(RifleIndex, enemyPos);
             }
+
 
             GamePlayerInformation.ChangeBalance(givenDamage);
             Debug.Log("OnShoot");
 
-            if (hasAnimator)
-                animator.SetBool(currentBool, true);
 
-            yield return new WaitForSeconds(soldierData.GetWeapon(UpgradeLevel).Firerate);
+            if (soldierData.GetWeapon(UpgradeLevel).ShootingType == ShootingType.Shootable)
+            {
+                if (hasAnimator)
+                    animator.SetBool(currentBool, true);
+
+                yield return new WaitForSeconds(soldierData.GetWeapon(UpgradeLevel).Firerate);
+
+            }
+            yield return new WaitForSeconds(delayTime);
 
             if (hasAnimator)
                 animator.SetBool(currentBool, false);
+
 
             IsShooting = false;
         }
 
         int GiveDamge(EnemyController enemy, int damage, bool isTraced, int RifleIndex = 0)
         {
+            if (enemy == null)
+                return 0;
+
             int enemyHealthValue = enemy.GetHealth() - damage;
             OnHitEnemy?.Invoke(enemy.transform, enemyHealthValue >= 0, isTraced);
             
@@ -318,6 +351,9 @@ namespace DefaultNamespace
 
         int GiveSpreadDamage(EnemyController firstEnemy)
         {
+            if (firstEnemy == null)
+                return 0;
+
             int givenDamage = 0;
 
             List<Transform> enemiesInSpreadRangeTransform = FindEnemiesInSplashRange(firstEnemy, soldierData.GetWeapon(UpgradeLevel).SplashDamageSpread);
@@ -340,6 +376,9 @@ namespace DefaultNamespace
 
         int GiveSplashDamage(EnemyController firstEnemy)
         {
+            if(firstEnemy == null)
+                return 0;
+
             int givenDamage = 0;
             
             List<Transform> enemiesInSpreadRangeTransform = FindEnemiesInSplashRange(firstEnemy, soldierData.GetWeapon(UpgradeLevel).SplashDamageSpread);
@@ -358,8 +397,11 @@ namespace DefaultNamespace
             return givenDamage;
         }
 
+      
+
         List<Transform> FindEnemiesInSplashRange(EnemyController firstEnemy, float spreadRadius)
         {
+
             List<Transform> enemiesInRange = new List<Transform>();
             foreach (var enemy in GameObject.FindGameObjectsWithTag("Enemy"))
             {

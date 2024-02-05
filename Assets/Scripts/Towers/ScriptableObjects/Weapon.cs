@@ -11,7 +11,8 @@ namespace DefaultNamespace.ScriptableObjects
         
         public WeaponType WeaponType;
         public DamageType DamageType;
-        
+        public ShootingType ShootingType;
+
         public int Damage;
         public float Firerate
         {
@@ -36,6 +37,12 @@ namespace DefaultNamespace.ScriptableObjects
         Single,
         Spraed,
         Splash
+    }
+
+    public enum ShootingType
+    {
+        Shootable,
+        Throwable
     }
     
 
