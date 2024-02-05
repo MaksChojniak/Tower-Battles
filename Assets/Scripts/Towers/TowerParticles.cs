@@ -147,7 +147,7 @@ namespace Assets.Scripts.Towers
 
             Vector3 enemyPosition = enemy.position;
 
-            var _explosionParticle = Instantiate(explosionParticle, enemyPosition, Quaternion.identity);
+            var _explosionParticle = Instantiate(explosionParticle.gameObject, enemyPosition, Quaternion.identity).GetComponent<ParticleSystem>();
             _explosionParticle.transform.position = enemyPosition;
 
             _explosionParticle.Play();
