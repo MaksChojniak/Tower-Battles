@@ -11,7 +11,7 @@ namespace DefaultNamespace
 {
     public class SoldierController : TowerController
     {
-        public event Action<int, Vector3> OnShoot;
+        public event Action<int,Transform, Vector3, bool> OnShoot;
         public event Action<Transform, bool, bool> OnHitEnemy;
         
         public Soldier soldierData;
@@ -250,7 +250,6 @@ namespace DefaultNamespace
 
         IEnumerator OnTowerShoot(EnemyController enemy, int RifleIndex = 0)
         {
-            Vector3 enemyPos = enemy.transform.position;
 
             string currentBool = RifleIndex == 0 ? "Shoot_R" : "Shoot_L";
             Debug.Log(currentBool);
@@ -283,13 +282,29 @@ namespace DefaultNamespace
             int givenDamage = 0;
             if (soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Single)
             {
-                givenDamage = GiveDamge(enemy, soldierData.GetWeapon(UpgradeLevel).Damage, true, RifleIndex);
-                OnShoot?.Invoke(RifleIndex, enemyPos);
+                try
+                {
+                    givenDamage = GiveDamge(enemy, soldierData.GetWeapon(UpgradeLevel).Damage, true, RifleIndex);
+                    OnShoot?.Invoke(RifleIndex, enemy.transform, enemy.transform.position, enemy == enemy);
+                }
+                catch
+                {
+                    IsShooting = false;
+                    yield break;
+                }
 
             }
             else if (soldierData.GetWeapon(UpgradeLevel).DamageType == DamageType.Spraed)
             {
-                givenDamage = GiveSpreadDamage(enemy);
+                try
+                {
+                    givenDamage = GiveSpreadDamage(enemy);
+                }
+                catch
+                {
+                    IsShooting = false;
+                    yield break;
+                }
             }
             else
             {
@@ -298,18 +313,37 @@ namespace DefaultNamespace
                     if (hasAnimator)
                         animator.SetBool(currentBool, true);
 
-                    yield return new WaitForEndOfFrame();
+                    yield return new WaitForSeconds(0.27f);
+
+                    try
+                    {
+                        OnShoot?.Invoke(RifleIndex, enemy.transform, enemy.transform.position, enemy == enemy);
+                    }
+                    catch
+                    {
+                        IsShooting = false;
+                        yield break;
+                    }
+
                     yield return new WaitUntil(new Func<bool>(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !animator.IsInTransition(0)));
 
                     delayTime = soldierData.GetWeapon(UpgradeLevel).Firerate - animator.GetCurrentAnimatorStateInfo(0).length;
                     Debug.Log($"Time to delay = {delayTime}");
                 }
 
+                try
+                {
+                    givenDamage = GiveSplashDamage(enemy);
 
-                givenDamage = GiveSplashDamage(enemy);
-                OnShoot?.Invoke(RifleIndex, enemyPos);
+                    if (soldierData.GetWeapon(UpgradeLevel).ShootingType == ShootingType.Shootable)
+                        OnShoot?.Invoke(RifleIndex, enemy.transform, enemy.transform.position, enemy == enemy);
+                }
+                catch
+                {
+                    IsShooting = false;
+                    yield break;
+                }
             }
-
 
             GamePlayerInformation.ChangeBalance(givenDamage);
             Debug.Log("OnShoot");
@@ -330,12 +364,12 @@ namespace DefaultNamespace
 
 
             IsShooting = false;
+
+
         }
 
         int GiveDamge(EnemyController enemy, int damage, bool isTraced, int RifleIndex = 0)
         {
-            if (enemy == null)
-                return 0;
 
             int enemyHealthValue = enemy.GetHealth() - damage;
             OnHitEnemy?.Invoke(enemy.transform, enemyHealthValue >= 0, isTraced);
@@ -351,8 +385,6 @@ namespace DefaultNamespace
 
         int GiveSpreadDamage(EnemyController firstEnemy)
         {
-            if (firstEnemy == null)
-                return 0;
 
             int givenDamage = 0;
 
@@ -368,7 +400,7 @@ namespace DefaultNamespace
                 givenDamage += GiveDamge(enemy, damage, enemy == firstEnemy);
                 step -= 1;
 
-                OnShoot?.Invoke(0, enemy.transform.position);
+                OnShoot?.Invoke(0, enemy.transform, enemy.transform.position, enemy == firstEnemy);
             }
 
             return givenDamage;
@@ -376,8 +408,6 @@ namespace DefaultNamespace
 
         int GiveSplashDamage(EnemyController firstEnemy)
         {
-            if(firstEnemy == null)
-                return 0;
 
             int givenDamage = 0;
             

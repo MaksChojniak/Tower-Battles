@@ -67,10 +67,22 @@ namespace Assets.Scripts.Towers
 
 
         //Coroutine BulletAnimationCoroutine;
-        void OnShoot(int RifleIndex, Vector3 targetPos)
+        void OnShoot(int RifleIndex, Transform enemy, Vector3 targetPos, bool isTraced)
         {
             if (!SettingsManager.Instance.SettingsData.ParticlesActive)
                 return;
+
+            if (isTraced && this.transform.parent.TryGetComponent<SoldierController>(out var soldierController) && soldierController.soldierData.GetWeapon(soldierController.UpgradeLevel).ShootingType == DefaultNamespace.ScriptableObjects.ShootingType.Throwable)
+            {
+                Debug.Log($"<color=red> Is Throwable </color>");
+                if (this.TryGetComponent<ThrowPath>(out var throwPathController))
+                {
+                    Debug.Log($"<color=red> Has Bezier Path </color>");
+                    throwPathController.ThrowObject(enemy);
+                }
+
+                return;
+            }
 
             bulletSpeed = Vector3.Distance(this.transform.position, targetPos) / maxBulletTrailLenght;
 
@@ -122,7 +134,7 @@ namespace Assets.Scripts.Towers
         {
             if (!SettingsManager.Instance.SettingsData.ParticlesActive)
                 return;
-            
+
             if (!isAlive)
             {
                 Debug.Log($"{nameof(PlayBloodSpray)} is alive");
