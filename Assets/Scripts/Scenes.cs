@@ -5,5 +5,5 @@ public static class Scenes
 
         public const int vetoScene = 1;
 
-        public static readonly List<int> gameScenes = new List<int>() {2};
+        public static readonly List<int> gameScenes = new List<int>() {2, 3, 4};
 }

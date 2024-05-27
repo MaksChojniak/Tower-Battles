@@ -699,18 +699,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Scenes:
-  - Scene: GameScene_0
+  - Scene: Map_1
     Image: {fileID: 21300000, guid: 05649a37da39e5d40bd3a9772781b71c, type: 3}
-    Name: Map 2
-    Lenght: 200
-  - Scene: GameScene
-    Image: {fileID: 21300000, guid: a9f9be268b0ee5149b9bad3b2ba1f79f, type: 3}
     Name: Map 1
+    Lenght: 225
+    SceneAsset: {fileID: 102900000, guid: 2789e3c4e392aae408bae9fdd38d3172, type: 3}
+  - Scene: Map_Test
+    Image: {fileID: 21300000, guid: a9f9be268b0ee5149b9bad3b2ba1f79f, type: 3}
+    Name: Map Test
     Lenght: 150
-  - Scene: GameScene_0
-    Image: {fileID: 21300000, guid: 05649a37da39e5d40bd3a9772781b71c, type: 3}
+    SceneAsset: {fileID: 102900000, guid: c850ee8c3b14cc8459e7e186857cf567, type: 3}
+  - Scene: Map_2
+    Image: {fileID: 21300000, guid: e2ddddd80dd82ab49868d1e6ca38606a, type: 3}
     Name: Map 2
-    Lenght: 200
+    Lenght: 275
+    SceneAsset: {fileID: 102900000, guid: fbd927bfcedaab94d93f4b5af90c1010, type: 3}
   UpdateScenesData: 0
   mapButtons:
   - {fileID: 424455069}
@@ -3200,6 +3203,7 @@ GameObject:
   - component: {fileID: 1747607143}
   - component: {fileID: 1747607142}
   - component: {fileID: 1747607141}
+  - component: {fileID: 1747607144}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3273,6 +3277,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1747607144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1747607140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_Version: 2
 --- !u!1 &1833923920
 GameObject:
   m_ObjectHideFlags: 0
