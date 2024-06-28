@@ -43,7 +43,7 @@ namespace Mirror
         // It is intentional for editor play mode to auto-start headless server / client
         //    when Dedicated Server platform is selected in the editor so that editor
         //    acts like a headless build to every extent possible for testing / debugging.
-        public static bool IsHeadless() =>
+        public static bool IsHeadless() => 
 #if UNITY_SERVER
             true;
 #else

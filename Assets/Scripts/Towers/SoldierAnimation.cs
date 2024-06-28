@@ -1,0 +1,345 @@
+﻿using System;
+using System.Collections;
+using System.Linq;
+using MMK.ScriptableObjects;
+using MMK.Towers;
+using PathCreation;
+using UnityEngine;
+
+namespace Towers
+{
+
+
+    public class SoldierAnimation : TowerAnimation
+    {
+        public delegate void UpdateMuzzlesDelegate(int Level);
+        public UpdateMuzzlesDelegate UpdateMuzzles;
+        
+
+        public delegate void OnBulletHitEnemyDelegate(Vector3 Position);
+        event OnBulletHitEnemyDelegate OnBulletHitEnemy;
+
+        
+        public AnimationClip ShootAnimationClip;
+        
+        
+        public GameObject FireStreamPrefab;
+        public GameObject ProjectileBeamPrefab;
+        public GameObject ThrowPathPrefab;
+        public GameObject ThrowedObjectPrefab;
+
+        public GameObject ExplosionPrefab;
+        
+        
+        public Muzzle RightMuzzle;
+        public Muzzle LeftMuzzle;
+
+
+        public SoldierController SoldierController { private set; get; }
+        
+        const float ObjectMaxHeight = 2.5f;
+        public const string SHOOT_CLIP_NAME = "Shoot";
+
+
+
+
+
+        Muzzle GetMuzzleByWeaponSide(Side WeaponSide)
+        {
+            if (WeaponSide == Side.Right)
+            {
+                if (RightMuzzle == null)
+                    throw new NullReferenceException("Right Muzzle is Null [value = null]");
+
+                return RightMuzzle;
+            }
+            else
+            {
+                if (LeftMuzzle == null)
+                    throw new NullReferenceException("Left Muzzle is Null [value = null]");
+                
+                return LeftMuzzle;
+            }
+
+            return null;
+        }
+
+
+
+
+        protected override void Awake()
+        {
+            SoldierController = this.GetComponent<SoldierController>();
+            
+            base.Awake();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+            
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+        }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+        }
+
+
+
+#region Register & Unregister Handlers
+        
+        protected override void RegisterHandlers()
+        {
+            base.RegisterHandlers();
+
+            UpdateMuzzles += OnUpdateMuzzles;
+
+            SoldierController.OnLevelUp += PlayLevelUpAnimation;
+            SoldierController.OnRemoveTower += PlayRemoveAnimation;
+            SoldierController.TowerWeaponComponent.OnShoot += PlayShootAnimation;
+
+            OnBulletHitEnemy += PlayExplosionAnimation;
+
+        }
+
+        protected override void UnregisterHndlers()
+        {
+            OnBulletHitEnemy -= PlayExplosionAnimation;
+            
+            SoldierController.TowerWeaponComponent.OnShoot -= PlayShootAnimation;
+            SoldierController.OnRemoveTower -= PlayRemoveAnimation;
+            SoldierController.OnLevelUp -= PlayLevelUpAnimation;
+
+            UpdateMuzzles -= OnUpdateMuzzles;
+            
+            base.UnregisterHndlers();
+        }
+        
+#endregion
+
+
+
+        void OnUpdateMuzzles(int Level)
+        {
+            GameObject towerObject = this.transform.GetChild(Level).gameObject;
+
+            Muzzle[] muzzles = towerObject.GetComponentsInChildren<Muzzle>();
+            RightMuzzle = muzzles.FirstOrDefault(muzzle => muzzle.Side == Side.Right);
+            LeftMuzzle = muzzles.FirstOrDefault(muzzle => muzzle.Side == Side.Left);
+        }
+        
+
+
+        protected override void InitializeAnimationClips()
+        {
+            base.InitializeAnimationClips();
+
+            if (ShootAnimationClip == null)
+                throw new NullReferenceException("ShootAnimationClip doesn't exist  [value = null]");
+            
+            Animation.AddClip(ShootAnimationClip, SHOOT_CLIP_NAME);
+        }
+
+
+
+
+#region Shoot Animation
+
+        // void PlayShootAnimation(EnemyController target, Side WeaponSide, bool EnemyInCenter, Weapon Wepaon)
+        // {
+        //     Animation.Play(SHOOT_CLIP_NAME);
+        //     
+        //     BulletAnimation(target, WeaponSide, Wepaon);
+        //
+        //
+        // }
+        
+        void PlayShootAnimation(EnemyController target, Side[] WeaponSides, bool EnemyInCenter, Weapon Wepaon)
+        {
+            Animation.Play(SHOOT_CLIP_NAME);
+
+            foreach (var WeaponSide in WeaponSides)
+            {
+                BulletAnimation(target, WeaponSide, Wepaon);
+            }
+
+
+        }
+
+        
+        
+#endregion
+
+        
+        
+#region Bullet Animation
+        
+        float maxBulletTrailLenght = 6.5f;
+        
+        void BulletAnimation(EnemyController target, Side WeaponSide, Weapon Wepaon)
+        {
+            Vector3 targetPosition = target.transform.position;
+            
+            float bulletSpeed = Vector3.Distance(this.transform.position, targetPosition) / maxBulletTrailLenght;
+
+            if (Wepaon.DamageType == DamageType.Fire)
+                StartCoroutine(DoFireStream(bulletSpeed, WeaponSide, targetPosition));
+            else if(Wepaon.ShootingType == ShootingType.Shootable)
+                StartCoroutine(DoProjectileBeam(bulletSpeed, WeaponSide, targetPosition, Wepaon.DamageType == DamageType.Splash) );
+            else if(Wepaon.ShootingType == ShootingType.Throwable)
+                StartCoroutine(DoThrowPath(WeaponSide, target, Wepaon.DamageType == DamageType.Splash) );
+        }
+
+        IEnumerator DoProjectileBeam(float bulletSpeed, Side WeaponSide, Vector3 endPosition, bool playExplosionAnimation)
+        {
+            Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
+            Vector3 startPosition = muzzle.position;
+
+            // Spawn Line Renderer (Animator)
+            LineRenderer lineRenderer = Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
+
+            // Fix End Position (longer distance)
+            Vector3 directionToEndPosition = (endPosition - startPosition).normalized;
+            endPosition += directionToEndPosition;
+            
+            // Do Animtion
+            lineRenderer.positionCount = 2;
+
+            lineRenderer.SetPosition(0, startPosition);
+            lineRenderer.SetPosition(1, startPosition);
+
+            while (Vector3.Distance(lineRenderer.GetPosition(1), endPosition) > 0.1f)
+            {
+                Vector3 newEndPosition = Vector3.Lerp(lineRenderer.GetPosition(1), endPosition, 0.5f);
+                lineRenderer.SetPosition(1, newEndPosition);
+
+                yield return new WaitForSeconds(Time.deltaTime * 2f / bulletSpeed);
+            }
+
+            yield return new WaitForSeconds(0.01f / bulletSpeed);
+
+            while (Vector3.Distance(lineRenderer.GetPosition(0), endPosition) > 0.1f)
+            {
+                Vector3 newEndPosition = Vector3.Lerp(lineRenderer.GetPosition(0), endPosition, 0.5f);
+                lineRenderer.SetPosition(0, newEndPosition);
+
+                yield return new WaitForSeconds(Time.deltaTime / bulletSpeed / 4f / 4f);
+            }
+
+            lineRenderer.positionCount = 0;
+
+            Destroy(lineRenderer.gameObject);
+            
+            
+            if(playExplosionAnimation)
+                OnBulletHitEnemy?.Invoke(endPosition);
+            
+            
+        }
+
+        IEnumerator DoThrowPath(Side WeaponSide, EnemyController EnemyController, bool playExplosionAnimation)
+        {
+            Transform target = EnemyController.transform;
+            Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
+            
+            PathCreator throwPath = Instantiate(ThrowPathPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathCreator>();
+            BezierPath bezierPath = throwPath.bezierPath;
+
+            GameObject throwedObject = Instantiate(ThrowedObjectPrefab, Vector3.zero, Quaternion.identity);
+
+
+            Vector3 startPosition = muzzle.position;
+            Vector3 heightPosition = ( (startPosition + target.position) / 2 ) + new Vector3(0, ObjectMaxHeight, 0);
+
+            // Setup Bezier Path
+            bezierPath.SetPoint(0, startPosition);  // start point
+            bezierPath.SetPoint(3, heightPosition); // highest Point
+            bezierPath.SetPoint(6, target.position);         // end Point
+
+            bezierPath.ControlPointMode = BezierPath.ControlMode.Aligned;
+
+            yield return new WaitForEndOfFrame();
+
+            bezierPath.ControlPointMode = BezierPath.ControlMode.Automatic;
+            throwPath.TriggerPathUpdate();
+
+            yield return new WaitForEndOfFrame();
+
+            
+            // Simulate Throw Trajectory
+            float distanceTravelled = 0;
+
+            float distance = throwPath.path.length;
+            float time = 0.3f;
+            float velocity = distance / time;
+
+            while (distanceTravelled < distance)
+            {
+                distanceTravelled += velocity / 100f;
+                throwedObject.transform.position = throwPath.path.GetPointAtDistance(distanceTravelled);
+                throwedObject.transform.rotation = Quaternion.Euler(throwedObject.transform.eulerAngles + new Vector3(Time.deltaTime * 10, 0, Time.deltaTime * 30));
+
+
+                if (target != null)
+                    bezierPath.SetPoint(6, target.position);
+
+                yield return new WaitForSeconds(1f / 100f);
+
+                throwPath.TriggerPathUpdate();
+
+            }
+
+            Destroy( throwedObject );
+            Destroy( throwPath );
+            
+            if(playExplosionAnimation)
+                OnBulletHitEnemy?.Invoke(target.position);
+        }
+
+        IEnumerator DoFireStream(float fireSpeed, Side WeaponSide, Vector3 endPosition)
+        {
+            Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
+
+            ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, muzzle.transform.position, this.transform.rotation).GetComponent<ParticleSystem>();
+            
+            fireStreamParticle.Play();
+            
+            Destroy(fireStreamParticle, fireStreamParticle.time + 1f);
+            
+            yield return null;
+        }
+        
+#endregion
+
+
+
+#region Explosion Animation
+
+        void PlayExplosionAnimation(Vector3 position)
+        {
+            ParticleSystem explosionParticle = Instantiate(ExplosionPrefab, position, Quaternion.identity).GetComponent<ParticleSystem>();
+
+            explosionParticle.Play();
+            
+            Destroy(explosionParticle.gameObject, 2f);
+        }
+        
+#endregion
+        
+        
+        
+        
+        
+    }
+}

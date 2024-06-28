@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3062655318356413329}
-  - component: {fileID: 8847120693009677792}
   m_Layer: 0
   m_Name: View Range
   m_TagString: Untagged
@@ -33,23 +32,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8847120693009677792
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1295652330158963532}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 072d5100dcdad7a44a09edae20fa88b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ViewRangeAble: {r: 0.29810432, g: 0.49696296, b: 0.7264151, a: 0.19607843}
-  ViewRangeUnable: {r: 0.5471698, g: 0.1264685, b: 0.1264685, a: 0.27450982}
-  ViewRangeObject: {fileID: 3727291273652735217}
-  ViewRangeImage: {fileID: 7148695571848999708}
-  ViewRangeController: {fileID: 5165150864517765397}
 --- !u!1 &3727291273652735217
 GameObject:
   m_ObjectHideFlags: 0
@@ -62,7 +44,6 @@ GameObject:
   - component: {fileID: 6639940992268276614}
   - component: {fileID: 6475299670967358790}
   - component: {fileID: 4972081893391415798}
-  - component: {fileID: 5165150864517765397}
   m_Layer: 5
   m_Name: ViewRange Canvas
   m_TagString: Untagged
@@ -153,23 +134,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &5165150864517765397
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3727291273652735217}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c956dcd985574a7a893bf339482bff08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LineRenderer: {fileID: 5606212144148299241}
-  radius: 0
-  ringMaterialExample: {fileID: 2100000, guid: b95b72ad190872b419e704a582147709, type: 2}
-  radiusOffset: 0.125
-  steps: 0
 --- !u!1 &4526302475832544887
 GameObject:
   m_ObjectHideFlags: 0

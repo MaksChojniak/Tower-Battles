@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts;
 using DefaultNamespace;
-using DefaultNamespace.ScriptableObjects;
+using MMK;
+using MMK.ScriptableObjects;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;

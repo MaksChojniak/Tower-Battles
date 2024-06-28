@@ -1,5 +1,5 @@
 ﻿using System;
-using DefaultNamespace.ScriptableObjects;
+using MMK.ScriptableObjects;
 using UnityEngine;
 
 namespace DefaultNamespace

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
+using MMK;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static Assets.Scripts.ConfirmationPanel;
 
-namespace Assets.Scripts
+namespace MMK
 {
     public class ConfirmationPanel : MonoBehaviour
     {

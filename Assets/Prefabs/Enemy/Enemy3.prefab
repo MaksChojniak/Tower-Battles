@@ -13,6 +13,10 @@ GameObject:
   - component: {fileID: 1991102936897783340}
   - component: {fileID: 6943624780380348958}
   - component: {fileID: 8565694491517476091}
+  - component: {fileID: 363818408101210610}
+  - component: {fileID: 8691331938702712094}
+  - component: {fileID: 1144996287600815607}
+  - component: {fileID: 4935238813449373917}
   m_Layer: 2
   m_Name: Enemy3
   m_TagString: Enemy
@@ -112,10 +116,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9e470f88542fc34f92c3c6457575011, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DistanceTravelled: 0
+  Hidden: 0
   EnemyData: {fileID: 11400000, guid: 3eac8913db7f440499f49307746a4f1c, type: 2}
-  HealthBar: {fileID: 39564883907803311}
-  Health: 30
+--- !u!114 &363818408101210610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315913079105496499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c1fedc1260d43dc931e40486209d67b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BloodParticlePrefab: {fileID: 7890859117289502679, guid: 7c516218fb02da44baa392183c6345bb,
+    type: 3}
+  RagdollClip: {fileID: 0}
+--- !u!114 &8691331938702712094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315913079105496499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f94f50226a734b4ca7681ab3c81c181f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DieAudio:
+    AudioClip: {fileID: 0}
+    AudioSource: {fileID: 0}
+--- !u!114 &1144996287600815607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315913079105496499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae32834a1c846478e391836c309a6c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HealthBarObject: {fileID: 5070072140375755179}
+  HealthValue: 0
+  BaseHealthValue: 0
+--- !u!114 &4935238813449373917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315913079105496499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11c0b67b185a64ebecc632c6a9ed2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 0
+  DistanceTravelled: 0
 --- !u!1001 &7910391722518194225
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -180,9 +241,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c97a838ea44550f42956f582842216ac, type: 3}
---- !u!224 &39564883907803311 stripped
+--- !u!224 &5070072140375755179 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7875611922878714014, guid: c97a838ea44550f42956f582842216ac,
+  m_CorrespondingSourceObject: {fileID: 3142343637146313114, guid: c97a838ea44550f42956f582842216ac,
     type: 3}
   m_PrefabInstance: {fileID: 7910391722518194225}
   m_PrefabAsset: {fileID: 0}

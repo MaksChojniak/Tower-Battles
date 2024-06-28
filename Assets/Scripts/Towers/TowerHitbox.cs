@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MMK.Towers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -40,8 +41,8 @@ namespace DefaultNamespace
                 if (Physics.Raycast(ray, out hit, 1000))
                 {
                     bool state = hit.transform.gameObject.layer == LayerMask.NameToLayer("Hitbox") && hit.transform.gameObject == this.gameObject;
-                    controller.ShowTowerViewRange(state);
-                    controller.ShowTowerInformation(state);
+                    // controller.ShowTowerViewRange(state);
+                    // controller.ShowTowerInformation(state);
                     
                 }
             }

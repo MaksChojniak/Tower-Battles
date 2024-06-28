@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using DefaultNamespace;
-using DefaultNamespace.ScriptableObjects;
+using MMK.ScriptableObjects;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;

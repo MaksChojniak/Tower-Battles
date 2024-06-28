@@ -1,37 +1,30 @@
 using System;
-using DefaultNamespace.ScriptableObjects;
+using MMK.ScriptableObjects;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Booster", menuName = "Towers/Booster", order = 2)]
-public class Booster : Tower
+namespace MMK.ScriptableObjects
 {
-    [Space(18)]
-    public BoosterUpgradeData[] UpgradesData;
+    [CreateAssetMenu(fileName = "Booster", menuName = "Towers/Booster", order = 2)]
+    public class Booster : Tower
+    {
+        
+        [SerializeField] public float[] UpgradeDiscounts;
+        [SerializeField] public float[] FirerateBoosts;
+        [SerializeField] public float[] SpwnIntervalBoosts;
+        [SerializeField] public float[] IncomeBoosts;
 
 
-    BoosterUpgradeData GetUpgradeData(int index) => UpgradesData[index];
 
-    public string GetUpgradeTitle(int index) => GetUpgradeData(index).UpgradeTitle;
-
-    public Sprite GetUpgradeIcon(int index) => GetUpgradeData(index).UpgradeIcon;
-
-    public long GetUpgradePrice(int index) => GetUpgradeData(index).UpgradePrice;
-    
-    public float GetUpgradeDiscount(int index) => GetUpgradeData(index).UpgradeDiscount;
-    public float GetFirerateBoost(int index) => GetUpgradeData(index).FirerateBoost;
-    public float GetSpwnIntervalBoost(int index) => GetUpgradeData(index).SpwnIntervalBoost;
-    public float GetIncomeBoost(int index) => GetUpgradeData(index).IncomeBoost;
-}
+        public float GetUpgradeDiscount(int Level) => UpgradeDiscounts[Level];
+        public float GetFirerateBoost(int Level) => FirerateBoosts[Level];
+        public float GetSpwnIntervalBoost(int Level) => SpwnIntervalBoosts[Level];
+        public float GetIncomeBoost(int Level) => IncomeBoosts[Level];
+        
+        
+    }
 
 
-[Serializable]
-public class BoosterUpgradeData : UpgradeDataBase
-{
 
-    public float UpgradeDiscount;
-    public float FirerateBoost;
-    public float SpwnIntervalBoost;
-    public float IncomeBoost;
 }
 

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DefaultNamespace;
+using MMK;
+using MMK.Towers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,14 +17,14 @@ public class TowerBarUI : MonoBehaviour
 
     void Awake()
     {
-        TowerSpawner.OnPlaceTower += OnUpdateTowersCount;
-        TowerController.OnDestroyTower += OnUpdateTowersCount;
+        // TowerSpawner.OnPlaceTower += OnUpdateTowersCount;
+        // TowerController.OnDestroyTower += OnUpdateTowersCount;
     }
 
     void OnDestroy()
     {
-        TowerSpawner.OnPlaceTower -= OnUpdateTowersCount;
-        TowerController.OnDestroyTower -= OnUpdateTowersCount;
+        // TowerSpawner.OnPlaceTower -= OnUpdateTowersCount;
+        // TowerController.OnDestroyTower -= OnUpdateTowersCount;
     }
 
 
@@ -50,6 +52,6 @@ public class TowerBarUI : MonoBehaviour
     void DelayedUpdateTowersCount()
     {
 
-        TowersCount.text = $"{GameObject.FindGameObjectsWithTag("Tower").Length}/{TowerSpawner.MaxTowersCount} Towers";
+        TowersCount.text = $"{GameObject.FindGameObjectsWithTag("Tower").Length}/{GameSettings.MAX_TOWERS_COUNT} Towers";
     }
 }

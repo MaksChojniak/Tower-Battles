@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace DefaultNamespace.ScriptableObjects
+namespace MMK.ScriptableObjects
 {
     // [CreateAssetMenu(fileName = "Weapons", menuName = "")]
     public class Tower : ScriptableObject
@@ -10,17 +10,19 @@ namespace DefaultNamespace.ScriptableObjects
         public Sprite TowerSprite;
         public GameObject TowerPrefab;
         public Vector3 OriginPointOffset;
-        public TypeOfBuildng Type;
-
-        [Space(18)]
+        
         public PlacementType PlacementType;
 
-        [Space(18)]
+        
+        public TypeOfBuildng Type; // idk if we need it
+        
+        
         public BaseProperties BaseProperties;
         
-        [Space(18)]
-        public GameProperties GameProperties;
 
+        public Sprite[] UpgradeIcon;
+
+        public long[] UpgradePrice;
         
         
 #region Base Properties
@@ -33,11 +35,16 @@ namespace DefaultNamespace.ScriptableObjects
 
 #endregion
         
-#region Game Properties
 
-        public long GetPrice() => GameProperties.Price;
 
-#endregion
+        public long GetPrice() => UpgradePrice[0];
+        public long GetUpgradePrice(int Level) => UpgradePrice[Level];
+        
+        public Sprite GetUpgradeSprite(int Level) => UpgradeIcon[Level];
+        
+        
+        
+
     }
 
 
@@ -49,25 +56,8 @@ namespace DefaultNamespace.ScriptableObjects
         public bool IsUnlocked;
     }
     
-    [Serializable]
-    public class GameProperties
-    {
-        public long Price;
-    }
 
-    [Serializable]
-    public class UpgradeDataBase
-    {
-        public string UpgradeTitle;
-        //public string UpgradeDescription;
-        public Sprite UpgradeIcon;
 
-        public long UpgradePrice;
-        //public long SellPrice;
-        
-        public Weapon Weapon;
-    }
-    
     public enum PlacementType
     {
         Ground,

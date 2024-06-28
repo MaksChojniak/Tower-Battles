@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Data;
-using Assets.Scripts;
+using MMK;
 using TMPro;
 using UnityEngine;
 

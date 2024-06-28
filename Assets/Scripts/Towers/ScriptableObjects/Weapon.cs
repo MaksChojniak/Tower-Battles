@@ -1,10 +1,11 @@
 ﻿using System;
+using MMK.Towers;
 using Unity.VisualScripting;
 using UnityEngine;
 
-namespace DefaultNamespace.ScriptableObjects
+namespace MMK.ScriptableObjects
 {
-    [CreateAssetMenu(fileName = "Weapons", menuName = "Weapon")]
+    [CreateAssetMenu(fileName = "Weapons", menuName = "Weapon/Weapons")]
     public class Weapon : ScriptableObject
     {
         public string WeaponName;
@@ -23,6 +24,10 @@ namespace DefaultNamespace.ScriptableObjects
         
         public float SplashDamageSpread;
         public int MaxEnemiesInSpread;
+        
+        
+        public const float BurningTime = 2f;
+        public const float BurningInterval = 0.25f;
     }
     
     
@@ -36,7 +41,8 @@ namespace DefaultNamespace.ScriptableObjects
     {
         Single,
         Spraed,
-        Splash
+        Splash,
+        Fire
     }
 
     public enum ShootingType

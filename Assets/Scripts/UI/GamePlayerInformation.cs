@@ -14,9 +14,21 @@ public class GamePlayerInformation : MonoBehaviour
     public static event Action<long> UpdateBalance;
     public static event Action<int> UpdateHealth;
 
-    public static Action<long> ChangeBalance;
-    public static Action<int> ChangeHP;
+    
+    public delegate void ChangeBalanceDelegate(long Value);
+    public static ChangeBalanceDelegate ChangeBalance;
 
+    public delegate long GetBalanceDelegate();
+    public static GetBalanceDelegate GetBalance;
+    
+
+    public delegate void ChangeHealthDelegate(int Value);
+    public static ChangeHealthDelegate ChangeHealth;
+    
+    public delegate int GetHealthDelegate();
+    public static GetHealthDelegate GetHealth;
+
+    
     public long Balance;
     public int Health;
 
@@ -25,12 +37,16 @@ public class GamePlayerInformation : MonoBehaviour
     {
         Instance = this;
         
-        ChangeBalance += OnChangeBalance;
         
-        ChangeHP += OnChangeHealth;
-
-        WaveManager.OnEndWave += GetWaveReward;
         WaveManager.OnEndAllWaves += OnEndAllWaves;
+        WaveManager.OnEndWave += GetWaveReward;
+
+        GetBalance += OnGetBalance;
+        ChangeBalance += OnChangeBalance;
+
+        GetHealth += OnGetHealth;
+        ChangeHealth += OnChangeHealth;
+        
 
         Health = 100;
         Balance = 10500;
@@ -45,13 +61,22 @@ public class GamePlayerInformation : MonoBehaviour
     void OnDestroy()
     {
         ChangeBalance -= OnChangeBalance;
+        GetBalance -= OnGetBalance;
 
-        ChangeHP -= OnChangeHealth;
+        ChangeHealth -= OnChangeHealth;
+        GetHealth -= OnGetHealth;
         
         WaveManager.OnEndWave -= GetWaveReward;
         WaveManager.OnEndAllWaves -= OnEndAllWaves;
     }
 
+    
+    
+    long OnGetBalance() => Balance;
+    int OnGetHealth() => Health;
+
+    
+    
     void OnEndAllWaves()
     {
         EndGame(true, 5f);
@@ -61,10 +86,8 @@ public class GamePlayerInformation : MonoBehaviour
     {
         ChangeBalance(reward);
     }
-
-    public long GetBalance() => Balance;
-    public int GetHealth() => Health;
-
+    
+    
     void OnChangeBalance(long value)
     {
         Balance += value;

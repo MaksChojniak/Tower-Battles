@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using MMK;
 using TMPro;
 using UnityEngine;
 
@@ -69,7 +70,7 @@ namespace DefaultNamespace
                     message = "Not Enough Money!";
                     break;
                 case WarningType.MaxTowersCountPlaced:
-                    message = $"{TowerSpawner.MaxTowersCount}/{TowerSpawner.MaxTowersCount} Towers are Placed";
+                    message = $"{GameSettings.MAX_TOWERS_COUNT}/{GameSettings.MAX_TOWERS_COUNT} Towers are Placed";
                     break;
                 case WarningType.DeckIsEmpty:
                     message = $"Before Starting, Create Your Deck. Click the 'Towers' Button to Open up Your Inventory";

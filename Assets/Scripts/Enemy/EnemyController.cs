@@ -1,84 +1,106 @@
 using System;
+using MMK.Extensions;
 using UnityEngine;
 using PathCreation;
-using UnityEngine.UI;
 
-public class EnemyController : MonoBehaviour
-{
-    public static event Action OnDestroyEnemy;
-    public event Action OnMove;
-    public Action<int> TakeDamage;
-    
-    public float DistanceTravelled;
+// namespace MMK.Enemy
+// {
 
-    [Space(18)]
-    [SerializeField] Enemy EnemyData;
-    [SerializeField] RectTransform HealthBar;
-
-    [Space(18)]
-    [SerializeField] int Health;
-
-    PathCreator pathCreator;
-    
-
-    void Awake()
+    [RequireComponent(typeof(EnemyAnimation))]
+    [RequireComponent(typeof(EnemyAudio))]
+    [RequireComponent(typeof(EnemyMovement))]
+    [RequireComponent(typeof(Health))]
+    public class EnemyController : MonoBehaviour
     {
-        TakeDamage += Damage;
+        public delegate void SetBurningActiveDelegate(bool State);
+        public SetBurningActiveDelegate SetBurningActive; 
         
-        pathCreator = GameObject.FindGameObjectWithTag("Path").GetComponent<PathCreator>();
+        [Header("Stats")]
+        public bool Hidden;
+        public bool IsBurning;
 
-        Health = EnemyData.GetBaseHealth();
-    }
-
-    void OnDestroy()
-    {
-        TakeDamage -= Damage;
-    }
-
-    void Update()
-    {
-        Move();
         
-    }
-
-    void Move()
-    {
-        DistanceTravelled += EnemyData.Speed * 2.5f * Time.deltaTime;
-        transform.position = pathCreator.path.GetPointAtDistance(DistanceTravelled);
-        transform.rotation = pathCreator.path.GetRotationAtDistance(DistanceTravelled);
+        [Space(12)]
+        [SerializeField] Enemy EnemyData;
         
-        OnMove?.Invoke();
-    }
 
-    public float GetDistanceTravelled() => DistanceTravelled;
+        public Health HealthComponent { private set; get; }
+        public EnemyMovement MovementComponent { private set; get; }
+        public EnemyAnimation AnimationComponent { private set; get; }
+        public EnemyAudio AudioComponent { private set; get; }
+         
+         
 
-    public void Damage(int value)
-    {
-        Health -= value;
-        if (Health < 0)
-            Health = 0;
+         void Awake()
+         {
+             IsBurning = false;
+            
+            HealthComponent = GetComponent<Health>();
+            MovementComponent = GetComponent<EnemyMovement>();
+            AnimationComponent = GetComponent<EnemyAnimation>();
+            AudioComponent = GetComponent<EnemyAudio>();
 
-        OnTakeDamage();
-    }
-
-    void OnTakeDamage()
-    {
-        UpdateHealthBar();
-
-        if (Health <= 0)
-        {
-            OnDestroyEnemy?.Invoke();
-            Destroy(this.gameObject);
+            RegisterHandlers();
+            
         }
+
+        void OnDestroy()
+        {
+            UnregisterHandlers();
+            
+        }
+
+        void Start()
+        {
+            MovementComponent.SetSpeed(EnemyData.Speed);
+            HealthComponent.SetHealth(EnemyData.GetBaseHealth());
+            
+        }
+
+        void Update()
+        {
+
+        }
+
+
+
+        
+#region Register & Unregister Handlers
+
+        void RegisterHandlers()
+        {
+            HealthComponent.OnDie += OnDie;
+            SetBurningActive += OnSetBurningActive;
+
+        }
+        
+        void UnregisterHandlers()
+        {
+            SetBurningActive -= OnSetBurningActive;
+            HealthComponent.OnDie -= OnDie;
+            
+        }
+        
+#endregion
+        
+
+
+
+        void OnDie()
+        {
+            MovementComponent.SetSpeed(0);
+            // Destroy(this.gameObject);
+            this.Invoke(() => Destroy(this.gameObject) , 1f);
+        }
+
+
+        void OnSetBurningActive(bool state)
+        {
+            IsBurning = state;
+            
+            // TODO set bruning animation state
+        }
+        
     }
 
-    public int GetHealth() => Health;
-
-    void UpdateHealthBar()
-    {
-        HealthBar.GetComponent<Image>().fillAmount = Health <= 0 ? 0 : (float)Health / (float)EnemyData.GetBaseHealth();
-    }
-    
-
-    
-}
+// }

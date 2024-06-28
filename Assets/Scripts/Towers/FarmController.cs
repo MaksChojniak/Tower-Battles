@@ -1,80 +1,197 @@
-﻿using DefaultNamespace.ScriptableObjects;
+﻿using MMK.ScriptableObjects;
+using MMK.Towers;
+using UnityEngine;
 
-namespace DefaultNamespace
+namespace MMK.Towers
 {
+    
+    [RequireComponent(typeof(TowerIncome))]
+    [RequireComponent(typeof(FarmAnimation))]
+    [RequireComponent(typeof(FarmAudio))]
     public class FarmController : TowerController
     {
 
-        public Farm farmData;
+        // public Farm farmData;
+        //
+        // public int TotalEarnedMoney;
+        //
+        //
+        // protected override (object, TypeOfBuildng) GetTowerData()
+        // {
+        //     return (farmData, farmData.Type);
+        //     
+        //     // return base.GetTowerData();
+        // }
+        //
+        //
+        // public override void Awake()
+        // {
+        //     WaveManager.OnStartWave += EarnFarmBonusProcess;
+        //     
+        //     base.Awake();
+        //     
+        //     UpdateViewRange(0f);
+        // }
+        //
+        // public override void OnDestroy()
+        // {
+        //     WaveManager.OnStartWave -= EarnFarmBonusProcess;
+        //     
+        //     base.OnDestroy();
+        // }
+        //
+        // protected override void Destroy()
+        // {
+        //     GamePlayerInformation.ChangeBalance(this.GetTowerSellValue(farmData.Type));
+        //
+        //     this.ShowTowerInformation(false);
+        //     
+        //     Destroy(this.gameObject);
+        //     
+        //     base.Destroy();
+        // }
+        //
+        // public override void Update()
+        // {
+        //     base.Update();
+        // }
+        //
+        // protected override void OnUpgradeTower(TowerController towerController)
+        // {
+        //     if (towerController != this || UpgradeLevel >= 4)
+        //         return;
+        //
+        //     if (GamePlayerInformation.Instance == null || GamePlayerInformation.Instance.GetBalance() < farmData.GetUpgradePrice(UpgradeLevel))
+        //     {
+        //         WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+        //         return;
+        //     }
+        //
+        //     GamePlayerInformation.ChangeBalance(-farmData.GetUpgradePrice(UpgradeLevel));
+        //     
+        //     base.OnUpgradeTower(towerController);
+        // }
+        //
+        //
+        // void EarnFarmBonusProcess()
+        // {
+        //     long waveReward = farmData.GetWaveReward(UpgradeLevel);
+        //     
+        //     GamePlayerInformation.ChangeBalance(waveReward);
+        //     
+        //     // TODO Show info for farm bonus
+        //     // ShowFarmBonus(waveReward); cos takiego
+        // }
         
-        public int TotalEarnedMoney;
         
+        public Farm FarmData;
 
-        protected override (object, TypeOfBuildng) GetTowerData()
+
+        public TowerIncome TowerIncomeComponent { private set; get; }
+        public FarmAnimation AnimationComponent { private set; get; }
+        public FarmAudio AudioComponent { private set; get; }
+        
+        
+        
+        
+        protected override void Awake()
         {
-            return (farmData, farmData.Type);
-            
-            // return base.GetTowerData();
-        }
-
-
-        public override void Awake()
-        {
-            WaveManager.OnStartWave += EarnFarmBonusProcess;
+            TowerIncomeComponent = this.GetComponent<TowerIncome>();
+            AnimationComponent = this.GetComponent<FarmAnimation>();
+            AudioComponent = this.GetComponent<FarmAudio>();
             
             base.Awake();
-            
-            UpdateViewRange(0f);
         }
 
-        public override void OnDestroy()
+        protected override void OnDestroy()
         {
-            WaveManager.OnStartWave -= EarnFarmBonusProcess;
-            
             base.OnDestroy();
         }
 
-        protected override void Destroy()
+        protected override void Start()
         {
-            GamePlayerInformation.ChangeBalance(this.GetTowerSellValue(farmData.Type));
-
-            this.ShowTowerInformation(false);
-            
-            Destroy(this.gameObject);
-            
-            base.Destroy();
+            base.Start();
         }
 
-        public override void Update()
+        protected override void Update()
         {
             base.Update();
         }
 
-        protected override void OnUpgradeTower(TowerController towerController)
+        protected override void FixedUpdate()
         {
-            if (towerController != this || UpgradeLevel >= 4)
-                return;
+            base.FixedUpdate();
+        }
 
-            if (GamePlayerInformation.Instance == null || GamePlayerInformation.Instance.GetBalance() < farmData.GetUpgradePrice(UpgradeLevel))
-            {
-                WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
-                return;
-            }
+        
+        
+#region Register & Unregister Handlers
 
-            GamePlayerInformation.ChangeBalance(-farmData.GetUpgradePrice(UpgradeLevel));
+        protected override void RegisterHandlers()
+        {
+            base.RegisterHandlers();
             
-            base.OnUpgradeTower(towerController);
+        }
+
+        protected override void UnregisterHndlers()
+        {
+            base.UnregisterHndlers();
+            
+        }
+
+#endregion
+        
+        
+        
+        
+        protected override bool OnUpgradeLevel()
+        {
+            long upgradePrice = FarmData.GetUpgradePrice(Level);
+
+            if (GamePlayerInformation.GetBalance() < upgradePrice)
+                return false;
+            
+            GamePlayerInformation.ChangeBalance(-upgradePrice);
+            
+            return base.OnUpgradeLevel();
+        }
+
+
+        protected override void UploadNewData()
+        {
+            base.UploadNewData();
+
+            
+            TowerIncomeComponent.SetWaveIncome(FarmData.GetWaveIncome(Level));
+            
+        }
+
+
+
+
+        protected override TowerInformations OnGetTowerInformations()
+        {
+            return new TowerInformations()
+            {
+                Data = FarmData,
+                Controller = this
+            };
+            // return base.OnGetTowerInformations();
+        }
+
+
+
+        protected override void RemoveTowerProcess()
+        {
+            long sellPrice = FarmData.GetTowerSellValue(Level);
+            GamePlayerInformation.ChangeBalance(sellPrice);
+            
+            base.RemoveTowerProcess();
+            
         }
         
-
-        void EarnFarmBonusProcess()
-        {
-            long waveReward = farmData.GetWaveReward(UpgradeLevel);
-            
-            GamePlayerInformation.ChangeBalance(waveReward);
-            
-            // TODO Show info for farm bonus
-            // ShowFarmBonus(waveReward); cos takiego
-        }
+        
+        
+        
     }
 }

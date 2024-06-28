@@ -1,95 +1,241 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DefaultNamespace;
-using DefaultNamespace.ScriptableObjects;
+using MMK;
+using MMK.ScriptableObjects;
+using MMK.Towers;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 using TMPro;
+using Towers;
 
 public class TowerSpawner : MonoBehaviour
 {
-    public static event Action OnPlaceTower;
+    public delegate void OnStartPlacingTowerDelegate(TowerController Tower);
+    public static event OnStartPlacingTowerDelegate OnStartPlacingTower;
     
-    [SerializeField] Tower[] towers;
+    public delegate void OnPlaceTowerDelegate(TowerController Tower, bool CanBePlaced);
+    public static event OnPlaceTowerDelegate OnPlacingTower;
+    
+    public delegate void OnTowerPlacedDelegate(TowerController Tower);
+    public static event OnTowerPlacedDelegate OnTowerPlaced;
+    
+    
+    [Header("Deck")]
+    [SerializeField] Tower[] Deck;
  
-    [SerializeField] GameObject selectedBuilidng;
-    [SerializeField] bool posibilityOfPlace;
+    [Space(12)]
+    [Header("Stats")]
+    [SerializeField] TowerController SelectedBuilidng;
+    [SerializeField] bool PosibilityOfPlace;
 
+    [Space(12)]
+    [Header("Properties UI")]
     [SerializeField] GameObject cancelationTrashCan;
 
-    public const int MaxTowersCount = 10;
+    
     int offsetDirection = 1;
-
     Vector2 offset;
+
+
+    TowerController[] towers;
+    // ViewRange[] viewRanges;
+    // SpawnRange[] spawnRanges;
+    
+    
 
     void Awake()
     {
-        towers = PlayerTowerInventory.Instance.TowerDeck;
+        Deck = PlayerTowerInventory.Instance.TowerDeck;
+    }
+
+    void OnDestroy()
+    {
+        
+    }
+
+    void Start()
+    {
+        
     }
 
     void Update()
     {
-        cancelationTrashCan.SetActive(selectedBuilidng != null);
+        cancelationTrashCan.SetActive(SelectedBuilidng != null);
 
         offsetDirection = SettingsManager.Instance.SettingsData.HandMode == Assets.Scripts.Settings.HandModeType.Right ? -1 : 1;
         offset = new Vector2(offsetDirection * 3 * (float)Screen.width, 2 * (float)Screen.height) * 1.5f / 100;
+        
     }
 
-    public void SpawnBuilding(int index)
+    void FixedUpdate()
     {
-        if (towers[index] == null) return;
+        
+    }
 
-        foreach (var tower in GameObject.FindObjectsOfType<TowerController>())
-        {
-            tower.ShowTowerViewRange(false);
-            tower.ShowTowerInformation(false);
-        }
 
-        if (towers[index].GetPrice() > GamePlayerInformation.Instance.GetBalance())
-        {
-            // ShowBuildingInformations.showNotEnoughMoneyMessage();
-            WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+
+#region Spawnig Tower
+
+    
+    public void StartPlacingTower(int Index)
+    {
+        if (Deck[Index] == null) return;
+
+        // Initialize towers
+        towers = GameObject.FindObjectsOfType<TowerController>();
+        // viewRanges = towers.Select(tower => tower.ViewRangeComponent ).ToArray();
+        // spawnRanges = towers.Select(tower => tower.SpawnRangeComponent ).ToArray();
+
+        
+        if(!CanBuyMoreTowers(Index))
             return;
+
+        
+        SelectedBuilidng = Instantiate(Deck[Index].TowerPrefab, Input.GetTouch(0).position, Quaternion.identity, transform)
+            .GetComponent<TowerController>();
+
+        PosibilityOfPlace = false;
+
+        // selectedBuilidng.GetComponent<TowerController>().ShowTowerViewRange(true);
+        // TowerController.ShowTowerSpawnRange(selectedBuilidng, true);
+        
+        OnStartPlacingTower?.Invoke(SelectedBuilidng);
+
+        Ground.UpdateGround(Deck[Index].PlacementType);
+        
+    }
+    
+
+    public void PlacingTower(int index)
+    {
+        if (SelectedBuilidng == null)
+            return;
+
+        if (DetectGround(index, SelectedBuilidng, out PosibilityOfPlace, out var Position))
+        {
+            SelectedBuilidng.transform.position = Position;
+
+            // selectedBuilidng.GetComponent<TowerController>().SpawnRangeComponent.SetState(posibilityOfPlace);
+            // selectedBuilidng.GetComponent<TowerController>().ViewRangeComponent.SetState(posibilityOfPlace);
         }
 
-        if (GameObject.FindObjectsOfType<TowerController>().Length >= MaxTowersCount)
+        // if (Input.touchCount > 0)
+        // {
+        //     Vector3 pos = Input.GetTouch(0).position;
+        //
+        //     Ray ray = Camera.main.ScreenPointToRay(pos + (Vector3)offset);
+        //     RaycastHit hit;
+        //
+        //     if (Physics.Raycast(ray, out hit, 1000)) //, 1 << 6))
+        //     {
+        //         posibilityOfPlace = hit.transform.gameObject.TryGetComponent<Ground>(out var ground) && ground.groundType == deck[index].PlacementType;
+        //
+        //         selectedBuilidng.transform.position = new Vector3(hit.point.x, hit.point.y + 1f, hit.point.z);
+        //
+        //         if (posibilityOfPlace)
+        //             posibilityOfPlace = selectedBuilidng.GetComponent<TowerController>().SpawnRangeComponent;
+        //
+        //         // selectedBuilidng.GetComponent<TowerController>().SpawnRangeComponent.SetState(posibilityOfPlace);
+        //         // selectedBuilidng.GetComponent<TowerController>().ViewRangeComponent.SetState(posibilityOfPlace);
+        //     }
+        // }
+        
+        OnPlacingTower?.Invoke(SelectedBuilidng, PosibilityOfPlace);
+    }
+
+    
+    public void PlaceTower(int index)
+    {
+        Ground.OnStopPlacingTower();
+        
+        if (SelectedBuilidng == null)
+            return;
+        
+        // TowerController.ShowTowerSpawnRange(selectedBuilidng, false);
+        
+
+        if (PosibilityOfPlace)
+        {
+            GamePlayerInformation.ChangeBalance(-Deck[index].GetPrice());
+            
+            // selectedBuilidng.GetComponent<TowerController>().ShowTowerViewRange(false);
+            // selectedBuilidng.GetComponent<TowerController>().PlaceTower();
+
+            OnTowerPlaced?.Invoke(SelectedBuilidng);
+            
+            PosibilityOfPlace = false;
+            SelectedBuilidng = null;
+        }
+        else
+        {
+            Destroy(SelectedBuilidng.gameObject);
+            SelectedBuilidng = null;
+        }
+            
+    }
+
+    
+#endregion
+    
+    
+    
+    
+    public void CancelPlacingTower()
+    {
+        if(SelectedBuilidng == null)
+            return;
+
+        // TowerController.ShowTowerSpawnRange(null, false);
+        
+        Destroy(SelectedBuilidng);
+        PosibilityOfPlace = false;
+    }
+
+
+
+
+
+
+    
+
+    bool CanBuyMoreTowers(int Index)
+    {
+        if (Deck[Index].GetPrice() > GamePlayerInformation.GetBalance())
+        {
+            WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+            return false;
+        }
+
+        if (towers.Length >= GameSettings.MAX_TOWERS_COUNT)
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.MaxTowersCountPlaced);
-            return;
+            return false;
         }
 
-        if (towers[index].Type == TypeOfBuildng.Booster)
+        if (Deck[Index].Type == TypeOfBuildng.Booster)
         {
-            bool boosterBuildingIsPlaced = GameObject.FindObjectsOfType<BoosterController>().Length > 0;
+            bool boosterBuildingIsPlaced = towers.Where(tower => tower.TryGetComponent<Booster>(out var booster) ).ToArray().Length > 0;
             
             if (boosterBuildingIsPlaced)
             {
                 WarningSystem.ShowWarning(WarningSystem.WarningType.SecondBooster);
-                return;
+                return false;
             }
         }
 
-        selectedBuilidng = Instantiate(towers[index].TowerPrefab, Input.GetTouch(0).position, Quaternion.identity, transform);
-
-        posibilityOfPlace = false;
-
-        selectedBuilidng.GetComponent<TowerController>().ShowTowerViewRange(true);
-        TowerController.ShowTowerSpawnRange(selectedBuilidng, true);
-
-        Ground.UpdateGround(towers[index].PlacementType);
+        return true;
     }
 
-    public void MoveBuilding(int index)
+
+    bool DetectGround(int Index, TowerController Tower, out bool posibilityOfPlace, out Vector3 Position)
     {
-        if (towers[index] == null) return;
-
-        if (towers[index].GetPrice() > GamePlayerInformation.Instance.GetBalance())
-            return;
-
-        if (selectedBuilidng == null) return;
+        posibilityOfPlace = false;
+        Position = Vector3.zero;
 
         if (Input.touchCount > 0)
         {
@@ -100,65 +246,20 @@ public class TowerSpawner : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit, 1000)) //, 1 << 6))
             {
-                posibilityOfPlace = hit.transform.gameObject.TryGetComponent<Ground>(out var ground) && ground.groundType == towers[index].PlacementType;
-
-                selectedBuilidng.transform.position = new Vector3(hit.point.x, hit.point.y + 1f, hit.point.z);
-
+                posibilityOfPlace = hit.transform.gameObject.TryGetComponent<Ground>(out var ground) && ground.groundType == Deck[Index].PlacementType;
                 if (posibilityOfPlace)
-                    posibilityOfPlace = selectedBuilidng.GetComponent<TowerController>().SpawnRange.IsAble();
+                    posibilityOfPlace = Tower.SpawnRangeComponent.CanBePlaced();
 
-                selectedBuilidng.GetComponent<TowerController>().SpawnRange.SetState(posibilityOfPlace);
-                selectedBuilidng.GetComponent<TowerController>().ViewRange.SetState(posibilityOfPlace);
+                Position = new Vector3(hit.point.x, hit.point.y + 1f, hit.point.z);
+
+                return true;
             }
         }
+
+        return false;
+
     }
-
-    public void PlaceBuilding(int index)
-    {
-        Ground.OnStopPlacingTower();
-        
-        if (towers[index] == null)
-            return;
-        
-        if (towers[index].GetPrice() > GamePlayerInformation.Instance.GetBalance())
-            return;
-        
-        if (selectedBuilidng == null)
-            return;
-        
-        TowerController.ShowTowerSpawnRange(selectedBuilidng, false);
-        
-
-        if (posibilityOfPlace)
-        {
-            GamePlayerInformation.ChangeBalance(-towers[index].GetPrice());
-            
-            selectedBuilidng.GetComponent<TowerController>().ShowTowerViewRange(false);
-            selectedBuilidng.GetComponent<TowerController>().PlaceTower();
-            // StartCoroutine(SetBuildingValues(selectedBuilidng));
-            
-            posibilityOfPlace = false;
-            selectedBuilidng = null;
-            
-            OnPlaceTower?.Invoke();
-        }
-        else
-        {
-            Destroy(selectedBuilidng);
-            selectedBuilidng = null;
-        }
-            
-    }
-
-
-    public void CancelPlacingBuilding()
-    {
-        if(selectedBuilidng == null)
-            return;
-
-        TowerController.ShowTowerSpawnRange(null, false);
-        
-        Destroy(selectedBuilidng);
-        posibilityOfPlace = false;
-    }
+    
+    
+    
 }

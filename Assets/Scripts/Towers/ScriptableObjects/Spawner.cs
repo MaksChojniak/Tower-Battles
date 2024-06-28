@@ -1,10 +1,16 @@
 ﻿using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "Spawner", menuName = "Buildings/Spawner")]
-public class Spawner : Building
+namespace MMK.ScriptableObjects
 {
-    public Vehicle spawnedBuilding;
+    [CreateAssetMenu(fileName = "Spawner", menuName = "Buildings/Spawner")]
+    public class Spawner : Tower
+    {
+        
+        public Tower Tower;
 
-    public double spawnInterval;
+        public double[] SpawnIntervals;
+
+
+    }
 }

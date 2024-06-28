@@ -196,6 +196,12 @@ GameObject:
   m_Component:
   - component: {fileID: 4143877711466309262}
   - component: {fileID: 3049298684329862677}
+  - component: {fileID: 2882103868473529327}
+  - component: {fileID: 2507927013354496988}
+  - component: {fileID: 1029531472924601118}
+  - component: {fileID: 1709726011370633529}
+  - component: {fileID: 8650706833975597806}
+  - component: {fileID: 4249188922381717833}
   m_Layer: 2
   m_Name: Wheat Farm
   m_TagString: Untagged
@@ -239,15 +245,109 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1a3f3eb5f70474481033afaf17b851b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpgradeLevel: 0
+  Level: 0
   IsPlaced: 0
-  targetMode: 0
-  CurrentTowerObject: {fileID: 0}
-  ViewRange: {fileID: 5089337932868163148}
-  SpawnRange: {fileID: 6588233400380571196}
-  SelectedRingImage: {fileID: 4959421635067697374}
-  farmData: {fileID: 11400000, guid: 51b1448c25e938249be9d320d8b977db, type: 2}
-  TotalEarnedMoney: 0
+  FarmData: {fileID: 11400000, guid: 51b1448c25e938249be9d320d8b977db, type: 2}
+--- !u!114 &2882103868473529327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4143877711466309256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e17074e0f8664cf890d1fb66745c3f70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WaveIncome: 0
+  TotalWaveIncome: 0
+--- !u!114 &2507927013354496988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4143877711466309256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 175f329184e54bb1a3d9e7f4d9931250, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LevelUpClip: {fileID: 0}
+  RemoveTowerClip: {fileID: 0}
+  IncomeParticlePrefab: {fileID: 6231767993991750681, guid: 2f134346cf6c4804292fd3e3b8c3158b,
+    type: 3}
+  IncomeUIPrefab: {fileID: 4062201794968849389, guid: f049f69dee309ac4ba24e251de896be8,
+    type: 3}
+--- !u!114 &1029531472924601118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4143877711466309256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72237227a62d425d929fe6d61ad4aabf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnTowerClickedAudio:
+    AudioClip: {fileID: 0}
+    AudioSource: {fileID: 0}
+  LevelUpAudio:
+    AudioClip: {fileID: 0}
+    AudioSource: {fileID: 0}
+  RemoveTowerAudio:
+    AudioClip: {fileID: 0}
+    AudioSource: {fileID: 0}
+  PlaceTowerAudio:
+    AudioClip: {fileID: 0}
+    AudioSource: {fileID: 0}
+  IncomeAudio:
+    AudioClip: {fileID: 0}
+    AudioSource: {fileID: 0}
+--- !u!114 &1709726011370633529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4143877711466309256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ce90910d89a480d837be2fccd210128, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HitboxObject: {fileID: 761250950605158958}
+--- !u!114 &8650706833975597806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4143877711466309256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691f5b08009c46728b770f43d94abdf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpawnRangeObject: {fileID: 7333917790690380473}
+  RedMaterial: {fileID: 2100000, guid: 535ee3c143991744488139437469df53, type: 2}
+  GreenMaterial: {fileID: 2100000, guid: 02b7f24ec109e9049a0a66134934018b, type: 2}
+--- !u!114 &4249188922381717833
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4143877711466309256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f93f6d8159b46e29660e6b4ddf03ac5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RingObject: {fileID: 5312611521155340888}
 --- !u!1 &5144825771152525345
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,18 +455,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 875521398128790993}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6588233400380571196 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6289383865374241773, guid: 13c87166f07a0144b9bf802c4cc2e1e2,
+--- !u!1 &7333917790690380473 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7629437849086773096, guid: 13c87166f07a0144b9bf802c4cc2e1e2,
     type: 3}
   m_PrefabInstance: {fileID: 875521398128790993}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7e709b05f794374aba242b31c7ccff6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &989796749785021138
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -712,18 +806,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4352654856127671212}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5089337932868163148 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8847120693009677792, guid: 533c8567e7547c24a9f420dc7ad3d1e9,
-    type: 3}
-  m_PrefabInstance: {fileID: 4352654856127671212}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 072d5100dcdad7a44a09edae20fa88b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &5210249719263937778
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -786,6 +868,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7955756115333628381, guid: c688dc51876fdb04a85e4a590ed24bfa,
+        type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 8466077859122818715, guid: c688dc51876fdb04a85e4a590ed24bfa,
         type: 3}
       propertyPath: m_Name
@@ -799,9 +886,9 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 5210249719263937778}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &4959421635067697374 stripped
+--- !u!1 &5312611521155340888 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 909130299468061740, guid: c688dc51876fdb04a85e4a590ed24bfa,
+  m_CorrespondingSourceObject: {fileID: 140938167746485930, guid: c688dc51876fdb04a85e4a590ed24bfa,
     type: 3}
   m_PrefabInstance: {fileID: 5210249719263937778}
   m_PrefabAsset: {fileID: 0}

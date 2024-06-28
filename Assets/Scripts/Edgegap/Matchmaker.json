@@ -1,0 +1,49 @@
+﻿{
+  "auth": {
+    "type": "Token",
+    "configuration": {
+      "token": "test_token",
+      "key": "player_id"
+    }
+  },
+  "profiles": [
+    {
+      "profile_id": "GameExample",
+      "name": "ConfigurationExample",
+      "app": "test-application",
+      "version": "0.1",
+      "game_port": "Game Port",
+      "inject_env": true,
+      "delay_to_start": 4,
+      "refresh": 5,
+      "match_player_count": 4,
+      "selectors": [
+        {
+          "default": "casual",
+          "key": "mode",
+          "inject_env": true,
+          "items": [
+            "casual",
+            "ranked",
+            "private"
+          ],
+          "required": true,
+          "name": "GameMode"
+        }
+      ],
+      "filters": [
+        {
+          "maximum": 2000.0,
+          "difference": {
+            "negative": 20.0,
+            "positive": 30.0
+          },
+          "key": "score",
+          "required": true,
+          "name": "Elo Score",
+          "minimum": 0.0
+        }
+      ]
+    }
+  ]
+}

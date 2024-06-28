@@ -1,30 +1,33 @@
 ﻿using System;
-using DefaultNamespace.ScriptableObjects;
+using MMK.ScriptableObjects;
+using MMK.Towers;
 using UnityEngine;
 
-
-[CreateAssetMenu(fileName = "Farm", menuName = "Buildings/Farm")]
-public class Farm : Tower
+namespace MMK.ScriptableObjects
 {
-    [Space(18)]
-    public FarmUpgradeData[] UpgradesData;
 
-    
-    FarmUpgradeData GetUpgradeData(int index) => UpgradesData[index];
+    [CreateAssetMenu(fileName = "Farm", menuName = "Buildings/Farm")]
+    public class Farm : Tower
+    {
 
-    public string GetUpgradeTitle(int index) => GetUpgradeData(index).UpgradeTitle;
+        [SerializeField] public long[] WaveIncome;
 
-    public Sprite GetUpgradeIcon(int index) => GetUpgradeData(index).UpgradeIcon;
 
-    public long GetUpgradePrice(int index) => Mathf.RoundToInt(GetUpgradeData(index).UpgradePrice * TowerControllerUtility.GetBoosterData().UpgradeDiscount);
+        public long GetWaveIncome(int Level) => WaveIncome[Level];
+        
 
-    public long GetWaveReward(int index) => Mathf.RoundToInt(GetUpgradeData(index).WaveReward * TowerControllerUtility.GetBoosterData().IncomeBoost);
+        // FarmUpgradeData GetUpgradeData(int index) => UpgradesData[index];
+        //
+        // public string GetUpgradeTitle(int index) => GetUpgradeData(index).UpgradeTitle;
+        //
+        // public Sprite GetUpgradeIcon(int index) => GetUpgradeData(index).UpgradeIcon;
+        //
+        // public long GetUpgradePrice(int index) => Mathf.RoundToInt(GetUpgradeData(index).UpgradePrice * TowerControllerUtility.GetBoosterData().UpgradeDiscount);
+        //
+        // public long GetWaveReward(int index) => Mathf.RoundToInt(GetUpgradeData(index).WaveReward * TowerControllerUtility.GetBoosterData().IncomeBoost);
+
+    }
+
 
 }
 
-[Serializable]
-public class FarmUpgradeData : UpgradeDataBase
-{
-
-    public long WaveReward;
-}

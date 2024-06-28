@@ -12,21 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6c4a120c59645129990c767c7aa1697, type: 3}
   m_Name: Spawner1
   m_EditorClassIdentifier: 
-  buildingName: Spawner
-  unlockPrice: 0
-  unlocked: 0
-  buildingPrefab: {fileID: 7600840362920964263, guid: fdb0e7c4a8a58174593884edf08a041c,
-    type: 3}
-  buildingImage: {fileID: 21300000, guid: f95f697d66d238446b1ab717def09945, type: 3}
-  type: 1
-  price: 20
-  upgradePrices: 9600000000000000
-  sellPrices: 6400000000000000
-  upgradeTitle:
-  - title
-  upgradeDescription:
-  - desc
-  viewRange:
+  TowerName: 
+  TowerSprite: {fileID: 0}
+  TowerPrefab: {fileID: 0}
+  OriginPointOffset: {x: 0, y: 0, z: 0}
+  PlacementType: 0
+  Type: 0
+  BaseProperties:
+    UnlockPrice: 0
+    RequiredWinsCount: 0
+    IsUnlocked: 0
+  UpgradeIcon:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  UpgradePrice: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
+  Tower: {fileID: 0}
+  SpawnIntervals:
   - 0
-  spawnedBuilding: {fileID: 11400000, guid: 3ef019b234584ee4aae1744c367c732e, type: 2}
-  spawnInterval: 5
+  - 0
+  - 0
+  - 0
+  - 0

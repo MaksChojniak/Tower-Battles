@@ -30,10 +30,10 @@ public class EndPath : MonoBehaviour
     {
         if (other.transform.gameObject.TryGetComponent<EnemyController>(out var enemy))
         {
-            int healthValue = enemy.GetHealth();
+            int healthValue = enemy.HealthComponent.GetHealth();
 
-            GamePlayerInformation.ChangeHP(-healthValue);
-            enemy.TakeDamage(healthValue);
+            GamePlayerInformation.ChangeHealth(-healthValue);
+            enemy.HealthComponent.ChangeHealth(-healthValue);
         }
     }
 
