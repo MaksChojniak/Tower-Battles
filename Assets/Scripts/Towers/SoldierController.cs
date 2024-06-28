@@ -372,7 +372,7 @@ namespace DefaultNamespace
         {
 
             int enemyHealthValue = enemy.GetHealth() - damage;
-            OnHitEnemy?.Invoke(enemy.transform, enemyHealthValue >= 0, isTraced);
+            OnHitEnemy?.Invoke(enemy.transform, enemyHealthValue > 0, isTraced);
             
             int enemyHealth = enemy.GetHealth();
             enemy.TakeDamage(damage);
