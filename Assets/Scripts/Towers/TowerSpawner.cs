@@ -51,10 +51,13 @@ public class TowerSpawner : MonoBehaviour
     void Awake()
     {
         Deck = PlayerTowerInventory.Instance.TowerDeck;
+        
+        GamePlayerInformation.EndGame += OnEndGame;
     }
 
     void OnDestroy()
     {
+        GamePlayerInformation.EndGame -= OnEndGame;
         
     }
 
@@ -63,6 +66,13 @@ public class TowerSpawner : MonoBehaviour
         
     }
 
+    
+    void OnEndGame(bool state)
+    {
+        Destroy(this.gameObject);
+    }
+    
+    
     void Update()
     {
         cancelationTrashCan.SetActive(SelectedBuilidng != null);

@@ -10,29 +10,23 @@ namespace Assets.Scripts
 {
     public class EndGame : MonoBehaviour
     {
-        public static Action<bool> OnEndGame;
-
-        [SerializeField] GameObject WaveManager;
-        [SerializeField] GameObject TowerSpawner;
 
         [SerializeField] GameObject VicotryEndPanel;
         [SerializeField] GameObject LoseEndPanel;
 
         private void Awake()
         {
-            OnEndGame += UpdateUI;
+            GamePlayerInformation.EndGame += UpdateUI;
         }
 
         private void OnDestroy()
         {
-            OnEndGame -= UpdateUI;
+            GamePlayerInformation.EndGame -= UpdateUI;
         }
 
 
         void UpdateUI(bool state)
         {
-            Destroy(WaveManager);
-            Destroy(TowerSpawner);
 
             if (state)
             {

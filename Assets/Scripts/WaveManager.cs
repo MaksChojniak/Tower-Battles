@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Security.Cryptography;
 using MMK;
 using TMPro;
 using UnityEngine;
@@ -34,6 +35,7 @@ public class WaveManager : MonoBehaviour
 
     void Awake()
     {
+        GamePlayerInformation.EndGame += OnEndGame;
 
         ActualyWeveIndex = -1;
 
@@ -46,7 +48,7 @@ public class WaveManager : MonoBehaviour
 
     void OnDestroy()
     {
-        
+        GamePlayerInformation.EndGame -= OnEndGame;
     }
 
     void Start()
@@ -54,6 +56,12 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(PrepareWaves());
     }
 
+
+    void OnEndGame(bool state)
+    {
+        Destroy(this.gameObject);
+    }
+    
 
     IEnumerator PrepareWaves()
     {

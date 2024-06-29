@@ -9,6 +9,7 @@ public class GamePlayerInformation : MonoBehaviour
 {
     public static GamePlayerInformation Instance;
 
+    public static event Action<bool> EndGame;
     public static event Action OnEndGame;
 
     public static event Action<long> UpdateBalance;
@@ -79,7 +80,7 @@ public class GamePlayerInformation : MonoBehaviour
     
     void OnEndAllWaves()
     {
-        EndGame(true, 5f);
+        StartEndGame(true, 5f);
     }
     
     void GetWaveReward(uint reward)
@@ -103,13 +104,13 @@ public class GamePlayerInformation : MonoBehaviour
         {
             Health = 0;
 
-            EndGame(false, 5f);
+            StartEndGame(false, 5f);
         }
 
         UpdateHealth?.Invoke(Health);
     }
 
-    public void EndGame(bool state, float time)
+    public void StartEndGame(bool state, float time)
     {
         if (EndGameCoroutine == null)
             EndGameCoroutine = StartCoroutine(EndGameProcess(state, time));
@@ -136,8 +137,8 @@ public class GamePlayerInformation : MonoBehaviour
             defeatReward += 1;
         }
 
-
-        Assets.Scripts.EndGame.OnEndGame(isWinner);
+        
+        EndGame?.Invoke(isWinner);
 
         yield return new WaitForSeconds(timeDelay);
 
