@@ -52,7 +52,7 @@ public class TowerPreviewUI : MonoBehaviour
         towerNameText.text = tower.TowerName;
         // towerImage.sprite = tower.TowerSprite;
 
-        startingPriceText.text = $"{tower.GetPrice()}";
+        startingPriceText.text = $"{tower.GetPrice()} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettings.CASH_ICON_NAME})}";
         damageTypeText.text = "Single/Splash";
 
         float[] fillAmounts = new[] { 0.2f, 0.4f, 0.6f, 0.8f, 1f };
