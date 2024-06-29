@@ -1,11 +1,15 @@
+using MMK.ScriptableObjects;
+using MMK;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class TowerDeckTileUI : MonoBehaviour
 {
+    public Action<bool, long> UpdatePrice;
     public Action<Sprite> UpdateSprite;
     public Action<bool> ChangeColor;
     public Action<Color> ChangeColorOnRemove;
@@ -15,10 +19,12 @@ public class TowerDeckTileUI : MonoBehaviour
         UpdateSprite += OnUpdateSprite;
         ChangeColor += OnChangeColor;
         ChangeColorOnRemove += OnChangeColorOnRemove;
+        UpdatePrice += OnUpdatePrice;
     }
 
     private void OnDestroy()
     {
+        UpdatePrice -= OnUpdatePrice;
         UpdateSprite -= OnUpdateSprite;
         ChangeColor -= OnChangeColor;
         ChangeColorOnRemove -= OnChangeColorOnRemove;
@@ -62,5 +68,15 @@ public class TowerDeckTileUI : MonoBehaviour
         Image tileImage = this.transform.parent.GetComponent<Image>();
 
         tileImage.color = color;
+    }
+
+    void OnUpdatePrice(bool state, long price)
+    {
+        GameObject pricePanel = this.transform.GetChild(0).gameObject;
+        TMP_Text priceText = pricePanel.GetComponent<TMP_Text>();
+
+        pricePanel.SetActive(state);
+        priceText.text = $"{price} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettings.CASH_ICON_NAME })}";
+
     }
 }

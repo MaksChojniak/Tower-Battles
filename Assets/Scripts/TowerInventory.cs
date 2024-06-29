@@ -103,6 +103,7 @@ public class TowerInventory : MonoBehaviour
             PlayerTowerInventory.Instance.TowerDeck[index] = null;
             TowerDeck.Instance.deckTiles[index].UpdateSprite(null);
             TowerDeck.Instance.deckTiles[index].ChangeColor(false);
+            TowerDeck.Instance.deckTiles[index].UpdatePrice(false, 0);
         }
     }
 
@@ -133,14 +134,14 @@ public class TowerInventory : MonoBehaviour
             {
                 if (PlayerTowerInventory.Instance.TowerDeck[i] == TowerData.GetAllTowerInventoryData()[selectedTower].towerSO)
                 {
-                    PlayerTowerInventory.Instance.TowerDeck[i] = null;
-                    TowerDeck.Instance.deckTiles[i].UpdateSprite(null);
+                    RemoveFromDeck(i);
                 }
             }
         }
 
         PlayerTowerInventory.Instance.TowerDeck[index] = TowerData.GetAllTowerInventoryData()[selectedTower].towerSO;
         TowerDeck.Instance.deckTiles[index].UpdateSprite(TowerData.GetAllTowerInventoryData()[selectedTower].towerSO.TowerSprite);
+        TowerDeck.Instance.deckTiles[index].UpdatePrice(true, PlayerTowerInventory.Instance.TowerDeck[index].GetPrice());
 
         TowerDeck.OnSelectSlot -= OnSelectDeckSlot;
 

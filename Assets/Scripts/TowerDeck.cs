@@ -35,6 +35,8 @@ public class TowerDeck : MonoBehaviour
 
         for (int i = 0; i < PlayerTowerInventory.Instance.TowerDeck.Length; i++)
         {
+            deckTiles[i].UpdatePrice(false, 0);
+
             if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
             {
                 Debug.Log("Update Tower Sprite onStart");
