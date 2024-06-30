@@ -42,6 +42,8 @@ public class TowerDeck : MonoBehaviour
                 Debug.Log("Update Tower Sprite onStart");
                 deckTiles[i].UpdateSprite(PlayerTowerInventory.Instance.TowerDeck[i].TowerSprite);
                 deckTiles[i].ChangeColor(true);
+
+                deckTiles[i].UpdatePrice(true, PlayerTowerInventory.Instance.TowerDeck[i].GetPrice());
             }
 
         }

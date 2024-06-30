@@ -1,6 +1,7 @@
 using DefaultNamespace;
 using MMK;
 using MMK.ScriptableObjects;
+using MMK.Towers;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -53,7 +54,14 @@ public class TowerPreviewUI : MonoBehaviour
         // towerImage.sprite = tower.TowerSprite;
 
         startingPriceText.text = $"{tower.GetPrice()} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettings.CASH_ICON_NAME})}";
-        damageTypeText.text = "Single/Splash";
+        if(tower.TryGetData<Soldier>(out var soldier))
+        {
+            damageTypeText.text = soldier.GetWeapon(0).DamageType.ToString();
+        }
+        else
+        {
+            damageTypeText.text = "None";
+        }
 
         float[] fillAmounts = new[] { 0.2f, 0.4f, 0.6f, 0.8f, 1f };
         damageImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
@@ -63,7 +71,7 @@ public class TowerPreviewUI : MonoBehaviour
         rangeImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
         UpdateImageColor(rangeImage);
 
-        placementText.text = "Ground/Cliff";
+        placementText.text = $"{tower.PlacementType}";//"Ground/Cliff";
 
         lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()));
         lockedPrice.text = $"Locked:  {StringFormatter.PriceFormat(tower.GetRequiredWinsCount())}";
