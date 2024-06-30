@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using DefaultNamespace;
 using MMK;
 using MMK.Towers;
 using UnityEngine;
@@ -308,8 +309,9 @@ namespace Towers
         {
             ViewRangeRectTransform.sizeDelta = new Vector2(ViewRangeValue * 2, ViewRangeValue * 2);
 
+            float PosY = Ground.GroundPosY + 1 - VIEW_RANGE_OFFSET;
             Vector3 rectPosition = ViewRangeRectTransform.position;
-            rectPosition.y = 1f - VIEW_RANGE_OFFSET;
+            rectPosition.y = PosY;
             ViewRangeRectTransform.position = rectPosition;
             
             
@@ -317,7 +319,7 @@ namespace Towers
             
             steps = Mathf.RoundToInt( 4 *  2 * 2 * Mathf.PI * ViewRangeValue);
             
-            Vector3[] points = GetRingPoints(centerOfCircle, steps, ViewRangeValue - RADIUS_OFFSET);
+            Vector3[] points = GetRingPoints(centerOfCircle, steps, ViewRangeValue - RADIUS_OFFSET, PosY);
 
             LineRenderer.positionCount = steps;
 
@@ -330,7 +332,7 @@ namespace Towers
 
 
         
-        static Vector3[] GetRingPoints(Vector3 centerOfCircle, int steps, float radius)
+        static Vector3[] GetRingPoints(Vector3 centerOfCircle, int steps, float radius, float PosY)
         {
             Vector3[] points = new Vector3[steps];
             
@@ -346,7 +348,7 @@ namespace Towers
                 float x = xScaled * radius;
                 float z = zScaled * radius;
 
-                Vector3 point = new Vector3(centerOfCircle.x + x, 0, centerOfCircle.z + z);
+                Vector3 point = new Vector3(centerOfCircle.x + x, PosY, centerOfCircle.z + z);
                 points[i] = point;
             }
 

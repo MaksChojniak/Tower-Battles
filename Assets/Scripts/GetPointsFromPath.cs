@@ -40,7 +40,7 @@ public class GetPointsFromPath : MonoBehaviour
             for (int i = 0; i < points.Count; i++)
             {
                 points[i] += path.transform.position;
-                points[i] = new Vector3(points[i].x, 1f, points[i].z);
+                // points[i] = new Vector3(points[i].x, 1f, points[i].z);
                 lineRenderer.SetPosition(i, points[i]);
             }
         }

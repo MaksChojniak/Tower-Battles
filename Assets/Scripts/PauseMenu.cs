@@ -13,7 +13,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Start()
     {
-        PauseStateChange();
+        //PauseStateChange();
     }
 
     public void PauseStateChange()

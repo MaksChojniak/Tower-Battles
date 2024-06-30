@@ -202,7 +202,9 @@ public class TowerSpawner : MonoBehaviour
 
         // TowerController.ShowTowerSpawnRange(null, false);
         
-        Destroy(SelectedBuilidng);
+        Destroy(SelectedBuilidng.gameObject);
+        SelectedBuilidng = null;
+        
         PosibilityOfPlace = false;
     }
 

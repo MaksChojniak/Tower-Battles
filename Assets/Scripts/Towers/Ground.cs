@@ -10,6 +10,8 @@ namespace DefaultNamespace
 {
     public class Ground : MonoBehaviour
     {
+        public static float GroundPosY;
+        
         public static Action<PlacementType> UpdateGround;
         public static Action OnStopPlacingTower;
 
@@ -41,7 +43,35 @@ namespace DefaultNamespace
         void Start()
         {
             LoadMaterialAssets();
+
+            CheckGroundPosition();
         }
+
+
+        void CheckGroundPosition()
+        {
+            if(groundType == PlacementType.Cliff)
+                return;
+
+            GroundPosY = this.transform.position.y + 0.1f;
+            // Ray ray = new Ray(this.transform.position + new Vector3(0, 250, 0), Vector3.down);
+            // RaycastHit[] hits = new RaycastHit[100];
+            // int size = Physics.RaycastNonAlloc(ray, hits);
+            //
+            // for (int i = 0; i < size; i++)
+            // {
+            //     RaycastHit hit = hits[i];
+            //
+            //     if (hit.collider.gameObject.TryGetComponent<Ground>(out var ground) && ground.groundType == PlacementType.Ground)
+            //     {
+            //         GroundPosY = hit.point.y;
+            //         Debug.Log($"Ground Position Y : {GroundPosY}");
+            //         return;
+            //     }
+            // }
+            
+        } 
+        
 
 
         void LoadMaterialAssets()

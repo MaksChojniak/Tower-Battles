@@ -505,12 +505,18 @@ namespace MMK
                 return;
             
             bool isMaxLevel = CurrentClickedTower.Controller.GetLevel() >= 4;
-            
+
             if (isMaxLevel)
+            {
                 WarningSystem.ShowWarning(WarningSystem.WarningType.MaxedOut);
+                return;
+            }
 
             if (!CurrentClickedTower.Controller.UpgradeLevel())
+            {
                 WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+                return;
+            }
             
             SetActiveInformationsPanel(true, CurrentClickedTower);
         }
