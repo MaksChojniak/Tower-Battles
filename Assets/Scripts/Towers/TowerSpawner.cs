@@ -183,6 +183,8 @@ public class TowerSpawner : MonoBehaviour
         }
         else
         {
+            OnTowerPlaced?.Invoke(null);
+            
             Destroy(SelectedBuilidng.gameObject);
             SelectedBuilidng = null;
         }
@@ -200,6 +202,7 @@ public class TowerSpawner : MonoBehaviour
         if(SelectedBuilidng == null)
             return;
 
+        OnTowerPlaced?.Invoke(null);
         // TowerController.ShowTowerSpawnRange(null, false);
         
         Destroy(SelectedBuilidng.gameObject);
@@ -223,7 +226,7 @@ public class TowerSpawner : MonoBehaviour
             return false;
         }
 
-        if (towers.Length >= GameSettings.MAX_TOWERS_COUNT)
+        if (towers.Length >= GameSettingsManager.GetGameSettings().MaxTowersCount)
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.MaxTowersCountPlaced);
             return false;

@@ -53,7 +53,7 @@ public class TowerPreviewUI : MonoBehaviour
         towerNameText.text = tower.TowerName;
         // towerImage.sprite = tower.TowerSprite;
 
-        startingPriceText.text = $"{tower.GetPrice()} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettings.CASH_ICON_NAME})}";
+        startingPriceText.text = $"{tower.GetPrice()} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().CashIconName})}";
         if(tower.TryGetData<Soldier>(out var soldier))
         {
             damageTypeText.text = soldier.GetWeapon(0).DamageType.ToString();

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Towers
+namespace MMK.Towers
 {
     public enum Side
     {

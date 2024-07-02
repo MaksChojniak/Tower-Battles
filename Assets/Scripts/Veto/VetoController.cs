@@ -6,12 +6,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using Random = System.Random;
 using TMPro;
-
-using UnityEditor;
 using Assets.Scripts;
 using UnityEngine.SceneManagement;
 using DefaultNamespace;
 using static DefaultNamespace.WarningSystem;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [Serializable]
 public class SceneData
@@ -21,6 +23,7 @@ public class SceneData
     public string Name;
     public int Lenght;
     
+    #if UNITY_EDITOR
     [Space(20)]
     public SceneAsset SceneAsset;
 
@@ -31,6 +34,7 @@ public class SceneData
         
         Name = Scene.Replace('_', ' ');
     }
+    #endif  
 }
 
 
@@ -61,7 +65,8 @@ public class VetoController : MonoBehaviour
     int vetoCounter = 0;
     int vetoLimit = 3;
 
-
+    
+#if UNITY_EDITOR
     void OnValidate()
     {
         if (UpdateScenesData)
@@ -74,7 +79,7 @@ public class VetoController : MonoBehaviour
             }
         }    
     }
-
+#endif
 
     void Awake()
     {

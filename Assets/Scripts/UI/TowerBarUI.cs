@@ -52,6 +52,6 @@ public class TowerBarUI : MonoBehaviour
     void DelayedUpdateTowersCount()
     {
 
-        TowersCount.text = $"{GameObject.FindGameObjectsWithTag("Tower").Length}/{GameSettings.MAX_TOWERS_COUNT} Towers";
+        TowersCount.text = $"{GameObject.FindGameObjectsWithTag("Tower").Length}/{GameSettingsManager.GetGameSettings().MaxTowersCount} Towers";
     }
 }

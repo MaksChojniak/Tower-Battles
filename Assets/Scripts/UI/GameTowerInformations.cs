@@ -304,7 +304,7 @@ namespace MMK
             int damageValue = data.GetWeapon(baseInformations.Level).Damage;
             int damageNextValue = baseInformations.isMaxLevel ? damageValue : data.GetWeapon(baseInformations.Level + 1).Damage;
 
-            SpriteTextData damageSpriteData = new SpriteTextData() { SpriteName = GameSettings.DAMAGE_ICON_NAME, WithSpaces = true };
+            SpriteTextData damageSpriteData = new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().DamageIconName, WithSpaces = true };
             ShowProperty(TowerInformationsUI.Property_01_Text, new PropertyData<int>("Damage", damageSpriteData, damageValue, damageNextValue) );
             
             
@@ -313,7 +313,7 @@ namespace MMK
             float firerateValue = 60f / data.GetWeapon(baseInformations.Level).Firerate;
             float firerateNextValue = baseInformations.isMaxLevel ? firerateValue : 60f / data.GetWeapon(baseInformations.Level + 1).Firerate;
 
-            SpriteTextData firerateSpriteData = new SpriteTextData() { SpriteName = GameSettings.FIRERATE_ICON_NAME, WithSpaces = true };
+            SpriteTextData firerateSpriteData = new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().FirerateIconName, WithSpaces = true };
             ShowProperty(TowerInformationsUI.Property_02_Text, new PropertyData<float>("Firerate", firerateSpriteData, firerateValue, firerateNextValue) );
             
             
@@ -322,7 +322,7 @@ namespace MMK
             float rangeValue = data.GetViewRange(baseInformations.Level);
             float rangeNextValue = baseInformations.isMaxLevel ? rangeValue : data.GetViewRange(baseInformations.Level + 1);
 
-            SpriteTextData rangeSpriteData = new SpriteTextData() { SpriteName = GameSettings.RADAR_ICON_NAME, WithSpaces = true };
+            SpriteTextData rangeSpriteData = new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().RadarIconName, WithSpaces = true };
             ShowProperty(TowerInformationsUI.Property_03_Text, new PropertyData<float>("Range", rangeSpriteData, rangeValue, rangeNextValue) );
             
             
@@ -331,7 +331,7 @@ namespace MMK
             bool detectionValue = data.GetHasBinoculars(baseInformations.Level);
             bool detectionNextValue = baseInformations.isMaxLevel ? detectionValue : data.GetHasBinoculars(baseInformations.Level + 1);
 
-            SpriteTextData detectionSpriteData = new SpriteTextData() { SpriteName = GameSettings.HIDDEN_ICON_NAME, WithSpaces = true };
+            SpriteTextData detectionSpriteData = new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().HiddenIconName, WithSpaces = true };
             ShowProperty(TowerInformationsUI.Property_04_Text, new PropertyData<bool>("Detection", detectionSpriteData, detectionValue, detectionNextValue) );
             
         }
@@ -347,7 +347,7 @@ namespace MMK
             double rangeValue = data.GetWaveIncome(baseInformations.Level);
             double rangeNextValue = baseInformations.isMaxLevel ? rangeValue : data.GetWaveIncome(baseInformations.Level + 1);
 
-            SpriteTextData rangeSpriteData = new SpriteTextData() { SpriteName = GameSettings.CASH_ICON_NAME, WithSpaces = true };
+            SpriteTextData rangeSpriteData = new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().CashIconName, WithSpaces = true };
             ShowProperty(TowerInformationsUI.Property_01_Text, new PropertyData<double>("Income", rangeSpriteData, rangeValue, rangeNextValue) );
             
             
@@ -404,21 +404,21 @@ namespace MMK
 
             string upgradeText = baseInformations.isMaxLevel ? 
                 StringFormatter.GetColoredText("Maxed Out", MaxedOutColor) :
-                $"Upgrade: " + StringFormatter.GetColoredText(baseInformations.UpgradePrice.ToString(), cashColor) + StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GameSettings.CASH_ICON_NAME, WithSpaces = true});
+                $"Upgrade: " + StringFormatter.GetColoredText(baseInformations.UpgradePrice.ToString(), cashColor) + StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GameSettingsManager.GetGameSettings().CashIconName, WithSpaces = true});
             TowerInformationsUI.UpgradePriceText.text = upgradeText;
             
-            TowerInformationsUI.SellPriceText.text = $"Sell: " + StringFormatter.GetColoredText(baseInformations.SellPrice.ToString(), cashColor) + StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GameSettings.CASH_ICON_NAME, WithSpaces = true});
+            TowerInformationsUI.SellPriceText.text = $"Sell: " + StringFormatter.GetColoredText(baseInformations.SellPrice.ToString(), cashColor) + StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GameSettingsManager.GetGameSettings().CashIconName, WithSpaces = true});
 
             TowerInformationsUI.MaxedOutImage.enabled = baseInformations.isMaxLevel;
 
-            TowerInformationsUI.UpgradeProgressBar.fillAmount = (float)(baseInformations.Level + 1) / (float)GameSettings.MAX_UPGRADE_LEVEL;
+            TowerInformationsUI.UpgradeProgressBar.fillAmount = (float)(baseInformations.Level + 1) / (float)GameSettingsManager.GetGameSettings().MaxUpgradeLevel;
 
         }
 
         
         void ShowProperty<T>(TMP_Text propertyText, PropertyData<T> propertyData)
         {
-            Dictionary<bool, string> dictionary = new Dictionary<bool, string>() { {true, GameSettings.CHECKED_ICON_NAME}, {false, GameSettings.UNCHECKED_ICON_NAME}};
+            Dictionary<bool, string> dictionary = new Dictionary<bool, string>() { {true, GameSettingsManager.GetGameSettings().CheckedIconName}, {false, GameSettingsManager.GetGameSettings().UncheckedIconName}};
 
             bool valuesHasSprites = typeof(T) == typeof(bool);
             bool valueChanged = !propertyData.Value.Equals(propertyData.NextValue);
@@ -430,7 +430,7 @@ namespace MMK
             
             string text = $"<size=30>" + StringFormatter.GetSpriteText(propertyData.SpriteData) + $"   </size>" + $"{propertyData.PropertyName}: " + valueText;
             if (valueChanged)
-                text += StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettings.ARROW_RIGHT_ICON_NAME, WithColor = true, Color = nextValueColor, WithSpaces = true, SpacesCount = 2}) + nextValueText;
+                text += StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().ArrowRightIconName, WithColor = true, Color = nextValueColor, WithSpaces = true, SpacesCount = 2}) + nextValueText;
             
             propertyText.text = text;
             
@@ -460,7 +460,7 @@ namespace MMK
                 {
                     Tittle = "Total Income";
                     Value = farmController.TowerIncomeComponent.TotalWaveIncome;
-                    AdditionalText = StringFormatter.GetSpriteText(new SpriteTextData() {SpriteName = GameSettings.CASH_ICON_NAME});
+                    AdditionalText = StringFormatter.GetSpriteText(new SpriteTextData() {SpriteName = GameSettingsManager.GetGameSettings().CashIconName});
                 }
                 else if (controler.TryGetController<SoldierController>(out var soldierController))
                 {

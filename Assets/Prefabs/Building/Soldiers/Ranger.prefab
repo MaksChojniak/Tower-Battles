@@ -799,11 +799,13 @@ GameObject:
   - component: {fileID: 6448862434079306773}
   - component: {fileID: 4915776100451687682}
   - component: {fileID: 726209043994403341}
+  - component: {fileID: 8322465902957124430}
   - component: {fileID: 6798971060809249524}
   - component: {fileID: 1433215675172266436}
   - component: {fileID: 7595993423468045349}
   - component: {fileID: 967180862080643843}
   - component: {fileID: 7918543528801589872}
+  - component: {fileID: 6520079625015048767}
   m_Layer: 2
   m_Name: Ranger
   m_TagString: Tower
@@ -865,8 +867,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Weapon: {fileID: 0}
   ReadyToShoot: 0
-  TotalGivenDamage: 0
-  RifleIndex: 0
+  WeaponSide: 0
+  totalGivenReward: 0
+--- !u!114 &8322465902957124430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6088797102554229474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 807cdbe9285f46d3a0b2bd65b0e9cd00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6798971060809249524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -882,12 +896,13 @@ MonoBehaviour:
   LevelUpClip: {fileID: 0}
   RemoveTowerClip: {fileID: 0}
   ShootAnimationClip: {fileID: 0}
+  FireStreamPrefab: {fileID: 0}
   ProjectileBeamPrefab: {fileID: 0}
   ThrowPathPrefab: {fileID: 0}
   ThrowedObjectPrefab: {fileID: 0}
   ExplosionPrefab: {fileID: 0}
-  LeftHand: {fileID: 0}
-  RightHand: {fileID: 0}
+  RightMuzzle: {fileID: 0}
+  LeftMuzzle: {fileID: 0}
 --- !u!114 &1433215675172266436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -959,12 +974,24 @@ MonoBehaviour:
   LineRenderer: {fileID: 0}
   ViewRangeActive: {r: 0, g: 0, b: 0, a: 0}
   ViewRangeInactive: {r: 0, g: 0, b: 0, a: 0}
-  RingMaterialExample: {fileID: 0}
   ViewRangeValue: 0
   HasHiddenDetecion: 0
   enemiesInRange: []
   allEnemies: []
   _visibilityMode: 0
+--- !u!114 &6520079625015048767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6088797102554229474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f93f6d8159b46e29660e6b4ddf03ac5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RingObject: {fileID: 0}
 --- !u!1 &6402055982810848298
 GameObject:
   m_ObjectHideFlags: 0

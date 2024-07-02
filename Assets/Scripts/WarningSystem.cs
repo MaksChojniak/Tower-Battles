@@ -70,7 +70,7 @@ namespace DefaultNamespace
                     message = "Not Enough Money!";
                     break;
                 case WarningType.MaxTowersCountPlaced:
-                    message = $"{GameSettings.MAX_TOWERS_COUNT}/{GameSettings.MAX_TOWERS_COUNT} Towers are Placed";
+                    message = $"{GameSettingsManager.GetGameSettings().MaxTowersCount}/{GameSettingsManager.GetGameSettings().MaxTowersCount} Towers are Placed";
                     break;
                 case WarningType.DeckIsEmpty:
                     message = $"Before Starting, Create Your Deck. Click the 'Towers' Button to Open up Your Inventory";

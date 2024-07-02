@@ -12,6 +12,7 @@ namespace MMK.Towers
     
     [RequireComponent(typeof(ViewRange))]
     [RequireComponent(typeof(TowerWeapon))]
+    [RequireComponent(typeof(LookAt))]
     [RequireComponent(typeof(SoldierAnimation))]
     [RequireComponent(typeof(SoldierAudio))]
     public class SoldierController : TowerController
@@ -532,6 +533,7 @@ namespace MMK.Towers
 
         public ViewRange ViewRangeComponent { private set; get; }
         public TowerWeapon TowerWeaponComponent { private set; get; }
+        public LookAt LookAtComponent { private set; get; }
         public SoldierAnimation AnimationComponent { private set; get; }
         public SoldierAudio AudioComponent { private set; get; }
         
@@ -541,6 +543,7 @@ namespace MMK.Towers
         {
             ViewRangeComponent = this.GetComponent<ViewRange>();
             TowerWeaponComponent = this.GetComponent<TowerWeapon>();
+            LookAtComponent = this.GetComponent<LookAt>();
             AnimationComponent = this.GetComponent<SoldierAnimation>();
             AudioComponent = this.GetComponent<SoldierAudio>();
             
@@ -608,6 +611,7 @@ namespace MMK.Towers
             base.UploadNewData();
 
             ViewRangeComponent.SetViewRange(SoldierData.GetViewRange(Level));
+            LookAtComponent.SetViewRange(SoldierData.GetViewRange(Level));
             ViewRangeComponent.SetHiddenDetecion(SoldierData.GetHasBinoculars(Level));
 
             TowerWeaponComponent.UpdateWeapon(SoldierData.GetWeapon(Level));
