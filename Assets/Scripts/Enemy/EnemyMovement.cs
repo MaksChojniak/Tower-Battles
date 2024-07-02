@@ -94,6 +94,8 @@ public class EnemyMovement : MonoBehaviour
         transform.position = pathCreator.path.GetPointAtDistance(DistanceTravelled);
         transform.rotation = pathCreator.path.GetRotationAtDistance(DistanceTravelled);
 
+        Debug.Log($"Distance Travelled: {pathCreator.path.length}");
+
         OnMove?.Invoke();
     }
 
