@@ -9,15 +9,16 @@ using Random = UnityEngine.Random;
         
         public GameObject BloodParticlePrefab;
 
-        public AnimationClip RagdollClip;
+        // public AnimationClip MoveClip;
+        
         public Transform Body;
 
         
         public EnemyController EnemyController { private set; get; }
-        public Animation Animation { private set; get; }
+        public Animator Animator { private set; get; }
         
 
-        public const string RAGDOLL_CLIP_NAME = "Ragdoll";
+        public const string MOVE_CLIP_NAME = "Move";
 
         
         
@@ -25,10 +26,10 @@ using Random = UnityEngine.Random;
         {
             EnemyController = this.GetComponent<EnemyController>();
             
-            if (this.TryGetComponent<Animation>(out var animation))
-                Animation = animation;
+            if (this.TryGetComponent<Animator>(out var animator))
+                Animator = animator;
             else
-                Animation = this.gameObject.AddComponent<Animation>();
+                Animator = this.gameObject.AddComponent<Animator>();
             
             InitializeAnimationClips();
             
@@ -66,11 +67,13 @@ using Random = UnityEngine.Random;
         {
             EnemyController.HealthComponent.OnTakeDamage += PlayTakeDamageAnimation;
             EnemyController.HealthComponent.OnDie += PlayDieAnimation;
+            EnemyController.MovementComponent.OnMove += PlayMoveAnimation;
 
         }
 
         void UnregisterHandlers()
         {
+            EnemyController.MovementComponent.OnMove -= PlayMoveAnimation;
             EnemyController.HealthComponent.OnDie -= PlayDieAnimation;
             EnemyController.HealthComponent.OnTakeDamage -= PlayTakeDamageAnimation;
             
@@ -82,13 +85,23 @@ using Random = UnityEngine.Random;
         
         void InitializeAnimationClips()
         {
-            // if (RagdollClip == null)
+            // if (MoveClip == null)
             //     throw new NullReferenceException("RagdollClip doesn't exist  [value = null]");
-            //
-            // Animation.AddClip(RagdollClip, RAGDOLL_CLIP_NAME);
+            
+            //Animator.AddClip(MovementClip, MOVEMENT_CLIP_NAME);
 
         }
-        
+
+
+        void PlayMoveAnimation(float speed)
+        {
+            // if (!Animator.IsPlaying(MOVEMENT_CLIP_NAME))
+            //     Animator.Play(MOVEMENT_CLIP_NAME);
+            //
+            // Animator.clip.apparentSpeed
+
+            // Animator.speed = speed;
+        }
         
 
         void PlayTakeDamageAnimation()
@@ -104,7 +117,6 @@ using Random = UnityEngine.Random;
         
         void PlayDieAnimation()
         {
-            // Animation.Play(RAGDOLL_CLIP_NAME);
             PlayRagdoll();
             
         }

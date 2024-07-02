@@ -11,7 +11,7 @@ public class EnemyMovement : MonoBehaviour
     public delegate void SetSpeedDelegate(float Value);
     public SetSpeedDelegate SetSpeed;
 
-    public delegate void OnMoveDelegate();
+    public delegate void OnMoveDelegate(float Speed);
     public event OnMoveDelegate OnMove;
 
 
@@ -96,7 +96,7 @@ public class EnemyMovement : MonoBehaviour
 
         Debug.Log($"Distance Travelled: {pathCreator.path.length}");
 
-        OnMove?.Invoke();
+        OnMove?.Invoke(Speed);
     }
 
     public float GetDistanceTravelled() => DistanceTravelled;
