@@ -58,83 +58,83 @@ namespace DefaultNamespace
 
         void Awake()
         {
-            hardwareInformations = GetHarwareInformations();
+            // hardwareInformations = GetHarwareInformations();
         }
 
         
 #region Hardware Informations
 
-        [Serializable]
-        public class CPU
-        {
-            public string Name;
-            public int Cores;
-            public int Frequency;
-
-            public CPU()
-            {
-                Name = SystemInfo.processorType;
-                Cores = SystemInfo.processorCount;
-                Frequency =  SystemInfo.processorFrequency;
-                
-            }
-            
-        }
-        [Serializable]
-        public class GPU
-        {
-            public string Name;
-            public int RAM_GB;
-            public int RAM_MB;
-
-            public GPU()
-            {
-                Name = SystemInfo.graphicsDeviceName;
-                RAM_MB = SystemInfo.graphicsMemorySize;
-                RAM_GB = Mathf.RoundToInt(RAM_MB / 1024f);
-
-            }
-            
-        }
-        [Serializable]
-        public class RAM
-        {
-            public int Size_GB;
-            public int Size_MB;
-
-            public RAM()
-            {
-                Size_MB = SystemInfo.systemMemorySize; 
-                Size_GB = Mathf.RoundToInt(Size_MB / 1024f);
-                
-            }
-            
-        }
-        
-        [Serializable]
-        struct HardwareInformations
-        {
-            public GPU GPU;
-            public CPU CPU;
-            public RAM RAM;
-        }
-
-        
-        [SerializeField] HardwareInformations hardwareInformations;
-
-        HardwareInformations GetHarwareInformations()
-        {
-            GPU GPU = new GPU();
-            CPU CPU = new CPU();
-            RAM RAM = new RAM();
-
-            return new HardwareInformations()
-            {
-                GPU = GPU, 
-                CPU = CPU,
-                RAM = RAM
-            };
-        }
+        // [Serializable]
+        // public class CPU
+        // {
+        //     public string Name;
+        //     public int Cores;
+        //     public int Frequency;
+        //
+        //     public CPU()
+        //     {
+        //         Name = SystemInfo.processorType;
+        //         Cores = SystemInfo.processorCount;
+        //         Frequency =  SystemInfo.processorFrequency;
+        //         
+        //     }
+        //     
+        // }
+        // [Serializable]
+        // public class GPU
+        // {
+        //     public string Name;
+        //     public int RAM_GB;
+        //     public int RAM_MB;
+        //
+        //     public GPU()
+        //     {
+        //         Name = SystemInfo.graphicsDeviceName;
+        //         RAM_MB = SystemInfo.graphicsMemorySize;
+        //         RAM_GB = Mathf.RoundToInt(RAM_MB / 1024f);
+        //
+        //     }
+        //     
+        // }
+        // [Serializable]
+        // public class RAM
+        // {
+        //     public int Size_GB;
+        //     public int Size_MB;
+        //
+        //     public RAM()
+        //     {
+        //         Size_MB = SystemInfo.systemMemorySize; 
+        //         Size_GB = Mathf.RoundToInt(Size_MB / 1024f);
+        //         
+        //     }
+        //     
+        // }
+        //
+        // [Serializable]
+        // struct HardwareInformations
+        // {
+        //     public GPU GPU;
+        //     public CPU CPU;
+        //     public RAM RAM;
+        // }
+        //
+        //
+        // [SerializeField] HardwareInformations hardwareInformations;
+        //
+        // HardwareInformations GetHarwareInformations()
+        // {
+        //     GPU GPU = new GPU();
+        //     CPU CPU = new CPU();
+        //     RAM RAM = new RAM();
+        //
+        //     return new HardwareInformations()
+        //     {
+        //         GPU = GPU, 
+        //         CPU = CPU,
+        //         RAM = RAM
+        //     };
+        // }
 
 #endregion
 

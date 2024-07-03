@@ -29,7 +29,7 @@ using Random = UnityEngine.Random;
             if (this.TryGetComponent<Animator>(out var animator))
                 Animator = animator;
             else
-                Animator = this.gameObject.AddComponent<Animator>();
+                Debug.LogException(new Exception("Enemy doesn't have Animator"));
             
             InitializeAnimationClips();
             
@@ -100,7 +100,7 @@ using Random = UnityEngine.Random;
             //
             // Animator.clip.apparentSpeed
 
-            // Animator.speed = speed;
+            Animator.speed = speed;
         }
         
 
@@ -114,7 +114,7 @@ using Random = UnityEngine.Random;
         }
 
 
-        
+        [ContextMenu(nameof(PlayDieAnimation))]
         void PlayDieAnimation()
         {
             PlayRagdoll();
@@ -123,6 +123,8 @@ using Random = UnityEngine.Random;
 
         void PlayRagdoll()
         {
+            Destroy(Animator);
+            
             if (Body == null)
             {
                 Debug.LogException(new Exception("Body is null"));
@@ -132,11 +134,18 @@ using Random = UnityEngine.Random;
             Rigidbody[] rigidbodies = Body.GetComponentsInChildren<Rigidbody>();
             foreach (var rb in rigidbodies)
             {
-                rb.isKinematic = false;
+                rb.gameObject.layer = LayerMask.NameToLayer("Ragdoll");
                 
-                rb.AddForce(Random.Range(-1f, 1f), 0f, Random.Range(-1f,1f) );
+                rb.isKinematic = false;
+
+                Vector3 direction = (rb.transform.right * UnityEngine.Random.Range(10f, 25f) * (UnityEngine.Random.Range(0, 100) % 2 == 0 ? 1 : -1) ) +
+                                    (rb.transform.forward * UnityEngine.Random.Range(10f, 25f) * (UnityEngine.Random.Range(0, 100) % 2 == 0 ? 1 : -1) );
+                rb.AddForce(direction, ForceMode.Impulse);
+                
             }
         }
+
+        
         
         
         

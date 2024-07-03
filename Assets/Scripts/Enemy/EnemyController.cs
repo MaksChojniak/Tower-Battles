@@ -88,7 +88,7 @@ using PathCreation;
 
         void OnDie()
         {
-            MovementComponent.SetSpeed(0);
+            MovementComponent.enabled = false;
             // Destroy(this.gameObject);
             this.Invoke(() => Destroy(this.gameObject) , 1f);
         }
