@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8691331938702712094}
   - component: {fileID: 1144996287600815607}
   - component: {fileID: 4935238813449373917}
+  - component: {fileID: 2369697004701128668}
   m_Layer: 13
   m_Name: Zombie 4
   m_TagString: Enemy
@@ -52,7 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Hidden: 0
   IsBurning: 0
-  EnemyData: {fileID: 11400000, guid: 3eac8913db7f440499f49307746a4f1c, type: 2}
+  EnemyData: {fileID: 11400000, guid: 9f520aba086df004b9704d254cebf740, type: 2}
 --- !u!114 &363818408101210610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112,6 +113,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 0
   DistanceTravelled: 0
+--- !u!95 &2369697004701128668
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315913079105496499}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 11d133756e316b44ca74409053766409, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6841682007359900267
 GameObject:
   m_ObjectHideFlags: 0
