@@ -5,7 +5,7 @@ using MMK.ScriptableObjects;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace DefaultNamespace
+namespace MMK
 {
     public class Ground : MonoBehaviour
     {
@@ -41,7 +41,7 @@ namespace DefaultNamespace
 
         void Start()
         {
-            // LoadMaterialAssets();
+            LoadMaterialAssets();
 
             CheckGroundPosition();
         }

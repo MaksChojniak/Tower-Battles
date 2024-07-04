@@ -135,7 +135,9 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleVersion: 1.0.2
-  preloadedAssets: []
+  preloadedAssets:
+  - {fileID: 11400000, guid: ceabdb9c97127b34da35e121853afe86, type: 2}
+  - {fileID: -8426505734308998838, guid: 18d5582ae2511c44e96afbef5653d64a, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -252,7 +254,7 @@ PlayerSettings:
   androidSplashScreen: {fileID: 0}
   AndroidKeystoreName: 
   AndroidKeyaliasName: 
-  AndroidBuildApkPerCpuArchitecture: 0
+  AndroidBuildApkPerCpuArchitecture: 1
   AndroidTVCompatibility: 0
   AndroidIsGame: 1
   AndroidEnableTango: 0
@@ -722,7 +724,8 @@ PlayerSettings:
   platformArchitecture: {}
   scriptingBackend:
     Android: 1
-  il2cppCompilerConfiguration: {}
+  il2cppCompilerConfiguration:
+    Android: 0
   managedStrippingLevel: {}
   incrementalIl2cppBuild: {}
   suppressCommonWarnings: 1
