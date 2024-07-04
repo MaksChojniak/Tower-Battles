@@ -595,7 +595,7 @@ namespace MMK.Towers
 
         protected override bool OnUpgradeLevel()
         {
-            long upgradePrice = SoldierData.GetUpgradePrice(Level);
+            long upgradePrice = SoldierData.GetUpgradePrice(Level + 1);
 
             if (GamePlayerInformation.GetBalance() < upgradePrice)
                 return false;

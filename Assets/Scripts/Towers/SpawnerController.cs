@@ -63,7 +63,7 @@ namespace MMK.Towers
 
         protected override bool OnUpgradeLevel()
         {
-            long upgradePrice = SpawnerData.GetUpgradePrice(Level);
+            long upgradePrice = SpawnerData.GetUpgradePrice(Level+1);
 
             if (GamePlayerInformation.GetBalance() < upgradePrice)
                 return false;

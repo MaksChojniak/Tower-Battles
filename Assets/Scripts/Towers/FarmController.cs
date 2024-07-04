@@ -146,7 +146,7 @@ namespace MMK.Towers
         
         protected override bool OnUpgradeLevel()
         {
-            long upgradePrice = FarmData.GetUpgradePrice(Level);
+            long upgradePrice = FarmData.GetUpgradePrice(Level+1);
 
             if (GamePlayerInformation.GetBalance() < upgradePrice)
                 return false;

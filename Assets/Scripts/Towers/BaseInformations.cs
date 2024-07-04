@@ -11,7 +11,7 @@ namespace Towers
     public struct BaseInformations
     {
         public int Level;
-        public bool isMaxLevel => Level >= 4;
+        public bool isMaxLevel;
         
         public string Name;
         public Sprite Sprite;
@@ -26,10 +26,14 @@ namespace Towers
         public BaseInformations(Soldier data, SoldierController controller)
         {
             Level = controller.GetLevel();
+            isMaxLevel = Level >= 4;
+            int nextLevelIndex = isMaxLevel ? Level : Level + 1;
+            
             Name = data.TowerName;
-            Sprite = data.GetUpgradeSprite(controller.GetLevel());
-            SellPrice = data.GetTowerSellValue(controller.GetLevel());
-            UpgradePrice = data.GetUpgradePrice(controller.GetLevel());
+            Sprite = data.GetUpgradeSprite(nextLevelIndex);
+            
+            SellPrice = data.GetTowerSellValue(nextLevelIndex);
+            UpgradePrice = data.GetUpgradePrice(nextLevelIndex);
 
             HasTargettingMode = true;
         }
@@ -37,10 +41,14 @@ namespace Towers
         public BaseInformations(Farm data, FarmController controller)
         {
             Level = controller.GetLevel();
+            isMaxLevel = Level >= 4;
+            int nextLevelIndex = isMaxLevel ? Level : Level + 1;
+            
             Name = data.TowerName;
-            Sprite = data.GetUpgradeSprite(controller.GetLevel());
-            SellPrice = data.GetTowerSellValue(controller.GetLevel());
-            UpgradePrice = data.GetUpgradePrice(controller.GetLevel());
+            Sprite = data.GetUpgradeSprite(nextLevelIndex);
+            
+            SellPrice = data.GetTowerSellValue(nextLevelIndex);
+            UpgradePrice = data.GetUpgradePrice(nextLevelIndex);
             
             HasTargettingMode = false;
         }
@@ -48,10 +56,14 @@ namespace Towers
         public BaseInformations(Booster data, BoosterController controller)
         {
             Level = controller.GetLevel();
+            isMaxLevel = Level >= 4;
+            int nextLevelIndex = isMaxLevel ? Level : Level + 1;
+            
             Name = data.TowerName;
-            Sprite = data.GetUpgradeSprite(controller.GetLevel());
-            SellPrice = data.GetTowerSellValue(controller.GetLevel());
-            UpgradePrice = data.GetUpgradePrice(controller.GetLevel());
+            Sprite = data.GetUpgradeSprite(nextLevelIndex);
+            
+            SellPrice = data.GetTowerSellValue(nextLevelIndex);
+            UpgradePrice = data.GetUpgradePrice(nextLevelIndex);
             
             HasTargettingMode = false;
         }

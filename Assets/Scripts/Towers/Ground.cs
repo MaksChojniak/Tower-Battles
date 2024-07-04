@@ -4,7 +4,6 @@ using System.Linq;
 using MMK.ScriptableObjects;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace DefaultNamespace
 {
@@ -42,7 +41,7 @@ namespace DefaultNamespace
 
         void Start()
         {
-            LoadMaterialAssets();
+            // LoadMaterialAssets();
 
             CheckGroundPosition();
         }
