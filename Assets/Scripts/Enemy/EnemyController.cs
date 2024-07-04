@@ -33,8 +33,9 @@ using PathCreation;
 
          void Awake()
          {
-             IsBurning = false;
-            
+            IsBurning = false;
+            Hidden = EnemyData.IsGhost;
+
             HealthComponent = GetComponent<Health>();
             MovementComponent = GetComponent<EnemyMovement>();
             AnimationComponent = GetComponent<EnemyAnimation>();

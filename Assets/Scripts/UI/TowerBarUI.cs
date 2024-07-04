@@ -35,9 +35,15 @@ public class TowerBarUI : MonoBehaviour
         for (int i = 0; i < Tiles.Length; i++)
         {
             if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
+            {
                 Tiles[i].UpdateSprite(PlayerTowerInventory.Instance.TowerDeck[i].TowerSprite);
+                Tiles[i].UpdatePrice(true, PlayerTowerInventory.Instance.TowerDeck[i].GetPrice());
+            }
             else
+            {
                 Tiles[i].UpdateSprite(null);
+                Tiles[i].UpdatePrice(false, 0);
+            }
         }
     }
 
