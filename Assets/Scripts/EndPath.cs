@@ -28,7 +28,11 @@ public class EndPath : MonoBehaviour
 
     void OnEnemyTriggerEnter(Collider other)
     {
-        if (other.transform.gameObject.TryGetComponent<EnemyController>(out var enemy))
+        if(other.transform.parent == null || other.transform.parent.parent == null || other.transform.parent.parent.parent == null)
+            return;
+
+        GameObject enemyObject = other.transform.parent.parent.parent.gameObject;
+        if (enemyObject.TryGetComponent<EnemyController>(out var enemy))
         {
             int healthValue = enemy.HealthComponent.GetHealth();
 

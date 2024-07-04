@@ -273,10 +273,10 @@ namespace Towers
                 };
             
             Side[] sides = Weapon.WeaponType == WeaponType.DualWield ? new [] { Side.Right, Side.Left } : new [] { Side.Right };
-
+   
             OnShoot?.Invoke(enemy, sides, true, Weapon);
 
-            StartCoroutine(FireDamage(enemy, Weapon.Damage, Weapon.BurningTime));
+            enemy.StartCoroutine(FireDamage(enemy, Weapon.Damage, Weapon.BurningTime));
 
             return new ShootResult()
             {

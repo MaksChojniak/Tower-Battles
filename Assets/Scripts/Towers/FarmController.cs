@@ -164,6 +164,8 @@ namespace MMK.Towers
             
             TowerIncomeComponent.SetWaveIncome(FarmData.GetWaveIncome(Level));
             
+            AnimationComponent.UpdateController(Level);
+            
         }
 
 

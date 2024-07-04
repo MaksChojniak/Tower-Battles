@@ -5,6 +5,7 @@ using MMK.ScriptableObjects;
 using MMK.Towers;
 using PathCreation;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Towers
 {
@@ -19,8 +20,6 @@ namespace Towers
         public delegate void OnBulletHitEnemyDelegate(Vector3 Position);
         event OnBulletHitEnemyDelegate OnBulletHitEnemy;
 
-        
-        public AnimationClip ShootAnimationClip;
         
         
         public GameObject FireStreamPrefab;
@@ -141,17 +140,6 @@ namespace Towers
         
 
 
-        protected override void InitializeAnimationClips()
-        {
-            base.InitializeAnimationClips();
-
-            if (ShootAnimationClip == null)
-                throw new NullReferenceException("ShootAnimationClip doesn't exist  [value = null]");
-            
-            Animation.AddClip(ShootAnimationClip, SHOOT_CLIP_NAME);
-        }
-
-
 
 
 #region Shoot Animation
@@ -167,10 +155,13 @@ namespace Towers
         
         void PlayShootAnimation(EnemyController target, Side[] WeaponSides, bool EnemyInCenter, Weapon Wepaon)
         {
-            Animation.Play(SHOOT_CLIP_NAME);
-
+            
             foreach (var WeaponSide in WeaponSides)
             {
+                string animationLayerName = WeaponSide == Side.Right ? "R" : "L";
+                int animationLayer = Animator.GetLayerIndex(animationLayerName);
+                Animator.Play(SHOOT_CLIP_NAME, animationLayer);
+                
                 BulletAnimation(target, WeaponSide, Wepaon);
             }
 
@@ -194,20 +185,29 @@ namespace Towers
             float bulletSpeed = Vector3.Distance(this.transform.position, targetPosition) / maxBulletTrailLenght;
 
             if (Wepaon.DamageType == DamageType.Fire)
-                StartCoroutine(DoFireStream(bulletSpeed, WeaponSide, targetPosition));
-            else if(Wepaon.ShootingType == ShootingType.Shootable)
-                StartCoroutine(DoProjectileBeam(bulletSpeed, WeaponSide, targetPosition, Wepaon.DamageType == DamageType.Splash) );
-            else if(Wepaon.ShootingType == ShootingType.Throwable)
-                StartCoroutine(DoThrowPath(WeaponSide, target, Wepaon.DamageType == DamageType.Splash) );
+            {
+                // ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+                // StartCoroutine(DoFireStream(fireStreamParticle, bulletSpeed, WeaponSide, targetPosition));
+            }
+            else if (Wepaon.ShootingType == ShootingType.Shootable)
+            {
+                LineRenderer lineRenderer = Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
+                StartCoroutine(DoProjectileBeam(lineRenderer, bulletSpeed, WeaponSide, targetPosition, Wepaon.DamageType == DamageType.Splash) );
+            }
+            else if (Wepaon.ShootingType == ShootingType.Throwable)
+            {
+                PathCreator throwPath = Instantiate(ThrowPathPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathCreator>();
+                StartCoroutine(DoThrowPath(throwPath, WeaponSide, target, Wepaon.DamageType == DamageType.Splash) );
+            }
         }
 
-        IEnumerator DoProjectileBeam(float bulletSpeed, Side WeaponSide, Vector3 endPosition, bool playExplosionAnimation)
+        IEnumerator DoProjectileBeam(LineRenderer lineRenderer, float bulletSpeed, Side WeaponSide, Vector3 endPosition, bool playExplosionAnimation)
         {
             Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
             Vector3 startPosition = muzzle.position;
 
             // Spawn Line Renderer (Animator)
-            LineRenderer lineRenderer = Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
+            // LineRenderer lineRenderer = Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
 
             // Fix End Position (longer distance)
             Vector3 directionToEndPosition = (endPosition - startPosition).normalized;
@@ -248,12 +248,13 @@ namespace Towers
             
         }
 
-        IEnumerator DoThrowPath(Side WeaponSide, EnemyController EnemyController, bool playExplosionAnimation)
+        IEnumerator DoThrowPath(PathCreator throwPath, Side WeaponSide, EnemyController EnemyController, bool playExplosionAnimation)
         {
             Transform target = EnemyController.transform;
             Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
             
-            PathCreator throwPath = Instantiate(ThrowPathPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathCreator>();
+            // PathCreator throwPath = Instantiate(ThrowPathPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathCreator>();
+            
             BezierPath bezierPath = throwPath.bezierPath;
 
             GameObject throwedObject = Instantiate(ThrowedObjectPrefab, Vector3.zero, Quaternion.identity);
@@ -307,11 +308,13 @@ namespace Towers
                 OnBulletHitEnemy?.Invoke(target.position);
         }
 
-        IEnumerator DoFireStream(float fireSpeed, Side WeaponSide, Vector3 endPosition)
+        IEnumerator DoFireStream(ParticleSystem fireStreamParticle, float fireSpeed, Side WeaponSide, Vector3 endPosition)
         {
             Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
 
-            ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, muzzle.transform.position, this.transform.rotation).GetComponent<ParticleSystem>();
+            // ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, muzzle.transform.position, this.transform.rotation).GetComponent<ParticleSystem>();
+            fireStreamParticle.transform.position = muzzle.transform.position;
+            fireStreamParticle.transform.rotation = this.transform.rotation;
             
             fireStreamParticle.Play();
             

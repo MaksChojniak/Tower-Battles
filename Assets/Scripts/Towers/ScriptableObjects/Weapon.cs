@@ -26,8 +26,8 @@ namespace MMK.ScriptableObjects
         public int MaxEnemiesInSpread;
         
         
-        public const float BurningTime = 2f;
-        public const float BurningInterval = 0.25f;
+        public float BurningTime = 0;// = 2f;
+        public float BurningInterval = 0;// = 0.25f;
     }
     
     

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
     public class Health : MonoBehaviour
     {
-        public delegate void OnTakeDamageDelegate();
+        public delegate void OnTakeDamageDelegate(bool IsBurning);
         public event OnTakeDamageDelegate OnTakeDamage;
         
         public delegate void OnDieDelegate();
@@ -34,10 +34,14 @@ using UnityEngine.UI;
         [SerializeField] int HealthValue;
         [SerializeField] int BaseHealthValue;
 
+        
+        public EnemyController EnemyController { private set; get; }
 
         
         void Awake()
         {
+            EnemyController = this.GetComponent<EnemyController>();
+            
             RegisterHandlers();
             
         }
@@ -102,7 +106,7 @@ using UnityEngine.UI;
         {
             HealthValue += value;
             
-            OnTakeDamage?.Invoke();
+            OnTakeDamage?.Invoke(EnemyController.IsBurning);
             
             if(HealthValue <= 0)
                 OnDie?.Invoke();
