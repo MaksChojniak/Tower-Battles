@@ -50,7 +50,7 @@ public class GamePlayerInformation : MonoBehaviour
         
 
         Health = 100;
-        Balance = 105000;
+        Balance = 650;
     }
 
     void Start()
