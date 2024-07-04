@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MMK;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -38,7 +39,7 @@ namespace DefaultNamespace
 
         void UpdateBalanceInformation(long value)
         {
-            BalanceText.text = $"{value}";
+            BalanceText.text = $"{value} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().CashIconName })}";
         }
 
         void UpdateHealthInformation(int value)
