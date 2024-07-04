@@ -90,7 +90,7 @@ using PathCreation;
         {
             MovementComponent.enabled = false;
             // Destroy(this.gameObject);
-            this.Invoke(() => Destroy(this.gameObject) , 1f);
+            this.Invoke(() => Destroy(this.gameObject) , 1.5f);
         }
 
 

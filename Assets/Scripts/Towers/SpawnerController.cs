@@ -78,6 +78,7 @@ namespace MMK.Towers
         {
             base.UploadNewData();
 
+            AnimationComponent.UpdateController(Level);
             // TODO upload spawning data :)
 
         }

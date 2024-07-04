@@ -18,11 +18,15 @@ namespace Editor
             
 
             EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Animation Controllers", EditorStyles.boldLabel);
+            EditorGUILayout.Space(5);
+            InspectorTools.DrawUpgradableProperties(serializedObject, "AnimationControllers", "Animation Controllers");
+            
+            EditorGUILayout.Space();
             EditorGUILayout.LabelField("Animation Clips", EditorStyles.boldLabel);
             EditorGUILayout.Space(5);
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "LevelUpClip", Caption = "LevelUp Clip"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "RemoveTowerClip", Caption = "Remove Tower Clip"});
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ShootAnimationClip", Caption = "Shoot Clip"});
             // InspectorTools.PropertyField(serializedObject, "LevelUpClip", "LevelUp Clip");
             // InspectorTools.PropertyField(serializedObject, "RemoveTowerClip", "Remove Tower Clip");
             // InspectorTools.PropertyField(serializedObject, "ShootAnimationClip", "Shoot Clip");

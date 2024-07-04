@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.Plastic.Newtonsoft.Json.Bson;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -100,20 +101,39 @@ using Random = UnityEngine.Random;
             //
             // Animator.clip.apparentSpeed
 
-            Animator.speed = speed;
+            Animator.speed = speed / 2f;
         }
         
 
-        void PlayTakeDamageAnimation()
+        void PlayTakeDamageAnimation(bool IsBurning)
         {
-            ParticleSystem bloodParticle = Instantiate(BloodParticlePrefab, this.transform.position, this.transform.rotation).transform.GetChild(0).GetComponent<ParticleSystem>();
-
-            bloodParticle.Play();
-            
-            Destroy(bloodParticle.gameObject, 2f);
+            if (IsBurning)
+                PlayBurningAnimation();
+            else
+                PlayBloodAnimation();
         }
 
 
+
+        void PlayBurningAnimation()
+        {
+            
+        }
+
+        void PlayBloodAnimation()
+        {
+            GameObject bloodParticleObject = Instantiate(BloodParticlePrefab, this.transform.position, this.transform.rotation);
+            ParticleSystem bloodParticle = bloodParticleObject.transform.GetChild(0).GetComponent<ParticleSystem>();
+
+            bloodParticle.Play();
+            
+            Destroy(bloodParticle.gameObject, 1.5f);
+        }
+
+
+        
+        
+        
         [ContextMenu(nameof(PlayDieAnimation))]
         void PlayDieAnimation()
         {
@@ -131,7 +151,7 @@ using Random = UnityEngine.Random;
                 return;
             }
 
-            Rigidbody[] rigidbodies = Body.GetComponentsInChildren<Rigidbody>();
+            Rigidbody[] rigidbodies = Body.transform.GetChild(0).GetComponentsInChildren<Rigidbody>();
             foreach (var rb in rigidbodies)
             {
                 rb.gameObject.layer = LayerMask.NameToLayer("Ragdoll");

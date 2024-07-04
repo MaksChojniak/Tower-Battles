@@ -142,12 +142,6 @@ namespace MMK.Towers
 
         
         
-        protected override void InitializeAnimationClips()
-        {
-            base.InitializeAnimationClips();
-            
-        }
-        
         
         
         

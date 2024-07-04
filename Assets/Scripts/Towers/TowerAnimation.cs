@@ -6,14 +6,17 @@ namespace MMK.Towers
 {
     public class TowerAnimation : MonoBehaviour
     {
-        
+        public delegate void UpdateControllerDelegate(int Level);
+        public UpdateControllerDelegate UpdateController;
         
         public AnimationClip LevelUpClip;
         public AnimationClip RemoveTowerClip;
+
+        public RuntimeAnimatorController[] AnimationControllers; 
         
         
         public TowerController TowerController { private set; get; }
-        public Animation Animation { private set; get; }
+        public Animator Animator { private set; get; }
 
         
         public const string LEVEL_UP_CLIP_NAME = "LevelUp";
@@ -26,12 +29,11 @@ namespace MMK.Towers
         {
             TowerController = this.GetComponent<TowerController>();
             
-            if (this.TryGetComponent<Animation>(out var animation))
-                Animation = animation;
+            if (this.TryGetComponent<Animator>(out var animator))
+                Animator = animator;
             else
-                Animation = this.gameObject.AddComponent<Animation>();
+                Debug.LogException(new Exception("Enemy doesn't have Animator"));
 
-            // InitializeAnimationClips();
             
             RegisterHandlers();
         }
@@ -63,43 +65,35 @@ namespace MMK.Towers
 
         protected virtual void RegisterHandlers()
         {
-            
+            UpdateController += OnUpdateController;
+
         }
 
         protected virtual void UnregisterHndlers()
         {
+            UpdateController -= OnUpdateController;
 
         }
 
 #endregion
 
 
-        protected virtual void InitializeAnimationClips()
+        void OnUpdateController(int Level)
         {
-            if (LevelUpClip == null)
-                throw new NullReferenceException("ShootAnimationClip doesn't exist  [value = null]");
-            
-            Animation.AddClip(LevelUpClip, LEVEL_UP_CLIP_NAME);
-            
-            if (RemoveTowerClip == null)
-                throw new NullReferenceException("ShootAnimationClip doesn't exist  [value = null]");
-            
-            Animation.AddClip(RemoveTowerClip, REMOVE_TOWER_CLIP_NAME);
-            
+            Animator.runtimeAnimatorController = AnimationControllers[Level];
         }
-        
         
 
 
         protected void PlayLevelUpAnimation()
         {
-            Animation.Play(LEVEL_UP_CLIP_NAME);
+            Animator.Play(LEVEL_UP_CLIP_NAME);
             
         }
         
         protected void PlayRemoveAnimation()
         {
-            Animation.Play(REMOVE_TOWER_CLIP_NAME);
+            Animator.Play(REMOVE_TOWER_CLIP_NAME);
             
         }
 

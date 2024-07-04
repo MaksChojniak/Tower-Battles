@@ -78,7 +78,7 @@ namespace MMK.Towers
             if(lastFollowCourtine != null)
                 StopCoroutine(lastFollowCourtine);
 
-            lastFollowCourtine = StartCoroutine(LookAtEnemy(target));
+            lastFollowCourtine = StartCoroutine(LookAtEnemy(target, Weapon));
         }
         
         
@@ -86,7 +86,7 @@ namespace MMK.Towers
         
         const float followTime = 0.2f;
         Coroutine lastFollowCourtine;
-        IEnumerator LookAtEnemy(EnemyController enemy)
+        IEnumerator LookAtEnemy(EnemyController enemy, Weapon Weapon)
         {
             Vector3 enemyPos = enemy.transform.position;
             
@@ -112,9 +112,12 @@ namespace MMK.Towers
                 yield return new WaitForSeconds(delay);
             }
         
-            EnemyController enemyController = SoldierController.ViewRangeComponent.GetEnemyByMode(SoldierController.TargetMode);
-            if(enemyController != null)
-                lastFollowCourtine = StartCoroutine(LookAtEnemy(enemyController));
+            EnemyController enemyController = SoldierController.ViewRangeComponent.GetEnemyByMode(SoldierController.TargetMode, Weapon.DamageType != DamageType.Fire);
+            if (enemyController != null)
+            {
+                lastFollowCourtine = StartCoroutine(LookAtEnemy(enemyController, Weapon));
+                yield break;
+            }
         }
         
         

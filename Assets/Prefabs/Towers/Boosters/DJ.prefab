@@ -589,6 +589,10 @@ GameObject:
   m_Component:
   - component: {fileID: 5998357733650976851}
   - component: {fileID: 5631502985247624011}
+  - component: {fileID: 7745437714799393003}
+  - component: {fileID: 6917646200149386372}
+  - component: {fileID: 361746709343595383}
+  - component: {fileID: -8325406302975125813}
   m_Layer: 2
   m_Name: DJ
   m_TagString: Tower
@@ -632,15 +636,69 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 010991ac84774965825a02cbaedaa070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UpgradeLevel: 0
+  Level: 0
   IsPlaced: 0
-  targetMode: 0
-  CurrentTowerObject: {fileID: 0}
-  ViewRange: {fileID: 7384435159752698244}
-  SpawnRange: {fileID: 8554342040311403939}
-  SelectedRingImage: {fileID: 3971638467824864322}
-  boosterData: {fileID: 11400000, guid: e7e727593595d164db882b8b7ff223d3, type: 2}
-  TotalEarnedMoney: 0
+--- !u!114 &7745437714799393003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5998357733650976853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ce90910d89a480d837be2fccd210128, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HitboxObject: {fileID: 0}
+--- !u!114 &6917646200149386372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5998357733650976853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691f5b08009c46728b770f43d94abdf6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SpawnRangeObject: {fileID: 0}
+  RedMaterial: {fileID: 0}
+  GreenMaterial: {fileID: 0}
+--- !u!114 &361746709343595383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5998357733650976853}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f93f6d8159b46e29660e6b4ddf03ac5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RingObject: {fileID: 0}
+--- !u!95 &-8325406302975125813
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5998357733650976853}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &7002841070397478136
 GameObject:
   m_ObjectHideFlags: 0
