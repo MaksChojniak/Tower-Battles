@@ -109,6 +109,7 @@ public class WaveManager : MonoBehaviour
     
     IEnumerator ProcessWave(WaveData wave)
     {
+        bool isLastWave = ActualyWeveIndex + 1 < Waves.Length;
 
         for (int i = 0; i < wave.stages.Length; i++)
         {
@@ -125,7 +126,7 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(stage.stageSleepTime);
         }
 
-        if(skipWavePanel != null && ActualyWeveIndex + 1 < Waves.Length)
+        if(skipWavePanel != null && isLastWave)
             skipWavePanel.SetActive(true);
 
 
@@ -134,6 +135,12 @@ public class WaveManager : MonoBehaviour
         skipWave = false;
         if (skipWavePanel != null)
             skipWavePanel.SetActive(false);
+
+        if (isLastWave)
+        {
+            UpdateWaves();
+            yield break;
+        }
 
         uint waveReward = wave.waveReward;
         StartCoroutine(ShowWaveReward(waveReward));

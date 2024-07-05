@@ -158,14 +158,19 @@ namespace Towers
             
             foreach (var WeaponSide in WeaponSides)
             {
-                string animationLayerName = WeaponSide == Side.Right ? "R" : "L";
-                int animationLayer = Animator.GetLayerIndex(animationLayerName);
-                Animator.Play(SHOOT_CLIP_NAME, animationLayer);
+                ShootAnimation(WeaponSide);
                 
                 BulletAnimation(target, WeaponSide, Wepaon);
             }
 
 
+        }
+
+        public void ShootAnimation(Side WeaponSide)
+        {
+            string animationLayerName = WeaponSide == Side.Right ? "R" : "L";
+            int animationLayer = Animator.GetLayerIndex(animationLayerName);
+            Animator.Play(SHOOT_CLIP_NAME, animationLayer);
         }
 
         

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using MMK.Towers;
+using Towers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -55,8 +56,12 @@ namespace DefaultNamespace
                 towerModelChild.gameObject.layer = LayerMask.NameToLayer("Tower");
             }
 
-            if (towerObject.transform.GetChild(0).TryGetComponent<Animator>(out var animator))
-                animator.SetBool("Shoot_R", true);
+            if (towerObject.transform.TryGetComponent<SoldierAnimation>(out var soldierAnimation))
+            {
+                soldierAnimation.UpdateController(0);
+                soldierAnimation.ShootAnimation(Side.Right);
+            }
+            
 
 
             Tower = towerObject.transform;
