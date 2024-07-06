@@ -5,6 +5,7 @@ using System.Xml.Schema;
 using DefaultNamespace;
 using MMK.ScriptableObjects;
 using MMK.Towers;
+using TMPro;
 using Towers;
 using UnityEngine;
 
@@ -174,6 +175,7 @@ namespace MMK.Towers
     [RequireComponent(typeof(InputHandler))]
     [RequireComponent(typeof(SpawnRange))]
     [RequireComponent(typeof(SelectedRing))]
+    [RequireComponent(typeof(TowerLevel))]
     // [RequireComponent(typeof(ViewRange))]
     public abstract class TowerController : MonoBehaviour
     {
@@ -202,11 +204,14 @@ namespace MMK.Towers
         [Range(0, 4)]
         [SerializeField] protected int Level;
         public bool IsPlaced;
-        
+
+        [SerializeField] GameObject LevelTextObject;
+        [SerializeField] TMP_Text LevelText => LevelTextObject.transform.GetChild(0).GetComponent<TMP_Text>();
 
         public InputHandler InputHandlerCmponent { private set; get; }
         public SpawnRange SpawnRangeComponent { private set; get; }
         public SelectedRing SelectedRingComponent { private set; get; }
+        public TowerLevel LevelComponent { private set; get; }
         // public ViewRange ViewRangeComponent { private set; get; }
 
 
@@ -216,6 +221,7 @@ namespace MMK.Towers
             InputHandlerCmponent = this.GetComponent<InputHandler>();
             SpawnRangeComponent = this.GetComponent<SpawnRange>();
             SelectedRingComponent = this.GetComponent<SelectedRing>();
+            LevelComponent = this.GetComponent<TowerLevel>();
             // ViewRangeComponent = this.GetComponent<ViewRange>();
             
             RegisterHandlers();
@@ -229,6 +235,7 @@ namespace MMK.Towers
 
         protected virtual void Start()
         {
+            LevelComponent.SetActive(false);
             UploadNewData();
 
         }
@@ -281,6 +288,7 @@ namespace MMK.Towers
 
             return true;
         }
+
 
         
         void OnLevelUpgraded()
@@ -336,6 +344,7 @@ namespace MMK.Towers
             IsPlaced = true;
             
             UploadNewData();
+            LevelComponent.SetActive(true);
         }
         
         

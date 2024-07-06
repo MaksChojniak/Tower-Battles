@@ -27,13 +27,12 @@ namespace Towers
         {
             Level = controller.GetLevel();
             isMaxLevel = Level >= 4;
-            int nextLevelIndex = isMaxLevel ? Level : Level + 1;
             
             Name = data.TowerName;
-            Sprite = data.GetUpgradeSprite(nextLevelIndex);
+            Sprite = data.GetUpgradeSprite(Level);
             
-            SellPrice = data.GetTowerSellValue(nextLevelIndex);
-            UpgradePrice = data.GetUpgradePrice(nextLevelIndex);
+            SellPrice = data.GetTowerSellValue(Level);
+            UpgradePrice = data.GetUpgradePrice(Level);
 
             HasTargettingMode = true;
         }
@@ -42,13 +41,12 @@ namespace Towers
         {
             Level = controller.GetLevel();
             isMaxLevel = Level >= 4;
-            int nextLevelIndex = isMaxLevel ? Level : Level + 1;
             
             Name = data.TowerName;
-            Sprite = data.GetUpgradeSprite(nextLevelIndex);
+            Sprite = data.GetUpgradeSprite(Level);
             
-            SellPrice = data.GetTowerSellValue(nextLevelIndex);
-            UpgradePrice = data.GetUpgradePrice(nextLevelIndex);
+            SellPrice = data.GetTowerSellValue(Level);
+            UpgradePrice = data.GetUpgradePrice(Level);
             
             HasTargettingMode = false;
         }
@@ -57,13 +55,12 @@ namespace Towers
         {
             Level = controller.GetLevel();
             isMaxLevel = Level >= 4;
-            int nextLevelIndex = isMaxLevel ? Level : Level + 1;
             
             Name = data.TowerName;
-            Sprite = data.GetUpgradeSprite(nextLevelIndex);
+            Sprite = data.GetUpgradeSprite(Level);
             
-            SellPrice = data.GetTowerSellValue(nextLevelIndex);
-            UpgradePrice = data.GetUpgradePrice(nextLevelIndex);
+            SellPrice = data.GetTowerSellValue(Level);
+            UpgradePrice = data.GetUpgradePrice(Level);
             
             HasTargettingMode = false;
         }

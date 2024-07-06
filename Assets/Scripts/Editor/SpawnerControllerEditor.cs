@@ -21,13 +21,17 @@ namespace Editor
         
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Stats", EditorStyles.boldLabel);
+            
             EditorGUILayout.Space(5);
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "SpawnerData", Caption = "Spawner Data"});
             EditorGUILayout.Space(3);
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "Level", Caption = "Upgrade Level"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "IsPlaced", Caption = "Is Placed"});
 
-
+            
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("UI", EditorStyles.boldLabel);
+            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "LevelTextObject", Caption = "Current Level Text Object"});
 
 
 

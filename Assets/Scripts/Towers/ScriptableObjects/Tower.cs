@@ -38,9 +38,9 @@ namespace MMK.ScriptableObjects
 
 
         public long GetPrice() => UpgradePrice[0];
-        public long GetUpgradePrice(int Level) => UpgradePrice[Level];
+        public long GetUpgradePrice(int Level) => Level + 1 < GameSettingsManager.GetGameSettings().MaxUpgradeLevel ? UpgradePrice[Level + 1] : UpgradePrice[Level];
         
-        public Sprite GetUpgradeSprite(int Level) => UpgradeIcon[Level];
+        public Sprite GetUpgradeSprite(int Level)  => Level + 1 < GameSettingsManager.GetGameSettings().MaxUpgradeLevel ? UpgradeIcon[Level + 1] : UpgradeIcon[Level];
         
         
         
