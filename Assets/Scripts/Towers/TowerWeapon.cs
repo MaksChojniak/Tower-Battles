@@ -311,7 +311,7 @@ namespace Towers
 
         ShootResult ThrowableShoot()
         {
-            float objectFlyTime = 0.8f;
+            float objectFlyTime = 0.75f;
             
 
             EnemyController[] enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);

@@ -154,7 +154,7 @@ using Random = UnityEngine.Random;
 
             bloodParticle.Play();
             
-            Destroy(bloodParticle.gameObject, 1.5f);
+            Destroy(bloodParticleObject, 1.5f);
         }
         
 #endregion
