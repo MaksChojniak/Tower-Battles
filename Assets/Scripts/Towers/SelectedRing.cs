@@ -55,19 +55,26 @@ namespace MMK.Towers
         void RegisterHandlers()
         {
             SetActiveRing += OnSetActiveRing;
+            TowerSpawner.OnStartPlacingTower += OnStartPlacingTower;
 
         }
 
         void UnregisterHandlers()
         {
+            TowerSpawner.OnStartPlacingTower -= OnStartPlacingTower;
             SetActiveRing -= OnSetActiveRing;
             
         }
         
 #endregion
 
-        
 
+
+        void OnStartPlacingTower(TowerController Tower)
+        {
+            SetActiveRing(false);
+        }
+        
         
         void OnSetActiveRing(bool state)
         {
