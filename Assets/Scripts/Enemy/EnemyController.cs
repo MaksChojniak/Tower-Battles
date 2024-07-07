@@ -1,4 +1,5 @@
 using System;
+using MMK.Enemy;
 using MMK.Extensions;
 using UnityEngine;
 using PathCreation;
@@ -10,6 +11,7 @@ using PathCreation;
     [RequireComponent(typeof(EnemyAudio))]
     [RequireComponent(typeof(EnemyMovement))]
     [RequireComponent(typeof(Health))]
+    [RequireComponent(typeof(EnemyInputHandler))]
     public class EnemyController : MonoBehaviour
     {
         public delegate void SetBurningActiveDelegate(bool State);
@@ -28,6 +30,7 @@ using PathCreation;
         public EnemyMovement MovementComponent { private set; get; }
         public EnemyAnimation AnimationComponent { private set; get; }
         public EnemyAudio AudioComponent { private set; get; }
+        public EnemyInputHandler InputHandlerComponent { private set; get; }
          
          
 
@@ -40,6 +43,7 @@ using PathCreation;
             MovementComponent = GetComponent<EnemyMovement>();
             AnimationComponent = GetComponent<EnemyAnimation>();
             AudioComponent = GetComponent<EnemyAudio>();
+            InputHandlerComponent = GetComponent<EnemyInputHandler>();
 
             RegisterHandlers();
             

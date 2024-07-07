@@ -85,7 +85,7 @@ namespace Towers
         {
             Vector3 screenPosition = Input.GetTouch(0).position;
 
-            GameObject UIComponent = UIRaycast(ScreenPosToPointerData(screenPosition));
+            GameObject UIComponent = InputHandlerExtension.UIRaycast(InputHandlerExtension.ScreenPosToPointerData(screenPosition));
             if (UIComponent != null && UIComponent.layer == UILayer)
                 return;
 
@@ -119,18 +119,24 @@ namespace Towers
         }
 
         
-
-        static GameObject UIRaycast (PointerEventData pointerData)
-        {
-            var results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerData, results);
- 
-            return results.Count < 1 ? null : results[0].gameObject;
-        }
-    
-        static PointerEventData ScreenPosToPointerData (Vector2 screenPos)
-            => new(EventSystem.current){position = screenPos};
-
-
+        
     }
+    
+    
+}
+
+
+public static class InputHandlerExtension
+{
+
+    public static GameObject UIRaycast (PointerEventData pointerData)
+    {
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
+ 
+        return results.Count < 1 ? null : results[0].gameObject;
+    }
+    
+    public static PointerEventData ScreenPosToPointerData (Vector2 screenPos) => new(EventSystem.current){position = screenPos};
+    
 }

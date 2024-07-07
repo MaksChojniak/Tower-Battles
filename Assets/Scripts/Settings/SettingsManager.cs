@@ -6,6 +6,100 @@ using UnityEngine.SceneManagement;
 
 namespace DefaultNamespace
 {
+    public enum GraphicsQuality
+    {
+        Low,
+        Medium,
+        High,
+        Ultra,
+    }
+    [Serializable]
+    public class CPU
+    {
+        public string Name;
+        public int Cores;
+        public double CoresFrequency;
+
+        public CPU()
+        {
+            Name = SystemInfo.processorType;
+            Cores = SystemInfo.processorCount;
+            CoresFrequency = Math.Round(SystemInfo.processorFrequency / 1000f, 1);
+        }
+    }
+    [Serializable]
+    public class RAM
+    {
+        public int Size;
+
+        public RAM()
+        {
+            Size = Mathf.RoundToInt(SystemInfo.systemMemorySize / 1024f);
+        }
+    }
+    [Serializable]
+    public class Battery
+    {
+        public float ChargeLevel;
+        public BatteryStatus ChargingStatus;
+
+        public Battery()
+        { 
+            ChargeLevel = SystemInfo.batteryLevel;
+            ChargingStatus = SystemInfo.batteryStatus;
+        }
+    }
+    [Serializable]
+    public class Hardware
+    {
+        public CPU CPU;
+        public RAM RAM;
+        public Battery Battery;
+
+        public Hardware()
+        {
+            CPU = new CPU();
+            RAM = new RAM();
+            Battery = new Battery();
+        }
+    }
+    
+    [Serializable]
+    public class Settings
+    {
+        public GraphicsQuality GraphicsQuality;
+
+        public Hardware Hardware;
+
+
+        public Settings()
+        {
+            
+        }
+        
+
+        [ContextMenu(nameof(UpdateGraphicsQuality))]
+        public void UpdateGraphicsQuality()
+        {
+            Hardware = new Hardware();
+            
+            GraphicsQuality = CalculateQuality(Hardware);
+            
+        }
+
+        static GraphicsQuality CalculateQuality(Hardware hardware)
+        {
+
+
+            return GraphicsQuality.Low;
+        }
+        
+    }
+    
+    
+    
+    
+    
     public class SettingsManager : MonoBehaviour
     {
         public static SettingsManager Instance;
@@ -14,8 +108,12 @@ namespace DefaultNamespace
         
         public static Action<SettingsData> UpdateSettingsData;
 
+        public Settings Settings;
+        
         public SettingsData SettingsData;
 
+        
+        
         void OnEnable()
         {
             if (Instance != null)

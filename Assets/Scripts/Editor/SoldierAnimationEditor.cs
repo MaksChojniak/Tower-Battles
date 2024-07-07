@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 
+using System;
 using Towers;
 using UnityEditor;
 
@@ -7,11 +8,10 @@ using UnityEditor;
 namespace Editor
 {
     
-    [CustomEditor(typeof(SoldierAnimation))]
+    [CustomEditor(typeof(SoldierAnimation)), CanEditMultipleObjects]
     public class SoldierAnimationEditor : UnityEditor.Editor
     {
 
-        
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
@@ -39,6 +39,7 @@ namespace Editor
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ProjectileBeamPrefab", Caption = "Projectile Beam Prefab"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ThrowPathPrefab", Caption = "Throw Path Prefab"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ThrowedObjectPrefab", Caption = "Throwed Object Prefab"});
+            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ExplosionPrefab", Caption = "Explosion Prefab"});
             // InspectorTools.PropertyField(serializedObject, "ProjectileBeamPrefab", "Projectile Beam Prefab");
             // InspectorTools.PropertyField(serializedObject, "ThrowPathPrefab", "Throw Path Prefab");
             // InspectorTools.PropertyField(serializedObject, "ThrowedObjectPrefab", "Throwed Object Prefab");

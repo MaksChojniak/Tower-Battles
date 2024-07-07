@@ -6,7 +6,7 @@ using UnityEditor;
 namespace Editor
 {
     
-    [CustomEditor(typeof(FarmController))]
+    [CustomEditor(typeof(FarmController)), CanEditMultipleObjects]
     public class FarmControllerEditor : UnityEditor.Editor
     {
             

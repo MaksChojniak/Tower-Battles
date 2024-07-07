@@ -6,6 +6,9 @@ using Random = UnityEngine.Random;
 // {
     public class EnemyAnimation : MonoBehaviour
     {
+        public delegate void SetSelectedAnimationDelegate(bool state);
+        public SetSelectedAnimationDelegate SetSelectedAnimation;
+        
         
         public GameObject BloodParticlePrefab;
 
@@ -69,10 +72,14 @@ using Random = UnityEngine.Random;
             EnemyController.HealthComponent.OnDie += PlayDieAnimation;
             EnemyController.MovementComponent.OnMove += PlayMoveAnimation;
 
+            SetSelectedAnimation += OnSetSelectedAnimation;
+
         }
 
         void UnregisterHandlers()
         {
+            SetSelectedAnimation -= OnSetSelectedAnimation;
+            
             EnemyController.MovementComponent.OnMove -= PlayMoveAnimation;
             EnemyController.HealthComponent.OnDie -= PlayDieAnimation;
             EnemyController.HealthComponent.OnTakeDamage -= PlayTakeDamageAnimation;
@@ -95,14 +102,35 @@ using Random = UnityEngine.Random;
 
         void PlayMoveAnimation(float speed)
         {
-            // if (!Animator.IsPlaying(MOVEMENT_CLIP_NAME))
-            //     Animator.Play(MOVEMENT_CLIP_NAME);
-            //
-            // Animator.clip.apparentSpeed
-
             Animator.speed = speed / 2f;
         }
+
+
         
+#region Select Animation
+        
+        void OnSetSelectedAnimation(bool state)
+        {
+            SetSelectedMaterial(state);
+            SetOutlineMaterial(state);
+
+        }
+
+        void SetSelectedMaterial(bool state)
+        {
+            
+        }
+        
+        void SetOutlineMaterial(bool state)
+        {
+            
+        }
+        
+#endregion
+        
+        
+
+#region Take Damage Animation
 
         void PlayTakeDamageAnimation(bool IsBurning)
         {
@@ -128,11 +156,13 @@ using Random = UnityEngine.Random;
             
             Destroy(bloodParticle.gameObject, 1.5f);
         }
+        
+#endregion
 
+        
 
-        
-        
-        
+#region Die Animation
+
         [ContextMenu(nameof(PlayDieAnimation))]
         void PlayDieAnimation()
         {
@@ -157,13 +187,14 @@ using Random = UnityEngine.Random;
                 
                 rb.isKinematic = false;
 
-                Vector3 direction = (rb.transform.right * UnityEngine.Random.Range(10f, 25f) * (UnityEngine.Random.Range(0, 100) % 2 == 0 ? 1 : -1) ) +
-                                    (rb.transform.forward * UnityEngine.Random.Range(10f, 25f) * (UnityEngine.Random.Range(0, 100) % 2 == 0 ? 1 : -1) );
+                Vector3 direction = (rb.transform.right * Random.Range(10f, 25f) * (Random.Range(0, 100) % 2 == 0 ? 1 : -1) ) +
+                                    (rb.transform.forward * Random.Range(10f, 25f) * (Random.Range(0, 100) % 2 == 0 ? 1 : -1) );
                 rb.AddForce(direction, ForceMode.Impulse);
                 
             }
         }
-
+        
+#endregion
         
         
         

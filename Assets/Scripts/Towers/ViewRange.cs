@@ -243,6 +243,9 @@ namespace Towers
         EnemyController[] OnGetEnemiesInSpreadByMode(TargetMode mode, float spread)
         {
             EnemyController enemyInCenter = OnGetEnemyByMode(mode);
+
+            if (enemyInCenter == null)
+                return Array.Empty<EnemyController>();
          
             EnemyController[] enemiesInSpread = allEnemies.
                 Where( enemy => Vector3.Distance(enemyInCenter.transform.position, enemy.transform.position) <= spread ).

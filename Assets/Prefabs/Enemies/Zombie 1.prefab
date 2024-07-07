@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1144996287600815607}
   - component: {fileID: 4935238813449373917}
   - component: {fileID: 2683216753395866945}
+  - component: {fileID: 6858512171384931385}
   m_Layer: 13
   m_Name: Zombie 1
   m_TagString: Enemy
@@ -69,6 +70,7 @@ MonoBehaviour:
   BloodParticlePrefab: {fileID: 7890859117289502679, guid: 7c516218fb02da44baa392183c6345bb,
     type: 3}
   Body: {fileID: 4085800037843556954}
+  isSelected: 0
 --- !u!114 &8691331938702712094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,6 +135,25 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6858512171384931385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2315913079105496499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64944311d873404c85cc21547288cc9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Hitboxes:
+  - {fileID: 7125879621401738777}
+  - {fileID: 6574328320748849342}
+  - {fileID: 6755706530925057655}
+  - {fileID: 8155127640227936679}
+  - {fileID: 3667610656710097206}
+  - {fileID: 6057632149366794671}
 --- !u!1 &4261821232666986038
 GameObject:
   m_ObjectHideFlags: 0

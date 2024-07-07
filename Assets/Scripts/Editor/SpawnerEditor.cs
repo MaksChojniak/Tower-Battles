@@ -9,7 +9,7 @@ namespace Editor
 {
 
     
-    [CustomEditor(typeof(Spawner))]
+    [CustomEditor(typeof(Spawner)), CanEditMultipleObjects]
     public class SpawnerEditor : UnityEditor.Editor
     {
         
