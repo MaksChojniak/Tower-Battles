@@ -280,7 +280,7 @@ namespace Towers
             bezierPath.ControlPointMode = BezierPath.ControlMode.Automatic;
             throwPath.TriggerPathUpdate();
 
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(0.2f); // animation time
 
             
             // Simulate Throw Trajectory

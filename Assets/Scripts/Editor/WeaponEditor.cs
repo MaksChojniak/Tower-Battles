@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace Editor
 {
-    [CustomEditor(typeof(Weapon)), CanEditMultipleObjects]
+    [CustomEditor(typeof(Weapon))]
     public class WeaponEditor : UnityEditor.Editor
     {
 

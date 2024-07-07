@@ -8,7 +8,7 @@ using UnityEditor;
 namespace Editor
 {
     
-    [CustomEditor(typeof(GameSettings)), CanEditMultipleObjects]
+    [CustomEditor(typeof(GameSettings))]
     public class GameSettingsEditor : UnityEditor.Editor
     {
         

@@ -7,7 +7,7 @@ using UnityEditor;
 namespace Editor
 {
     
-    [CustomEditor(typeof(Soldier)), CanEditMultipleObjects]
+    [CustomEditor(typeof(Soldier))]
     public class SoldierEditor : UnityEditor.Editor
     {
         

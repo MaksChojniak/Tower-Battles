@@ -6,7 +6,7 @@ using UnityEditor;
 namespace Editor
 {
     
-    [CustomEditor(typeof(Tower), true), CanEditMultipleObjects]
+    [CustomEditor(typeof(Tower), true)]
     public class TowerEditor : UnityEditor.Editor
     {
         

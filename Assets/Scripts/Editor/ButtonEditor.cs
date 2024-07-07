@@ -6,7 +6,7 @@ using UnityEditor;
 namespace Editor
 {
     
-    [CustomEditor(typeof(MMK.UI.Button)), CanEditMultipleObjects]
+    [CustomEditor(typeof(MMK.UI.Button))]
     public class ButtonEditor : UnityEditor.UI.ButtonEditor
     {
 
