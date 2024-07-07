@@ -20,7 +20,7 @@ namespace DefaultNamespace
         public int Cores;
         public double CoresFrequency;
 
-        public CPU()
+        public void Update()
         {
             Name = SystemInfo.processorType;
             Cores = SystemInfo.processorCount;
@@ -32,7 +32,7 @@ namespace DefaultNamespace
     {
         public int Size;
 
-        public RAM()
+        public void Update()
         {
             Size = Mathf.RoundToInt(SystemInfo.systemMemorySize / 1024f);
         }
@@ -43,7 +43,7 @@ namespace DefaultNamespace
         public float ChargeLevel;
         public BatteryStatus ChargingStatus;
 
-        public Battery()
+        public void Update()
         { 
             ChargeLevel = SystemInfo.batteryLevel;
             ChargingStatus = SystemInfo.batteryStatus;
@@ -61,6 +61,14 @@ namespace DefaultNamespace
             CPU = new CPU();
             RAM = new RAM();
             Battery = new Battery();
+        }
+
+        public void Update()
+        {
+            CPU.Update();
+            RAM.Update();
+            Battery.Update();
+
         }
     }
     
@@ -82,6 +90,7 @@ namespace DefaultNamespace
         public void UpdateGraphicsQuality()
         {
             Hardware = new Hardware();
+            Hardware.Update();
             
             GraphicsQuality = CalculateQuality(Hardware);
             
