@@ -191,8 +191,8 @@ namespace Towers
 
             if (Wepaon.DamageType == DamageType.Fire)
             {
-                // ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
-                // StartCoroutine(DoFireStream(fireStreamParticle, bulletSpeed, WeaponSide, targetPosition));
+                ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+                StartCoroutine(DoFireStream(fireStreamParticle, bulletSpeed, WeaponSide, target));
             }
             else if (Wepaon.ShootingType == ShootingType.Shootable)
             {
@@ -307,23 +307,44 @@ namespace Towers
             }
 
             Destroy( throwedObject );
-            Destroy( throwPath );
+            Destroy( throwPath.gameObject );
             
             if(playExplosionAnimation)
                 OnBulletHitEnemy?.Invoke(target.position);
         }
 
-        IEnumerator DoFireStream(ParticleSystem fireStreamParticle, float fireSpeed, Side WeaponSide, Vector3 endPosition)
+        IEnumerator DoFireStream(ParticleSystem fireStreamParticle, float fireSpeed, Side WeaponSide, EnemyController enemy)
         {
+            ParticleSystem hotterStreamParticle = fireStreamParticle.transform.GetChild(0).GetComponent<ParticleSystem>();
+            
             Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
-
+            Vector3 enemyPosition = enemy.transform.position;
+            
             // ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, muzzle.transform.position, this.transform.rotation).GetComponent<ParticleSystem>();
             fireStreamParticle.transform.position = muzzle.transform.position;
-            fireStreamParticle.transform.rotation = this.transform.rotation;
+            fireStreamParticle.transform.rotation = Quaternion.LookRotation(enemy.transform.position - this.transform.position);
+
+            var fireStreamMain = fireStreamParticle.main;
+            float multiplier = 3f;
+            fireStreamMain.startLifetime =  (Vector3.Distance(this.transform.position, enemy.transform.position) + 1f) / fireStreamParticle.velocityOverLifetime.z.constant / multiplier ;
+            
+            var hotterStreamMain = hotterStreamParticle.main;
+            hotterStreamMain.startLifetime = fireStreamMain.startLifetime;
+            
             
             fireStreamParticle.Play();
+
+            float time = 0.5f + fireStreamMain.startLifetime.constant;
+            while (time >= 0)
+            {
+                fireStreamParticle.transform.position = muzzle.transform.position;
+                fireStreamParticle.transform.rotation = Quaternion.LookRotation(enemy.transform.position - this.transform.position);
+                
+                yield return new WaitForSeconds(Time.deltaTime);
+                time -= Time.deltaTime;
+            }
             
-            Destroy(fireStreamParticle, fireStreamParticle.time + 1f);
+            Destroy(fireStreamParticle.gameObject);
             
             yield return null;
         }
