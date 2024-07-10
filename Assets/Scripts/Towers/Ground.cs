@@ -147,8 +147,9 @@ namespace MMK
                 newMaterials.Add(placementMaterial);
             
             Addressables.Release(placementHandle);
-            
-            
+
+
+            yield return new WaitForEndOfFrame();
             
             
             // Load Outline Material

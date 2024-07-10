@@ -328,11 +328,11 @@ namespace Towers
             this.Invoke(() =>
             {
                 int givenDamage = 0;
-                int step = Weapon.MaxEnemiesInSpread;
+                int damageValue = Weapon.Damage;
                 
                 foreach (var enemy in enemies)
                 {
-                    int damage = Weapon.Damage * (step);
+                    int damage = damageValue;
 
                     int healthBeforeShoot = enemy.HealthComponent.GetHealth();
                     
@@ -341,7 +341,9 @@ namespace Towers
                     int healthAfterShoot = enemy.HealthComponent.GetHealth();
 
                     givenDamage += (healthBeforeShoot - healthAfterShoot);
-                    step -= 1;
+                    
+                    if(damageValue > 1f)
+                        damageValue -= 1;
                 }
                 
                 TotalGivenDamage += givenDamage;

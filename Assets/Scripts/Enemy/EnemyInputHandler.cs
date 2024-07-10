@@ -15,6 +15,7 @@ namespace MMK.Enemy
         const int maxDistance = 1000;
         
         static int UILayer => LayerMask.NameToLayer("UI");
+        static int RagdollLayer => LayerMask.NameToLayer("Ragdoll");
         
         
         public EnemyController EnemyController { private set; get; }
@@ -78,7 +79,7 @@ namespace MMK.Enemy
             bool enemyIsClicked = false;
             
             if (Physics.Raycast(ray, out hit, maxDistance)) //, HitboxLayer))
-                enemyIsClicked = Hitboxes.Contains(hit.transform.gameObject);
+                enemyIsClicked = Hitboxes.Contains(hit.transform.gameObject) && hit.transform.gameObject.layer != RagdollLayer;
 
 
             EnemyController.AnimationComponent.SetSelectedAnimation(enemyIsClicked);

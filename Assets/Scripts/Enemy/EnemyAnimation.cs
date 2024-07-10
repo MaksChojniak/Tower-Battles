@@ -1,5 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Xml.Schema;
+using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using Random = UnityEngine.Random;
 
 // namespace Enemy
@@ -16,12 +22,19 @@ using Random = UnityEngine.Random;
         
         public Transform Body;
 
+        [SerializeField] GameObject healthObject;
+        GameObject healthPanel => healthObject.transform.GetChild(0).gameObject;
+        TMP_Text healthText => healthPanel.transform.GetChild(0).GetComponent<TMP_Text>();
+
         
         public EnemyController EnemyController { private set; get; }
         public Animator Animator { private set; get; }
         
 
         public const string MOVE_CLIP_NAME = "Move";
+
+        const string SELECTED_MATERIAL_ADDRESS = "Zombie Selected.mat";
+        const string OUTLINE_MATERIAL_ADDRESS = "Zombie Outline.mat";
 
         
         
@@ -53,7 +66,7 @@ using Random = UnityEngine.Random;
 
         void Update()
         {
-            
+            healthText.text = $"{EnemyController.HealthComponent.GetHealth()} HP";
         }
 
         void FixedUpdate()
@@ -83,7 +96,6 @@ using Random = UnityEngine.Random;
             EnemyController.MovementComponent.OnMove -= PlayMoveAnimation;
             EnemyController.HealthComponent.OnDie -= PlayDieAnimation;
             EnemyController.HealthComponent.OnTakeDamage -= PlayTakeDamageAnimation;
-            
         }
   
 #endregion
@@ -108,23 +120,76 @@ using Random = UnityEngine.Random;
 
         
 #region Select Animation
-        
+
         void OnSetSelectedAnimation(bool state)
         {
-            SetSelectedMaterial(state);
-            SetOutlineMaterial(state);
+            StartCoroutine(SpawnMaterials());
 
+            foreach (var meshRenderer in Body.GetComponentsInChildren<MeshRenderer>())
+            {
+                SetMaterials(meshRenderer, state);
+            }
+
+            healthPanel.SetActive(state);
         }
 
-        void SetSelectedMaterial(bool state)
+
+        Material _selectedMaterial;
+        Material _outlineMaterial;
+        void SetMaterials(MeshRenderer meshRenderer, bool state)
         {
+            List<Material> materials = new List<Material>() { meshRenderer.materials[0] };
+            
+            if (state)
+            {
+                if(_selectedMaterial != null)
+                    materials.Add(_selectedMaterial);
+                if(_outlineMaterial != null)
+                    materials.Add(_outlineMaterial);
+            }
+            
+            meshRenderer.materials = materials.ToArray();
             
         }
+
+        IEnumerator SpawnMaterials()
+        {
+            if (_selectedMaterial == null)
+            {
+                var selected_handle = Addressables.LoadAssetAsync<Material>(SELECTED_MATERIAL_ADDRESS);
+                yield return selected_handle;
+            
+                if(selected_handle.Status != AsyncOperationStatus.Succeeded)
+                    yield break;
+            
+                _selectedMaterial = new Material(selected_handle.Result);
+                // _selectedMaterial.shader = Shader.Find("Universal Render Pipeline/Lit");
+            
+                Addressables.Release(selected_handle);
+            }
+            
+            
+            yield return new WaitForEndOfFrame();
+
+            
+            if (_outlineMaterial == null)
+            {
+                var outline_handle = Addressables.LoadAssetAsync<Material>(OUTLINE_MATERIAL_ADDRESS);
+                yield return outline_handle;
+            
+                if(outline_handle.Status != AsyncOperationStatus.Succeeded)
+                    yield break;
+            
+                _outlineMaterial = new Material(outline_handle.Result);
+                _outlineMaterial.shader = Shader.Find("Shader Graphs/Zombie Outline");
+            
+                Addressables.Release(outline_handle);
+            }
+
+        }
+
         
-        void SetOutlineMaterial(bool state)
-        {
-            
-        }
+ 
         
 #endregion
         
@@ -166,6 +231,8 @@ using Random = UnityEngine.Random;
         [ContextMenu(nameof(PlayDieAnimation))]
         void PlayDieAnimation()
         {
+            SetSelectedAnimation(false);
+            
             PlayRagdoll();
             
         }
