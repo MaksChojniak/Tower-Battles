@@ -37,7 +37,10 @@ namespace MMK
         void OnDestroy()
         {
             OnStopPlacingTower -= OnPlaceTower;
-            UpdateGround -= OnUpdateGround; 
+            UpdateGround -= OnUpdateGround;
+
+            Addressables.Release(outlineMaterialHandle);
+            Addressables.Release(placementMaterialHaandle);
         }
 
 
@@ -121,6 +124,8 @@ namespace MMK
         //
         // }
 
+        AsyncOperationHandle<Material> placementMaterialHaandle;
+        AsyncOperationHandle<Material> outlineMaterialHandle;
         IEnumerator LoadMaterialAssets()
         {
             List<Material> newMaterials = new List<Material>();
@@ -132,42 +137,46 @@ namespace MMK
 
             
             // Load Placement Material
-            var placementHandle = Addressables.LoadAssetAsync<Material>(PLACEMENT_MATERIAL_ADDRESS);
-            yield return placementHandle;
+            placementMaterialHaandle = Addressables.LoadAssetAsync<Material>(PLACEMENT_MATERIAL_ADDRESS);
+            yield return placementMaterialHaandle;
             
-            if(placementHandle.Status != AsyncOperationStatus.Succeeded)
+            if(placementMaterialHaandle.Status != AsyncOperationStatus.Succeeded)
                 yield break;
             
-            placementMaterial = new Material(placementHandle.Result);
-            placementMaterial.shader = Shader.Find("Shader Graphs/Placement");
+            placementMaterial = new Material(placementMaterialHaandle.Result);
+            placementMaterial.shader = placementMaterialHaandle.Result.shader;
+            // placementMaterial.shader = Shader.Find("Shader Graphs/Placement");
+            Debug.Log(placementMaterialHaandle.Result.shader.name);
             Material oldPlacementMaterial = renderer.materials.FirstOrDefault(material => material.name.Contains("Placement"));
             if (oldPlacementMaterial != null)
                 placementMaterial = oldPlacementMaterial;
             else
                 newMaterials.Add(placementMaterial);
             
-            Addressables.Release(placementHandle);
+            // Addressables.Release(placementHandle);
 
 
             yield return new WaitForEndOfFrame();
             
             
             // Load Outline Material
-            var outlineHandle = Addressables.LoadAssetAsync<Material>(OUTLINE_MATERIAL_ADDRESS);
-            yield return outlineHandle;
+            outlineMaterialHandle = Addressables.LoadAssetAsync<Material>(OUTLINE_MATERIAL_ADDRESS);
+            yield return outlineMaterialHandle;
             
-            if(outlineHandle.Status != AsyncOperationStatus.Succeeded)
+            if(outlineMaterialHandle.Status != AsyncOperationStatus.Succeeded)
                 yield break;
-            
-            outlineMaterial = new Material(outlineHandle.Result);
-            outlineMaterial.shader = Shader.Find("Shader Graphs/Outline");
+
+            outlineMaterial = new Material(outlineMaterialHandle.Result);
+            outlineMaterial.shader = outlineMaterialHandle.Result.shader;
+            // outlineMaterial.shader = Shader.Find("Shader Graphs/Outline");
+            Debug.Log(outlineMaterialHandle.Result.shader.name);
             Material oldOutlineMaterial = renderer.materials.FirstOrDefault(material => material.name.Contains("Outline"));
             if (oldOutlineMaterial != null)
                 outlineMaterial = oldOutlineMaterial;
             else
                 newMaterials.Add(outlineMaterial);
             
-            Addressables.Release(outlineHandle);
+            // Addressables.Release(outlineHandle);
 
             
             

@@ -105,6 +105,8 @@ using UnityEngine.UI;
         void OnChangeHealth(int value)
         {
             HealthValue += value;
+            if (HealthValue <= 0)
+                HealthValue = 0;
             
             OnTakeDamage?.Invoke(EnemyController.IsBurning);
             

@@ -199,24 +199,48 @@ namespace Towers
                     GivenDamage = 0
                 };
             
-            int step = Weapon.MaxEnemiesInSpread;
-
-            int givenDamage = 0;
+            // int step = Weapon.MaxEnemiesInSpread;
+            //
+            // int givenDamage = 0;
+            //
+            // foreach (var enemy in enemies)
+            // {
+            //     int damage = Weapon.Damage * (step);
+            //
+            //     int healthBeforeShoot = enemy.HealthComponent.GetHealth();
+            //
+            //     OnShoot?.Invoke(enemy, new[] {WeaponSide}, step == Weapon.MaxEnemiesInSpread, Weapon);
+            //     enemy.HealthComponent.ChangeHealth(-damage);
+            //
+            //     int healthAfterShoot = enemy.HealthComponent.GetHealth();
+            //
+            //     givenDamage += (healthBeforeShoot - healthAfterShoot);
+            //     step -= 1;
+            // }
             
-            foreach (var enemy in enemies)
+            int givenDamage = 0;
+            int damageValue = Weapon.Damage;
+                
+            for (int i = 0 ; i < enemies.Length; i++)
             {
-                int damage = Weapon.Damage * (step);
+                if(i >= Weapon.MaxEnemiesInSpread)
+                    break;
 
+                EnemyController enemy = enemies[i];
+                    
                 int healthBeforeShoot = enemy.HealthComponent.GetHealth();
-
-                OnShoot?.Invoke(enemy, new[] {WeaponSide}, step == Weapon.MaxEnemiesInSpread, Weapon);
-                enemy.HealthComponent.ChangeHealth(-damage);
+                    
+                OnShoot?.Invoke(enemy, new[] {WeaponSide}, i == 0, Weapon);
+                enemy.HealthComponent.ChangeHealth(-damageValue);
 
                 int healthAfterShoot = enemy.HealthComponent.GetHealth();
 
                 givenDamage += (healthBeforeShoot - healthAfterShoot);
-                step -= 1;
+                    
+                if(damageValue > 1f)
+                    damageValue -= 1;
             }
+                
 
             return new ShootResult()
             {
@@ -235,24 +259,45 @@ namespace Towers
                     GivenDamage = 0
                 };
             
-            int step = Weapon.MaxEnemiesInSpread;
-
+            // int step = Weapon.MaxEnemiesInSpread;
+            //
+            // int givenDamage = 0;
+            
+            OnShoot?.Invoke(enemies[0], new[] {WeaponSide}, true, Weapon);
+            
+            // foreach (var enemy in enemies)
+            // {
+            //     int damage = Weapon.Damage * (step);
+            //
+            //     int healthBeforeShoot = enemy.HealthComponent.GetHealth();
+            //     
+            //     enemy.HealthComponent.ChangeHealth(-damage);
+            //
+            //     int healthAfterShoot = enemy.HealthComponent.GetHealth();
+            //
+            //     givenDamage += (healthBeforeShoot - healthAfterShoot);
+            //     step -= 1;
+            // }
             int givenDamage = 0;
-            
-            OnShoot?.Invoke(enemies[0], new[] {WeaponSide}, step == Weapon.MaxEnemiesInSpread, Weapon);
-            
-            foreach (var enemy in enemies)
-            {
-                int damage = Weapon.Damage * (step);
-
-                int healthBeforeShoot = enemy.HealthComponent.GetHealth();
+            int damageValue = Weapon.Damage;
                 
-                enemy.HealthComponent.ChangeHealth(-damage);
+            for (int i = 0 ; i < enemies.Length; i++)
+            {
+                if(i >= Weapon.MaxEnemiesInSpread)
+                    break;
+
+                EnemyController enemy = enemies[i];
+                    
+                int healthBeforeShoot = enemy.HealthComponent.GetHealth();
+                    
+                enemy.HealthComponent.ChangeHealth(-damageValue);
 
                 int healthAfterShoot = enemy.HealthComponent.GetHealth();
 
                 givenDamage += (healthBeforeShoot - healthAfterShoot);
-                step -= 1;
+                    
+                if(damageValue > 1f)
+                    damageValue -= 1;
             }
 
             return new ShootResult()
@@ -330,13 +375,16 @@ namespace Towers
                 int givenDamage = 0;
                 int damageValue = Weapon.Damage;
                 
-                foreach (var enemy in enemies)
+                for (int i = 0 ; i < enemies.Length; i++)
                 {
-                    int damage = damageValue;
+                    if(i >= Weapon.MaxEnemiesInSpread)
+                        break;
 
+                    EnemyController enemy = enemies[i];
+                    
                     int healthBeforeShoot = enemy.HealthComponent.GetHealth();
                     
-                    enemy.HealthComponent.ChangeHealth(-damage);
+                    enemy.HealthComponent.ChangeHealth(-damageValue);
 
                     int healthAfterShoot = enemy.HealthComponent.GetHealth();
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Xml.Schema;
 using TMPro;
 using UnityEngine;
@@ -56,22 +57,34 @@ using Random = UnityEngine.Random;
         void OnDestroy()
         {
             UnregisterHandlers();
-            
+
+            if(outlineMaterialHandle.IsValid())
+                Addressables.Release(outlineMaterialHandle);
+            if(selectedMaterialHandle.IsValid())
+                Addressables.Release(selectedMaterialHandle);
         }
 
         void Start()
         {
+            StartCoroutine(SpawnMaterials());
             
         }
 
         void Update()
         {
-            healthText.text = $"{EnemyController.HealthComponent.GetHealth()} HP";
+            if(healthPanel.activeSelf)
+                healthText.text = $"{EnemyController.HealthComponent.GetHealth()} HP";
         }
 
         void FixedUpdate()
         {
             
+        }
+
+        void LateUpdate()
+        {
+            if (healthPanel.activeSelf)
+                UpdateTextRotation();
         }
 
 
@@ -121,76 +134,81 @@ using Random = UnityEngine.Random;
         
 #region Select Animation
 
+        void UpdateTextRotation()
+        {
+            Vector3 direction = (Camera.main.transform.position - this.transform.position);
+            Quaternion rotation = Quaternion.Euler(healthObject.transform.rotation.x, Quaternion.LookRotation(direction, Vector3.up).y, healthObject.transform.rotation.z);
+            // rotation.y = Quaternion.LookRotation(direction, Vector3.up).y;
+            healthObject.transform.rotation = rotation;
+            
+        }
+
+        
+        
         void OnSetSelectedAnimation(bool state)
         {
-            StartCoroutine(SpawnMaterials());
-
             foreach (var meshRenderer in Body.GetComponentsInChildren<MeshRenderer>())
             {
                 SetMaterials(meshRenderer, state);
             }
 
             healthPanel.SetActive(state);
+            
         }
 
 
-        Material _selectedMaterial;
-        Material _outlineMaterial;
+        static Material SelectedMaterial;
+        static Material OutlineMaterial;
+        
         void SetMaterials(MeshRenderer meshRenderer, bool state)
         {
             List<Material> materials = new List<Material>() { meshRenderer.materials[0] };
-            
+
             if (state)
             {
-                if(_selectedMaterial != null)
-                    materials.Add(_selectedMaterial);
-                if(_outlineMaterial != null)
-                    materials.Add(_outlineMaterial);
+                materials.Add(SelectedMaterial);
+                materials.Add(OutlineMaterial);
             }
-            
+
             meshRenderer.materials = materials.ToArray();
             
         }
 
+
+        static AsyncOperationHandle<Material> selectedMaterialHandle;
+        static AsyncOperationHandle<Material> outlineMaterialHandle;
         IEnumerator SpawnMaterials()
         {
-            if (_selectedMaterial == null)
-            {
-                var selected_handle = Addressables.LoadAssetAsync<Material>(SELECTED_MATERIAL_ADDRESS);
-                yield return selected_handle;
-            
-                if(selected_handle.Status != AsyncOperationStatus.Succeeded)
-                    yield break;
-            
-                _selectedMaterial = new Material(selected_handle.Result);
-                // _selectedMaterial.shader = Shader.Find("Universal Render Pipeline/Lit");
-            
-                Addressables.Release(selected_handle);
-            }
-            
-            
-            yield return new WaitForEndOfFrame();
 
-            
-            if (_outlineMaterial == null)
+            if (!selectedMaterialHandle.IsValid())
             {
-                var outline_handle = Addressables.LoadAssetAsync<Material>(OUTLINE_MATERIAL_ADDRESS);
-                yield return outline_handle;
-            
-                if(outline_handle.Status != AsyncOperationStatus.Succeeded)
+                selectedMaterialHandle = Addressables.LoadAssetAsync<Material>(SELECTED_MATERIAL_ADDRESS);
+                yield return selectedMaterialHandle;
+        
+                if (selectedMaterialHandle.Status != AsyncOperationStatus.Succeeded)
                     yield break;
-            
-                _outlineMaterial = new Material(outline_handle.Result);
-                _outlineMaterial.shader = Shader.Find("Shader Graphs/Zombie Outline");
-            
-                Addressables.Release(outline_handle);
-            }
+        
+                SelectedMaterial = new Material(selectedMaterialHandle.Result);
 
+            }
+        
+   
+            if (!outlineMaterialHandle.IsValid())
+            {
+                outlineMaterialHandle = Addressables.LoadAssetAsync<Material>(OUTLINE_MATERIAL_ADDRESS);
+                yield return outlineMaterialHandle;
+        
+                if (outlineMaterialHandle.Status != AsyncOperationStatus.Succeeded)
+                    yield break;
+        
+                OutlineMaterial = new Material(outlineMaterialHandle.Result);
+
+            }
+        
+            
         }
 
-        
- 
-        
+
 #endregion
         
         

@@ -109,7 +109,7 @@ namespace MMK.Towers
             
             incomeUICanvas.transform.position = this.transform.position;
             
-            Vector3 direction = Camera.main.transform.position - transform.position;
+            Vector3 direction = UnityEngine.Camera.main.transform.position - transform.position;
             incomeUICanvas.transform.rotation = Quaternion.LookRotation(-direction, Vector3.up);
             
             float distance = Mathf.Abs(direction.magnitude - baseDistance) ;

@@ -73,13 +73,23 @@ namespace MMK.Enemy
             if (UIComponent != null && UIComponent.layer == UILayer)
                 return;
             
-            Ray ray = Camera.main.ScreenPointToRay(screenPosition);
+            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(screenPosition);
             RaycastHit hit;
             
             bool enemyIsClicked = false;
-            
+
             if (Physics.Raycast(ray, out hit, maxDistance)) //, HitboxLayer))
-                enemyIsClicked = Hitboxes.Contains(hit.transform.gameObject) && hit.transform.gameObject.layer != RagdollLayer;
+            {
+                float maxEnemyDistance = 1.75f;
+                GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy").
+                    Where(enemy => enemy.TryGetComponent<EnemyController>(out var enemyController) &&
+                                   enemyController.HealthComponent.GetHealth() > 0 &&
+                                   Vector2.Distance(new Vector2(enemy.transform.position.x, enemy.transform.position.z), new Vector2(hit.point.x, hit.point.z)) < maxEnemyDistance).
+                    OrderBy(enemy => Vector2.Distance(new Vector2(enemy.transform.position.x, enemy.transform.position.z), new Vector2(hit.point.x, hit.point.z)) ).
+                    ToArray();
+                
+                enemyIsClicked = (Hitboxes.Contains(hit.transform.gameObject) && hit.transform.gameObject.layer != RagdollLayer) || (enemies.Length > 0 && enemies[0] == this.gameObject) ;
+            }
 
 
             EnemyController.AnimationComponent.SetSelectedAnimation(enemyIsClicked);
