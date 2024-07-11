@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Xml.Schema;
+using MMK.Towers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -138,8 +139,11 @@ using Random = UnityEngine.Random;
         {
             Vector3 direction = (Camera.main.transform.position - this.transform.position);
             Quaternion rotation = Quaternion.Euler(healthObject.transform.rotation.x, Quaternion.LookRotation(direction, Vector3.up).y, healthObject.transform.rotation.z);
-            // rotation.y = Quaternion.LookRotation(direction, Vector3.up).y;
             healthObject.transform.rotation = rotation;
+
+
+            float scale = this.GetGameScaleUI();
+            healthObject.transform.localScale = Vector3.one * scale;
             
         }
 

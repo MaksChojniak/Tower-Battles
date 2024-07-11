@@ -27,13 +27,6 @@ namespace Editor
             // InspectorTools.PropertyField(serializedObject, "TargetMode", "Target Mode");
             // InspectorTools.PropertyField(serializedObject, "Level", "Upgrade Level");
             // InspectorTools.PropertyField(serializedObject, "IsPlaced", "Is Placed");
-            
-            
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("UI", EditorStyles.boldLabel);
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "LevelTextObject", Caption = "Current Level Text Object"});
-
-
 
 
 
