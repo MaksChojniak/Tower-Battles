@@ -74,7 +74,10 @@ namespace MMK.Towers
 
         public static float GetGameScaleUI(this MonoBehaviour monoBehaviour)
         {
-            float baseDistance = 45f;
+            float baseDistance = 43.5f;
+            
+            float minScale = 1f;
+            float maxScale = 1.225f;
             
             // Vector3 direction = (UnityEngine.Camera.main.transform.position - monoBehaviour.transform.position);
             //
@@ -84,6 +87,8 @@ namespace MMK.Towers
             float distance = Vector3.Distance(monoBehaviour.transform.position, UnityEngine.Camera.main.transform.position);
 
             float scale = distance / baseDistance;
+
+            scale = Mathf.Clamp(scale, minScale, maxScale);
             
             return scale;
         }
