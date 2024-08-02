@@ -8,11 +8,10 @@ namespace MMK.Towers
     public class FarmAnimation : TowerAnimation
     {
 
-        public GameObject IncomeParticlePrefab;
+        
         public GameObject IncomeUIPrefab;
-        
-        
-        
+
+
         public FarmController FarmController { private set; get; }
 
         const float INCOME_ANIMATION_TIME = 0.7f;
@@ -86,36 +85,27 @@ namespace MMK.Towers
                 AnimationLenght = INCOME_ANIMATION_LENGHT
             };
             
-            IncomeParticleAnimation();
             StartCoroutine(InomeUIAnimation(incomeAnimationData, Value));
 
 
         }
 
         
-        void IncomeParticleAnimation()
-        {
-            ParticleSystem incomeParticle = Instantiate(IncomeParticlePrefab, this.transform.position, Quaternion.identity).GetComponent<ParticleSystem>();
-
-            incomeParticle.Play();
-        }
 
         IEnumerator InomeUIAnimation(IncomeAnimationData AnimationData, long Value)
         {
             float animationEndDelay = 0.35f;
-            float baseDistance = 45f;
 
             Canvas incomeUICanvas = Instantiate(IncomeUIPrefab).GetComponent<Canvas>();
             
+            // Set Position
             incomeUICanvas.transform.position = this.transform.position;
-            
+            // Set Rotation
             Vector3 direction = UnityEngine.Camera.main.transform.position - transform.position;
             incomeUICanvas.transform.rotation = Quaternion.LookRotation(-direction, Vector3.up);
-            
-            float distance = Mathf.Abs(direction.magnitude - baseDistance) ;
-            // float scale = 1f * distance * distanceScaleFactor;
-            float scale = 1f + ( distance * (1f / 50f) );
-            incomeUICanvas.transform.localScale = new Vector3(scale, scale, scale);
+            // Set Scale
+            float scale = this.GetGameScaleUI();
+            incomeUICanvas.transform.localScale = Vector3.one * scale;
             
             
             TMP_Text[] incomeTexts = incomeUICanvas.GetComponentsInChildren<TMP_Text>();

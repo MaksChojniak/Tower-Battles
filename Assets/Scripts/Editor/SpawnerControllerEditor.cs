@@ -28,11 +28,6 @@ namespace Editor
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "Level", Caption = "Upgrade Level"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "IsPlaced", Caption = "Is Placed"});
 
-            
-            EditorGUILayout.Space();
-            EditorGUILayout.LabelField("UI", EditorStyles.boldLabel);
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "LevelTextObject", Caption = "Current Level Text Object"});
-
 
 
             serializedObject.ApplyModifiedProperties();

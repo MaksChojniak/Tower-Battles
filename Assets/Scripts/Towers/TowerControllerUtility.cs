@@ -70,7 +70,28 @@ namespace MMK.Towers
 
         
 #endregion
-        
+
+
+        public static float GetGameScaleUI(this MonoBehaviour monoBehaviour)
+        {
+            float baseDistance = 43.5f;
+            
+            float minScale = 1f;
+            float maxScale = 1.225f;
+            
+            // Vector3 direction = (UnityEngine.Camera.main.transform.position - monoBehaviour.transform.position);
+            //
+            // float distance = Mathf.Abs(direction.magnitude - baseDistance) ;
+            // float scale = 1f + ( distance * (1f / 50f) );
+
+            float distance = Vector3.Distance(monoBehaviour.transform.position, UnityEngine.Camera.main.transform.position);
+
+            float scale = distance / baseDistance;
+
+            scale = Mathf.Clamp(scale, minScale, maxScale);
+            
+            return scale;
+        }
         
         
         

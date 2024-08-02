@@ -250,7 +250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Level: 0
   IsPlaced: 0
-  LevelTextObject: {fileID: 0}
+  LevelTextObject: {fileID: 2726946782431591732}
   FarmData: {fileID: 11400000, guid: 51b1448c25e938249be9d320d8b977db, type: 2}
 --- !u!114 &2882103868473529327
 MonoBehaviour:
@@ -280,7 +280,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LevelUpClip: {fileID: 0}
   RemoveTowerClip: {fileID: 0}
-  AnimationControllers: []
+  AnimationControllers:
+  - {fileID: 9100000, guid: 4cdf155ade0d9bf4ebddff0c37c2f201, type: 2}
+  - {fileID: 9100000, guid: 0648690a5933a2444a0d339e6d738ee1, type: 2}
+  - {fileID: 9100000, guid: 1d52766cc55643d4991bf87f90352054, type: 2}
+  - {fileID: 9100000, guid: be6835294da68d44782e9e10b8d5202a, type: 2}
+  - {fileID: 9100000, guid: dc81817784440ca4bb9bba71c9e7c9b9, type: 2}
   IncomeParticlePrefab: {fileID: 6231767993991750681, guid: 2f134346cf6c4804292fd3e3b8c3158b,
     type: 3}
   IncomeUIPrefab: {fileID: 4062201794968849389, guid: f049f69dee309ac4ba24e251de896be8,
@@ -615,6 +620,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7213765457525601174, guid: 82f8a91cac20cd745af916cbcccbd868,
+        type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 82f8a91cac20cd745af916cbcccbd868, type: 3}

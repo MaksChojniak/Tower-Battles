@@ -205,9 +205,7 @@ namespace MMK.Towers
         [SerializeField] protected int Level;
         public bool IsPlaced;
 
-        [SerializeField] GameObject LevelTextObject;
-        [SerializeField] TMP_Text LevelText => LevelTextObject.transform.GetChild(0).GetComponent<TMP_Text>();
-
+        
         public InputHandler InputHandlerCmponent { private set; get; }
         public SpawnRange SpawnRangeComponent { private set; get; }
         public SelectedRing SelectedRingComponent { private set; get; }

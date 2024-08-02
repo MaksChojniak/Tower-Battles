@@ -60,6 +60,10 @@ namespace Towers
         void OnSetActive(bool state)
         {
             LevelTextObject.gameObject.SetActive(state);
+            
+            
+            float scale = this.GetGameScaleUI();
+            LevelTextImage.transform.localScale = Vector3.one * scale;
         }
 
         
