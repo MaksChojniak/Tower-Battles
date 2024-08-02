@@ -40,17 +40,17 @@ public class PlayerInventoryStatsUI : MonoBehaviour
 
     void UpdateBalanceText(int value)
     {
-        moneyText.text = $"{StringFormatter.PriceFormat(value)}";
+        moneyText.text = $"{StringFormatter.PriceFormat(value)}{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().CoinsIconName })}";
     }
 
     void UpdateWinCountText(int value)
     {
-        winsCountText.text = $"{StringFormatter.PriceFormat(value)}";
+        winsCountText.text = $"{StringFormatter.PriceFormat(value)} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().TrophyIconName })}";
     }
 
     void UpdateDefeatCountText(int value)
     {
-        defeatCountText.text = $"{StringFormatter.PriceFormat(value)}";
+        defeatCountText.text = $"{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().StarIconName })}" + "  " + "1050 / 2000";
     }
 
 }

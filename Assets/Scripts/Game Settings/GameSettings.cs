@@ -35,6 +35,8 @@ namespace MMK
         public string CheckedIconName = "checked";
         public string UncheckedIconName = "unchecked";
         public string DiscordIconName = "discord";
+        public string StarIconName = "star";
+        public string TrophyIconName = "trophy";
 
 #endregion
         

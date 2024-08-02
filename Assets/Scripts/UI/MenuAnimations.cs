@@ -151,6 +151,12 @@ public class MenuAnimations : MonoBehaviour
             case 7:
                 animator.SetBool("Lobby", false);
                 break;
+            case 8:
+                animator.SetBool("Battlepass", true);
+                break;
+            case 9:
+                animator.SetBool("Battlepass", false);
+                break;
         }
 
         

@@ -61,19 +61,19 @@ namespace DefaultNamespace
             switch (type)
             {
                 case WarningType.LockedTower:
-                    message = "First You Need to Buy This Tower";
+                    message = "Tower Is Locked!";
                     break;
                 case WarningType.SecondBooster:
-                    message = "Only 1 Building of the Booster Type Can be Placed!";
+                    message = "Only 1 Booster Allowed!";
                     break;
                 case WarningType.NotEnoughtMoney:
-                    message = "Not Enough Money!";
+                    message = "Not Enough Coins!";
                     break;
                 case WarningType.MaxTowersCountPlaced:
                     message = $"{GameSettingsManager.GetGameSettings().MaxTowersCount}/{GameSettingsManager.GetGameSettings().MaxTowersCount} Towers are Placed";
                     break;
                 case WarningType.DeckIsEmpty:
-                    message = $"Before Starting, Create Your Deck. Click the 'Towers' Button to Open up Your Inventory";
+                    message = $"Your Deck Is Empty!";
                     break;
                 case WarningType.NotEnoughtWins:
                     message = "Not Enough Wins!";
@@ -82,7 +82,7 @@ namespace DefaultNamespace
                     message = "Tower Maxed Out!";
                     break;
                 case WarningType.MapNotSelected:
-                    message = "You Have To Select Map";
+                    message = "No Map Selected!";
                     break;
                 default:
                     message = "Error!!";
