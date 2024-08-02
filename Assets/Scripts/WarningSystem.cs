@@ -70,7 +70,7 @@ namespace DefaultNamespace
                     message = "Not Enough Coins!";
                     break;
                 case WarningType.MaxTowersCountPlaced:
-                    message = $"{GameSettingsManager.GetGameSettings().MaxTowersCount}/{GameSettingsManager.GetGameSettings().MaxTowersCount} Towers are Placed";
+                    message = $"{GlobalSettingsManager.GetGlobalSettings().MaxTowersCount}/{GlobalSettingsManager.GetGlobalSettings().MaxTowersCount} Towers are Placed";
                     break;
                 case WarningType.DeckIsEmpty:
                     message = $"Your Deck Is Empty!";

@@ -5,7 +5,9 @@ using System.Linq;
 using DefaultNamespace;
 using MMK;
 using MMK.ScriptableObjects;
+using MMK.Settings;
 using MMK.Towers;
+using Player;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -15,6 +17,8 @@ using Towers;
 
 public class TowerSpawner : MonoBehaviour
 {
+    public static HandModeType HandMode;
+    
     public delegate void OnStartPlacingTowerDelegate(TowerController Tower);
     public static event OnStartPlacingTowerDelegate OnStartPlacingTower;
     
@@ -50,14 +54,15 @@ public class TowerSpawner : MonoBehaviour
 
     void Awake()
     {
-        Deck = PlayerTowerInventory.Instance.TowerDeck;
+        // Deck = PlayerTowerInventory.Instance.TowerDeck;
+        Deck = PlayerController.GetLocalPlayerData().Deck.Select(element => element.Value).ToArray();
         
-        GamePlayerInformation.EndGame += OnEndGame;
+        RegisterHandlers();
     }
 
     void OnDestroy()
     {
-        GamePlayerInformation.EndGame -= OnEndGame;
+        UnregisterHandlers();
         
     }
 
@@ -66,18 +71,13 @@ public class TowerSpawner : MonoBehaviour
         
     }
 
-    
-    void OnEndGame(bool state)
-    {
-        Destroy(this.gameObject);
-    }
-    
-    
+
     void Update()
     {
         cancelationTrashCan.SetActive(SelectedBuilidng != null);
 
-        offsetDirection = SettingsManager.Instance.SettingsData.HandMode == Assets.Scripts.Settings.HandModeType.Right ? -1 : 1;
+        // offsetDirection = SettingsManager.Instance.SettingsData.HandMode == Assets.Scripts.Settings.HandModeType.Right ? -1 : 1;
+        offsetDirection = HandMode == HandModeType.Right ? -1 : 1;
         offset = new Vector2(offsetDirection * 3 * (float)Screen.width, 2 * (float)Screen.height) * 1.5f / 100;
         
     }
@@ -87,6 +87,24 @@ public class TowerSpawner : MonoBehaviour
         
     }
 
+
+
+#region Register & Unregister Handlers
+
+    void RegisterHandlers()
+    {
+        GamePlayerInformation.EndGame += OnEndGame;
+
+    }
+
+    void UnregisterHandlers()
+    {
+        GamePlayerInformation.EndGame -= OnEndGame;
+        
+    }
+    
+#endregion
+    
 
 
 #region Spawnig Tower
@@ -106,7 +124,7 @@ public class TowerSpawner : MonoBehaviour
             return;
 
         
-        SelectedBuilidng = Instantiate(Deck[Index].TowerPrefab, Input.GetTouch(0).position, Quaternion.identity, transform)
+        SelectedBuilidng = Instantiate(Deck[Index].CurrentSkin.TowerPrefab, Input.GetTouch(0).position, Quaternion.identity, transform)
             .GetComponent<TowerController>();
 
         PosibilityOfPlace = false;
@@ -196,7 +214,6 @@ public class TowerSpawner : MonoBehaviour
     
     
     
-    
     public void CancelPlacingTower()
     {
         if(SelectedBuilidng == null)
@@ -213,9 +230,15 @@ public class TowerSpawner : MonoBehaviour
 
 
 
+    
+    void OnEndGame(bool state)
+    {
+        Destroy(this.gameObject);
+    }
 
 
-
+    
+    
     
 
     bool CanBuyMoreTowers(int Index)
@@ -226,7 +249,7 @@ public class TowerSpawner : MonoBehaviour
             return false;
         }
 
-        if (towers.Length >= GameSettingsManager.GetGameSettings().MaxTowersCount)
+        if (towers.Length >= GlobalSettingsManager.GetGlobalSettings().MaxTowersCount)
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.MaxTowersCountPlaced);
             return false;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Player;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,17 +34,21 @@ public class TowerDeck : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        for (int i = 0; i < PlayerTowerInventory.Instance.TowerDeck.Length; i++)
+        // for (int i = 0; i < PlayerTowerInventory.Instance.TowerDeck.Length; i++)
+        for (int i = 0; i < PlayerController.GetLocalPlayerData().Deck.Length; i++)
         {
             deckTiles[i].UpdatePrice(false, 0);
 
-            if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
+            // if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
+            if (PlayerController.GetLocalPlayerData().Deck[i].Value != null)
             {
                 Debug.Log("Update Tower Sprite onStart");
-                deckTiles[i].UpdateSprite(PlayerTowerInventory.Instance.TowerDeck[i].TowerSprite);
+                // deckTiles[i].UpdateSprite(PlayerTowerInventory.Instance.TowerDeck[i].CurrentSkin.TowerSprite);
+                deckTiles[i].UpdateSprite(PlayerController.GetLocalPlayerData().Deck[i].Value.CurrentSkin.TowerSprite);
                 deckTiles[i].ChangeColor(true);
 
-                deckTiles[i].UpdatePrice(true, PlayerTowerInventory.Instance.TowerDeck[i].GetPrice());
+                // deckTiles[i].UpdatePrice(true, PlayerTowerInventory.Instance.TowerDeck[i].GetPrice());
+                deckTiles[i].UpdatePrice(true, PlayerController.GetLocalPlayerData().Deck[i].Value.GetPrice());
             }
 
         }
@@ -69,7 +74,8 @@ public class TowerDeck : MonoBehaviour
     {
         CurrentButtonLastcolor = deckTiles[i].transform.parent.GetComponent<Image>().color;
 
-        if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
+        // if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
+        if (PlayerController.GetLocalPlayerData().Deck[i].Value != null)
         {
             deckTiles[i].ChangeColorOnRemove(removeTileColor);
         }

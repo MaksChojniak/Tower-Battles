@@ -195,6 +195,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4143877711466309262}
+  - component: {fileID: 8547082956643068258}
+  - component: {fileID: 972502818459938481}
   - component: {fileID: 3049298684329862677}
   - component: {fileID: 2882103868473529327}
   - component: {fileID: 2507927013354496988}
@@ -236,6 +238,57 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8547082956643068258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4143877711466309256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 4181664122
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
+--- !u!114 &972502818459938481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4143877711466309256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ff3ba0becae47b8b9381191598957c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 1
+  syncMode: 0
+  syncInterval: 0
+  target: {fileID: 4143877711466309262}
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  onlySyncOnChange: 1
+  compressRotation: 1
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  coordinateSpace: 1
+  sendIntervalMultiplier: 1
+  timelineOffset: 0
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+  onlySyncOnChangeCorrectionMultiplier: 2
+  rotationSensitivity: 0.01
+  positionPrecision: 0.01
+  scalePrecision: 0.01
 --- !u!114 &3049298684329862677
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,9 +301,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1a3f3eb5f70474481033afaf17b851b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   Level: 0
   IsPlaced: 0
-  LevelTextObject: {fileID: 2726946782431591732}
   FarmData: {fileID: 11400000, guid: 51b1448c25e938249be9d320d8b977db, type: 2}
 --- !u!114 &2882103868473529327
 MonoBehaviour:
@@ -286,8 +341,6 @@ MonoBehaviour:
   - {fileID: 9100000, guid: 1d52766cc55643d4991bf87f90352054, type: 2}
   - {fileID: 9100000, guid: be6835294da68d44782e9e10b8d5202a, type: 2}
   - {fileID: 9100000, guid: dc81817784440ca4bb9bba71c9e7c9b9, type: 2}
-  IncomeParticlePrefab: {fileID: 6231767993991750681, guid: 2f134346cf6c4804292fd3e3b8c3158b,
-    type: 3}
   IncomeUIPrefab: {fileID: 4062201794968849389, guid: f049f69dee309ac4ba24e251de896be8,
     type: 3}
 --- !u!114 &1029531472924601118

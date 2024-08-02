@@ -2,6 +2,7 @@ using DefaultNamespace;
 using MMK;
 using MMK.ScriptableObjects;
 using MMK.Towers;
+using Player;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -53,7 +54,7 @@ public class TowerPreviewUI : MonoBehaviour
         towerNameText.text = tower.TowerName;
         // towerImage.sprite = tower.TowerSprite;
 
-        startingPriceText.text = $"{tower.GetPrice()} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().CashIconName})}";
+        startingPriceText.text = $"{tower.GetPrice()} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName})}";
         if(tower.TryGetData<Soldier>(out var soldier))
         {
             damageTypeText.text = soldier.GetWeapon(0).DamageType.ToString();
@@ -73,7 +74,8 @@ public class TowerPreviewUI : MonoBehaviour
 
         placementText.text = $"{tower.PlacementType}";//"Ground/Cliff";
 
-        lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()));
+        // lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()));
+        lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount));
         lockedPrice.text = $"Locked:  {StringFormatter.PriceFormat(tower.GetRequiredWinsCount())}";
         
         unlockPanel.SetActive(!isUnlocked && !lockedPanel.activeSelf);
@@ -87,21 +89,24 @@ public class TowerPreviewUI : MonoBehaviour
     public void BuyTower()
     {
         Tower towerData = inventory.TowerData.GetAllTowerInventoryData()[lastSelectedTowerIndex].towerSO;
-        PlayerTowerInventory playerTowerInventory = PlayerTowerInventory.Instance;
+        // PlayerTowerInventory playerTowerInventory = PlayerTowerInventory.Instance;
 
-        if (!towerData.IsRequiredWinsCount(playerTowerInventory.GetWinsCount()))
+        // if (!towerData.IsRequiredWinsCount(playerTowerInventory.GetWinsCount()))
+        if (!towerData.IsRequiredWinsCount(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount))
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtWins);
             return;
         }
         
-        if (towerData.GetUnlockedPrice() > PlayerTowerInventory.Instance.GetBalance())
+        // if (towerData.GetUnlockedPrice() > PlayerTowerInventory.Instance.GetBalance())
+        if (towerData.GetUnlockedPrice() > PlayerController.GetLocalPlayerData().WalletData.Balance)
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
             return;
         }
 
-        PlayerTowerInventory.ChangeBalance(-towerData.GetUnlockedPrice());
+        // PlayerTowerInventory.ChangeBalance(-towerData.GetUnlockedPrice());
+        PlayerData.ChangeBalance(-(long)towerData.GetUnlockedPrice());
         towerData.UnlockTower();
 
         inventory.UpdateTiles();

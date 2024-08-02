@@ -105,13 +105,13 @@ namespace Mirror.Discovery
             Shutdown();
         }
 
-        void OnDisable()
+        public virtual void OnDisable()
         {
             //Debug.Log("NetworkDiscoveryBase OnDisable");
             Shutdown();
         }
 
-        void OnDestroy()
+        public virtual void OnDestroy()
         {
             //Debug.Log("NetworkDiscoveryBase OnDestroy");
             Shutdown();

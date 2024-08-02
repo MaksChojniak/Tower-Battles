@@ -90,14 +90,48 @@ namespace Editor
         
         
         
-        public static void DrawUpgradableProperties(SerializedObject serializedObject, string propertName = "", string headerName = "")
+        public static void DrawUpgradableProperties(SerializedObject serializedObject, string propertName = "", string headerName = "", int propertiesCount = 5)
         {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField(headerName);
 
             EditorGUILayout.BeginHorizontal();
 
-            int propertiesCount = 5;
+            float fieldWidth = ( EditorGUIUtility.currentViewWidth * 0.9f ) / propertiesCount;
+            SerializedProperty array = serializedObject.FindProperty(propertName);
+            array.arraySize = propertiesCount;
+            
+            for(int i = 0; i < array.arraySize; i++)
+            {
+
+                if (array.arrayElementType == GetAliasTypeName(typeof(bool)))
+                {
+                    SerializedProperty boolProperty = array.GetArrayElementAtIndex(i);
+                    Rect boolRect = GUILayoutUtility.GetRect(fieldWidth, EditorGUIUtility.singleLineHeight);
+                    boolProperty.boolValue = EditorGUI.Toggle(new Rect(boolRect.x, boolRect.y, 50, boolRect.height), boolProperty.boolValue);
+                    // boolProperty.boolValue = EditorGUILayout.Toggle(boolProperty.boolValue, GUILayout.Width(fieldWidth) );
+                }
+                else
+                {
+                    InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, Property = array.GetArrayElementAtIndex(i), Width = fieldWidth});
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
+            
+        }
+        
+        
+        
+        
+        
+        public static void DrawHorizontalArrayProperties(SerializedObject serializedObject, string propertName = "", string headerName = "", int propertiesCount = 0 )
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField(headerName);
+
+            EditorGUILayout.BeginHorizontal();
+
             float fieldWidth = ( EditorGUIUtility.currentViewWidth * 0.9f ) / propertiesCount;
             SerializedProperty array = serializedObject.FindProperty(propertName);
             array.arraySize = propertiesCount;

@@ -13,8 +13,16 @@ MonoBehaviour:
   m_Name: Spawner1
   m_EditorClassIdentifier: 
   TowerName: 
-  TowerSprite: {fileID: 0}
-  TowerPrefab: {fileID: 0}
+  TowerSkins:
+  - TowerSprite: {fileID: 0}
+    TowerPrefab: {fileID: 0}
+    UpgradeIcon:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+  SkinIndex: 0
   OriginPointOffset: {x: 0, y: 0, z: 0}
   PlacementType: 0
   Type: 0
@@ -22,12 +30,6 @@ MonoBehaviour:
     UnlockPrice: 0
     RequiredWinsCount: 0
     IsUnlocked: 0
-  UpgradeIcon:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   UpgradePrice: 00000000000000000000000000000000000000000000000000000000000000000000000000000000
   Tower: {fileID: 0}
   SpawnIntervals:

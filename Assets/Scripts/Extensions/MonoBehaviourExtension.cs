@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace MMK.Extensions
 {
@@ -23,6 +25,25 @@ namespace MMK.Extensions
             yield return new WaitForSeconds(delay);
             
             action.Invoke();
+        }
+
+
+
+
+        public static TComponent CopyComponent<TComponent>(this GameObject destination, TComponent originialComponent) where TComponent : Component
+        {
+            Type componentType = originialComponent.GetType();
+
+            Component copy = destination.AddComponent(componentType);
+
+            FieldInfo[] fields = componentType.GetFields();
+            
+            foreach (var field in fields)
+            {
+                field.SetValue(copy, field.GetValue(originialComponent));
+            }
+
+            return copy as TComponent;
         }
         
     }

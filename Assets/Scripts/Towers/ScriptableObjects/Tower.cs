@@ -4,11 +4,21 @@ using UnityEngine;
 namespace MMK.ScriptableObjects
 {
     // [CreateAssetMenu(fileName = "Weapons", menuName = "")]
+    [Serializable]
     public class Tower : ScriptableObject
     {
+        public delegate void OnUnlockTowerDelegate(Tower tower);
+        public static OnUnlockTowerDelegate OnUnlockTower;
+
+
+        
+        public int ID;
         public string TowerName;
-        public Sprite TowerSprite;
-        public GameObject TowerPrefab;
+
+        public TowerSkin CurrentSkin => TowerSkins[SkinIndex];
+        public TowerSkin[] TowerSkins;
+        public int SkinIndex = 0;
+        
         public Vector3 OriginPointOffset;
         
         public PlacementType PlacementType;
@@ -20,39 +30,47 @@ namespace MMK.ScriptableObjects
         public BaseProperties BaseProperties;
         
 
-        public Sprite[] UpgradeIcon;
-
         public long[] UpgradePrice;
+        
+        
         
         
 #region Base Properties
         
-        public int GetUnlockedPrice() => BaseProperties.UnlockPrice;
+        public ulong GetUnlockedPrice() => BaseProperties.UnlockPrice;
         public bool IsUnlocked() => BaseProperties.IsUnlocked;
-        public int GetRequiredWinsCount() => BaseProperties.RequiredWinsCount;
-        public bool IsRequiredWinsCount(int currentWinsCount) => currentWinsCount >= BaseProperties.RequiredWinsCount;
-        public void UnlockTower() =>  BaseProperties.IsUnlocked = true;
+        public ulong GetRequiredWinsCount() => BaseProperties.RequiredWinsCount;
+        public bool IsRequiredWinsCount(ulong currentWinsCount) => currentWinsCount >= BaseProperties.RequiredWinsCount;
+        // public void UnlockTower() =>  BaseProperties.IsUnlocked = true;
+        public void UnlockTower()
+        {
+            BaseProperties.IsUnlocked = true;
+            
+            OnUnlockTower?.Invoke(this);
+        }
 
 #endregion
         
 
 
         public long GetPrice() => UpgradePrice[0];
-        public long GetUpgradePrice(int Level) => Level + 1 < GameSettingsManager.GetGameSettings().MaxUpgradeLevel ? UpgradePrice[Level + 1] : UpgradePrice[Level];
+        public long GetUpgradePrice(int Level) => Level + 1 < GlobalSettingsManager.GetGlobalSettings().MaxUpgradeLevel ? UpgradePrice[Level + 1] : UpgradePrice[Level];
         
-        public Sprite GetUpgradeSprite(int Level)  => UpgradeIcon[Level];
+        public Sprite GetUpgradeSprite(int Level)  => CurrentSkin.UpgradeIcon[Level];
         
         
         
 
     }
 
+    
+    
 
     [Serializable]
     public class BaseProperties
     {
-        public int UnlockPrice;
-        public int RequiredWinsCount;
+        public ulong UnlockPrice;
+        public ulong RequiredWinsCount;
         public bool IsUnlocked;
     }
     

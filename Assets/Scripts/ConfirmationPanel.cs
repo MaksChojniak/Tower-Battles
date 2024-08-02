@@ -46,7 +46,7 @@ namespace MMK
             TowerType towerType = GetTowerType(towerInventoryData);
 
             TitleText.text = $"Unlock " + $"<color={GetHexColor(GetColor(towerType))}>" + $"{towerInventoryData.towerSO.TowerName}" + "</color>";
-            TowerSprite.sprite = towerInventoryData.towerSO.TowerSprite;
+            TowerSprite.sprite = towerInventoryData.towerSO.CurrentSkin.TowerSprite;
             PriceText.text = "<smallcaps>" + $"Price:  " + "<b>" + $"<color={GetHexColor(PriceTextColor)}>" + $"{StringFormatter.PriceFormat(towerInventoryData.towerSO.BaseProperties.UnlockPrice)}" + "</color>";
         }
 

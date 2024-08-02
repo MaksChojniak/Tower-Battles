@@ -42,10 +42,6 @@ Preset:
     value: 
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: clientAuthority
-    value: 0
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
     propertyPath: syncPosition
     value: 1
     objectReference: {fileID: 0}
@@ -58,6 +54,14 @@ Preset:
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
+    propertyPath: onlySyncOnChange
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: compressRotation
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
     propertyPath: interpolatePosition
     value: 1
     objectReference: {fileID: 0}
@@ -67,6 +71,10 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: interpolateScale
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: coordinateSpace
     value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
@@ -102,12 +110,12 @@ Preset:
     value: 0.5
     objectReference: {fileID: 0}
   - target: {fileID: 0}
-    propertyPath: onlySyncOnChange
-    value: 1
-    objectReference: {fileID: 0}
-  - target: {fileID: 0}
     propertyPath: bufferResetMultiplier
     value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: changedDetection
+    value: 1
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: positionSensitivity

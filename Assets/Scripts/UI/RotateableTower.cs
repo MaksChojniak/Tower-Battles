@@ -34,7 +34,7 @@ namespace DefaultNamespace
         
         void OnSelectTile(int index, GameObject tileUI, bool isUnlocked)
         {
-            GameObject towerPrefab = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.TowerPrefab;
+            GameObject towerPrefab = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.CurrentSkin.TowerPrefab;
             Vector3 towerOffset = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.OriginPointOffset;
             SpawnTower(towerPrefab, towerOffset);
         }

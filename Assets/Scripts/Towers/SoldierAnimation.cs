@@ -16,17 +16,28 @@ namespace Towers
         public delegate void UpdateMuzzlesDelegate(int Level);
         public UpdateMuzzlesDelegate UpdateMuzzles;
         
+        public delegate void UpdatePrefabsDelegate(int Level);
+        public UpdatePrefabsDelegate UpdatePrefabs;
+
 
         public delegate void OnBulletHitEnemyDelegate(Vector3 Position);
         event OnBulletHitEnemyDelegate OnBulletHitEnemy;
 
         
         
+        public GameObject[] FireStreamPrefabs;
         public GameObject FireStreamPrefab;
+        
+        public GameObject[] ProjectileBeamPrefabs;
         public GameObject ProjectileBeamPrefab;
+        
+        public GameObject[] ThrowPathPrefabs;
         public GameObject ThrowPathPrefab;
+        
+        public GameObject[] ThrowedObjectPrefabs;
         public GameObject ThrowedObjectPrefab;
 
+        public GameObject[] ExplosionPrefabs;
         public GameObject ExplosionPrefab;
         
         
@@ -103,6 +114,7 @@ namespace Towers
             base.RegisterHandlers();
 
             UpdateMuzzles += OnUpdateMuzzles;
+            UpdatePrefabs += OnUpdatePrefabs;
 
             SoldierController.OnLevelUp += PlayLevelUpAnimation;
             SoldierController.OnRemoveTower += PlayRemoveAnimation;
@@ -120,6 +132,7 @@ namespace Towers
             SoldierController.OnRemoveTower -= PlayRemoveAnimation;
             SoldierController.OnLevelUp -= PlayLevelUpAnimation;
 
+            UpdatePrefabs -= OnUpdatePrefabs;
             UpdateMuzzles -= OnUpdateMuzzles;
             
             base.UnregisterHndlers();
@@ -137,8 +150,22 @@ namespace Towers
             RightMuzzle = muzzles.FirstOrDefault(muzzle => muzzle.Side == Side.Right);
             LeftMuzzle = muzzles.FirstOrDefault(muzzle => muzzle.Side == Side.Left);
         }
-        
 
+
+        void OnUpdatePrefabs(int Level)
+        {
+
+            FireStreamPrefab = FireStreamPrefabs[Level];
+
+            ProjectileBeamPrefab = ProjectileBeamPrefabs[Level];
+
+            ThrowPathPrefab = ThrowPathPrefabs[Level];
+
+            ThrowedObjectPrefab = ThrowedObjectPrefabs[Level];
+
+            ExplosionPrefab = ExplosionPrefabs[Level];
+
+        }
 
 
 

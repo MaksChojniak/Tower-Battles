@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -120,12 +121,14 @@ namespace Assets.Scripts
 
         public void ClaimReward()
         {
-            PlayerTowerInventory.ChangeBalance(MoneyReward);
+            // PlayerTowerInventory.ChangeBalance(MoneyReward);
+            PlayerData.ChangeBalance(MoneyReward);
 
-            if(TrophyReward > 0)
-                PlayerTowerInventory.AddWin();
-            if(DefeatReward > 0)
-                PlayerTowerInventory.AddDefeat();
+            // if(TrophyReward > 0)
+            //     PlayerTowerInventory.AddWin();
+            // if(DefeatReward > 0)
+            //     PlayerTowerInventory.AddDefeat();
+            PlayerData.AddGameResult(GameResult.Survival);
 
             ClearReward();
             ClearUI();

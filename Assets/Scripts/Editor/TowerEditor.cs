@@ -22,9 +22,13 @@ namespace Editor
             
             EditorGUILayout.Space();
             
+            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ID", Caption = "ID"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowerName", Caption = "Tower Name"});
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowerSprite", Caption = "Tower Sprite"});
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowerPrefab", Caption = "Tower Prefab"});
+            
+            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowerSkins", Caption = "Tower Skins"});
+            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "SkinIndex", Caption = "Skin Index"});
+            // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowerSprite", Caption = "Tower Sprite"});
+            // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowerPrefab", Caption = "Tower Prefab"});
             
             EditorGUILayout.Space();
             
@@ -49,7 +53,7 @@ namespace Editor
             showUpgrades = EditorGUILayout.Foldout(showUpgrades, "Upgrades");
             if (showUpgrades)
             {
-                InspectorTools.DrawUpgradableProperties(serializedObject, "UpgradeIcon", "Upgrade Icon");
+                // InspectorTools.DrawUpgradableProperties(serializedObject, "UpgradeIcon", "Upgrade Icon");
                 InspectorTools.DrawUpgradableProperties(serializedObject, "UpgradePrice", "Upgrade Price (first value is price for tower)");
             }
             

@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 
 using System;
+using MMK.Towers;
 using Towers;
 using UnityEditor;
 
@@ -11,10 +12,15 @@ namespace Editor
     [CustomEditor(typeof(SoldierAnimation))]
     public class SoldierAnimationEditor : UnityEditor.Editor
     {
-
+        SoldierAnimation _target;
+        SoldierController controller;
+        
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+
+            _target = (SoldierAnimation)target;
+            controller = _target.GetComponent<SoldierController>();
             
 
             EditorGUILayout.Space();
@@ -35,11 +41,18 @@ namespace Editor
             EditorGUILayout.Space(15);
             EditorGUILayout.LabelField("Prefabs for bullet & throw animations", EditorStyles.boldLabel);
             EditorGUILayout.Space(5);
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "FireStreamPrefab", Caption = "Fire Stream Prefab"});
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ProjectileBeamPrefab", Caption = "Projectile Beam Prefab"});
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ThrowPathPrefab", Caption = "Throw Path Prefab"});
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ThrowedObjectPrefab", Caption = "Throwed Object Prefab"});
-            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ExplosionPrefab", Caption = "Explosion Prefab"});
+
+            // new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "FireStreamPrefabs", Caption = "Fire Stream Prefab"}
+            // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ProjectileBeamPrefabs", Caption = "Projectile Beam Prefab"});
+            // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ThrowPathPrefabs", Caption = "Throw Path Prefab"});
+            // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ThrowedObjectPrefabs", Caption = "Throwed Object Prefab"});
+            // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ExplosionPrefabs", Caption = "Explosion Prefab"});
+            InspectorTools.DrawUpgradableProperties(serializedObject, "FireStreamPrefabs", "Fire Stream Prefab");
+            InspectorTools.DrawUpgradableProperties(serializedObject, "ProjectileBeamPrefabs", "Projectile Beam Prefab");
+            InspectorTools.DrawUpgradableProperties(serializedObject, "ThrowPathPrefabs", "Throw Path Prefab");
+            InspectorTools.DrawUpgradableProperties(serializedObject, "ThrowedObjectPrefabs", "Throwed Object Prefab");
+            InspectorTools.DrawUpgradableProperties(serializedObject, "ExplosionPrefabs", "Explosion Prefab");
+            
             // InspectorTools.PropertyField(serializedObject, "ProjectileBeamPrefab", "Projectile Beam Prefab");
             // InspectorTools.PropertyField(serializedObject, "ThrowPathPrefab", "Throw Path Prefab");
             // InspectorTools.PropertyField(serializedObject, "ThrowedObjectPrefab", "Throwed Object Prefab");
