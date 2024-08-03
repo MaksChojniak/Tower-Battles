@@ -617,6 +617,7 @@ namespace MMK.Towers
             TowerWeaponComponent.UpdateWeapon(SoldierData.GetWeapon(Level));
 
             AnimationComponent.UpdateMuzzles(Level);
+            AnimationComponent.UpdatePrefabs(Level);
             AnimationComponent.UpdateController(Level);
 
         }

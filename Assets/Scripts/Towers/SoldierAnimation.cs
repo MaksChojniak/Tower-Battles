@@ -155,15 +155,15 @@ namespace Towers
         void OnUpdatePrefabs(int Level)
         {
 
-            FireStreamPrefab = FireStreamPrefabs[Level];
+            FireStreamPrefab = FireStreamPrefabs.Length > Level ? FireStreamPrefabs[Level] : null;
 
-            ProjectileBeamPrefab = ProjectileBeamPrefabs[Level];
+            ProjectileBeamPrefab = ProjectileBeamPrefabs.Length > Level ? ProjectileBeamPrefabs[Level] : null; //ProjectileBeamPrefabs[Level];
 
-            ThrowPathPrefab = ThrowPathPrefabs[Level];
+            ThrowPathPrefab = ThrowPathPrefabs.Length > Level ? ThrowPathPrefabs[Level] : null; //ThrowPathPrefabs[Level];
 
-            ThrowedObjectPrefab = ThrowedObjectPrefabs[Level];
+            ThrowedObjectPrefab = ThrowedObjectPrefabs.Length > Level ? ThrowedObjectPrefabs[Level] : null; //ThrowedObjectPrefabs[Level];
 
-            ExplosionPrefab = ExplosionPrefabs[Level];
+            ExplosionPrefab = ExplosionPrefabs.Length > Level ? ExplosionPrefabs[Level] : null;//ExplosionPrefabs[Level];
 
         }
 
