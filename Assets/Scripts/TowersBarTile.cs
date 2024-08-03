@@ -41,7 +41,7 @@ public class TowersBarTile : MonoBehaviour
         TMP_Text priceText = pricePanel.GetComponent<TMP_Text>();
 
         pricePanel.SetActive(state);
-        priceText.text = $"{price} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().CashIconName })}";
+        priceText.text = $"{price} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName })}";
 
     }
 }

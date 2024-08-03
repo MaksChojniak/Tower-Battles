@@ -1,85 +1,104 @@
 ﻿using DefaultNamespace;
 using System;
+using MMK;
+using MMK.Settings;
 using TMPro;
 using UnityEngine;
 
 
 namespace Assets.Scripts.Settings
 {
-    [Serializable]
-    public enum HandModeType
-    {
-        Left,
-        Right
-    }
 
+    
     public class HandMode : MonoBehaviour
     {
 
+        [Header("Properties")]
         [SerializeField] HandModeType HandModeType;
 
-        [SerializeField] TMP_Text HandModeText;
+        
+        
+        [Space(12)]
+        [Header("UI Properties")]
+        [SerializeField] TMP_Text ValueText;
 
         [SerializeField] CanvasGroup LeftButton;
         [SerializeField] CanvasGroup RightButton;
 
-        private void Awake()
+        
+        
+        
+        void Awake()
         {
-            SettingsManager.ShareSettingsData += OnUpdateData;
+            RegisterHandlers();
+       
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
-            SettingsManager.ShareSettingsData -= OnUpdateData;
+            UnregisterHandlers();
+            
         }
 
-        void OnUpdateData(SettingsData data)
+
+
+#region Register & Unregister
+
+        void RegisterHandlers()
         {
-            HandModeType = data.HandMode;
+            SettingsManager.ShareHandModeType += OnShareHandModeType;
+        }
+        
+        void UnregisterHandlers()
+        {
+            SettingsManager.ShareHandModeType -= OnShareHandModeType;
+        }
+        
+#endregion
+
+
+        void OnShareHandModeType(HandModeType handModeType)
+        {
+            // if(HandModeType == handModeType)
+            //     return;
+
+            HandModeType = handModeType;
+            
+            OnDataChanged();
+        }
+
+
+        void OnDataChanged()
+        {
+            TowerSpawner.HandMode = HandModeType;
+
             UpdateUI();
         }
 
-        public void ChangeHandMode()
+
+
+        public void ChangeData(int direction)
         {
-            if (HandModeType == HandModeType.Left)
-                HandModeType = HandModeType.Right;
-            else
-                HandModeType = HandModeType.Left;
+            int index = (int)HandModeType;
+            index += direction;
 
-            ShareData();
-
-            UpdateUI();
+            SettingsManager.SetHandModeType((HandModeType)index);
         }
-
-        void ShareData()
-        {
-            SettingsData data = SettingsManager.Instance.SettingsData;
-
-            data.HandMode = HandModeType;
-
-            SettingsManager.UpdateSettingsData(data);
-        }
-
+        
+        
+        
         void UpdateUI()
         {
-            HandModeText.text = $"{HandModeType.ToString()} Hand";
+            LeftButton.interactable = HandModeType == HandModeType.Right;
+            LeftButton.alpha = LeftButton.interactable ? 1f : 0.7f;
+                
+            RightButton.interactable = HandModeType == HandModeType.Left;
+            RightButton.alpha = RightButton.interactable ? 1f : 0.7f;
 
 
-            RightButton.interactable = true;
-            RightButton.alpha = 1f;
-            LeftButton.interactable = true;
-            LeftButton.alpha = 1f;
+            string text = HandModeType.ToString();
+            ValueText.text = text;
 
-            if (HandModeType == HandModeType.Right)
-            { 
-                LeftButton.interactable = false;
-                LeftButton.alpha = 0.7f;
-            }
-            else
-            {
-                RightButton.interactable = false;
-                RightButton.alpha = 0.7f;
-            }
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Assets.Scripts
         [SerializeField] TMP_FontAsset baseFontAsset;
         [SerializeField] TMP_FontAsset secondFontAsset;
         
-        [SerializeField] FontAsset actuallyFont;
+        // [SerializeField] FontAsset actuallyFont;
 
 
         private void Awake()
@@ -32,36 +32,36 @@ namespace Assets.Scripts
             DontDestroyOnLoad(this.gameObject);
             Instance = this;
 
-            SettingsManager.ShareSettingsData += UpdateFont;
+            // SettingsManager.ShareSettingsData += UpdateFont;
         }
 
         private void OnDestroy()
         {
-            if(Instance == this)
-            {
-                SettingsManager.ShareSettingsData -= UpdateFont;
-            }   
+            // if(Instance == this)
+            // {
+            //     SettingsManager.ShareSettingsData -= UpdateFont;
+            // }   
         }
 
 
-        private void Update()
+        void Update()
         {
             TMP_FontAsset fontAsset = baseFontAsset;
 
-            if (actuallyFont == FontAsset.baseFont)
-                fontAsset = baseFontAsset;
-            else
-                fontAsset = secondFontAsset;
+            // if (actuallyFont == FontAsset.baseFont)
+            //     fontAsset = baseFontAsset;
+            // else
+            //     fontAsset = secondFontAsset;
 
             ChangeFont(fontAsset);
 
         }
 
 
-        void UpdateFont(SettingsData settings)
-        {
-            actuallyFont = settings.Font;
-        }
+        // void UpdateFont(SettingsData settings)
+        // {
+        //     actuallyFont = settings.Font;
+        // }
 
 
         void ChangeFont(TMP_FontAsset font)

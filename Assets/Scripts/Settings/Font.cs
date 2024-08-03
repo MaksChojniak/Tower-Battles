@@ -1,96 +1,114 @@
-﻿using DefaultNamespace;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using MMK;
+using MMK.Settings;
 using TMPro;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 namespace Assets.Scripts.Settings
 {
-    [Serializable]
-    public enum FontAsset
-    {
-        baseFont,
-        secondFont
-
-    }
 
     public class Font : MonoBehaviour
     {
+        
+        [Header("Properties")]
         [SerializeField] FontAsset FontAsset;
 
-        [SerializeField] TMP_FontAsset baseFontAsset;
-        [SerializeField] TMP_FontAsset secondFontAsset;
-
-
-        [SerializeField] TMP_Text FontText;
+        
+        
+        [Space(12)]
+        [Header("UI Properties")]
+        [SerializeField] TMP_Text ValueText;
 
         [SerializeField] CanvasGroup LeftButton;
         [SerializeField] CanvasGroup RightButton;
 
-        private void Awake()
+        
+        
+        
+        void Awake()
         {
-            SettingsManager.ShareSettingsData += OnUpdateData;
+            RegisterHandlers();
+       
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
-            SettingsManager.ShareSettingsData -= OnUpdateData;
+            UnregisterHandlers();
+            
         }
 
-        void OnUpdateData(SettingsData data)
+
+
+#region Register & Unregister
+
+        void RegisterHandlers()
         {
-            FontAsset = data.Font;
+            SettingsManager.ShareFontAsset += OnShareFontAsset;
+        }
+        
+        void UnregisterHandlers()
+        {
+            SettingsManager.ShareFontAsset -= OnShareFontAsset;
+        }
+        
+#endregion
+
+
+        void OnShareFontAsset(FontAsset fontAsset)
+        {
+            // if(FontAsset == fontAsset)
+            //     return;
+
+            FontAsset = fontAsset;
+            
+            OnDataChanged();
+        }
+
+
+        void OnDataChanged()
+        {
+            TMP_FontAsset fontAsset = GlobalSettingsManager.GetGlobalSettings().FontAssets[(int)FontAsset];
+            // TMP_Text[] textFields = GameObject.FindObjectsOfType<TMP_Text>();
+            // foreach (var textField in textFields)
+            // {
+            //     textField.font = fontAsset;
+            // }
+
             UpdateUI();
         }
 
-        public void ChangeFont()
+
+
+        public void ChangeData(int direction)
         {
-            if (FontAsset == FontAsset.baseFont)
-                FontAsset = FontAsset.secondFont;
-            else
-                FontAsset = FontAsset.baseFont;
+            int index = (int)FontAsset;
+            index += direction;
 
-            ShareData();
-
-            UpdateUI();
+            SettingsManager.SetFontAsset((FontAsset)index);
         }
-
-        void ShareData()
-        {
-            SettingsData data = SettingsManager.Instance.SettingsData;
-
-            data.Font = FontAsset;
-
-            SettingsManager.UpdateSettingsData(data);
-        }
-
+        
+        
+        
         void UpdateUI()
         {
-            if (FontAsset == FontAsset.baseFont)
-                FontText.text = $"{baseFontAsset.name.ToString()}";
-            else
-                FontText.text = $"{secondFontAsset.name.ToString()}";
+            int fontAssetsCount = GlobalSettingsManager.GetGlobalSettings().FontAssets.Length;
+            int index = (int)FontAsset;
+
+            
+            LeftButton.interactable = (index - 1 >= 0);
+            LeftButton.alpha = LeftButton.interactable ? 1f : 0.7f;
+                
+            RightButton.interactable = (index  + 1 < fontAssetsCount);
+            RightButton.alpha = RightButton.interactable ? 1f : 0.7f;
 
 
-            RightButton.interactable = true;
-            RightButton.alpha = 1f;
-            LeftButton.interactable = true;
-            LeftButton.alpha = 1f;
+            string text = FontAsset.ToString();
+            text = text.Replace('_', ' ');
+            // Debug.Log(text.Replace('_', ' '));
+            ValueText.text = text;
 
-            if (FontAsset == FontAsset.baseFont)
-            {
-                LeftButton.interactable = false;
-                LeftButton.alpha = 0.7f;
-            }
-            else
-            {
-                RightButton.interactable = false;
-                RightButton.alpha = 0.7f;
-            }
         }
+        
+
     }
 }

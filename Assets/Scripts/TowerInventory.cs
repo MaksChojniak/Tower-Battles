@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Player;
 using UnityEngine.Events;
 
 public class TowerInventory : MonoBehaviour
@@ -98,9 +99,11 @@ public class TowerInventory : MonoBehaviour
 
     void RemoveFromDeck(int index)
     {
-        if (PlayerTowerInventory.Instance.TowerDeck[index] != null)
+        // if (PlayerTowerInventory.Instance.TowerDeck[index] != null)
+        if (PlayerController.GetLocalPlayerData().Deck[index].Value != null)
         {
-            PlayerTowerInventory.Instance.TowerDeck[index] = null;
+            // PlayerTowerInventory.Instance.TowerDeck[index] = null;
+            PlayerController.GetLocalPlayerData().Deck[index].Value = null;
             TowerDeck.Instance.deckTiles[index].UpdateSprite(null);
             TowerDeck.Instance.deckTiles[index].ChangeColor(false);
             TowerDeck.Instance.deckTiles[index].UpdatePrice(false, 0);
@@ -128,20 +131,25 @@ public class TowerInventory : MonoBehaviour
 
         //Debug.Log($"selected slot - {index}, seletced tower - {selectedTower}");
 
-        if (PlayerTowerInventory.Instance.TowerDeck.Contains(TowerData.GetAllTowerInventoryData()[selectedTower].towerSO))
+        // if (PlayerTowerInventory.Instance.TowerDeck.Contains(TowerData.GetAllTowerInventoryData()[selectedTower].towerSO))
+        if (PlayerController.GetLocalPlayerData().Deck.Select(element => element.Value).ToArray().Contains(TowerData.GetAllTowerInventoryData()[selectedTower].towerSO))
         {
-            for (int i = 0; i < PlayerTowerInventory.Instance.TowerDeck.Length; i++)
+            // for (int i = 0; i < PlayerTowerInventory.Instance.TowerDeck.Length; i++)
+            for (int i = 0; i < PlayerController.GetLocalPlayerData().Deck.Length; i++)
             {
-                if (PlayerTowerInventory.Instance.TowerDeck[i] == TowerData.GetAllTowerInventoryData()[selectedTower].towerSO)
+                // if (PlayerTowerInventory.Instance.TowerDeck[i] == TowerData.GetAllTowerInventoryData()[selectedTower].towerSO)
+                if (PlayerController.GetLocalPlayerData().Deck[i].Value == TowerData.GetAllTowerInventoryData()[selectedTower].towerSO)
                 {
                     RemoveFromDeck(i);
                 }
             }
         }
 
-        PlayerTowerInventory.Instance.TowerDeck[index] = TowerData.GetAllTowerInventoryData()[selectedTower].towerSO;
-        TowerDeck.Instance.deckTiles[index].UpdateSprite(TowerData.GetAllTowerInventoryData()[selectedTower].towerSO.TowerSprite);
-        TowerDeck.Instance.deckTiles[index].UpdatePrice(true, PlayerTowerInventory.Instance.TowerDeck[index].GetPrice());
+        // PlayerTowerInventory.Instance.TowerDeck[index] = TowerData.GetAllTowerInventoryData()[selectedTower].towerSO;
+        PlayerController.GetLocalPlayerData().Deck[index].Value = TowerData.GetAllTowerInventoryData()[selectedTower].towerSO;
+        TowerDeck.Instance.deckTiles[index].UpdateSprite(TowerData.GetAllTowerInventoryData()[selectedTower].towerSO.CurrentSkin.TowerSprite);
+        // TowerDeck.Instance.deckTiles[index].UpdatePrice(true, PlayerTowerInventory.Instance.TowerDeck[index].GetPrice());
+        TowerDeck.Instance.deckTiles[index].UpdatePrice(true, PlayerController.GetLocalPlayerData().Deck[index].Value.GetPrice());
 
         TowerDeck.OnSelectSlot -= OnSelectDeckSlot;
 
@@ -159,7 +167,7 @@ public class TowerInventory : MonoBehaviour
         {
             try
             {
-                buildingData.towerTileUI.UpdateSprite(buildingData.towerSO.TowerSprite);
+                buildingData.towerTileUI.UpdateSprite(buildingData.towerSO.CurrentSkin.TowerSprite);
                 buildingData.towerTileUI.UpdateName(buildingData.towerSO.TowerName);
                 buildingData.towerTileUI.UpdateLockedState(buildingData.towerSO.IsUnlocked());
             }
@@ -268,7 +276,8 @@ public class AllTowerInventoryData
 
         for (int i = 0; i < baseTowersData.Length; i++)
         {
-            if(baseTowersData[i].towerSO.IsUnlocked() && baseTowersData[i].towerSO.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()))
+            // if(baseTowersData[i].towerSO.IsUnlocked() && baseTowersData[i].towerSO.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()))
+            if(baseTowersData[i].towerSO.IsUnlocked() && baseTowersData[i].towerSO.IsRequiredWinsCount(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount))
                 unlockedTowers.Add(baseTowersData[i]);
             else
                 lockedTowers.Add(baseTowersData[i]);

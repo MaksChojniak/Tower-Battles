@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using DefaultNamespace;
+using Mirror;
 using MMK.ScriptableObjects;
 using MMK.Towers;
 using TMPro;
@@ -177,7 +178,7 @@ namespace MMK.Towers
     [RequireComponent(typeof(SelectedRing))]
     [RequireComponent(typeof(TowerLevel))]
     // [RequireComponent(typeof(ViewRange))]
-    public abstract class TowerController : MonoBehaviour
+    public abstract class TowerController : NetworkBehaviour
     {
         public delegate int GetLevelDelegate();
         public GetLevelDelegate GetLevel;

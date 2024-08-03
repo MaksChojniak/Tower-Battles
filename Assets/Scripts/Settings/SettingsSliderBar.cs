@@ -8,13 +8,13 @@ namespace DefaultNamespace
 {
     public class SettingsSliderBar : MonoBehaviour
     {
-        // public delegate void OnPointerHold(int value);
-        // OnPointerHold onPointerHold;
+        public delegate void OnPointerHold(int value);
+        public event OnPointerHold onPointerHold;
 
-        public event Action<int> onPointerHold;
+        // public event Action<int> onPointerHold;
         const float interval = 0.25f;
         
-        [SerializeField] Slider slider;
+        public Slider slider;
 
         [SerializeField] float _interval;
         bool readyToNextInvoke;

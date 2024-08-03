@@ -111,7 +111,7 @@ namespace MMK.Towers
             TMP_Text[] incomeTexts = incomeUICanvas.GetComponentsInChildren<TMP_Text>();
 
             foreach (TMP_Text incomeText in incomeTexts)
-                incomeText.text = $"{Value}" + StringFormatter.GetSpriteText( new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().CashIconName, WithSpaces = true } );
+                incomeText.text = $"{Value}" + StringFormatter.GetSpriteText( new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName, WithSpaces = true } );
             
 
             float time = 0;

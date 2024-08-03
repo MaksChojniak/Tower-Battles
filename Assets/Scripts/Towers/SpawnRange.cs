@@ -135,7 +135,7 @@ namespace Towers
 
         GameObject[] GetCollidedObjects(Transform root)
         {
-            Collider[] colliders = new Collider[GameSettingsManager.GetGameSettings().MaxTowersCount];
+            Collider[] colliders = new Collider[GlobalSettingsManager.GetGlobalSettings().MaxTowersCount];
             
             int collidersCount = Physics.OverlapBoxNonAlloc(root.position, root.lossyScale / 2, colliders, Quaternion.identity);
 

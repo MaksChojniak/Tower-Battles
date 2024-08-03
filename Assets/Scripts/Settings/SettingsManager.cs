@@ -1,33 +1,31 @@
-﻿using Assets.Scripts.Settings;
-using System;
-using System.Collections;
+﻿using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using SystemInfo = UnityEngine.SystemInfo;
 
-namespace DefaultNamespace
+namespace MMK.Settings
 {
-    public enum GraphicsQuality
-    {
-        Low,
-        Medium,
-        High,
-        Ultra,
-    }
-    [Serializable]
+    
+#region Hardware Classes
+    
     public class CPU
     {
         public string Name;
         public int Cores;
-        public double CoresFrequency;
+        public float CoresFrequency;
+        
+        public string Result;
+
 
         public void Update()
         {
             Name = SystemInfo.processorType;
             Cores = SystemInfo.processorCount;
-            CoresFrequency = Math.Round(SystemInfo.processorFrequency / 1000f, 1);
+            CoresFrequency = (float)Math.Round(SystemInfo.processorFrequency / 1000f, 1);
+
         }
     }
-    [Serializable]
+    
     public class RAM
     {
         public int Size;
@@ -35,21 +33,24 @@ namespace DefaultNamespace
         public void Update()
         {
             Size = Mathf.RoundToInt(SystemInfo.systemMemorySize / 1024f);
+ 
         }
     }
-    [Serializable]
+    
     public class Battery
     {
         public float ChargeLevel;
         public BatteryStatus ChargingStatus;
 
         public void Update()
-        { 
+        {
             ChargeLevel = SystemInfo.batteryLevel;
             ChargingStatus = SystemInfo.batteryStatus;
+   
         }
     }
-    [Serializable]
+    
+    
     public class Hardware
     {
         public CPU CPU;
@@ -61,6 +62,8 @@ namespace DefaultNamespace
             CPU = new CPU();
             RAM = new RAM();
             Battery = new Battery();
+            
+            Update();
         }
 
         public void Update()
@@ -72,179 +75,298 @@ namespace DefaultNamespace
         }
     }
     
+#endregion
+
+
+#region Settings
+
+    public enum GraphicsQuality : int
+    {
+        Low = 0,
+        Medium = 1,
+        High = 2,
+        Ultra = 3,
+    }
+    
+    public enum FontAsset : int
+    {
+        Liberation_Sans = 0,
+        ZCOOL_Sans = 1
+
+    }
+    
+    public enum LanguageType
+    {
+        Polish,
+        English,
+        German,
+        French,
+        Spanish
+    }
+    
+    public enum HandModeType
+    {
+        Left,
+        Right
+    }
+
     [Serializable]
-    public class Settings
+    public struct AudioSettings
+    {
+        [Range(0, 100)]
+        public int MusicVolume;
+        
+        [Range(0, 100)]
+        public int EffectVolume;
+        
+        [Range(0, 100)]
+        public int UIVolume;
+
+    }
+
+    [Serializable]
+    public struct Quality
     {
         public GraphicsQuality GraphicsQuality;
 
-        public Hardware Hardware;
-
-
-        public Settings()
+        public void SetQuality(GraphicsQuality quality)
         {
+            GraphicsQuality = quality;
             
-        }
-        
-
-        [ContextMenu(nameof(UpdateGraphicsQuality))]
-        public void UpdateGraphicsQuality()
-        {
-            Hardware = new Hardware();
-            Hardware.Update();
             
-            GraphicsQuality = CalculateQuality(Hardware);
-            
-        }
+            QualitySettings.vSyncCount = 0;
 
-        static GraphicsQuality CalculateQuality(Hardware hardware)
-        {
+            Application.targetFrameRate = Screen.resolutions[0].refreshRate;
 
+            QualitySettings.SetQualityLevel((int)GraphicsQuality);
 
-            return GraphicsQuality.Low;
         }
         
     }
     
     
-    
-    
-    
-    public class SettingsManager : MonoBehaviour
+    [Serializable]
+    public struct Settings
     {
-        public static SettingsManager Instance;
+        public delegate void OnSettingsChangedDelegate();
+        public event OnSettingsChangedDelegate OnSettingsChanged;
+        
+        public AudioSettings AudioSettings;
 
-        public static event Action<SettingsData> ShareSettingsData;
+        public Quality Quality;
         
-        public static Action<SettingsData> UpdateSettingsData;
-
-        public Settings Settings;
+        public LanguageType Language;
+        public FontAsset Font;
         
-        public SettingsData SettingsData;
-
+        public HandModeType HandMode;
         
         
-        void OnEnable()
+        
+        public void SetAudioSettings(AudioSettings audioSettings)
         {
-            if (Instance != null)
-            {
-                Destroy(this.gameObject);
-                return;
-            }
+            AudioSettings = audioSettings;
+            
+            
+            PlayerPrefs.SetInt(nameof(AudioSettings.MusicVolume), AudioSettings.MusicVolume);
+            PlayerPrefs.SetInt(nameof(AudioSettings.EffectVolume), AudioSettings.EffectVolume);
+            PlayerPrefs.SetInt(nameof(AudioSettings.UIVolume), AudioSettings.UIVolume);
+            
+            PlayerPrefs.Save();
+            
+            OnSettingsChanged?.Invoke();
+        }
 
-            Instance = this;
-            DontDestroyOnLoad(Instance.gameObject);
+        public void SetLanguageType(LanguageType language)
+        {
+            Language = language;
+            
+            PlayerPrefs.SetString(nameof(Language), Language.ToString());
+            
+            PlayerPrefs.Save();
+            
+            OnSettingsChanged?.Invoke();
+        }
+        
+        public void SetFontAsset(FontAsset font) 
+        {
+            Font = font;
+            
+            PlayerPrefs.SetString(nameof(Font), Font.ToString());
+            
+            PlayerPrefs.Save();
+            
+            OnSettingsChanged?.Invoke();
+        }
+        
+        public void SetHandModeType(HandModeType handMode)
+        {
+            HandMode = handMode;
+            
+            PlayerPrefs.SetString(nameof(HandMode), HandMode.ToString());
+            
+            PlayerPrefs.Save();
+            
+            OnSettingsChanged?.Invoke();
+        }
+
+
+
+
+        public static void SaveData(Settings setings)
+        {
+            PlayerPrefs.SetInt(nameof(setings.AudioSettings.MusicVolume), setings.AudioSettings.MusicVolume);
+            PlayerPrefs.SetInt(nameof(setings.AudioSettings.EffectVolume), setings.AudioSettings.EffectVolume);
+            PlayerPrefs.SetInt(nameof(setings.AudioSettings.UIVolume), setings.AudioSettings.UIVolume);
+            
+            PlayerPrefs.SetString(nameof(setings.Language), setings.Language.ToString());
+            
+            PlayerPrefs.SetString(nameof(setings.Font), setings.Font.ToString());
+            
+            PlayerPrefs.SetString(nameof(setings.HandMode), setings.HandMode.ToString());
+            
+            PlayerPrefs.Save();
+        }
+
+
+        public static Settings LoadData()
+        {
+            Settings settings = new Settings();
+
+            // Audio Settings
+            AudioSettings audioSetings = new AudioSettings()
+            {
+                MusicVolume = PlayerPrefs.GetInt(nameof(audioSetings.MusicVolume), 50),
+                EffectVolume = PlayerPrefs.GetInt(nameof(audioSetings.EffectVolume), 50),
+                UIVolume = PlayerPrefs.GetInt(nameof(audioSetings.UIVolume), 50),
+            };
+            settings.AudioSettings = audioSetings;
 
             
-            SettingsData = new SettingsData()
-            {
-                MusicVolume = 100,
-                EffectVolume = 100,
-                UIVolume = 100,
-                QualityLevel = Quality.QualityLevelsType.Medium,
-                ShadowsActive = true,
-                ParticlesActive = true,
-                FPSLimitIndex = 5,
-                Language = Language.LanguageType.Poland,
-                HandMode = HandModeType.Right,
-                Font = FontAsset.secondFont
-            };
+            // Language Settings
+            LanguageType language = LanguageType.English;
+            if (Enum.TryParse<LanguageType>(PlayerPrefs.GetString(nameof(settings.Language)), out LanguageType languageType))
+                language = languageType;
+            settings.Language = language;
+            
+            
+            // Font Settings
+            FontAsset font = FontAsset.Liberation_Sans;
+            if (Enum.TryParse<FontAsset>(PlayerPrefs.GetString(nameof(settings.Font)), out FontAsset fontAsset))
+                font = fontAsset;
+            settings.Font = font;
+            
+            
+            // Hand Mode Settings
+            HandModeType handMode = HandModeType.Right;
+            if (Enum.TryParse<HandModeType>(PlayerPrefs.GetString(nameof(settings.HandMode)), out HandModeType handModeType))
+                handMode = handModeType;
+            settings.HandMode = handMode;
+            
 
+            return settings;
+        }
+        
+    }
+    
+    
+#endregion
+
+
+
+
+
+
+    public class SettingsManager : MonoBehaviour
+    {
+
+#region Events
+
+#region Audio Settings
+
+        public delegate void ShareAudioSettingsDelegate(AudioSettings audioSetings);
+        public static event ShareAudioSettingsDelegate ShareAudioSettings;
+
+        public delegate void SetAudioSettingsDelegate(AudioSettings audioSetings);
+        public static SetAudioSettingsDelegate SetAudioSettings;
+  
+#endregion
+        
+#region Language Settings
+
+        public delegate void ShareLanguageTypeDelegate(LanguageType languageType);
+        public static event ShareLanguageTypeDelegate ShareLanguageType;
+
+        public delegate void SetLanguageTypeDelegate(LanguageType languageType);
+        public static SetLanguageTypeDelegate SetLanguageType;
+  
+#endregion
+        
+#region Font Settings
+
+        public delegate void ShareFontAssetDelegate(FontAsset fontAsset);
+        public static event ShareFontAssetDelegate ShareFontAsset;
+
+        public delegate void SetFontAssetDelegate(FontAsset fontAsset);
+        public static SetFontAssetDelegate SetFontAsset;
+  
+#endregion
+        
+#region HandMode Settings
+
+        public delegate void ShareHandModeTypeDelegate(HandModeType handModeType);
+        public static event ShareHandModeTypeDelegate ShareHandModeType;
+
+        public delegate void SetHandModeTypeDelegate(HandModeType handModeType);
+        public static SetHandModeTypeDelegate SetHandModeType;
+  
+#endregion
+        
+#endregion
+        
+        
+
+        // Settings
+        public Settings Settings;
+
+        // Hardware
+        Hardware Hardware;
+
+        
+        
+
+        void OnEnable()
+        {
+            DontDestroyOnLoad(this.gameObject);
+            
+            
+            Settings = Settings.LoadData();
+            
+            Hardware = new Hardware();
+            UpdateGraphicsQuality();
+            
             
             RegisterHandlers();
         }
 
+        
         void OnDisable()
         {
-            if (Instance == this)
-            {
-                Instance = null;
-                UnregisterHandlers();
-            }
-        }
+            UnregisterHandlers();
 
-
-        void Awake()
-        {
-            // hardwareInformations = GetHarwareInformations();
+            Settings.SaveData(Settings);
         }
 
         
-#region Hardware Informations
+        void Update()
+        {
+            
+        }
 
-        // [Serializable]
-        // public class CPU
-        // {
-        //     public string Name;
-        //     public int Cores;
-        //     public int Frequency;
-        //
-        //     public CPU()
-        //     {
-        //         Name = SystemInfo.processorType;
-        //         Cores = SystemInfo.processorCount;
-        //         Frequency =  SystemInfo.processorFrequency;
-        //         
-        //     }
-        //     
-        // }
-        // [Serializable]
-        // public class GPU
-        // {
-        //     public string Name;
-        //     public int RAM_GB;
-        //     public int RAM_MB;
-        //
-        //     public GPU()
-        //     {
-        //         Name = SystemInfo.graphicsDeviceName;
-        //         RAM_MB = SystemInfo.graphicsMemorySize;
-        //         RAM_GB = Mathf.RoundToInt(RAM_MB / 1024f);
-        //
-        //     }
-        //     
-        // }
-        // [Serializable]
-        // public class RAM
-        // {
-        //     public int Size_GB;
-        //     public int Size_MB;
-        //
-        //     public RAM()
-        //     {
-        //         Size_MB = SystemInfo.systemMemorySize; 
-        //         Size_GB = Mathf.RoundToInt(Size_MB / 1024f);
-        //         
-        //     }
-        //     
-        // }
-        //
-        // [Serializable]
-        // struct HardwareInformations
-        // {
-        //     public GPU GPU;
-        //     public CPU CPU;
-        //     public RAM RAM;
-        // }
-        //
-        //
-        // [SerializeField] HardwareInformations hardwareInformations;
-        //
-        // HardwareInformations GetHarwareInformations()
-        // {
-        //     GPU GPU = new GPU();
-        //     CPU CPU = new CPU();
-        //     RAM RAM = new RAM();
-        //
-        //     return new HardwareInformations()
-        //     {
-        //         GPU = GPU, 
-        //         CPU = CPU,
-        //         RAM = RAM
-        //     };
-        // }
-
-#endregion
-
+        
+        void FixedUpdate()
+        {
+            
+        }
 
 
 
@@ -253,13 +375,23 @@ namespace DefaultNamespace
         void RegisterHandlers()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
-            UpdateSettingsData += OnUpdateData;
-            
+            Settings.OnSettingsChanged += ShareSettings;
+
+            SetHandModeType += OnSetHandModeType;
+            SetFontAsset += OnSetFontAsset;
+            SetLanguageType += OnSetLanguageType;
+            SetAudioSettings += OnSetAudioSettings;
         }
 
+        
         void UnregisterHandlers()
         {
-            UpdateSettingsData -= OnUpdateData;
+            SetAudioSettings -= OnSetAudioSettings;
+            SetLanguageType -= OnSetLanguageType;
+            SetFontAsset -= OnSetFontAsset;
+            SetHandModeType -= OnSetHandModeType;
+            
+            Settings.OnSettingsChanged -= ShareSettings;
             SceneManager.sceneLoaded -= OnSceneLoaded;
             
         }
@@ -270,47 +402,117 @@ namespace DefaultNamespace
         
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Debug.Log("Shange Scene");
-            StartCoroutine(UpdateSettngsMenu());
+            ShareSettings();
         }
 
-        IEnumerator UpdateSettngsMenu()
+        
+        
+        
+
+#region Share Settings Data
+
+        void ShareSettings()
         {
-            yield return new WaitForEndOfFrame();
-            yield return new WaitForEndOfFrame();
+            ShareAudioSettings?.Invoke(Settings.AudioSettings);
             
-            ShareSettingsData?.Invoke(SettingsData);
-        }
+            ShareHandModeType?.Invoke(Settings.HandMode);
+            
+            ShareFontAsset?.Invoke(Settings.Font);
+            
+            ShareLanguageType?.Invoke(Settings.Language);
 
-        void OnUpdateData(SettingsData newData)
+        }
+        
+#endregion
+
+
+        
+#region Set Settings Data
+
+        
+        void OnSetAudioSettings(AudioSettings audioSettings) => Settings.SetAudioSettings(audioSettings);
+
+
+        void OnSetHandModeType(HandModeType handModeType) => Settings.SetHandModeType(handModeType);
+
+        
+        void OnSetFontAsset(FontAsset fontAsset) => Settings.SetFontAsset(fontAsset);
+        
+        
+        void OnSetLanguageType(LanguageType languageType) => Settings.SetLanguageType(languageType);
+
+#endregion
+
+
+
+#region Update Quality & Hardware
+        
+        [ContextMenu(nameof(UpdateGraphicsQuality))]
+        public void UpdateGraphicsQuality()
         {
-            SettingsData = newData;
+            Hardware.Update();
 
-            ShareSettingsData?.Invoke(SettingsData);
+            Settings.Quality.SetQuality(CalculateQuality());
+            
+        }
+
+        
+        GraphicsQuality CalculateQuality()
+        {
+            float score = 0;
+
+            // Battery
+            if (Hardware.Battery.ChargingStatus == BatteryStatus.Charging)
+                score += 5f;
+
+            if (Hardware.Battery.ChargeLevel * 100f > 25f)
+                score += 10f;
+
+            // CPU
+            if (Hardware.CPU.Cores > 4)
+                score += (Hardware.CPU.Cores - 4f) * 2f;
+            
+            if (Hardware.CPU.CoresFrequency > 1.8f)
+                score += (Hardware.CPU.CoresFrequency - 1.8f) / 0.2f;
+
+            // RAM
+            score += 5f * Hardware.RAM.Size;
+            Debug.Log($"Score: {score}");
+            
+            
+            if(score <= 35f)
+                return GraphicsQuality.Low;
+            else if (score <= 50f)
+                return GraphicsQuality.Medium;
+            else if (score <= 75f)
+                return GraphicsQuality.High;
+            else
+                return GraphicsQuality.Ultra;
         }
         
+#endregion
+        
+        
+        
+// #region On GUI
+//
+//         void OnGUI()
+//         {
+//             Rect rect = new Rect(new Vector2(250, 100), new Vector2(450, 100));
+//             GUI.TextArea(rect, $"Your GQ: {Settings.Quality.GraphicsQuality.ToString()}", new GUIStyle(){fontSize = 64});
+//             
+//         }
+//         
+// #endregion
+
+        
+        
+        
+
+        
         
     }
 
-    [Serializable]
-    public struct SettingsData
-    {
-        [Range(0, 100)]
-        public int MusicVolume;
-        [Range(0, 100)]
-        public int EffectVolume;
-        [Range(0, 100)]
-        public int UIVolume;
-
-        [Space(10)]
-        public Quality.QualityLevelsType QualityLevel;
-        public bool ShadowsActive;
-        public bool ParticlesActive;
-        public int FPSLimitIndex;
-
-        [Space(10)]
-        public Language.LanguageType Language;
-        public HandModeType HandMode;
-        public FontAsset Font;
-    }
+    
+    
 }

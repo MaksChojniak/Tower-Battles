@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using MMK;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -57,7 +58,7 @@ public class PauseMenu : MonoBehaviour
 
         PauseStateChange();
 
-        SceneManager.LoadSceneAsync(Scenes.mainMenuScene);
+        SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings().mainMenuScene);
     }
 
 

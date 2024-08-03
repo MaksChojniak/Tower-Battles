@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Data.SqlTypes;
+using MMK;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -144,7 +145,7 @@ public class GamePlayerInformation : MonoBehaviour
 
         DontDestroyOnLoad(this.gameObject);
 
-        var scene = SceneManager.LoadSceneAsync(Scenes.mainMenuScene);
+        var scene = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings().mainMenuScene);
 
         OnEndGame?.Invoke();
 

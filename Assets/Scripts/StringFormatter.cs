@@ -60,6 +60,16 @@ namespace MMK
             return price.ToString("N0");
         }
         
+        public static string PriceFormat(long price)
+        {
+            return price.ToString("N0");
+        }
+        
+        public static string PriceFormat(ulong price)
+        {
+            return price.ToString("N0");
+        }
+        
 
         public static string GetFormattedDouble(double value)
         {

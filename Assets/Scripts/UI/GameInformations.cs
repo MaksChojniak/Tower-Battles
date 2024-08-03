@@ -39,7 +39,7 @@ namespace DefaultNamespace
 
         void UpdateBalanceInformation(long value)
         {
-            BalanceText.text = $"{value} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GameSettingsManager.GetGameSettings().CashIconName })}";
+            BalanceText.text = $"{value} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName })}";
         }
 
         void UpdateHealthInformation(int value)

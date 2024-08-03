@@ -1,6 +1,8 @@
-﻿namespace Settings
+﻿using UnityEngine;
+
+namespace Settings
 {
-    public class UIVolume
+    public class UIVolume : MonoBehaviour
     {
         
     }

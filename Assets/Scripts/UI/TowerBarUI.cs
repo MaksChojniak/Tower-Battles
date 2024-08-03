@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MMK;
 using MMK.Towers;
+using Player;
 using TMPro;
 using UnityEngine;
 
@@ -20,10 +21,13 @@ public class TowerBarUI : MonoBehaviour
     
         for (int i = 0; i < Tiles.Length; i++)
         {
-            if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
+            // if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
+            if (PlayerController.GetLocalPlayerData().Deck[i].Value != null)
             {
-                Tiles[i].UpdateSprite(PlayerTowerInventory.Instance.TowerDeck[i].TowerSprite);
-                Tiles[i].UpdatePrice(true, PlayerTowerInventory.Instance.TowerDeck[i].GetPrice());
+                // Tiles[i].UpdateSprite(PlayerTowerInventory.Instance.TowerDeck[i].CurrentSkin.TowerSprite);
+                Tiles[i].UpdateSprite(PlayerController.GetLocalPlayerData().Deck[i].Value.CurrentSkin.TowerSprite);
+                // Tiles[i].UpdatePrice(true, PlayerTowerInventory.Instance.TowerDeck[i].GetPrice());
+                Tiles[i].UpdatePrice(true, PlayerController.GetLocalPlayerData().Deck[i].Value.GetPrice());
             }
             else
             {
@@ -35,7 +39,7 @@ public class TowerBarUI : MonoBehaviour
 
     void Update()
     {
-        TowersCount.text = $"{GameObject.FindGameObjectsWithTag("Tower").Length}/{GameSettingsManager.GetGameSettings().MaxTowersCount} Towers";
+        TowersCount.text = $"{GameObject.FindGameObjectsWithTag("Tower").Length}/{GlobalSettingsManager.GetGlobalSettings().MaxTowersCount} Towers";
         
     }
 
