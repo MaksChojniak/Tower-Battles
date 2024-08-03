@@ -1,6 +1,7 @@
 ﻿#if UNITY_EDITOR
 
 using System;
+using MMK.ScriptableObjects;
 using MMK.Towers;
 using Towers;
 using UnityEditor;
@@ -14,6 +15,7 @@ namespace Editor
     {
         SoldierAnimation _target;
         SoldierController controller;
+
         
         public override void OnInspectorGUI()
         {
@@ -47,11 +49,8 @@ namespace Editor
             // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ThrowPathPrefabs", Caption = "Throw Path Prefab"});
             // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ThrowedObjectPrefabs", Caption = "Throwed Object Prefab"});
             // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ExplosionPrefabs", Caption = "Explosion Prefab"});
-            InspectorTools.DrawUpgradableProperties(serializedObject, "FireStreamPrefabs", "Fire Stream Prefab");
-            InspectorTools.DrawUpgradableProperties(serializedObject, "ProjectileBeamPrefabs", "Projectile Beam Prefab");
-            InspectorTools.DrawUpgradableProperties(serializedObject, "ThrowPathPrefabs", "Throw Path Prefab");
-            InspectorTools.DrawUpgradableProperties(serializedObject, "ThrowedObjectPrefabs", "Throwed Object Prefab");
-            InspectorTools.DrawUpgradableProperties(serializedObject, "ExplosionPrefabs", "Explosion Prefab");
+
+            ShowPrefabs();
             
             // InspectorTools.PropertyField(serializedObject, "ProjectileBeamPrefab", "Projectile Beam Prefab");
             // InspectorTools.PropertyField(serializedObject, "ThrowPathPrefab", "Throw Path Prefab");
@@ -72,6 +71,43 @@ namespace Editor
             InspectorTools.EndContent();
         }
 
+
+
+
+
+        void ShowPrefabs()
+        {
+            bool hasFireStream = false;
+            bool hasProjectileBeam = false;
+            bool hasExplosion = false;
+            bool hasThrowedObject = false;
+
+
+            foreach (var weapon in controller.SoldierData.UpgradeWeapons)
+            {
+                if (weapon.DamageType == DamageType.Fire)
+                    hasFireStream = true;
+                else if (weapon.ShootingType == ShootingType.Shootable)
+                    hasProjectileBeam = true;
+                else if (weapon.ShootingType == ShootingType.Throwable)
+                    hasThrowedObject = true;
+                if (weapon.DamageType == DamageType.Splash)
+                    hasExplosion = true;
+            }
+            
+            if(hasFireStream)
+                InspectorTools.DrawUpgradableProperties(serializedObject, "FireStreamPrefabs", "Fire Stream Prefab");
+            if(hasProjectileBeam)
+                InspectorTools.DrawUpgradableProperties(serializedObject, "ProjectileBeamPrefabs", "Projectile Beam Prefab");
+            if (hasThrowedObject)
+            {
+                InspectorTools.DrawUpgradableProperties(serializedObject, "ThrowPathPrefabs", "Throw Path Prefab");
+                InspectorTools.DrawUpgradableProperties(serializedObject, "ThrowedObjectPrefabs", "Throwed Object Prefab");
+            }
+            if(hasExplosion)
+                InspectorTools.DrawUpgradableProperties(serializedObject, "ExplosionPrefabs", "Explosion Prefab");
+        }
+        
         
     }
 }
