@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Storage;
+using UI.Shop;
+using UI.Shop.Daily_Rewards;
 using UnityEngine;
 
 namespace Player.Database
@@ -43,10 +45,13 @@ namespace Player.Database
         public static DatabaseReference[] References = new[]
         {
             new DatabaseReference(){ DataType = typeof(PlayerData), DataReference = "PlayerData.json"},
+            new DatabaseReference(){ DataType = typeof(DailyRewards), DataReference = "DailyRewards.json"},
+            new DatabaseReference(){ DataType = typeof(SkinsForSale), DataReference = "SkinsForSale.json"},
+            new DatabaseReference(){ DataType = typeof(SkinOffert[]), DataReference = "AllSkinOfferts.json"},
         };
         
         
-        public async static Task<GET_Callback<T>> GET<T>(string playerID)
+        public async static Task<GET_Callback<T>> GET<T>(string playerID = "")
         {
             GET_Callback<T> callback = new GET_Callback<T>()
             {
@@ -70,7 +75,7 @@ namespace Player.Database
         }
 
 
-        public async static Task POST<T>(string playerID, T data)
+        public async static Task POST<T>(T data, string playerID = "")
         {
             string json = JsonConvert.SerializeObject(data);
 
@@ -101,6 +106,8 @@ namespace Player.Database
             
             StorageReference playerReference = storageReference.Child(playerID);
             StorageReference dataReference = playerReference.Child(dataReferenceName);
+            if(string.IsNullOrEmpty(playerID))
+                dataReference = storageReference.Child(dataReferenceName);
 
             bool fileExist = await FileExist(dataReference);
             if (!fileExist)

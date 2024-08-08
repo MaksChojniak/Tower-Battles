@@ -4,11 +4,19 @@ using UnityEngine;
 
 namespace MMK.ScriptableObjects
 {
-    
+    public enum SkinRarity
+    {
+        Common,
+        Rare,
+        Epic,
+        Exclusive
+    }
     
     [CreateAssetMenu(fileName = "Skin", menuName = "Towers/Skin")]
     public class TowerSkin : ScriptableObject
     {
+        public uint ID;
+        
         public Sprite TowerSprite;
         
         public GameObject TowerPrefab;
@@ -17,8 +25,9 @@ namespace MMK.ScriptableObjects
 
         public bool IsUnlocked;
         public int UnlockPrice;
-        
-        
+
+        public SkinRarity Rarity;
+
     }
 
     

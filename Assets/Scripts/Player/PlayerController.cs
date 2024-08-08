@@ -153,7 +153,7 @@ namespace Player
 
         async void OnSave()
         {
-            await Database.Database.POST<PlayerData>(PlayerData.ID, PlayerData);
+            await Database.Database.POST<PlayerData>(PlayerData, PlayerData.ID);
 
         }
 
