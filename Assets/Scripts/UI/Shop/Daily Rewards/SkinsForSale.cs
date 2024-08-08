@@ -2,6 +2,8 @@
 
 namespace UI.Shop.Daily_Rewards
 {
+    
+    [Serializable]
     public class SkinsForSale
     {
     

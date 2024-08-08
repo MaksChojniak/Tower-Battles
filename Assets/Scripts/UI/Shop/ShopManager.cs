@@ -50,10 +50,10 @@ namespace UI.Shop
         public delegate void SaveDelegate();
         public SaveDelegate Save;
 
-        SkinsForSale skinsForSale = new SkinsForSale();
-        DailyRewards dailyRewards = new DailyRewards();
-        CoinsOffert[] CoinsOfferts = new CoinsOffert[COINS_OFFERTS_COUNT];
-
+        [SerializeField] SkinsForSale skinsForSale = new SkinsForSale();
+        [SerializeField] DailyRewards dailyRewards = new DailyRewards();
+        [SerializeField] CoinsOffert[] CoinsOfferts = new CoinsOffert[COINS_OFFERTS_COUNT];
+        [Space(28)]
 
         [Space(8)]
         [Header("UI Properties")]
@@ -627,7 +627,7 @@ namespace UI.Shop
 
         async Task SaveDailyRewards()
         {
-            string playerID = PlayerController.GetLocalPlayerData().ID;
+            string playerID = PlayerController.GetLocalPlayerData?.Invoke().ID;
             await Database.POST<DailyRewards>(dailyRewards, playerID);
         }
         
