@@ -22,8 +22,9 @@ public class SceneData
     public Sprite Image;
     public string Name;
     public int Lenght;
-    
-    #if UNITY_EDITOR
+
+
+#if UNITY_EDITOR
     [Space(20)]
     public SceneAsset SceneAsset;
 
@@ -205,7 +206,7 @@ public class VetoController : MonoBehaviour
         for (int i = 0; i < scenesRange.Length; i++)
         {
             Transform buttons = mapButtons[i].transform;
-            Transform outline = buttons.GetChild(2);
+            GameObject outline = buttons.GetChild(2).gameObject;
             
             buttons.GetComponent<Image>().sprite = scenesRange[i].Image;
 
@@ -215,7 +216,36 @@ public class VetoController : MonoBehaviour
 
             Transform lenghtButton = buttons.transform.GetChild(1);
             TMP_Text lenghtText = lenghtButton.GetChild(0).GetComponent<TMP_Text>();
-            lenghtText.text = $"Lenght: {scenesRange[i].Lenght}";
+            //lenghtText.text = $"Lenght: {scenesRange[i].Lenght}";
+
+            string difficulty;
+            Color color;
+            Image outlineColor = outline.GetComponent<Image>();
+            
+
+            if(scenesRange[i].Lenght <= 150)
+            {
+                difficulty = "Hard";
+                ColorUtility.TryParseHtmlString("#F50F0F", out color);
+            }
+            else if (scenesRange[i].Lenght >= 216)
+            {
+                difficulty = "Easy";
+                ColorUtility.TryParseHtmlString("#189500", out color);
+            }
+            else
+            {
+                difficulty = "Medium";
+                ColorUtility.TryParseHtmlString("#FF9B00", out color);
+            }
+            lenghtText.text = $"{difficulty}";
+            lenghtText.color = color;
+            outlineColor.color = color;
+            
+
+
+
+
 
         }
     }
