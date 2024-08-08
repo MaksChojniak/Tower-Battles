@@ -12,7 +12,7 @@ namespace MMK.ScriptableObjects
 
 
         
-        public int ID;
+        public string ID;
         public string TowerName;
 
         public TowerSkin CurrentSkin => TowerSkins[SkinIndex];

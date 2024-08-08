@@ -7,7 +7,7 @@ namespace MMK.ScriptableObjects
     [Serializable]
     public class TowerSerializable
     {
-        public int ID = -1;
+        public string ID = "";
         
         public TowerSkinSerializable[] TowerSkins;
         public int SkinIndex = -1;

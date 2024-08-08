@@ -6,7 +6,7 @@ namespace MMK.ScriptableObjects
     [Serializable]
     public class TowerSkinSerializable
     {
-        public uint ID;
+        public string ID = "";
         
         public bool IsUnlocked;
         public int UnlockPrice;

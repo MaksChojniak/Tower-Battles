@@ -15,7 +15,7 @@ namespace MMK.ScriptableObjects
     [CreateAssetMenu(fileName = "Skin", menuName = "Towers/Skin")]
     public class TowerSkin : ScriptableObject
     {
-        public uint ID;
+        public string ID;
         
         public Sprite TowerSprite;
         

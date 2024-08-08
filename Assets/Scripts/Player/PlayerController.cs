@@ -191,7 +191,7 @@ namespace Player
 
                 for (int i = 0; i < tower.TowerSkins.Length; i++)
                 {
-                    tower.TowerSkins[i].IsUnlocked = towerIsUnlocked && unlockedTower.TowerSkins[i].IsUnlocked;
+                    tower.TowerSkins[i].IsUnlocked = towerIsUnlocked && unlockedTower.TowerSkins.Any(skin => skin.ID == tower.TowerSkins[i].ID);
                 }
 
                 
