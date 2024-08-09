@@ -75,9 +75,6 @@ namespace Player
         
         void OnDestroy()
         {
-#if UNITY_EDITOR
-            Save?.Invoke();
-#endif
             Load -= OnLoad;
             Save -= OnSave;
 
@@ -86,7 +83,14 @@ namespace Player
         }
 
 
-
+        void OnApplicationQuit()
+        {
+            
+#if UNITY_EDITOR
+            Save?.Invoke();
+#endif
+            
+        }
 
         void OnApplicationFocus(bool hasFocus)
         {

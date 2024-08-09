@@ -86,10 +86,6 @@ namespace UI.Shop
 
         void OnDestroy()
         {
-#if UNITY_EDITOR
-            Save?.Invoke();
-#endif
-            
             UnregisterHandlers();
 
         }
@@ -118,6 +114,14 @@ namespace UI.Shop
         }
 
         
+        void OnApplicationQuit()
+        {
+            
+#if UNITY_EDITOR
+            Save?.Invoke();
+#endif
+            
+        }
         
 
         void OnApplicationFocus(bool hasFocus)
