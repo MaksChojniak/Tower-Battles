@@ -53,10 +53,14 @@ namespace Player.Database
         
         public async static Task<GET_Callback<T>> GET<T>(string playerID = "")
         {
+            
             GET_Callback<T> callback = new GET_Callback<T>()
             {
                 Status = DatabaseStatus.Error,
             };
+            
+            if (playerID == "0")
+                return callback;
             
             string json = await GetDataJson(playerID, typeof(T));
 
@@ -77,6 +81,9 @@ namespace Player.Database
 
         public async static Task POST<T>(T data, string playerID = "")
         {
+            if (playerID == "0")
+                return;
+            
             string json = JsonConvert.SerializeObject(data);
 
             await UploadDataJson(playerID, typeof(T), json);

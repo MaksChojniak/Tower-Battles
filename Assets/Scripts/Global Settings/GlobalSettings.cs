@@ -169,9 +169,10 @@ namespace MMK
         
 
 
-#region Towers
+#region Towers & Skins
 
         public Tower[] Towers;
+        public TowerSkin[] TowersSkins;
 
 #endregion
 

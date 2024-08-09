@@ -16,6 +16,8 @@ namespace MMK.ScriptableObjects
     public class TowerSkin : ScriptableObject
     {
         public string ID;
+
+        public string SkinName;
         
         public Sprite TowerSprite;
         
@@ -24,10 +26,16 @@ namespace MMK.ScriptableObjects
         public Sprite[] UpgradeIcon = new Sprite[5];
 
         public bool IsUnlocked;
-        public int UnlockPrice;
+        public ulong UnlockPrice;
 
         public SkinRarity Rarity;
 
+
+
+        void OnValidate()
+        {
+            SkinName = this.name;
+        }
     }
 
     

@@ -15,6 +15,7 @@ using Player.Database;
 using TMPro;
 using UI.Shop.Daily_Rewards;
 using UI.Shop.Daily_Rewards.Scriptable_Objects;
+using Unity.VisualScripting;
 using DateTime = System.DateTime;
 using Random = Unity.Mathematics.Random;
 
@@ -23,7 +24,7 @@ namespace UI.Shop
 {
 
     [Serializable]
-    public class SkinsForSaleUI
+    public class SkinsForSaleUIProperties
     {
         public Color CommonColor;
         public Color RareColor;
@@ -33,7 +34,7 @@ namespace UI.Shop
     }
     
     [Serializable]
-    public class DailyRewardUI
+    public class DailyRewardUIProperties
     {
         public Color ClaimedColor;
         public Color ClaimColor;
@@ -50,20 +51,21 @@ namespace UI.Shop
         public delegate void SaveDelegate();
         public SaveDelegate Save;
 
-        [SerializeField] SkinsForSale skinsForSale = new SkinsForSale();
-        [SerializeField] DailyRewards dailyRewards = new DailyRewards();
-        [SerializeField] CoinsOffert[] CoinsOfferts = new CoinsOffert[COINS_OFFERTS_COUNT];
-        [Space(28)]
+        SkinsForSale skinsForSale = new SkinsForSale();
+        DailyRewards dailyRewards = new DailyRewards();
+        CoinsOffert[] CoinsOfferts = new CoinsOffert[COINS_OFFERTS_COUNT];
 
+        
         [Space(8)]
         [Header("UI Properties")]
         [SerializeField] ScrollRect scrollRect;
         [Space(16)]
-        [SerializeField] SkinsForSaleUI skinsForSaleUIProperties;
-        [SerializeField] GameObject[] skinsForSalePanels;
+        [SerializeField] SkinsForSaleUIProperties skinsForSaleUIProperties;
+        [SerializeField] SkinForSaleUI[] skinsForSalePanels;
+        [SerializeField] TMP_Text offertsTimerText;
         [Space(8)]
-        [SerializeField] DailyRewardUI dailyRewardsUIProperties;
-        [SerializeField] GameObject[] dalyRewardsPanels;
+        [SerializeField] DailyRewardUIProperties dailyRewardsUIProperties;
+        [SerializeField] DailyRewardUI[] dalyRewardsPanels;
         [Space(8)]
         [SerializeField] GameObject[] coinsOffertsPanels;
         [Space(16)]
@@ -84,6 +86,10 @@ namespace UI.Shop
 
         void OnDestroy()
         {
+#if UNITY_EDITOR
+            Save?.Invoke();
+#endif
+            
             UnregisterHandlers();
 
         }
@@ -113,14 +119,6 @@ namespace UI.Shop
 
         
         
-        void OnApplicationQuit()
-        {
-            
-#if UNITY_EDITOR
-            Save?.Invoke();
-#endif
-            
-        }
 
         void OnApplicationFocus(bool hasFocus)
         {
@@ -235,8 +233,8 @@ namespace UI.Shop
             
             if (result.Status == DatabaseStatus.Error)
                 skinsForSale = await CalculateNewSkinsForSale(); // Calculate new offerts
-            else if (new DateTime(result.Data.LastClaimDateTicks).DayOfWeek != simulateDateOnServer.DayOfWeek)
-                skinsForSale = await CalculateNewSkinsForSale(result.Data);// Calculate new offerts
+            // else if (new DateTime(result.Data.LastClaimDateTicks) != simulateDateOnServer.DayOfWeek)
+            //     skinsForSale = await CalculateNewSkinsForSale(result.Data);// Calculate new offerts
             else
                 skinsForSale = result.Data;
             
@@ -245,8 +243,18 @@ namespace UI.Shop
 
         void UpdateSkinsForSaleUI()
         {
+            DateTime createTime = new DateTime(skinsForSale.LastClaimDateTicks);
+
+
+            offertsTimerText.text = $"Next in: {24}h {0}min";
+            
+            for (int i = 0; i < skinsForSale.skinsForSale.Length; i++)
+            {
+                skinsForSalePanels[i].UpdateUI(skinsForSale.skinsForSale[i], skinsForSaleUIProperties);
+            }
             
         }
+
 
 
         [ContextMenu(nameof(CalculateNewSkinsForSale))]
@@ -256,6 +264,7 @@ namespace UI.Shop
             
             SkinsForSale _skinsForSale = new SkinsForSale()
             {
+                skinsForSale = new SkinOffert[SKINS_FOR_SALE_COUNT] {new SkinOffert(), new SkinOffert(), new SkinOffert()},
                 LastClaimDateTicks = simulateDateOnServer.Ticks 
             };
             List<SkinOffert> offerts = null;
@@ -313,16 +322,19 @@ namespace UI.Shop
 
             foreach (var avaiableSkin in avaiableSkins)
             {
-                offerts.Add(new SkinOffert()
-                {
-                    TowerSkin = new TowerSkinSerializable(avaiableSkin)
-                });
+                if(avaiableSkin.Rarity != SkinRarity.Common)
+                    offerts.Add(new SkinOffert() { TowerSkinID = avaiableSkin.ID });
             }
+
+
+            //offert.TowerSkin.Rarity != SkinRarity.Common)).ToList();
             
             Debug.Log(JsonConvert.SerializeObject(offerts.ToArray()));
 
             return offerts.ToArray();
         }
+        
+        
         // async Task SaveSkinsForSale()
         // {
         //     string playerID = PlayerController.GetLocalPlayerData().ID;
@@ -434,94 +446,95 @@ namespace UI.Shop
 
             for (int i = 0; i < dailyRewards.Rewards.Length; i++)
             {
-                Reward reward = dailyRewards.Rewards[i];
-                
-                RewardType type = RewardType.None;
-                ulong value = 0;
-
-                if (reward.Type == RewardType.Coins)
-                {
-                    value = reward.CoinsBalance;
-                    type = reward.Type;
-                }
-                else if (reward.Type == RewardType.Experience)
-                {
-                    value = reward.XP;
-                    type = reward.Type;
-                }
-                
-
-
-                UpdateDailyRewardPanelUI(i, type, value);
+                // Reward reward = dailyRewards.Rewards[i];
+                //
+                // RewardType type = RewardType.None;
+                // ulong value = 0;
+                //
+                // if (reward.Type == RewardType.Coins)
+                // {
+                //     value = reward.CoinsBalance;
+                //     type = reward.Type;
+                // }
+                // else if (reward.Type == RewardType.Experience)
+                // {
+                //     value = reward.XP;
+                //     type = reward.Type;
+                // }
+                //
+                //
+                //
+                // UpdateDailyRewardPanelUI(i, type, value);
+                dalyRewardsPanels[i].UpdateUI(i, dailyRewards, dailyRewardsUIProperties, simulateDateOnServer);
             }
             
             
         }
 
-        void UpdateDailyRewardPanelUI(int index, RewardType type, ulong value)
-        {
-            GameObject rewardPanel = dalyRewardsPanels[index];
-            Image lockedBackground = rewardPanel.GetComponent<Image>();
-
-            Image rewardSprite = rewardPanel.transform.GetChild(0).GetComponent<Image>();
-            TMP_Text rewardValue = rewardSprite.transform.GetChild(0).GetComponent<TMP_Text>();
-            
-            Image claimButton = rewardPanel.transform.GetChild(1).GetComponent<Image>();
-            TMP_Text claimStateButtonText = claimButton.transform.GetChild(0).gameObject.GetComponent<TMP_Text>();
-            GameObject claimStateCheckmark = claimButton.transform.GetChild(1).gameObject;
-
-            bool isClaimedReward = dailyRewards.LastCalimedRewardIndex >= index;
-            bool isNextReward = dailyRewards.LastCalimedRewardIndex + 1 == index;
-            TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulateDateOnServer;
-            bool canClaim = dailyRewards.LastCalimedRewardIndex + 1 == index && ( timeToClaim.TotalSeconds <= 0 );
-
-            
-            
-            // Apply Image
-            Sprite sprite = null;
-            if (type == RewardType.Coins)
-                sprite = dailyRewardsUIProperties.CoinsIcon;
-            else if (type == RewardType.Experience)
-                sprite = dailyRewardsUIProperties.ExerienceIcon;
-            rewardSprite.sprite = sprite;
-            
-            Color rewardColor = new Color(0.5f, 0.5f, 0.5f, 0.65f);
-            if(isClaimedReward || canClaim)
-                rewardColor = new Color(1, 1, 1, 1);
-            else if(isNextReward)
-                rewardColor = new Color(0.75f, 0.75f, 0.75f, 0.75f);
-            rewardSprite.color = rewardColor;
-
-            
-            // Apply Image
-            rewardValue.gameObject.SetActive(type != RewardType.None);
-            rewardValue.text = $"{value}";
-            
-            
-            // Apply Claim button Color
-            Color buttonColor = dailyRewardsUIProperties.LockedColor;
-            if (isClaimedReward)
-                buttonColor = dailyRewardsUIProperties.ClaimedColor;
-            else if (canClaim)
-                buttonColor = dailyRewardsUIProperties.ClaimColor;
-            claimButton.color = buttonColor;
-            
-            
-            // Apply Claim Button Text
-            string buttonText = $"Day {index + 1}";
-            if (isClaimedReward)
-                buttonText = "Claimed";
-            else if (canClaim)
-                buttonText = "Claim";
-            else if (isNextReward)
-                buttonText = $"{timeToClaim.Hours}:{timeToClaim.Minutes}:{timeToClaim.Seconds}";
-            claimStateButtonText.text = buttonText;
-
-            
-            // Apply Checkmark State
-            claimStateCheckmark.SetActive(isClaimedReward);
-
-        }
+        // void UpdateDailyRewardPanelUI(int index, RewardType type, ulong value)
+        // {
+        //     GameObject rewardPanel = dalyRewardsPanels[index];
+        //     Image lockedBackground = rewardPanel.GetComponent<Image>();
+        //
+        //     Image rewardSprite = rewardPanel.transform.GetChild(0).GetComponent<Image>();
+        //     TMP_Text rewardValue = rewardSprite.transform.GetChild(0).GetComponent<TMP_Text>();
+        //     
+        //     Image claimButton = rewardPanel.transform.GetChild(1).GetComponent<Image>();
+        //     TMP_Text claimStateButtonText = claimButton.transform.GetChild(0).gameObject.GetComponent<TMP_Text>();
+        //     GameObject claimStateCheckmark = claimButton.transform.GetChild(1).gameObject;
+        //
+        //     bool isClaimedReward = dailyRewards.LastCalimedRewardIndex >= index;
+        //     bool isNextReward = dailyRewards.LastCalimedRewardIndex + 1 == index;
+        //     TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulateDateOnServer;
+        //     bool canClaim = dailyRewards.LastCalimedRewardIndex + 1 == index && ( timeToClaim.TotalSeconds <= 0 );
+        //
+        //     
+        //     
+        //     // Apply Image
+        //     Sprite sprite = null;
+        //     if (type == RewardType.Coins)
+        //         sprite = dailyRewardsUIProperties.CoinsIcon;
+        //     else if (type == RewardType.Experience)
+        //         sprite = dailyRewardsUIProperties.ExerienceIcon;
+        //     rewardSprite.sprite = sprite;
+        //     
+        //     Color rewardColor = new Color(0.5f, 0.5f, 0.5f, 0.65f);
+        //     if(isClaimedReward || canClaim)
+        //         rewardColor = new Color(1, 1, 1, 1);
+        //     else if(isNextReward)
+        //         rewardColor = new Color(0.75f, 0.75f, 0.75f, 0.75f);
+        //     rewardSprite.color = rewardColor;
+        //
+        //     
+        //     // Apply Image
+        //     rewardValue.gameObject.SetActive(type != RewardType.None);
+        //     rewardValue.text = $"{value}";
+        //     
+        //     
+        //     // Apply Claim button Color
+        //     Color buttonColor = dailyRewardsUIProperties.LockedColor;
+        //     if (isClaimedReward)
+        //         buttonColor = dailyRewardsUIProperties.ClaimedColor;
+        //     else if (canClaim)
+        //         buttonColor = dailyRewardsUIProperties.ClaimColor;
+        //     claimButton.color = buttonColor;
+        //     
+        //     
+        //     // Apply Claim Button Text
+        //     string buttonText = $"Day {index + 1}";
+        //     if (isClaimedReward)
+        //         buttonText = "Claimed";
+        //     else if (canClaim)
+        //         buttonText = "Claim";
+        //     else if (isNextReward)
+        //         buttonText = $"{timeToClaim.Hours}:{timeToClaim.Minutes}:{timeToClaim.Seconds}";
+        //     claimStateButtonText.text = buttonText;
+        //
+        //     
+        //     // Apply Checkmark State
+        //     claimStateCheckmark.SetActive(isClaimedReward);
+        //
+        // }
         
         
         public void ClaimReward(int index)
@@ -627,7 +640,7 @@ namespace UI.Shop
 
         async Task SaveDailyRewards()
         {
-            string playerID = PlayerController.GetLocalPlayerData?.Invoke().ID;
+            string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
             await Database.POST<DailyRewards>(dailyRewards, playerID);
         }
         
