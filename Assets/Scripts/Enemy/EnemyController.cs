@@ -95,8 +95,27 @@ using PathCreation;
         {
             MovementComponent.enabled = false;
             // Destroy(this.gameObject);
-            this.Invoke(() => Destroy(this.gameObject) , 1.5f);
+            
+            
+            if (EnemyData.CanSpawnAfterDead)
+            {
+                foreach (var enemyToSpawn in EnemyData.EnemiesToSpawn)
+                {
+                    for (int i = 0; i < enemyToSpawn.Count; i++)
+                    {
+                        EnemyController enemyController = Instantiate(enemyToSpawn.Enemy.EnemyPrefab, this.transform.position, this.transform.rotation, this.transform.parent).GetComponent<EnemyController>();
+                        enemyController.MovementComponent.DistanceTravelled = MovementComponent.DistanceTravelled;
+                    }
+                }
+
+            }
+            
+            
+            this.Invoke( () => Destroy(this.gameObject) , 1.5f);
         }
+
+
+        
 
 
         void OnSetBurningActive(bool state)

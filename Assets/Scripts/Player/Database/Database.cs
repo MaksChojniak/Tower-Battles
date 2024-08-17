@@ -178,21 +178,16 @@ namespace Player.Database
         async static Task UploadDataJson(string playerID, string dataReferenceName, string json)
         {
             StorageReference storageReference = FirebaseStorage.DefaultInstance.RootReference;//GetReferenceFromUrl("gs://towerdefense-a8118.appspot.com");
+            
             StorageReference playerReference = storageReference.Child(playerID);
             StorageReference dataReference = playerReference.Child(dataReferenceName);
+            if(string.IsNullOrEmpty(playerID))
+                dataReference = storageReference.Child(dataReferenceName);
             
             byte[] byteArray = Encoding.UTF8.GetBytes(json);
             var task = dataReference.PutBytesAsync(byteArray);
             await Task.WhenAll(task);
-            // try
-            // {
-            //     await Task.WhenAll(task);
-            // }
-            // catch (Exception exception)
-            // {
-            //     throw new Exception($"exception when run Task.WhenAll:   {exception.ToString()}");
-            // }
-            
+
             if (task.IsCanceled || task.IsFaulted)
                 throw new Exception("Error while uploading file");
             

@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using DefaultNamespace;
+using Firebase.Storage;
 using MMK;
 using MMK.Extensions;
 using MMK.ScriptableObjects;
@@ -52,8 +53,6 @@ namespace UI.Shop
     
     public class ShopManager : MonoBehaviour
     {
-        public delegate void SaveDelegate();
-        public SaveDelegate Save;
 
         SkinsForSale skinsForSale = new SkinsForSale();
         DailyRewards dailyRewards = new DailyRewards();
@@ -103,7 +102,7 @@ namespace UI.Shop
 
         void OnDisable()
         {
-            Save?.Invoke();
+
         }
 
 
@@ -121,9 +120,6 @@ namespace UI.Shop
         void OnApplicationQuit()
         {
             
-#if UNITY_EDITOR
-            Save?.Invoke();
-#endif
             
         }
         
@@ -133,8 +129,6 @@ namespace UI.Shop
 
             if (hasFocus)
                 GetDataFromServer();
-            else
-                Save?.Invoke();
 
         }
 
@@ -144,12 +138,12 @@ namespace UI.Shop
 
         void RegisterHandlers()
         {
-            Save += OnSave;
+            
         }
 
         void UnregisterHandlers()
         {
-            Save -= OnSave;
+            
         }
 
 #endregion
@@ -201,16 +195,7 @@ namespace UI.Shop
 #endregion
 
 
-
-        async void OnSave()
-        {
-            // await SaveSkinsForSale();
-            
-            await SaveDailyRewards();
-            
-            // Save Coins Offerts
-            
-        }
+        
         
         
 #region Get Offerts From Server
@@ -219,26 +204,17 @@ namespace UI.Shop
         async void GetDataFromServer()
         {
 
-            try
+            List<Task> tasks = new List<Task>()
             {
-                List<Task> tasks = new List<Task>()
-                {
-                    GetDateFromServerAsync(),
-                    GetSkinsForSaleFromServerAsync(),
-                    GetDailyRewardsFromServerAsync(),
-                    GetCoinsOffertsFromServerAsync()
-                };
-                await Task.WhenAll(tasks);
-            }
-            catch (Exception exception)
-            {
-                debugText = exception.ToString();
-            }
+                GetDateFromServerAsync(),
+                GetSkinsForSaleFromServerAsync(),
+                GetDailyRewardsFromServerAsync(),
+                GetCoinsOffertsFromServerAsync()
+            };
+            await Task.WhenAll(tasks);
                 
             await Task.Yield();
-                
-            Save?.Invoke();
-            
+
         }
         
         
@@ -337,15 +313,9 @@ namespace UI.Shop
                 offerts.RemoveAt(index);
             }
 
-            await Task.Run( async () => await Database.POST<SkinsForSale>(_skinsForSale) );
             
-            // await Database.POST<SkinsForSale>(_skinsForSale);
-            //
-            // await Task.Yield();
+            await Database.POST<SkinsForSale>(_skinsForSale);
             
-            // await Task.WhenAll(GetSkinsForSaleFromServerAsync());
-            
-            // return skinsForSale;
             
             return _skinsForSale;
         }
@@ -503,6 +473,9 @@ namespace UI.Shop
                 dailyRewards = CalculateNewDailyRewards();
             else
                 dailyRewards = result.Data;
+            
+
+            await Database.POST<DailyRewards>(dailyRewards, playerID);
         }
 
         
@@ -530,91 +503,31 @@ namespace UI.Shop
                 //
                 //
                 // UpdateDailyRewardPanelUI(i, type, value);
-                dalyRewardsPanels[i].UpdateUI(i, dailyRewards, dailyRewardsUIProperties, simulateDateOnServer);
+                dalyRewardsPanels[i].UpdateUI(i, dailyRewards, dailyRewardsUIProperties, simulatedDateOnServerUTC);
             }
             
             
         }
 
-        // void UpdateDailyRewardPanelUI(int index, RewardType type, ulong value)
-        // {
-        //     GameObject rewardPanel = dalyRewardsPanels[index];
-        //     Image lockedBackground = rewardPanel.GetComponent<Image>();
-        //
-        //     Image rewardSprite = rewardPanel.transform.GetChild(0).GetComponent<Image>();
-        //     TMP_Text rewardValue = rewardSprite.transform.GetChild(0).GetComponent<TMP_Text>();
-        //     
-        //     Image claimButton = rewardPanel.transform.GetChild(1).GetComponent<Image>();
-        //     TMP_Text claimStateButtonText = claimButton.transform.GetChild(0).gameObject.GetComponent<TMP_Text>();
-        //     GameObject claimStateCheckmark = claimButton.transform.GetChild(1).gameObject;
-        //
-        //     bool isClaimedReward = dailyRewards.LastCalimedRewardIndex >= index;
-        //     bool isNextReward = dailyRewards.LastCalimedRewardIndex + 1 == index;
-        //     TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulateDateOnServer;
-        //     bool canClaim = dailyRewards.LastCalimedRewardIndex + 1 == index && ( timeToClaim.TotalSeconds <= 0 );
-        //
-        //     
-        //     
-        //     // Apply Image
-        //     Sprite sprite = null;
-        //     if (type == RewardType.Coins)
-        //         sprite = dailyRewardsUIProperties.CoinsIcon;
-        //     else if (type == RewardType.Experience)
-        //         sprite = dailyRewardsUIProperties.ExerienceIcon;
-        //     rewardSprite.sprite = sprite;
-        //     
-        //     Color rewardColor = new Color(0.5f, 0.5f, 0.5f, 0.65f);
-        //     if(isClaimedReward || canClaim)
-        //         rewardColor = new Color(1, 1, 1, 1);
-        //     else if(isNextReward)
-        //         rewardColor = new Color(0.75f, 0.75f, 0.75f, 0.75f);
-        //     rewardSprite.color = rewardColor;
-        //
-        //     
-        //     // Apply Image
-        //     rewardValue.gameObject.SetActive(type != RewardType.None);
-        //     rewardValue.text = $"{value}";
-        //     
-        //     
-        //     // Apply Claim button Color
-        //     Color buttonColor = dailyRewardsUIProperties.LockedColor;
-        //     if (isClaimedReward)
-        //         buttonColor = dailyRewardsUIProperties.ClaimedColor;
-        //     else if (canClaim)
-        //         buttonColor = dailyRewardsUIProperties.ClaimColor;
-        //     claimButton.color = buttonColor;
-        //     
-        //     
-        //     // Apply Claim Button Text
-        //     string buttonText = $"Day {index + 1}";
-        //     if (isClaimedReward)
-        //         buttonText = "Claimed";
-        //     else if (canClaim)
-        //         buttonText = "Claim";
-        //     else if (isNextReward)
-        //         buttonText = $"{timeToClaim.Hours}:{timeToClaim.Minutes}:{timeToClaim.Seconds}";
-        //     claimStateButtonText.text = buttonText;
-        //
-        //     
-        //     // Apply Checkmark State
-        //     claimStateCheckmark.SetActive(isClaimedReward);
-        //
-        // }
+
         
-        
-        public void ClaimReward(int index)
+        public async void ClaimReward(int index)
         {
-            TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulateDateOnServer;
+            TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulatedDateOnServerUTC;
             bool canClaim = dailyRewards.LastCalimedRewardIndex + 1 == index && (timeToClaim.TotalSeconds <= 0 );
             
             if(!canClaim)
                 return;
 
-            dailyRewards.LastClaimDateTicks = simulateDateOnServer.Ticks;
+            dailyRewards.LastClaimDateTicks = simulatedDateOnServerUTC.Ticks;
             dailyRewards.LastCalimedRewardIndex += 1;
 
             if (dailyRewards.LastCalimedRewardIndex + 1 >= DAILY_REWARDS_COUNT)
                 dailyRewards = CalculateNewDailyRewards();
+            
+            
+            string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
+            await Database.POST<DailyRewards>(dailyRewards, playerID);
         }
         
         
@@ -693,7 +606,7 @@ namespace UI.Shop
 
             DailyRewards rewards = new DailyRewards()
             {
-                LastClaimDateTicks = isFirstDailyReward ? simulateDateOnServer.AddDays(-1).Ticks : simulateDateOnServer.Ticks,
+                LastClaimDateTicks = isFirstDailyReward ? simulatedDateOnServerUTC.AddDays(-1).Ticks : simulatedDateOnServerUTC.Ticks,
                 LastCalimedRewardIndex = -1,
                 Rewards = _rewards
             };
@@ -703,11 +616,11 @@ namespace UI.Shop
         }
 
 
-        async Task SaveDailyRewards()
-        {
-            string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
-            await Database.POST<DailyRewards>(dailyRewards, playerID);
-        }
+        // async Task SaveDailyRewards()
+        // {
+        //     string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
+        //     await Database.POST<DailyRewards>(dailyRewards, playerID);
+        // }
         
         
 #endregion
@@ -743,20 +656,7 @@ namespace UI.Shop
 
 
 
-
-
-        string debugText;
         
-        void OnGUI()
-        {
-            var rect = new Rect(550, 500, 500, 200);
-            GUI.color = Color.white;
-            GUI.backgroundColor = Color.black;
-            
-            GUI.TextArea(rect, $"{debugText}", new GUIStyle(){fontSize = 32});
-            // GUI.TextArea(rect, $"{dateFromServer}\n{simulateDateOnServer}\n{simulateDateOnServer.ToUniversalTime()}\n{new DateTime(skinsForSale.CreateDateUTCTicks).ToLocalTime()}", new GUIStyle(){fontSize = 64});
-        }
-
     }
     
     

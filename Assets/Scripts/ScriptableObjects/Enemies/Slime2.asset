@@ -14,8 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EnemyName: Slime1
   EnemySprite: {fileID: 21300000, guid: 0ac55f9f886d827408c102bdf33c5ff7, type: 3}
-  EnemyPrefab: {fileID: 2315913079105496499, guid: ec154d338df7838429f565a4bab6b000,
+  EnemyPrefab: {fileID: 2315913079105496499, guid: 4766b4f486758774dbe765e4b43aca52,
     type: 3}
   Health: 240
   Speed: 2
   IsGhost: 0
+  CanSpawnAfterDead: 1
+  EnemiesToSpawn:
+  - Enemy: {fileID: 11400000, guid: 9b8f99320bbadc54cb643f16a1b0137c, type: 2}
+    Count: 1
