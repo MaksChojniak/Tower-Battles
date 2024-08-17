@@ -8,16 +8,21 @@ using UnityEngine;
 // {
 public class EnemyMovement : MonoBehaviour
 {
+    public delegate void SetSpeedMultiplierDelegate(bool isBurning);
+    public SetSpeedMultiplierDelegate SetSpeedMultiplier;
+    
     public delegate void SetSpeedDelegate(float Value);
     public SetSpeedDelegate SetSpeed;
 
     public delegate void OnMoveDelegate(float Speed);
     public event OnMoveDelegate OnMove;
 
-
+    
+    public float CurrentSpeed => SpeedMultiplier * Speed;
     public float Speed;
     public float DistanceTravelled;
     
+    float SpeedMultiplier = 1;
 
     
     public EnemyController EnemyController {private set; get; }
@@ -65,11 +70,13 @@ public class EnemyMovement : MonoBehaviour
     void RegisterHandlers()
     {
         SetSpeed += OnSetSpeed;
+        SetSpeedMultiplier += OnSetSpeedMultiplier;
 
     }
 
     void UnregisterHandlers()
     {
+        SetSpeedMultiplier -= OnSetSpeedMultiplier;
         SetSpeed -= OnSetSpeed;
 
     }
@@ -77,6 +84,10 @@ public class EnemyMovement : MonoBehaviour
 #endregion
 
 
+    void OnSetSpeedMultiplier(bool isBurning)
+    {
+        SpeedMultiplier = isBurning ? 0.6f : 1f;
+    }
 
     void OnSetSpeed(float Value)
     {
@@ -90,13 +101,13 @@ public class EnemyMovement : MonoBehaviour
         
     void Move()
     {
-        DistanceTravelled += Speed * 2.5f * Time.deltaTime;
+        DistanceTravelled += CurrentSpeed * 2.5f * Time.deltaTime;
         transform.position = pathCreator.path.GetPointAtDistance(DistanceTravelled);
         transform.rotation = pathCreator.path.GetRotationAtDistance(DistanceTravelled);
 
         Debug.Log($"Distance Travelled: {pathCreator.path.length}");
 
-        OnMove?.Invoke(Speed);
+        OnMove?.Invoke(CurrentSpeed);
     }
 
     public float GetDistanceTravelled() => DistanceTravelled;

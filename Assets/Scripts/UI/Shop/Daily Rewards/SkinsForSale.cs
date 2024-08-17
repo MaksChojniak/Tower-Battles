@@ -9,7 +9,7 @@ namespace UI.Shop.Daily_Rewards
     
         public SkinOffert[] skinsForSale = new SkinOffert[ShopManager.SKINS_FOR_SALE_COUNT];
         
-        public long LastClaimDateTicks = DateTime.Now.Ticks;
+        public long CreateDateUTCTicks = DateTime.Now.Ticks;
         
     }
 }

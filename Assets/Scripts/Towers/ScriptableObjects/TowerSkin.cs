@@ -36,6 +36,31 @@ namespace MMK.ScriptableObjects
         {
             SkinName = this.name;
         }
+
+
+
+
+
+        
+
+        public static TowerSkin GetTowerSkinByID(string TowerSkinID)
+        {
+            if(string.IsNullOrEmpty(TowerSkinID))
+                return null;
+
+            Tower tower = Tower.GetTowerBySkinID(TowerSkinID);
+            if(tower == null)
+                return null;
+            
+            TowerSkin skin = tower.TowerSkins.FirstOrDefault(_skin => _skin.ID == TowerSkinID);
+            if(skin == null)
+                return null;
+
+            return skin;
+        }
+        
+        
+        
     }
 
     

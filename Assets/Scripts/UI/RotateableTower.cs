@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using MMK.ScriptableObjects;
 using MMK.Towers;
 using Towers;
 using UnityEngine;
@@ -9,11 +10,16 @@ namespace DefaultNamespace
 {
     public class RotateableTower : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
+        public delegate void SpawnTowerProcessDelegate(Tower tower, TowerSkin skin);
+        public SpawnTowerProcessDelegate SpawnTowerProcess;
+        
+        
         [SerializeField] Transform Tower;
 
         [Space(18)]
         [Header("Properties")]
         [SerializeField] Transform TowerContainer;
+        [SerializeField] Transform RotatablePlatform;
         [SerializeField] TowerInventory TowerInventory;
         [SerializeField] Vector3 BaseRotation;
 
@@ -21,13 +27,21 @@ namespace DefaultNamespace
         
         Vector3 _startMousePosition;
 
-        void Awake()
+        void OnEnable()
         {
             TowerInventory.OnSelectTile += OnSelectTile;
+            SpawnTowerProcess += OnSpawnTowerProcess;
+            
+            
+            if(Tower == null)
+                return;
+            
+            Tower.Rotate(BaseRotation);
         }
 
-        void OnDestroy()
+        void OnDisable()
         {
+            SpawnTowerProcess -= OnSpawnTowerProcess;
             TowerInventory.OnSelectTile -= OnSelectTile;
         }
 
@@ -37,6 +51,13 @@ namespace DefaultNamespace
             GameObject towerPrefab = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.CurrentSkin.TowerPrefab;
             Vector3 towerOffset = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.OriginPointOffset;
             SpawnTower(towerPrefab, towerOffset);
+            
+        }
+
+        void OnSpawnTowerProcess(Tower tower, TowerSkin skin)
+        {
+            SpawnTower(skin.TowerPrefab, tower.OriginPointOffset);
+            
         }
         
 
@@ -66,18 +87,13 @@ namespace DefaultNamespace
 
             Tower = towerObject.transform;
 
+            RotatablePlatform.localPosition = -Vector3.up + offset;
             Tower.localPosition = Vector3.zero + offset;
             Tower.localRotation = Quaternion.Euler(BaseRotation);
         }
         
 
-        void OnEnable()
-        {
-            if(Tower == null)
-                return;
-            
-            Tower.Rotate(BaseRotation);
-        }
+
 
 
         Coroutine coroutine;

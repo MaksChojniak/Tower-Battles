@@ -23,14 +23,25 @@ namespace UI.Shop
 
         public void UpdateUI(SkinOffert skinOffert, SkinsForSaleUIProperties UIProperties)
         {
-            if(skinOffert == null || string.IsNullOrEmpty(skinOffert.TowerSkinID))
+            // if(skinOffert == null || string.IsNullOrEmpty(skinOffert.TowerSkinID))
+            //     return;
+            //
+            // Tower tower = GlobalSettingsManager.GetGlobalSettings?.Invoke().Towers.FirstOrDefault(_tower => _tower.TowerSkins.Any(_skin => _skin.ID == skinOffert.TowerSkinID) );//.FirstOrDefault(_skin => _skin.ID == skinOffert.TowerSkin.ID);
+            // if(tower == null)
+            //     return;
+            //
+            // TowerSkin skin = tower.TowerSkins.FirstOrDefault(_skin => _skin.ID == skinOffert.TowerSkinID);
+            // if(skin == null)
+            //     return;
+
+            if(skinOffert == null )
                 return;
             
-            Tower tower = GlobalSettingsManager.GetGlobalSettings?.Invoke().Towers.FirstOrDefault(_tower => _tower.TowerSkins.Any(_skin => _skin.ID == skinOffert.TowerSkinID) );//.FirstOrDefault(_skin => _skin.ID == skinOffert.TowerSkin.ID);
+            Tower tower = Tower.GetTowerBySkinID(skinOffert.TowerSkinID);
             if(tower == null)
                 return;
-            
-            TowerSkin skin = tower.TowerSkins.FirstOrDefault(_skin => _skin.ID == skinOffert.TowerSkinID);
+
+            TowerSkin skin = TowerSkin.GetTowerSkinByID(skinOffert.TowerSkinID);
             if(skin == null)
                 return;
             
@@ -58,13 +69,31 @@ namespace UI.Shop
             towerNameText.text = $"{tower.TowerName}";
 
             // Set Skin Name
-            skinNameText.text = $"{skin.SkinName.Replace(tower.TowerName, "")}";
+            skinNameText.text = $"{skin.SkinName}";//$"{skin.SkinName.Replace(tower.TowerName, "")}";
             
             // Set Skin Sprite
             skinSprite.sprite = skin.TowerSprite;
             
             // Set Skin Price
-            priceText.text = skin.IsUnlocked ? "Owned" : $"{skin.UnlockPrice}{StringFormatter.GetSpriteText(new SpriteTextData() {SpriteName = "coins", SpacesCount = 1, WithSpaces = true})}";
+            // priceText.text = skin.IsUnlocked ? "Owned" : $"{skin.UnlockPrice}{StringFormatter.GetSpriteText(new SpriteTextData() {SpriteName = "coins", SpacesCount = 1, WithSpaces = true})}";
+            string priceValue = "";
+            if (skin.IsUnlocked)
+                priceValue = "Owned";
+            else
+                priceValue = $"{skin.UnlockPrice}{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = "coins", SpacesCount = 1, WithSpaces = true })}";
+            // if (tower.IsUnlocked())
+            // {
+            //     if (skin.IsUnlocked)
+            //         priceValue = "Owned";
+            //     else
+            //         priceValue = $"{skin.UnlockPrice}{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = "coins", SpacesCount = 1, WithSpaces = true })}";
+            // }
+            // else
+            // {
+            //     priceValue = "Locked Tower";
+            // }
+            priceText.text = priceValue;
+            
 
             ownedBackground.color = skin.IsUnlocked ? new Color(0f, 0f, 0f, 0.65f) : new Color(1, 1, 1, 0);
         }

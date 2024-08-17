@@ -59,6 +59,7 @@ namespace Player.Database
                 Status = DatabaseStatus.Error,
             };
             
+            
             if (playerID == "0")
                 return callback;
             
@@ -81,6 +82,11 @@ namespace Player.Database
 
         public async static Task POST<T>(T data, string playerID = "")
         {
+            
+#if UNITY_EDITOR
+            return;
+#endif
+            
             if (playerID == "0")
                 return;
             
@@ -109,7 +115,7 @@ namespace Player.Database
         async static Task<string> GetDataJson(string playerID, string dataReferenceName)
         {
             // StorageReference storageReference = FirebaseStorage.DefaultInstance.RootReference;//.GetReferenceFromUrl("gs://towerdefense-a8118.appspot.com");
-            StorageReference storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl("gs://towerdefense-a8118.appspot.com");
+            StorageReference storageReference = FirebaseStorage.DefaultInstance.RootReference;//GetReferenceFromUrl("gs://towerdefense-a8118.appspot.com");
             
             StorageReference playerReference = storageReference.Child(playerID);
             StorageReference dataReference = playerReference.Child(dataReferenceName);
@@ -123,6 +129,8 @@ namespace Player.Database
             long maxDataSize = 50 * 1024 * 1024; // it is 10MB
             var task = dataReference.GetBytesAsync(maxDataSize); 
             await Task.WhenAll(task);
+            // await task;
+            // task.Wait();
             
             if (task.IsCanceled || task.IsFaulted)
                 throw new Exception("Error while downloading file");
@@ -169,17 +177,25 @@ namespace Player.Database
 
         async static Task UploadDataJson(string playerID, string dataReferenceName, string json)
         {
-            StorageReference storageReference = FirebaseStorage.DefaultInstance.GetReferenceFromUrl("gs://towerdefense-a8118.appspot.com");
+            StorageReference storageReference = FirebaseStorage.DefaultInstance.RootReference;//GetReferenceFromUrl("gs://towerdefense-a8118.appspot.com");
             StorageReference playerReference = storageReference.Child(playerID);
             StorageReference dataReference = playerReference.Child(dataReferenceName);
-
+            
             byte[] byteArray = Encoding.UTF8.GetBytes(json);
             var task = dataReference.PutBytesAsync(byteArray);
             await Task.WhenAll(task);
-
+            // try
+            // {
+            //     await Task.WhenAll(task);
+            // }
+            // catch (Exception exception)
+            // {
+            //     throw new Exception($"exception when run Task.WhenAll:   {exception.ToString()}");
+            // }
+            
             if (task.IsCanceled || task.IsFaulted)
                 throw new Exception("Error while uploading file");
-
+            
             StorageMetadata metadata = task.Result;
             string md5Hash = metadata.Md5Hash;
             Debug.Log($"Finished uploading... [hash: {md5Hash}]");

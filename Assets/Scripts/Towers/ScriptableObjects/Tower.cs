@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace MMK.ScriptableObjects
@@ -60,6 +61,17 @@ namespace MMK.ScriptableObjects
         
         
         
+        
+        
+        
+        public static Tower GetTowerBySkinID(string TowerSkinID)
+        {
+            Tower tower = GlobalSettingsManager.GetGlobalSettings?.Invoke().Towers.FirstOrDefault(_tower => _tower.TowerSkins.Any(_skin => _skin.ID == TowerSkinID) );
+            if(tower == null)
+                return null;
+            
+            return tower;
+        }
 
     }
 

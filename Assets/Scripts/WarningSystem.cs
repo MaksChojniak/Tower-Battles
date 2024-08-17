@@ -11,6 +11,8 @@ namespace DefaultNamespace
         public enum WarningType
         {
             LockedTower,
+            SkinIsUnlocked,
+            SkinIsLocked,
             SecondBooster,
             NotEnoughtMoney,
             MaxTowersCountPlaced,
@@ -62,6 +64,12 @@ namespace DefaultNamespace
             {
                 case WarningType.LockedTower:
                     message = "Tower Is Locked!";
+                    break;
+                case WarningType.SkinIsLocked:
+                    message = "Skin Is Locked!";
+                    break;
+                case WarningType.SkinIsUnlocked:
+                    message = "Skin Is Owned!";
                     break;
                 case WarningType.SecondBooster:
                     message = "Only 1 Booster Allowed!";

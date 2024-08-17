@@ -7,6 +7,8 @@ using System.Net.Http;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using DefaultNamespace;
+using MMK;
 using MMK.Extensions;
 using MMK.ScriptableObjects;
 using Newtonsoft.Json;
@@ -15,6 +17,7 @@ using Player.Database;
 using TMPro;
 using UI.Shop.Daily_Rewards;
 using UI.Shop.Daily_Rewards.Scriptable_Objects;
+using Unity.Profiling.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using DateTime = System.DateTime;
 using Random = Unity.Mathematics.Random;
@@ -31,6 +34,7 @@ namespace UI.Shop
         public Color EpicColor;
         public Color ExclusiveColor;
 
+        public BuySkinConfirmationPanel ConfirmationPanel;
     }
     
     [Serializable]
@@ -176,10 +180,17 @@ namespace UI.Shop
 
         async void ScrollBarAnimation(float targetPosition)
         {
+            float speed = 5f;
 
-            while (Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition) >= 0.05f)
+            while (Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition) >= 2 * Time.deltaTime )
             {
-                scrollRect.verticalNormalizedPosition = Mathf.Lerp(scrollRect.verticalNormalizedPosition, targetPosition, 0.05f);
+                float currentDistance = Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition);
+                int direction = ((targetPosition - scrollRect.verticalNormalizedPosition) >= 0 ? 1 : -1);
+
+                if (currentDistance > 0.1f && speed > 1f)
+                    speed *= 0.9f;
+
+                scrollRect.verticalNormalizedPosition += direction * speed * Time.deltaTime;      //Mathf.Lerp(scrollRect.verticalNormalizedPosition, targetPosition, 0.05f);
 
                 await Task.Yield();
             }
@@ -193,6 +204,8 @@ namespace UI.Shop
 
         async void OnSave()
         {
+            // await SaveSkinsForSale();
+            
             await SaveDailyRewards();
             
             // Save Coins Offerts
@@ -206,15 +219,24 @@ namespace UI.Shop
         async void GetDataFromServer()
         {
 
-            List<Task> tasks = new List<Task>()
+            try
             {
-                GetDateFromServerAsync(),
-                GetSkinsForSaleFromServerAsync(),
-                GetDailyRewardsFromServerAsync(),
-                GetCoinsOffertsFromServerAsync()
-            };
-            await Task.WhenAll(tasks);
-            
+                List<Task> tasks = new List<Task>()
+                {
+                    GetDateFromServerAsync(),
+                    GetSkinsForSaleFromServerAsync(),
+                    GetDailyRewardsFromServerAsync(),
+                    GetCoinsOffertsFromServerAsync()
+                };
+                await Task.WhenAll(tasks);
+            }
+            catch (Exception exception)
+            {
+                debugText = exception.ToString();
+            }
+                
+            await Task.Yield();
+                
             Save?.Invoke();
             
         }
@@ -234,11 +256,11 @@ namespace UI.Shop
         async Task GetSkinsForSaleFromServerAsync()
         {
             var result = await Database.GET<SkinsForSale>();
-            
+
             if (result.Status == DatabaseStatus.Error)
                 skinsForSale = await CalculateNewSkinsForSale(); // Calculate new offerts
-            // else if (new DateTime(result.Data.LastClaimDateTicks) != simulateDateOnServer.DayOfWeek)
-            //     skinsForSale = await CalculateNewSkinsForSale(result.Data);// Calculate new offerts
+            else if ((simulatedDateOnServerUTC - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
+                skinsForSale = await CalculateNewSkinsForSale(result.Data); // Calculate new offerts
             else
                 skinsForSale = result.Data;
             
@@ -247,10 +269,10 @@ namespace UI.Shop
 
         void UpdateSkinsForSaleUI()
         {
-            DateTime createTime = new DateTime(skinsForSale.LastClaimDateTicks);
+            DateTime createTimeUTC = new DateTime(skinsForSale.CreateDateUTCTicks);
+            TimeSpan offsetToNextOfferts = createTimeUTC.AddDays(1) - simulatedDateOnServerUTC;
 
-
-            offertsTimerText.text = $"Next in: {24}h {0}min";
+            offertsTimerText.text = $"Next in: {offsetToNextOfferts.Hours}h {offsetToNextOfferts.Minutes}min";
             
             for (int i = 0; i < skinsForSale.skinsForSale.Length; i++)
             {
@@ -266,10 +288,14 @@ namespace UI.Shop
         {
             Random random = new Random((uint)UnityEngine.Random.Range(0, 100));
             
+            var createDateUTC = simulatedDateOnServerUTC.AddHours(8 - simulatedDateOnServerUTC.Hour).AddMinutes(-simulatedDateOnServerUTC.Minute).AddSeconds(-simulatedDateOnServerUTC.Second);
+            if(simulatedDateOnServerUTC.Hour < 8)
+                createDateUTC = simulatedDateOnServerUTC.AddDays(-1).AddHours(8 - simulatedDateOnServerUTC.Hour).AddMinutes(-simulatedDateOnServerUTC.Minute).AddSeconds(-simulatedDateOnServerUTC.Second);
+            
             SkinsForSale _skinsForSale = new SkinsForSale()
             {
                 skinsForSale = new SkinOffert[SKINS_FOR_SALE_COUNT] {new SkinOffert(), new SkinOffert(), new SkinOffert()},
-                LastClaimDateTicks = simulateDateOnServer.Ticks 
+                CreateDateUTCTicks = createDateUTC.Ticks 
             };
             List<SkinOffert> offerts = null;
             
@@ -292,12 +318,14 @@ namespace UI.Shop
 
             if (oldOfferts != null)
             {
-                foreach (var oldSkinOfferts in oldOfferts.skinsForSale)
+
+                for (int i = 0; i < oldOfferts.skinsForSale.Length; i++)
                 {
-                    int index = offerts.FindIndex(element => JsonConvert.SerializeObject(element) == JsonConvert.SerializeObject(oldSkinOfferts) );
-                    if(index >= 0)
+                    int index = offerts.FindIndex(element => element.TowerSkinID == oldOfferts.skinsForSale[i].TowerSkinID);
+                    if (index >= 0)
                         offerts.RemoveAt(index);
                 }
+
             }
 
             for (int i = 0; i < SKINS_FOR_SALE_COUNT; i++)
@@ -308,14 +336,18 @@ namespace UI.Shop
                 
                 offerts.RemoveAt(index);
             }
-            
-            
-            await Database.POST<SkinsForSale>(_skinsForSale);
 
+            await Task.Run( async () => await Database.POST<SkinsForSale>(_skinsForSale) );
             
-            await Task.WhenAll(GetSkinsForSaleFromServerAsync());
+            // await Database.POST<SkinsForSale>(_skinsForSale);
+            //
+            // await Task.Yield();
             
-            return skinsForSale;
+            // await Task.WhenAll(GetSkinsForSaleFromServerAsync());
+            
+            // return skinsForSale;
+            
+            return _skinsForSale;
         }
 
 
@@ -341,9 +373,37 @@ namespace UI.Shop
         
         // async Task SaveSkinsForSale()
         // {
-        //     string playerID = PlayerController.GetLocalPlayerData().ID;
-        //     await Database.POST<DailyRewards>(dailyRewards, playerID);
+        //     await Database.POST<SkinsForSale>(skinsForSale);
         // }
+
+        public void BuySkinFromOffert(int offertIndex)
+        {
+            SkinOffert skinOffert = skinsForSale.skinsForSale[offertIndex];
+            
+            Tower tower = Tower.GetTowerBySkinID(skinOffert.TowerSkinID);
+            if(tower == null)
+                return;
+
+            TowerSkin skin = TowerSkin.GetTowerSkinByID(skinOffert.TowerSkinID);
+            if(skin == null)
+                return;
+
+            if (skin.IsUnlocked)
+            {
+                WarningSystem.ShowWarning(WarningSystem.WarningType.SkinIsUnlocked);
+                return;
+            }
+
+            // if (PlayerData.GetBalance() < skin.UnlockPrice)
+            // {
+            //     WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+            //     return;
+            // }
+            //
+            // PlayerData.ChangeBalance(-1 * (long)skin.UnlockPrice);
+
+            skinsForSaleUIProperties.ConfirmationPanel.Open(tower, skin);
+        }
         
         
 #endregion
@@ -357,6 +417,7 @@ namespace UI.Shop
         DateTime dateFromServer = new DateTime();
         TimeSpan localTimeOffset = new TimeSpan();
         DateTime simulateDateOnServer => DateTime.Now - localTimeOffset;
+        DateTime simulatedDateOnServerUTC => simulateDateOnServer.ToUniversalTime();
         
         
         
@@ -681,17 +742,19 @@ namespace UI.Shop
 #endregion
 
 
-        
-        
-        
-        
+
+
+
+        string debugText;
         
         void OnGUI()
         {
-            var rect = new Rect(50, 500, 500, 200);
+            var rect = new Rect(550, 500, 500, 200);
             GUI.color = Color.white;
             GUI.backgroundColor = Color.black;
-            GUI.TextArea(rect, $"{dateFromServer}\n{simulateDateOnServer}", new GUIStyle(){fontSize = 64});
+            
+            GUI.TextArea(rect, $"{debugText}", new GUIStyle(){fontSize = 32});
+            // GUI.TextArea(rect, $"{dateFromServer}\n{simulateDateOnServer}\n{simulateDateOnServer.ToUniversalTime()}\n{new DateTime(skinsForSale.CreateDateUTCTicks).ToLocalTime()}", new GUIStyle(){fontSize = 64});
         }
 
     }

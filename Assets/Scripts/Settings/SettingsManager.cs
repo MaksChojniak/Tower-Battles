@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using SystemInfo = UnityEngine.SystemInfo;
@@ -136,7 +137,7 @@ namespace MMK.Settings
             
             QualitySettings.vSyncCount = 0;
 
-            Application.targetFrameRate = Screen.resolutions[0].refreshRate;
+            Application.targetFrameRate = Screen.resolutions.OrderByDescending(resolution => resolution.refreshRate).ToList()[0].refreshRate;
 
             QualitySettings.SetQualityLevel((int)GraphicsQuality);
 

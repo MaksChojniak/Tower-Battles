@@ -102,6 +102,8 @@ using PathCreation;
         void OnSetBurningActive(bool state)
         {
             IsBurning = state;
+
+            MovementComponent.SetSpeedMultiplier(IsBurning);
             
             // TODO set bruning animation state
         }
