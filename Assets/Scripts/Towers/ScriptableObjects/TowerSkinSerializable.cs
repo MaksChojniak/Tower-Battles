@@ -9,7 +9,7 @@ namespace MMK.ScriptableObjects
         public string ID = "";
         
         public bool IsUnlocked;
-        public int UnlockPrice;
+        public ulong UnlockPrice;
         
         public SkinRarity Rarity;
         

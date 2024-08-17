@@ -7,7 +7,8 @@ namespace UI.Shop
     [Serializable]
     public class SkinOffert
     {
-        public TowerSkinSerializable TowerSkin;
+        public string TowerSkinID;
+
     }
     
 }
