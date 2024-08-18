@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Xml.Schema;
 using MMK.Towers;
 using TMPro;
@@ -166,13 +167,24 @@ using Random = UnityEngine.Random;
         
         void SetMaterials(MeshRenderer meshRenderer, bool state)
         {
-            List<Material> materials = new List<Material>() { meshRenderer.materials[0] };
+            List<Material> materials = new List<Material>(meshRenderer.materials);// { meshRenderer.materials[0] };
 
+            
+            Material selectedMaterial = materials.FirstOrDefault(mat => mat.name.Contains(SelectedMaterial.name) || SelectedMaterial.name.Contains(mat.name) );
+            if (selectedMaterial != null)
+                materials.Remove(selectedMaterial);
+                
+            Material outlineMaterial = materials.FirstOrDefault(mat => mat.name.Contains(OutlineMaterial.name) || OutlineMaterial.name.Contains(mat.name) );
+            if (outlineMaterial != null)
+                materials.Remove(outlineMaterial);
+            
+            
             if (state)
             {
                 materials.Add(SelectedMaterial);
                 materials.Add(OutlineMaterial);
             }
+
 
             meshRenderer.materials = materials.ToArray();
             
