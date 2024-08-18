@@ -45,9 +45,9 @@ public class TowerPreviewUI : MonoBehaviour
         TowerInventory.OnSelectTile -= UpdateTowerInformations;
     }
 
-    void UpdateTowerInformations(int index, GameObject tile, bool isUnlocked)
+    void UpdateTowerInformations(int index, GameObject tile, bool isUnlocked, Tower tower)
     {
-        Tower tower = inventory.TowerData.GetAllTowerInventoryData()[index].towerSO;
+        // Tower tower = inventory.TowerData.GetAllTowerInventoryData()[index].towerSO;
 
         skinChangeButton.SetActive(tower.BaseProperties.IsUnlocked);
 

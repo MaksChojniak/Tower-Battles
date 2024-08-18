@@ -188,8 +188,9 @@ namespace Player
         {
             Tower.OnUnlockTower += (tower) =>
             {
-                if(UnlockedTowers.Any(unlockedTower => unlockedTower.ID == tower.ID))
-                    return;
+                // if(UnlockedTowers.Any(unlockedTower => unlockedTower.ID == tower.ID))
+                //     return;
+                UnlockedTowers.RemoveWhere(_tower => _tower.ID == tower.ID);
                 
                 UnlockedTowers.Add(new TowerSerializable(tower));
             };

@@ -46,11 +46,13 @@ namespace DefaultNamespace
         }
 
         
-        void OnSelectTile(int index, GameObject tileUI, bool isUnlocked)
+        void OnSelectTile(int index, GameObject tileUI, bool isUnlocked, Tower tower)
         {
-            GameObject towerPrefab = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.CurrentSkin.TowerPrefab;
-            Vector3 towerOffset = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO.OriginPointOffset;
-            SpawnTower(towerPrefab, towerOffset);
+            // Tower tower = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO;
+            // GameObject towerPrefab = tower.CurrentSkin.TowerPrefab;
+            // Vector3 towerOffset = tower.OriginPointOffset;
+            // SpawnTower(towerPrefab, towerOffset);
+            SpawnTower(tower.CurrentSkin.TowerPrefab, tower.OriginPointOffset);
             
         }
 

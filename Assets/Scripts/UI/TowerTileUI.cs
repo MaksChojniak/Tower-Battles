@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MMK.ScriptableObjects;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -49,19 +50,19 @@ public class TowerTileUI : MonoBehaviour
         spriteObject.GetComponent<Image>().sprite = sprite;
     }
 
-    void OnUpdateName(string name)
+    void OnUpdateName(string _name)
     {
-        buildingNameText.text = name;
+        buildingNameText.text = _name;
     }
 
-    void OnSelectTile(int index, GameObject selectedTile, bool isUnlocked)
+    void OnSelectTile(int index, GameObject selectedTile, bool _isUnlocked, Tower tower)
     {
         Image border = this.GetComponent<Image>();
         
         border.enabled = selectedTile == this.gameObject;
 
         if (selectedTile == this.gameObject)
-            UpdateLockedState(isUnlocked);
+            UpdateLockedState(_isUnlocked);
 
         UpdateLockedUI();
     }

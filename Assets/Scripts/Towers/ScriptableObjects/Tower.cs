@@ -43,6 +43,16 @@ namespace MMK.ScriptableObjects
         public ulong GetRequiredWinsCount() => BaseProperties.RequiredWinsCount;
         public bool IsRequiredWinsCount(ulong currentWinsCount) => currentWinsCount >= BaseProperties.RequiredWinsCount;
         // public void UnlockTower() =>  BaseProperties.IsUnlocked = true;
+
+
+        public void SetSkinIndex(int index)
+        {
+            SkinIndex = index;
+            
+            OnUnlockTower?.Invoke(this);
+        }
+        
+        
         public void UnlockTower()
         {
             BaseProperties.IsUnlocked = true;

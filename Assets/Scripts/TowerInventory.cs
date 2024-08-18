@@ -8,12 +8,16 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using Player;
 using UnityEngine.Events;
 
 public class TowerInventory : MonoBehaviour
 {
-    public static event Action<int, GameObject, bool> OnSelectTile;
+    // public static event Action<int, GameObject, bool> OnSelectTile;
+    public delegate void OnSelectTileDelegate(int index, GameObject selectedTile, bool isUnlocked, Tower tower);
+    public static event OnSelectTileDelegate OnSelectTile;
+    
     public Action UpdateTiles;
 
 
@@ -72,7 +76,7 @@ public class TowerInventory : MonoBehaviour
         GameObject tile = TowerData.GetAllTowerInventoryData()[i].towerTileUI.gameObject;
         Tower tower = TowerData.GetAllTowerInventoryData()[i].towerSO;
 
-        OnSelectTile?.Invoke(i, tile, tower.IsUnlocked());
+        OnSelectTile?.Invoke(i, tile, tower.IsUnlocked(), tower);
 
         // Added
         if (tower.IsUnlocked())
@@ -194,7 +198,7 @@ public class TowerInventory : MonoBehaviour
     }
 
 
-    void OnOnSelectTile(int index, GameObject selectedTile, bool isUnlocked)
+    void OnOnSelectTile(int index, GameObject selectedTile, bool isUnlocked, Tower tower)
     {
         UpdateTiles();
     }

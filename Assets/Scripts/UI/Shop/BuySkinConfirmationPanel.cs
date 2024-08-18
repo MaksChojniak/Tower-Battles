@@ -2,6 +2,7 @@
 using DefaultNamespace;
 using MMK;
 using MMK.ScriptableObjects;
+using Player;
 using TMPro;
 using UI.Shop;
 using UnityEngine;
@@ -55,7 +56,9 @@ namespace MMK
                 return;
             }
             
+            skin.UnlockSkin();
             
+            Cancel();
         }
 
         public void Open(Tower _tower, TowerSkin _skin)

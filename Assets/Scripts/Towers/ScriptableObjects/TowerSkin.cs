@@ -58,6 +58,17 @@ namespace MMK.ScriptableObjects
 
             return skin;
         }
+
+
+        public void UnlockSkin()
+        {
+            IsUnlocked = true;
+            
+            Tower tower = Tower.GetTowerBySkinID(ID);
+            if(tower == null)
+                return;
+            Tower.OnUnlockTower?.Invoke(tower);
+        }
         
         
         
