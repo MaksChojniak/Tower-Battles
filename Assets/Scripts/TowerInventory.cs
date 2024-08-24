@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using DefaultNamespace;
 using MMK.ScriptableObjects;
 using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using Player;
-using UnityEngine.Events;
+
 
 public class TowerInventory : MonoBehaviour
 {
@@ -21,54 +19,235 @@ public class TowerInventory : MonoBehaviour
     public Action UpdateTiles;
 
 
-    [SerializeField] int selectedTower;
+    public int selectedTower;
     
     [ReadOnly] public AllTowerInventoryData BaseTowerData;
     public AllTowerInventoryData TowerData;
     
-    private void Awake()
+    
+    
+    
+    void Awake()
     {
         TowerData = new AllTowerInventoryData(BaseTowerData);
         
         NextTowerPageButton.OnChangePage += UpdateTileSprite;
         OnSelectTile += OnOnSelectTile;
         UpdateTiles += OnUpdateTiles;
+
+        // selectedTower = 0;
+        selectedTower = -1;
     }
 
-    private void OnDestroy()
+    void OnDestroy()
     {
         NextTowerPageButton.OnChangePage -= UpdateTileSprite;
         OnSelectTile -= OnOnSelectTile;
         UpdateTiles -= OnUpdateTiles;
     }
 
-    private void OnDisable()
+    
+    
+    void OnDisable()
     {
         TowerDeck.OnSelectSlot -= OnSelectDeckSlot;
     }
 
-
-    private void OnEnable()
+    void OnEnable()
     {
         StartCoroutine(AfterOnEnable());
+
     }
+
+
+
+    [Space(28)]
+    [SerializeField] Tower[] _inventoryTowers;
+    [SerializeField] Transform _tilesContainer;
+    void OnValidate()
+    {
+        return;
+        
+        AllTowerInventoryData _baseTowerData = new AllTowerInventoryData();
+        for (int i = 0; i < _inventoryTowers.Length; i++)
+        {
+            Tower tower = _inventoryTowers[i];
+            TowerTileUI tileUI = _tilesContainer.GetChild(1).GetChild(0).GetComponent<TowerTileUI>();
+            
+            List<TowerInventoryData> towersByRarity = new List<TowerInventoryData>();
+            switch (tower.Rarity)
+            {
+                case TowerRarity.Common:
+                    towersByRarity = _baseTowerData.commonTowers.ToList();
+
+                    tileUI = _tilesContainer.GetChild(1).GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
+
+                    break;
+                case TowerRarity.Rare:
+                    towersByRarity = _baseTowerData.rareTowers.ToList();
+
+                    tileUI = _tilesContainer.GetChild(3).GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
+
+                    break;
+                case TowerRarity.Exclusive:
+                    towersByRarity = _baseTowerData.exclusiveTowers.ToList();
+
+                    tileUI = _tilesContainer.GetChild(5).GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
+
+                    break;
+            }
+            
+
+            TowerInventoryData towerData = new TowerInventoryData(tower, tileUI);
+
+            towersByRarity.Add(towerData);
+            switch (tower.Rarity)
+            {
+                case TowerRarity.Common:
+                    _baseTowerData.commonTowers = towersByRarity.ToArray();
+                    break;
+                case TowerRarity.Rare:
+                    _baseTowerData.rareTowers = towersByRarity.ToArray();
+                    break;
+                case TowerRarity.Exclusive:
+                    _baseTowerData.exclusiveTowers = towersByRarity.ToArray();
+                    break;
+            }
+        }
+
+        
+        // switch (tower.Rarity)
+        //     {
+        //         case TowerRarity.Common:
+        //             towersByRarity = _baseTowerData.commonTowers.ToList();
+        //             tilesContainer = _tilesContainer.GetChild(1);
+        //             
+        //             tileUI = tilesContainer.GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
+        //             for (int j = 0; j < tilesContainer.childCount; j++)
+        //             {
+        //                 tilesContainer.GetChild(j).GetComponent<Button>().enabled = j <= tilesContainer.childCount;
+        //                 tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j <= tilesContainer.childCount);
+        //             }
+        //             break;
+        //         case TowerRarity.Rare:
+        //             towersByRarity = _baseTowerData.rareTowers.ToList();
+        //             tilesContainer = _tilesContainer.GetChild(3);
+        //             
+        //             tileUI = tilesContainer.GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
+        //             for (int j = 0; j < tilesContainer.childCount; j++)
+        //             {
+        //                 tilesContainer.GetChild(j).GetComponent<Button>().enabled = j <= tilesContainer.childCount;
+        //                 tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j <= tilesContainer.childCount);
+        //             }
+        //             break;
+        //         case TowerRarity.Exclusive:
+        //             towersByRarity = _baseTowerData.exclusiveTowers.ToList();
+        //             tilesContainer = _tilesContainer.GetChild(5);
+        //             
+        //             tileUI = tilesContainer.GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
+        //             for (int j = 0; j < tilesContainer.childCount; j++)
+        //             {
+        //                 tilesContainer.GetChild(j).GetComponent<Button>().enabled = j <= tilesContainer.childCount;
+        //                 tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j <= tilesContainer.childCount);
+        //             }
+        //             break;
+        //     }
+
+
+        Transform tilesContainer = null;
+        tilesContainer = _tilesContainer.GetChild(1);
+        for (int j = 0; j < tilesContainer.childCount; j++)
+        {
+            tilesContainer.GetChild(j).GetComponent<Button>().enabled = j < _baseTowerData.commonTowers.Length;
+            tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j < _baseTowerData.commonTowers.Length);
+        }
+        tilesContainer = _tilesContainer.GetChild(3);
+        for (int j = 0; j < tilesContainer.childCount; j++)
+        {
+            tilesContainer.GetChild(j).GetComponent<Button>().enabled = j < _baseTowerData.rareTowers.Length;
+            tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j < _baseTowerData.rareTowers.Length);
+        }
+        tilesContainer = _tilesContainer.GetChild(5);
+        for (int j = 0; j < tilesContainer.childCount; j++)
+        {
+            tilesContainer.GetChild(j).GetComponent<Button>().enabled = j < _baseTowerData.exclusiveTowers.Length;
+            tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j < _baseTowerData.exclusiveTowers.Length);
+        }
+
+
+        for (int i = 0; i < _baseTowerData.commonTowers.Length; i++)
+        {
+            GameObject tileUI = _baseTowerData.commonTowers[i].towerTileUI.gameObject;
+
+            Button button = tileUI.GetComponent<Button>();
+            
+            int index = i;
+            button.onClick.AddListener(() => SelectTower(index));
+        }
+        for (int i = 0; i < _baseTowerData.rareTowers.Length; i++)
+        {
+            GameObject tileUI = _baseTowerData.rareTowers[i].towerTileUI.gameObject;
+
+            Button button = tileUI.GetComponent<Button>();
+            
+            int index = i + _baseTowerData.commonTowers.Length;
+            button.onClick.AddListener(() => SelectTower(index));
+        }
+        for (int i = 0; i < _baseTowerData.exclusiveTowers.Length; i++)
+        {
+            GameObject tileUI = _baseTowerData.exclusiveTowers[i].towerTileUI.gameObject;
+
+            Button button = tileUI.GetComponent<Button>();
+            
+            int index = i + _baseTowerData.commonTowers.Length + _baseTowerData.rareTowers.Length;
+            button.onClick.AddListener(() => SelectTower(index));
+        }
+
+
+
+
+        BaseTowerData = _baseTowerData;
+    }
+
 
 
     IEnumerator AfterOnEnable()
     {
-        yield return new WaitForEndOfFrame();
-        //yield return new WaitForEndOfFrame();
-        //yield return new WaitForEndOfFrame();
-
-        UpdateTiles();// UpdateTileSprite();
-
-        SelectTower(0);
-    }
+        UpdateTiles();
     
+        yield return new WaitForEndOfFrame();
+        
+        // SelectTower(0);
+        // if(selectedTower >= 0)
+            // SelectTower(selectedTower);
+        SelectTower(selectedTower);
+
+        yield return null;
+    }
+
+    
+    
+    bool selectedTowersIsOwned;
+
     public void SelectTower(int i)
     {
         TowerDeck.OnSelectSlot -= OnSelectDeckSlot;
-
+        
+        TowerDeck.OnSelectSlot -= RemoveFromDeck;
+        TowerDeck.OnSelectSlot += RemoveFromDeck;
+        
+        if ( i < 0 || (selectedTower == i && selectedTowersIsOwned && TowerData.GetAllTowerInventoryData()[i].towerSO.IsUnlocked() ) )
+        {
+            selectedTower = -1;
+            selectedTowersIsOwned = false;
+            OnSelectTile?.Invoke(selectedTower, null, false, null);
+            
+            ChangeDeckTilesColor(false);
+            
+            return;
+        }
+        
+        
         //Debug.Log($"{i}");
 
         selectedTower = i;
@@ -79,12 +258,13 @@ public class TowerInventory : MonoBehaviour
         OnSelectTile?.Invoke(i, tile, tower.IsUnlocked(), tower);
 
         // Added
+        selectedTowersIsOwned = tower.IsUnlocked();
         if (tower.IsUnlocked())
         {
             TowerDeck.OnSelectSlot -= OnEquipLockedTower;
 
             TowerDeck.OnSelectSlot -= RemoveFromDeck;
-            TowerDeck.OnSelectSlot += RemoveFromDeck;
+            // TowerDeck.OnSelectSlot += RemoveFromDeck;
 
             TowerDeck.OnSelectSlot += OnSelectDeckSlot;
             OnEquipping(); 
@@ -93,13 +273,14 @@ public class TowerInventory : MonoBehaviour
         {
             ChangeDeckTilesColor(false);
 
-            TowerDeck.OnSelectSlot -= RemoveFromDeck;
+            // TowerDeck.OnSelectSlot -= RemoveFromDeck;
 
             TowerDeck.OnSelectSlot -= OnEquipLockedTower;
             TowerDeck.OnSelectSlot += OnEquipLockedTower;
         }
     }
-
+    
+    
 
     void RemoveFromDeck(int index)
     {
@@ -112,6 +293,8 @@ public class TowerInventory : MonoBehaviour
             TowerDeck.Instance.deckTiles[index].ChangeColor(false);
             TowerDeck.Instance.deckTiles[index].UpdatePrice(false, 0);
         }
+        
+        // SelectTower(-1);
     }
 
 
@@ -132,7 +315,9 @@ public class TowerInventory : MonoBehaviour
 
     void OnSelectDeckSlot(int index)
     {
-
+        if(selectedTower < 0)
+            return;
+        
         //Debug.Log($"selected slot - {index}, seletced tower - {selectedTower}");
 
         // if (PlayerTowerInventory.Instance.TowerDeck.Contains(TowerData.GetAllTowerInventoryData()[selectedTower].towerSO))
@@ -145,6 +330,7 @@ public class TowerInventory : MonoBehaviour
                 if (PlayerController.GetLocalPlayerData().Deck[i].Value == TowerData.GetAllTowerInventoryData()[selectedTower].towerSO)
                 {
                     RemoveFromDeck(i);
+                    break;
                 }
             }
         }
@@ -158,6 +344,9 @@ public class TowerInventory : MonoBehaviour
         TowerDeck.OnSelectSlot -= OnSelectDeckSlot;
 
         ChangeDeckTilesColor(false);
+        
+        
+        SelectTower(-1);
     }
 
 
@@ -218,7 +407,7 @@ public class AllTowerInventoryData
     public TowerInventoryData[] commonTowers;
     public TowerInventoryData[] rareTowers;
     public TowerInventoryData[] exclusiveTowers;
-    public TowerInventoryData[] trophyTowers;
+    // public TowerInventoryData[] trophyTowers;
 
     public AllTowerInventoryData(AllTowerInventoryData baseData)
     {
@@ -231,13 +420,22 @@ public class AllTowerInventoryData
         exclusiveTowers = new TowerInventoryData[baseData.exclusiveTowers.Length];
         baseData.exclusiveTowers.CopyTo(exclusiveTowers, 0);
 
-        trophyTowers = new TowerInventoryData[baseData.trophyTowers.Length];
-        baseData.trophyTowers.CopyTo(trophyTowers, 0);
+        // trophyTowers = new TowerInventoryData[baseData.trophyTowers.Length];
+        // baseData.trophyTowers.CopyTo(trophyTowers, 0);
     }
 
+    public AllTowerInventoryData()
+    {
+        commonTowers = Array.Empty<TowerInventoryData>();
+        rareTowers = Array.Empty<TowerInventoryData>();
+        exclusiveTowers = Array.Empty<TowerInventoryData>();
+    }
+
+    
+    
     public TowerInventoryData[] GetAllTowerInventoryData()
     {
-        TowerInventoryData[] allData = new TowerInventoryData[commonTowers.Length + rareTowers.Length + exclusiveTowers.Length + trophyTowers.Length];
+        TowerInventoryData[] allData = new TowerInventoryData[commonTowers.Length + rareTowers.Length + exclusiveTowers.Length];// + trophyTowers.Length];
 
         for (int i = 0; i < allData.Length; i++)
         {
@@ -249,14 +447,15 @@ public class AllTowerInventoryData
             {
                 allData[i] = rareTowers[i - commonTowers.Length];
             }
-            else if (i < rareTowers.Length + commonTowers.Length + exclusiveTowers.Length)
+            // else if (i < rareTowers.Length + commonTowers.Length + exclusiveTowers.Length)
+            else
             {
                 allData[i] = exclusiveTowers[i - rareTowers.Length - commonTowers.Length];
             }
-            else
-            {
-                allData[i] = trophyTowers[i - (commonTowers.Length + rareTowers.Length + exclusiveTowers.Length)];
-            }
+            // else
+            // {
+            //     allData[i] = trophyTowers[i - (commonTowers.Length + rareTowers.Length + exclusiveTowers.Length)];
+            // }
         }
 
         return allData;
@@ -269,7 +468,7 @@ public class AllTowerInventoryData
         SortTowersInventoryData(baseData.commonTowers, ref commonTowers);
         SortTowersInventoryData(baseData.rareTowers, ref rareTowers);
         SortTowersInventoryData(baseData.exclusiveTowers, ref exclusiveTowers);
-        SortTowersInventoryData(baseData.trophyTowers, ref trophyTowers);
+        // SortTowersInventoryData(baseData.trophyTowers, ref trophyTowers);
     }
 
     public void SortTowersInventoryData(TowerInventoryData[] baseTowersData, ref TowerInventoryData[] actuallyTowersData)

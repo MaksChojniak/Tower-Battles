@@ -5,6 +5,15 @@ using UnityEngine;
 namespace MMK.ScriptableObjects
 {
     // [CreateAssetMenu(fileName = "Weapons", menuName = "")]
+    
+    public enum TowerRarity
+    {
+        Common,
+        Rare,
+        Exclusive,
+    }
+    
+    
     [Serializable]
     public class Tower : ScriptableObject
     {
@@ -15,6 +24,8 @@ namespace MMK.ScriptableObjects
         
         public string ID;
         public string TowerName;
+        
+        public TowerRarity Rarity;
 
         public TowerSkin CurrentSkin => TowerSkins[SkinIndex];
         public TowerSkin[] TowerSkins;

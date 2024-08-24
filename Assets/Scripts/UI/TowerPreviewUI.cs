@@ -1,12 +1,15 @@
+using System;
 using DefaultNamespace;
 using MMK;
 using MMK.ScriptableObjects;
 using MMK.Towers;
 using Player;
 using TMPro;
+using UI.Animations;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class TowerPreviewUI : MonoBehaviour
 {
@@ -14,6 +17,7 @@ public class TowerPreviewUI : MonoBehaviour
 
     [Space(18)]
     [SerializeField] TMP_Text towerNameText;
+    [SerializeField] TMP_Text skinNameText;
     //[SerializeField] Image towerImage;
 
     [SerializeField] TMP_Text startingPriceText;
@@ -29,15 +33,21 @@ public class TowerPreviewUI : MonoBehaviour
     [SerializeField] GameObject unlockPanel;
     [SerializeField] TMP_Text unlockPrice;
 
+    [SerializeField] UIAnimation OpenTowerPreview;
+    [SerializeField] UIAnimation CloseTowerPreview;
+
     [SerializeField] GameObject skinChangeButton;
 
     [SerializeField] Color[] colors;
 
     public int lastSelectedTowerIndex { get; private set; }
+    [SerializeField] int _lastSelectedTowerIndex;
 
     private void Awake()
     {
         TowerInventory.OnSelectTile += UpdateTowerInformations;
+
+        lastSelectedTowerIndex = -1;
     }
 
     private void OnDestroy()
@@ -45,13 +55,36 @@ public class TowerPreviewUI : MonoBehaviour
         TowerInventory.OnSelectTile -= UpdateTowerInformations;
     }
 
+    void Update()
+    {
+        _lastSelectedTowerIndex = lastSelectedTowerIndex;
+    }
+
     void UpdateTowerInformations(int index, GameObject tile, bool isUnlocked, Tower tower)
     {
+        if (index < 0 && lastSelectedTowerIndex >= 0)
+        {
+            CloseTowerPreview.PlayAnimation();
+            lastSelectedTowerIndex = -1;
+            return;
+        }
+        else if (index >= 0 && lastSelectedTowerIndex < 0)
+        {
+            OpenTowerPreview.PlayAnimation();
+        }
+        else if (index < 0)
+        {
+            lastSelectedTowerIndex = -1;
+            return;
+        }
+        
         // Tower tower = inventory.TowerData.GetAllTowerInventoryData()[index].towerSO;
 
         skinChangeButton.SetActive(tower.BaseProperties.IsUnlocked);
 
         towerNameText.text = tower.TowerName;
+        // skinNameText.text = tower.CurrentSkin.SkinName; TODO
+        
         // towerImage.sprite = tower.TowerSprite;
 
         startingPriceText.text = $"{tower.GetPrice()} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName})}";
@@ -86,7 +119,7 @@ public class TowerPreviewUI : MonoBehaviour
         lastSelectedTowerIndex = index;
     }
 
-    public void BuyTower()
+    public bool BuyTower()
     {
         Tower towerData = inventory.TowerData.GetAllTowerInventoryData()[lastSelectedTowerIndex].towerSO;
         // PlayerTowerInventory playerTowerInventory = PlayerTowerInventory.Instance;
@@ -95,14 +128,14 @@ public class TowerPreviewUI : MonoBehaviour
         if (!towerData.IsRequiredWinsCount(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount))
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtWins);
-            return;
+            return false;
         }
         
         // if (towerData.GetUnlockedPrice() > PlayerTowerInventory.Instance.GetBalance())
         if (towerData.GetUnlockedPrice() > PlayerController.GetLocalPlayerData().WalletData.Balance)
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
-            return;
+            return false;
         }
 
         // PlayerTowerInventory.ChangeBalance(-towerData.GetUnlockedPrice());
@@ -122,6 +155,8 @@ public class TowerPreviewUI : MonoBehaviour
         }
         
         inventory.SelectTower(lastSelectedTowerIndex);
+
+        return true;
     }
 
     void UpdateImageColor(Image image)

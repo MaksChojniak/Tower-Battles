@@ -14,6 +14,8 @@ public class TowerDeckTileUI : MonoBehaviour
     public Action<bool> ChangeColor;
     public Action<Color> ChangeColorOnRemove;
 
+    
+    
     private void Awake()
     {
         UpdateSprite += OnUpdateSprite;

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class TowerDeck : MonoBehaviour
 {
     public static TowerDeck Instance;
-
+    
     public static event Action<int> OnSelectSlot;
 
     public TowerDeckTileUI[] deckTiles;
@@ -18,10 +18,10 @@ public class TowerDeck : MonoBehaviour
     public Color removeTileColor;
     public Color defaultTileColor;
 
+    
     private void Awake()
     {
         Instance = this;
-
     }
 
 
@@ -38,6 +38,7 @@ public class TowerDeck : MonoBehaviour
         for (int i = 0; i < PlayerController.GetLocalPlayerData().Deck.Length; i++)
         {
             deckTiles[i].UpdatePrice(false, 0);
+            deckTiles[i].ChangeColor(false);
 
             // if (PlayerTowerInventory.Instance.TowerDeck[i] != null)
             if (PlayerController.GetLocalPlayerData().Deck[i].Value != null)

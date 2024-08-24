@@ -18,10 +18,10 @@ using Player.Database;
 using TMPro;
 using UI.Shop.Daily_Rewards;
 using UI.Shop.Daily_Rewards.Scriptable_Objects;
-using Unity.Profiling.LowLevel.Unsafe;
-using Unity.VisualScripting;
+
 using DateTime = System.DateTime;
 using Random = Unity.Mathematics.Random;
+using Time = UnityEngine.Time;
 
 
 namespace UI.Shop
@@ -521,6 +521,10 @@ namespace UI.Shop
 
             dailyRewards.LastClaimDateTicks = simulatedDateOnServerUTC.Ticks;
             dailyRewards.LastCalimedRewardIndex += 1;
+            
+            
+            GiveDailyReward(dailyRewards.Rewards[dailyRewards.LastCalimedRewardIndex]);
+            
 
             if (dailyRewards.LastCalimedRewardIndex + 1 >= DAILY_REWARDS_COUNT)
                 dailyRewards = CalculateNewDailyRewards();
@@ -529,7 +533,22 @@ namespace UI.Shop
             string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
             await Database.POST<DailyRewards>(dailyRewards, playerID);
         }
-        
+
+
+        void GiveDailyReward(Reward reward)
+        {
+            
+            switch (reward.Type)
+            {
+                case RewardType.Coins:
+                    PlayerData.ChangeBalance((long)reward.CoinsBalance);
+                    break;
+                case RewardType.Experience:
+                    PlayerData.ChangeExperience((long)reward.XP);
+                    break;
+            }
+            
+        }
         
 
         DailyRewards CalculateNewDailyRewards(bool isFirstDailyReward = false)

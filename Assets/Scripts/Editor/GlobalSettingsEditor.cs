@@ -89,14 +89,42 @@ namespace Editor
             if (showColorSettings)
             {
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "NormalColor", Caption = "Normal Color"});
+                
+                EditorGUILayout.Space();
+                
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "NextValueColor", Caption = "Next Value Color"});
+                
+                EditorGUILayout.Space();
+                
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "CashColor", Caption = "Cash Color"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "CoinsColor", Caption = "Coins Color"});
+                
+                EditorGUILayout.Space();
+                
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TrophyColor", Caption = "Trophy Color"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "LosesColor", Caption = "Loses Color"});
+                
+                EditorGUILayout.Space();
+                
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TargettingButtonBaseColor", Caption = "Targetting Button Base Color"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TargettingButtonSelectedColor", Caption = "Targetting Button Selected Color"});
+                
+                EditorGUILayout.Space();
+                
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "MaxedOutColor", Caption = "Maxed Out Color"});
+                
+                EditorGUILayout.Space();
+                
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "LockedColor", Caption = "Locked Color"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "SelectedColor", Caption = "Selected Color"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "UnselectedColor", Caption = "Unselected Color"});
+                
+                EditorGUILayout.Space();
+                
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "CommonColor", Caption = "Common Rarity Color"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "RareColor", Caption = "Rare Rarity Color"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "EpicColor", Caption = " Epic Rarity Color"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ExclusiveColor", Caption = "Exclusive Rarity Color"});
             }
             
   #endregion

@@ -62,6 +62,21 @@ namespace Player
         public static GetBalanceDelegate GetBalance;
         
         #endregion
+        
+        
+        
+        #region XP Events
+
+        public delegate void OnChangeExperienceDelegate(ulong value);
+        public static OnChangeExperienceDelegate OnChangeExperience;   
+        
+        public delegate void ChangeExperienceDelegate(long value);
+        public static ChangeExperienceDelegate ChangeExperience;
+
+        public delegate ulong GetExperienceDelegate();
+        public static GetExperienceDelegate GetExperience;
+        
+        #endregion
 
 
         
@@ -166,8 +181,22 @@ namespace Player
         void RegisterEvents()
         {
             RegisterWalletEvents();
+            RegisterExperienceEvents();
             RegisterTowerUnlockEvent();
             RegisterWinsAndDefeatsEvents();
+            
+        }
+
+
+        void RegisterExperienceEvents()
+        {
+            ChangeExperience += (value) =>
+            {
+                ExperiencePoins = (ulong)((long)WalletData.Balance + value);
+                
+                OnChangeExperience?.Invoke(ExperiencePoins);
+            };
+            GetExperience += () => ExperiencePoins;
             
         }
         

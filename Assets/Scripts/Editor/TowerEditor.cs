@@ -25,6 +25,8 @@ namespace Editor
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ID", Caption = "ID"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowerName", Caption = "Tower Name"});
             
+            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "Rarity", Caption = "Rarity"});
+            
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowerSkins", Caption = "Tower Skins"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "SkinIndex", Caption = "Skin Index"});
             // InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowerSprite", Caption = "Tower Sprite"});

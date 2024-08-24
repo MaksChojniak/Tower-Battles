@@ -60,9 +60,67 @@ namespace MMK
         public Color TargettingButtonBaseColor = Color($"#989898");      //  TARGETTING_BUTTON_BASE_COLOR_HEX = "#989898";
         public Color TargettingButtonSelectedColor = Color($"#26761D");  //  TARGETTING_BUTTON_SELECTED_COLOR_HEX = "#26761D";
 
-        public Color MaxedOutColor = Color($"#822525");                  //  MAXED_OUT_COLOR_HEX = "#822525";
+        public Color MaxedOutColor = Color($"#822525");                  //  MAXED_OUT_COLOR_HEX = "#822525";\
+        
+        public Color LockedColor = Color($"#A20708");                    //  LOCKED_COLOR_HEX = "#A20708";
+        public Color SelectedColor = Color($"#06C300");                  //  SELECTED_COLOR_HEX = "#06C300";
+        public Color UnselectedColor = Color($"#37373A");                //  UNSELECTED_COLOR_HEX = "#37373A";
+
+        public Color CommonColor = Color($"#59C032");                    //  COMMON_RARITY_COLOR_HEX = "#822525";
+        public Color RareColor = Color($"#4B85BC");                      //  RARE_RARITY_COLOR_HEX = "#822525";
+        public Color EpicColor = Color($"#9E00D6");                      //  EPIC_RARITY_COLOR_HEX = "#822525";
+        public Color ExclusiveColor = Color($"#AD0000");                 //  EXCLUSIVE_RARITY_COLOR_HEX = "#822525";
 
 
+
+        
+        public Color GetRarityColorBySkin(TowerSkin _skin)
+        {
+            switch (_skin.Rarity)
+            {
+                case SkinRarity.Common:
+                    return CommonColor;
+                    break;
+                case SkinRarity.Rare:
+                    return RareColor;
+                    break;
+                case SkinRarity.Epic:
+                    return EpicColor;
+                    break;
+                case SkinRarity.Exclusive:
+                    return ExclusiveColor;
+                    break;
+                default:
+                    return new Color(1,1,1,1);
+                    break;
+            
+            }
+        }
+        
+        
+        public Color GetRarityColorByTower(Tower _tower)
+        {
+            switch (_tower.Rarity)
+            {
+                case TowerRarity.Common:
+                    return CommonColor;
+                    break;
+                case TowerRarity.Rare:
+                    return RareColor;
+                    break;
+                case TowerRarity.Exclusive:
+                    return ExclusiveColor;
+                    break;
+                default:
+                    return new Color(1,1,1,1);
+                    break;
+
+            }
+        }
+        
+        
+        
+        
         
         static Color Color(int r, int g, int b, int a = 255)
         {

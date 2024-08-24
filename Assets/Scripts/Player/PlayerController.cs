@@ -192,8 +192,8 @@ namespace Player
                 for (int i = 0; i < tower.TowerSkins.Length; i++)
                 {
                     TowerSkinSerializable skin = unlockedTower?.TowerSkins.FirstOrDefault(skin => skin.ID == tower.TowerSkins[i].ID);
-                    Debug.LogException(new Exception($"skin ID:  {tower.TowerSkins[i].ID.Substring(2,2)}"));
-                    tower.TowerSkins[i].IsUnlocked = (tower.TowerSkins[i].ID.Substring(2,2) == "01" || (towerIsUnlocked && skin != null && skin.IsUnlocked) );
+                    string skinID = tower.TowerSkins[i].ID.Substring(2, 2);
+                    tower.TowerSkins[i].IsUnlocked = skinID == "01" || (towerIsUnlocked && skin != null && skin.IsUnlocked);
                 }
 
                 

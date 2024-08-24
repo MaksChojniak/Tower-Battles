@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using MMK;
@@ -12,27 +13,49 @@ public class PlayerInventoryStatsUI : MonoBehaviour
     [SerializeField] TMP_Text defeatCountText;
 
 
-    private void OnEnable()
+
+    void OnEnable()
     {
-        // PlayerTowerInventory.OnChangeBalance += UpdateBalanceText;
-        // PlayerTowerInventory.OnChangeWinCount += UpdateWinCountText;
-        // PlayerTowerInventory.OnChangeDefeatCount += UpdateDefeatCountText;
-        PlayerData.OnChangeBalance += UpdateBalanceText;
-        PlayerData.OnChangeWinsCount += UpdateWinCountText;
-        PlayerData.OnChangeDefeatsCount += UpdateDefeatCountText;
+        RegisterHandlers();
 
         UpdateAllTexts();
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
-        // PlayerTowerInventory.OnChangeBalance -= UpdateBalanceText;
-        // PlayerTowerInventory.OnChangeWinCount -= UpdateWinCountText;
-        // PlayerTowerInventory.OnChangeDefeatCount -= UpdateDefeatCountText;
+        UnregisterHandlers();
+        
+    }
+
+
+
+
+#region Register & Unregister Handlers
+
+    
+    void RegisterHandlers()
+    {
+        PlayerData.OnChangeBalance += UpdateBalanceText;
+        PlayerData.OnChangeWinsCount += UpdateWinCountText;
+        PlayerData.OnChangeDefeatsCount += UpdateDefeatCountText;
+        
+    }
+
+    
+    void UnregisterHandlers()
+    {
         PlayerData.OnChangeBalance -= UpdateBalanceText;
         PlayerData.OnChangeWinsCount -= UpdateWinCountText;
         PlayerData.OnChangeDefeatsCount -= UpdateDefeatCountText;
     }
+    
+    
+#endregion
+    
+    
+    
+    
+    
 
     void UpdateAllTexts()
     {
@@ -40,9 +63,7 @@ public class PlayerInventoryStatsUI : MonoBehaviour
         if (PlayerController.GetLocalPlayerData?.Invoke() == null)
             return;
 
-        // UpdateBalanceText(PlayerTowerInventory.Instance.GetBalance());
-        // UpdateWinCountText(PlayerTowerInventory.Instance.GetWinsCount());
-        // UpdateDefeatCountText(PlayerTowerInventory.Instance.GetDefeatCount());
+
         UpdateBalanceText(PlayerController.GetLocalPlayerData().WalletData.Balance);
         UpdateWinCountText(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount);
         UpdateDefeatCountText(PlayerController.GetLocalPlayerData().PlayerGamesData.DefeatsCount);
