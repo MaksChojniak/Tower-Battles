@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 928624e7ee830ed47a026eadf51194f3, type: 3}
+  m_Name: Jelly 2
+  m_EditorClassIdentifier: 
+  EnemyName: Jelly2
+  EnemySprite: {fileID: 21300000, guid: 0ac55f9f886d827408c102bdf33c5ff7, type: 3}
+  EnemyPrefab: {fileID: 2315913079105496499, guid: 8caf83437fa875a4fb3631d576935e6f,
+    type: 3}
+  Health: 240
+  Speed: 1.6
+  IsGhost: 0
+  CanSpawnAfterDead: 1
+  EnemiesToSpawn:
+  - Enemy: {fileID: 11400000, guid: 777530bdca6e9304583957470745abd4, type: 2}
+    Count: 1
