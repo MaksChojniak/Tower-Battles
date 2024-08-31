@@ -10,7 +10,7 @@ public class PlayerInventoryStatsUI : MonoBehaviour
 {
     [SerializeField] TMP_Text moneyText;
     [SerializeField] TMP_Text winsCountText;
-    [SerializeField] TMP_Text defeatCountText;
+    [SerializeField] TMP_Text XPText;
 
 
 
@@ -37,7 +37,7 @@ public class PlayerInventoryStatsUI : MonoBehaviour
     {
         PlayerData.OnChangeBalance += UpdateBalanceText;
         PlayerData.OnChangeWinsCount += UpdateWinCountText;
-        PlayerData.OnChangeDefeatsCount += UpdateDefeatCountText;
+        PlayerData.OnChangeExperience += UpdateExperienceText;
         
     }
 
@@ -46,7 +46,7 @@ public class PlayerInventoryStatsUI : MonoBehaviour
     {
         PlayerData.OnChangeBalance -= UpdateBalanceText;
         PlayerData.OnChangeWinsCount -= UpdateWinCountText;
-        PlayerData.OnChangeDefeatsCount -= UpdateDefeatCountText;
+        PlayerData.OnChangeExperience -= UpdateExperienceText;
     }
     
     
@@ -66,7 +66,7 @@ public class PlayerInventoryStatsUI : MonoBehaviour
 
         UpdateBalanceText(PlayerController.GetLocalPlayerData().WalletData.Balance);
         UpdateWinCountText(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount);
-        UpdateDefeatCountText(PlayerController.GetLocalPlayerData().PlayerGamesData.DefeatsCount);
+        UpdateExperienceText(PlayerController.GetLocalPlayerData().ExperiencePoins);
 
     }
 
@@ -80,9 +80,9 @@ public class PlayerInventoryStatsUI : MonoBehaviour
         winsCountText.text = $"{StringFormatter.PriceFormat(value)} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().TrophyIconName })}";
     }
 
-    void UpdateDefeatCountText(ulong value)
+    void UpdateExperienceText(ulong value)
     {
-        defeatCountText.text = $"{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().StarIconName })}" + "  " + "1050 / 2000";
+        XPText.text = $"{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().StarIconName })}" + "  " + $"{value}/2000";//"1050 / 2000";
     }
 
 }

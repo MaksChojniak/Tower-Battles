@@ -480,7 +480,7 @@ public class AllTowerInventoryData
         for (int i = 0; i < baseTowersData.Length; i++)
         {
             // if(baseTowersData[i].towerSO.IsUnlocked() && baseTowersData[i].towerSO.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()))
-            if(baseTowersData[i].towerSO.IsUnlocked() && baseTowersData[i].towerSO.IsRequiredWinsCount(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount))
+            if(baseTowersData[i].towerSO.IsUnlocked() && baseTowersData[i].towerSO.IsRequiredLevel(PlayerController.GetLocalPlayerData().Level))
                 unlockedTowers.Add(baseTowersData[i]);
             else
                 lockedTowers.Add(baseTowersData[i]);

@@ -2219,6 +2219,7 @@ GameObject:
   - component: {fileID: 1714500237893697315}
   - component: {fileID: 4546033992542071069}
   - component: {fileID: 4634446039606178768}
+  - component: {fileID: 8290398309914206075}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -2311,6 +2312,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!225 &8290398309914206075
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3928974447624482493}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &4039118690028134548
 GameObject:
   m_ObjectHideFlags: 0
@@ -4084,6 +4097,9 @@ GameObject:
   - component: {fileID: 5171393443228359769}
   - component: {fileID: 1572386465235005797}
   - component: {fileID: 7255639990442919517}
+  - component: {fileID: 6349105606851143463}
+  - component: {fileID: 4516901592213084017}
+  - component: {fileID: 417071005344403312}
   m_Layer: 5
   m_Name: '[Canvas] Tower Informations'
   m_TagString: Untagged
@@ -4206,12 +4222,56 @@ MonoBehaviour:
     Property_02_Panel: {fileID: 7198717401327511271}
     Property_03_Panel: {fileID: 3156605464199713297}
     Property_04_Panel: {fileID: 41890138538530388}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  nextValueColor: {r: 0.16640149, g: 0.5754717, b: 0, a: 1}
-  MaxedOutColor: {r: 0.50980395, g: 0.14509805, b: 0.14509805, a: 0.78431374}
-  cashColor: {r: 0.12156863, g: 0.9372549, b: 0, a: 1}
-  targetModeButtonNormalColor: {r: 0.5943396, g: 0.5943396, b: 0.5943396, a: 1}
-  targetModeButtonHighlightedColor: {r: 0.14901961, g: 0.4627451, b: 0.11372549, a: 1}
+  OpenPanelAnimation: {fileID: 4516901592213084017}
+  ClosePanelAnimation: {fileID: 417071005344403312}
+--- !u!95 &6349105606851143463
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7900235205032692807}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7894ade064137de409784a6e9fd19d4b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4516901592213084017
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7900235205032692807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: 12731b91bd0d14b489e9f1592c82ecb3, type: 2}
+  IsReversed: 0
+--- !u!114 &417071005344403312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7900235205032692807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: 12731b91bd0d14b489e9f1592c82ecb3, type: 2}
+  IsReversed: 1
 --- !u!1 &8125075851301485936
 GameObject:
   m_ObjectHideFlags: 0

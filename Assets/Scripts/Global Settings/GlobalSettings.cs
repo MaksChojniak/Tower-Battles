@@ -192,7 +192,7 @@ namespace MMK
 
 #region Scenes
 
-        public int loadingScene;
+        public int loadingScene = 0;
         
         public int mainMenuScene = 1;
 

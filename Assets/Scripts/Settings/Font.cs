@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using MMK;
 using MMK.Settings;
 using TMPro;
@@ -67,12 +68,7 @@ namespace Assets.Scripts.Settings
 
         void OnDataChanged()
         {
-            TMP_FontAsset fontAsset = GlobalSettingsManager.GetGlobalSettings().FontAssets[(int)FontAsset];
-            // TMP_Text[] textFields = GameObject.FindObjectsOfType<TMP_Text>();
-            // foreach (var textField in textFields)
-            // {
-            //     textField.font = fontAsset;
-            // }
+            FontChanger.ChangeFont(FontAsset);
 
             UpdateUI();
         }
@@ -91,7 +87,7 @@ namespace Assets.Scripts.Settings
         
         void UpdateUI()
         {
-            int fontAssetsCount = GlobalSettingsManager.GetGlobalSettings().FontAssets.Length;
+            int fontAssetsCount = GlobalSettingsManager.GetGlobalSettings.Invoke().FontAssets.Length;
             int index = (int)FontAsset;
 
             

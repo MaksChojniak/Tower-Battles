@@ -4,7 +4,6 @@ using UnityEngine;
 namespace UI.Animations
 {
     
-   
     
     public class UIAnimation : MonoBehaviour
     {
@@ -14,6 +13,7 @@ namespace UI.Animations
         
         Animator _animator;
 
+        public AnimationClip GetAnimationClip() => Animation;
 
         
         void Awake()

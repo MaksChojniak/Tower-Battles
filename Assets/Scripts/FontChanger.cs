@@ -1,82 +1,77 @@
-﻿using Assets.Scripts.Settings;
-using DefaultNamespace;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
+using MMK;
+using MMK.Settings;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using UnityEngine.SceneManagement;
+
 
 namespace Assets.Scripts
 {
     public class FontChanger : MonoBehaviour
     {
-        public static FontChanger Instance;
-
-        [SerializeField] TMP_FontAsset baseFontAsset;
-        [SerializeField] TMP_FontAsset secondFontAsset;
-        
-        // [SerializeField] FontAsset actuallyFont;
+        public delegate void ChangeFontDelegate(FontAsset font);
+        public static ChangeFontDelegate ChangeFont;
 
 
-        private void Awake()
+        TMP_FontAsset font;
+
+
+        void Awake()
         {
-            if(Instance != null)
-            {
-                Destroy(this.gameObject);
-                return;
-            }
-
             DontDestroyOnLoad(this.gameObject);
-            Instance = this;
 
-            // SettingsManager.ShareSettingsData += UpdateFont;
+
+            ChangeFont += OnChangeFont;
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
+        
 
-        private void OnDestroy()
+
+        void OnDestroy()
         {
-            // if(Instance == this)
-            // {
-            //     SettingsManager.ShareSettingsData -= UpdateFont;
-            // }   
-        }
-
-
-        void Update()
-        {
-            TMP_FontAsset fontAsset = baseFontAsset;
-
-            // if (actuallyFont == FontAsset.baseFont)
-            //     fontAsset = baseFontAsset;
-            // else
-            //     fontAsset = secondFontAsset;
-
-            ChangeFont(fontAsset);
-
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            ChangeFont -= OnChangeFont;
         }
 
 
-        // void UpdateFont(SettingsData settings)
-        // {
-        //     actuallyFont = settings.Font;
-        // }
-
-
-        void ChangeFont(TMP_FontAsset font)
+        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            UpdateFont();
+        }
 
-            foreach (TextMeshPro textMeshPro3D in GameObject.FindObjectsOfType<TextMeshPro>())
+        
+        void OnChangeFont(FontAsset _font)
+        {
+            font = GlobalSettingsManager.GetGlobalSettings.Invoke().FontAssets[(int)_font];
+
+            UpdateFont();
+        }
+
+        
+        void UpdateFont()
+        {
+            if(font == null)
+                return;
+            
+            TMP_FontAsset[] fonts = GlobalSettingsManager.GetGlobalSettings.Invoke().FontAssets;
+
+            foreach (TextMeshPro textMeshPro3D in GameObject.FindObjectsOfType<TextMeshPro>(true))
             {
-                if(textMeshPro3D.font == baseFontAsset || textMeshPro3D.font == secondFontAsset)
+                if(fonts.Contains(textMeshPro3D.font))
                     textMeshPro3D.font = font;
+
             }
-            foreach (TextMeshProUGUI textMeshProUi in GameObject.FindObjectsOfType<TextMeshProUGUI>())
+            foreach (TextMeshProUGUI textMeshProUI in GameObject.FindObjectsOfType<TextMeshProUGUI>(true))
             {
-                if (textMeshProUi.font == baseFontAsset || textMeshProUi.font == secondFontAsset)
-                    textMeshProUi.font = font;
+                if (fonts.Contains(textMeshProUI.font))
+                    textMeshProUI.font = font;
+
             }
+            
         }
+
+
+       
     }
 }

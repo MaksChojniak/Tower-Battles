@@ -25,6 +25,7 @@ namespace Player
     public struct WalletData
     {
         public ulong Balance;
+        public ulong Gems;
 
         public Dictionary<ulong,string> Payements;
         public int PayementsCount => Payements != null ? Payements.Count : 0;

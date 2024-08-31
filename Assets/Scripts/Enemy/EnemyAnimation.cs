@@ -234,26 +234,30 @@ using Random = UnityEngine.Random;
         void PlayTakeDamageAnimation(bool IsBurning)
         {
             if (IsBurning)
-                PlayBurningAnimation();
+                StartCoroutine(PlayBurningAnimation());
             else
-                PlayBloodAnimation();
+            {
+                Particle bloodParticle = Instantiate(BloodParticlePrefab, this.transform.position, this.transform.rotation).GetComponent<Particle>();
+                bloodParticle.StartCoroutine(PlayBloodAnimation(bloodParticle.gameObject));
+            }
         }
 
 
 
-        void PlayBurningAnimation()
+        IEnumerator PlayBurningAnimation()
         {
-            
+            yield return null;
         }
 
-        void PlayBloodAnimation()
+        IEnumerator PlayBloodAnimation(GameObject bloodParticleObject)
         {
-            GameObject bloodParticleObject = Instantiate(BloodParticlePrefab, this.transform.position, this.transform.rotation);
             ParticleSystem bloodParticle = bloodParticleObject.transform.GetChild(0).GetComponent<ParticleSystem>();
 
             bloodParticle.Play();
             
             Destroy(bloodParticleObject, 1.5f);
+
+            yield return null;
         }
         
 #endregion

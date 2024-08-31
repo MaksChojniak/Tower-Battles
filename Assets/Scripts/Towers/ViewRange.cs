@@ -154,7 +154,10 @@ namespace Towers
         {
             Vector3 centerOfCircle = this.transform.position;
 
-            allEnemies = GameObject.FindObjectsOfType<EnemyController>().
+            // allEnemies = GameObject.FindObjectsOfType<EnemyController>().
+            allEnemies = GameObject.FindGameObjectsWithTag("Enemy").
+                Where(enemyObject => enemyObject.TryGetComponent<EnemyController>(out var enemy) ).
+                Select(enemyObject => enemyObject.GetComponent<EnemyController>() ).
                 Where(enemy => enemy.HealthComponent.GetHealth() > 0).
                 ToArray();
 

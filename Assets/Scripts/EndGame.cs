@@ -16,12 +16,12 @@ namespace Assets.Scripts
 
         private void Awake()
         {
-            GamePlayerInformation.EndGame += UpdateUI;
+            // GamePlayerInformation.EndGame += UpdateUI;
         }
 
         private void OnDestroy()
         {
-            GamePlayerInformation.EndGame -= UpdateUI;
+            // GamePlayerInformation.EndGame -= UpdateUI;
         }
 
 

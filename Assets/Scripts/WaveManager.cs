@@ -3,6 +3,8 @@ using System.Collections;
 using System.Security.Cryptography;
 using MMK;
 using TMPro;
+using UI;
+using UI.Animations;
 using UnityEngine;
 
 public class WaveManager : MonoBehaviour
@@ -24,31 +26,31 @@ public class WaveManager : MonoBehaviour
 
     [Space(18)]
     [SerializeField] GameObject waveIndicator;
-    
+
     [Space(18)]
-    [SerializeField] GameObject waveRewardPanel;
+    // [SerializeField] GameObject waveRewardPanel;
+    [SerializeField] UIAnimation OpenWaveRewardPanel;
+    [SerializeField] UIAnimation CloseWaveRewardPanel;
     [SerializeField] TMP_Text waveRewardText;
     
     [Space(18)]
-    [SerializeField] GameObject skipWavePanel;
+    // [SerializeField] GameObject skipWavePanel;
+    [SerializeField] UIAnimation OpenSkipWavePanel;
+    [SerializeField] UIAnimation CloseSkipWavePanel;
     [SerializeField] bool skipWave;
 
     void Awake()
     {
-        GamePlayerInformation.EndGame += OnEndGame;
+        GameResult.OnEndGame += OnEndGame;
 
         ActualyWeveIndex = -1;
-
-        if(skipWavePanel != null)
-            skipWavePanel.SetActive(false);
         
-        if(waveRewardPanel != null)
-            waveRewardPanel.SetActive(false);
     }
 
     void OnDestroy()
     {
-        GamePlayerInformation.EndGame -= OnEndGame;
+        GameResult.OnEndGame -= OnEndGame;
+        
     }
 
     void Start()
@@ -56,11 +58,16 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(PrepareWaves());
     }
 
+    
+    
 
-    void OnEndGame(bool state)
+    void OnEndGame()
     {
         Destroy(this.gameObject);
     }
+    
+    
+    
     
 
     IEnumerator PrepareWaves()
@@ -84,6 +91,7 @@ public class WaveManager : MonoBehaviour
         UpdateWaves();
     }
 
+    
     void UpdateWaves()
     {
         if (ActualyWeveIndex + 1 < Waves.Length)
@@ -97,6 +105,7 @@ public class WaveManager : MonoBehaviour
         }
     }
     
+    
 
     void StartWave()
     {
@@ -106,6 +115,7 @@ public class WaveManager : MonoBehaviour
 
         StartCoroutine(ProcessWave(Waves[ActualyWeveIndex]));
     }
+    
     
     IEnumerator ProcessWave(WaveData wave)
     {
@@ -126,15 +136,21 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(stage.stageSleepTime);
         }
 
-        if(skipWavePanel != null && !isLastWave)
-            skipWavePanel.SetActive(true);
+        // if(skipWavePanel != null && !isLastWave)
+        //     skipWavePanel.SetActive(true);
+        if(!isLastWave)
+            OpenSkipWavePanel.PlayAnimation();
 
 
         yield return new WaitUntil(new Func<bool>(() => IsReadyToNextWave() ));
 
-        skipWave = false;
-        if (skipWavePanel != null)
-            skipWavePanel.SetActive(false);
+        SetSkipWaveState(false);
+        // skipWave = false;
+        
+        
+        // if (skipWavePanel != null)
+        //     skipWavePanel.SetActive(false);
+        // CloseSkipWavePanel.PlayAnimation();
 
         if (isLastWave)
         {
@@ -155,20 +171,25 @@ public class WaveManager : MonoBehaviour
         UpdateWaves();
     }
 
+    
     IEnumerator ShowWaveReward(uint waveReward)
     {
         int.TryParse(waveReward.ToString(), out int fixedWaveReward);
         if(waveRewardText != null)
             waveRewardText.text = $"+ {StringFormatter.PriceFormat(fixedWaveReward)}";
         
-        if(waveRewardPanel != null)
-            waveRewardPanel.SetActive(true);
+        // if(waveRewardPanel != null)
+        //     waveRewardPanel.SetActive(true);
+        OpenWaveRewardPanel.PlayAnimation();
+        yield return new WaitForSeconds(OpenWaveRewardPanel.GetAnimationClip().length);
 
         yield return new WaitForSeconds(2.25f);
         
-        if(waveRewardPanel != null)
-            waveRewardPanel.SetActive(false);
+        // if(waveRewardPanel != null)
+        //     waveRewardPanel.SetActive(false);
+        CloseWaveRewardPanel.PlayAnimation();
     }
+    
     
 
     bool IsReadyToNextWave()
@@ -176,24 +197,32 @@ public class WaveManager : MonoBehaviour
         return (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0) || skipWave;
     }
 
+    
     public void SetSkipWaveState(bool state)
     {
         skipWave = state;
+        
+        CloseSkipWavePanel.PlayAnimation();
 
-        if (!state)
-        {
-            if (skipWavePanel != null)
-                skipWavePanel.SetActive(false);
-        }
+        // if (!state)
+        // {
+        //     // if (skipWavePanel != null)
+        //     //     skipWavePanel.SetActive(false);
+        //     
+        //     // CloseSkipWavePanel.PlayAnimation();
+        // }
 
     }
 
+    
 
     void SetActiveIndicator(bool state)
     {
         if (waveIndicator != null)
             waveIndicator.SetActive(state);
     }
+    
+    
     
     // public bool endAllWaves;
     // public int currentWave;

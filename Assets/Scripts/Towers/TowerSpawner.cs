@@ -14,6 +14,7 @@ using UnityEngine.Rendering;
 using UnityEngine.UI;
 using TMPro;
 using Towers;
+using GameResult = UI.GameResult;
 
 public class TowerSpawner : MonoBehaviour
 {
@@ -93,13 +94,13 @@ public class TowerSpawner : MonoBehaviour
 
     void RegisterHandlers()
     {
-        GamePlayerInformation.EndGame += OnEndGame;
+        GameResult.OnEndGame += OnEndGame;
 
     }
 
     void UnregisterHandlers()
     {
-        GamePlayerInformation.EndGame -= OnEndGame;
+        GameResult.OnEndGame -= OnEndGame;
         
     }
     
@@ -231,7 +232,7 @@ public class TowerSpawner : MonoBehaviour
 
 
     
-    void OnEndGame(bool state)
+    void OnEndGame()
     {
         Destroy(this.gameObject);
     }

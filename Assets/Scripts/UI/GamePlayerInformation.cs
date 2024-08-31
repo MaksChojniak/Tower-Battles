@@ -10,11 +10,17 @@ public class GamePlayerInformation : MonoBehaviour
 {
     public static GamePlayerInformation Instance;
 
-    public static event Action<bool> EndGame;
-    public static event Action OnEndGame;
+    
+    
+    public delegate void OnDieDelegate();
+    public static event OnDieDelegate OnDie;
 
-    public static event Action<long> UpdateBalance;
-    public static event Action<int> UpdateHealth;
+    
+    public delegate void UpdateBalanceDelegate(long value);
+    public static event UpdateBalanceDelegate UpdateBalance;
+
+    public delegate void UpdateHealthDelegate(int value);
+    public static event UpdateHealthDelegate UpdateHealth;
 
     
     public delegate void ChangeBalanceDelegate(long Value);
@@ -31,16 +37,20 @@ public class GamePlayerInformation : MonoBehaviour
     public static GetHealthDelegate GetHealth;
 
     
+    
+    
     public long Balance;
     public int Health;
 
+    
+    
 
     void Awake()
     {
         Instance = this;
         
         
-        WaveManager.OnEndAllWaves += OnEndAllWaves;
+        // WaveManager.OnEndAllWaves += OnEndAllWaves;
         WaveManager.OnEndWave += GetWaveReward;
 
         GetBalance += OnGetBalance;
@@ -54,12 +64,7 @@ public class GamePlayerInformation : MonoBehaviour
         Balance = 650;
     }
 
-    void Start()
-    {
-        UpdateBalance?.Invoke(Balance);
-        UpdateHealth?.Invoke(Health);
-    }
-
+    
     void OnDestroy()
     {
         ChangeBalance -= OnChangeBalance;
@@ -69,20 +74,28 @@ public class GamePlayerInformation : MonoBehaviour
         GetHealth -= OnGetHealth;
         
         WaveManager.OnEndWave -= GetWaveReward;
-        WaveManager.OnEndAllWaves -= OnEndAllWaves;
+        // WaveManager.OnEndAllWaves -= OnEndAllWaves;
     }
 
     
+    void Start()
+    {
+        UpdateBalance?.Invoke(Balance);
+        UpdateHealth?.Invoke(Health);
+    }
     
+    
+
     long OnGetBalance() => Balance;
     int OnGetHealth() => Health;
 
     
     
-    void OnEndAllWaves()
-    {
-        StartEndGame(true, 5f);
-    }
+    // void OnEndAllWaves()
+    // {
+    //     StartEndGame(true, 5f);
+    // }
+    
     
     void GetWaveReward(uint reward)
     {
@@ -105,56 +118,60 @@ public class GamePlayerInformation : MonoBehaviour
         {
             Health = 0;
 
-            StartEndGame(false, 5f);
+            OnDie?.Invoke();
         }
 
         UpdateHealth?.Invoke(Health);
     }
 
-    public void StartEndGame(bool state, float time)
-    {
-        if (EndGameCoroutine == null)
-            EndGameCoroutine = StartCoroutine(EndGameProcess(state, time));
-    }
-
-    Coroutine EndGameCoroutine;
-    IEnumerator EndGameProcess(bool isWinner, float timeDelay)
-    {
-        int moneyReward = 10;
-        int trophyReward = 0;
-        int defeatReward = 0;
-
-        if (isWinner)
-        {
-            Debug.Log($"WIN");
-            //PlayerTowerInventory.AddWin();
-            trophyReward += 1;
-        }
-        else
-        {
-            Debug.Log($"LOSE");
-            //PlayerTowerInventory.AddDefeat();
-
-            defeatReward += 1;
-        }
-
-        
-        EndGame?.Invoke(isWinner);
-
-        yield return new WaitForSeconds(timeDelay);
-
-        DontDestroyOnLoad(this.gameObject);
-
-        var scene = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings().mainMenuScene);
-
-        OnEndGame?.Invoke();
-
-        yield return new WaitUntil(new Func<bool>( () => scene.isDone ));
-
-        GameRewardPanel.OpenRewardPanel(isWinner, moneyReward, trophyReward, defeatReward);
-
-        EndGameCoroutine = null;
-
-        Destroy(this.gameObject);
-    }
+    
+    // public void StartEndGame(bool state, float time)
+    // {
+    //     if (EndGameCoroutine == null)
+    //         EndGameCoroutine = StartCoroutine(EndGameProcess(state, time));
+    // }
+    //
+    // Coroutine EndGameCoroutine;
+    // IEnumerator EndGameProcess(bool isWinner, float timeDelay)
+    // {
+    //     int moneyReward = 10;
+    //     int trophyReward = 0;
+    //     int defeatReward = 0;
+    //
+    //     if (isWinner)
+    //     {
+    //         Debug.Log($"WIN");
+    //         //PlayerTowerInventory.AddWin();
+    //         trophyReward += 1;
+    //     }
+    //     else
+    //     {
+    //         Debug.Log($"LOSE");
+    //         //PlayerTowerInventory.AddDefeat();
+    //
+    //         defeatReward += 1;
+    //     }
+    //
+    //     
+    //     EndGame?.Invoke(isWinner);
+    //
+    //     yield return new WaitForSeconds(timeDelay);
+    //
+    //     DontDestroyOnLoad(this.gameObject);
+    //
+    //     var scene = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings().mainMenuScene);
+    //
+    //     OnEndGame?.Invoke();
+    //
+    //     yield return new WaitUntil(new Func<bool>( () => scene.isDone ));
+    //
+    //     GameRewardPanel.OpenRewardPanel(isWinner, moneyReward, trophyReward, defeatReward);
+    //
+    //     EndGameCoroutine = null;
+    //
+    //     Destroy(this.gameObject);
+    // }
+    
+    
+    
 }

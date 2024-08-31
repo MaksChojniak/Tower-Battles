@@ -98,7 +98,7 @@ namespace Towers
                 thisTowerIsClicked = hit.transform.gameObject == HitboxObject;
 
             
-            GameTowerInformations.SetActiveInformationsPanel?.Invoke(thisTowerIsClicked, TowerController.GetTowerInformations?.Invoke());
+            GameTowerInformations.SetActiveInformationsPanel?.Invoke( thisTowerIsClicked, TowerController.GetTowerInformations?.Invoke() );
             
             TowerController.SelectedRingComponent.SetActiveRing(thisTowerIsClicked);
 

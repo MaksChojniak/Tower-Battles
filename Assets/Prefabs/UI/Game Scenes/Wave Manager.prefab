@@ -10,6 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 3742987942289061087}
   - component: {fileID: 2992847811520387996}
+  - component: {fileID: 1843567431072680471}
+  - component: {fileID: 4150835755056825383}
+  - component: {fileID: 8365914972969989751}
+  - component: {fileID: 8153168483282380432}
+  - component: {fileID: 3810545617786389066}
   m_Layer: 0
   m_Name: Wave Manager
   m_TagString: Untagged
@@ -687,10 +692,88 @@ MonoBehaviour:
   StartCountdown: 10
   enemyStorage: {fileID: 6530209073012195312}
   waveIndicator: {fileID: 6530209073321204858}
-  waveRewardPanel: {fileID: 6530209073889521953}
+  OpenWaveRewardPanel: {fileID: 4150835755056825383}
+  CloseWaveRewardPanel: {fileID: 8365914972969989751}
   waveRewardText: {fileID: 3492453584074183239}
-  skipWavePanel: {fileID: 6530209072742338948}
+  OpenSkipWavePanel: {fileID: 8153168483282380432}
+  CloseSkipWavePanel: {fileID: 3810545617786389066}
   skipWave: 0
+--- !u!95 &1843567431072680471
+Animator:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818828830347929337}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 0224f66b9ac42674cbe742f7dddd294b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4150835755056825383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818828830347929337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: c478dfaeda565e749a7b59f7103f23ce, type: 2}
+  IsReversed: 0
+--- !u!114 &8365914972969989751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818828830347929337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: c478dfaeda565e749a7b59f7103f23ce, type: 2}
+  IsReversed: 1
+--- !u!114 &8153168483282380432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818828830347929337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: 9c11103f1d1d73744ad3931367334333, type: 2}
+  IsReversed: 0
+--- !u!114 &3810545617786389066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818828830347929337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: 9c11103f1d1d73744ad3931367334333, type: 2}
+  IsReversed: 1
 --- !u!1 &3753610042173909690
 GameObject:
   m_ObjectHideFlags: 0
@@ -1518,6 +1601,7 @@ GameObject:
   - component: {fileID: 6530209072742338947}
   - component: {fileID: 6530209072742338945}
   - component: {fileID: 6530209072742338946}
+  - component: {fileID: 2837959668485558058}
   m_Layer: 5
   m_Name: WaveSkip
   m_TagString: Untagged
@@ -1587,6 +1671,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 20
+--- !u!225 &2837959668485558058
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6530209072742338948}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &6530209072804762547
 GameObject:
   m_ObjectHideFlags: 0
@@ -2800,7 +2896,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2992847811520387996}
-        m_TargetAssemblyTypeName: WaveManager, Scripts
+        m_TargetAssemblyTypeName: WaveManager, Assembly-CSharp
         m_MethodName: SetSkipWaveState
         m_Mode: 6
         m_Arguments:
@@ -3041,6 +3137,7 @@ GameObject:
   - component: {fileID: 6530209073889521952}
   - component: {fileID: 6530209073889521966}
   - component: {fileID: 6530209073889521967}
+  - component: {fileID: 211273509326575219}
   m_Layer: 5
   m_Name: 'Wave Bonus '
   m_TagString: Untagged
@@ -3107,6 +3204,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 20
+--- !u!225 &211273509326575219
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6530209073889521953}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &6530209073944117769
 GameObject:
   m_ObjectHideFlags: 0

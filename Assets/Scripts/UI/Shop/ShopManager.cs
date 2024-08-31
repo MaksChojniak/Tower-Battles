@@ -203,10 +203,12 @@ namespace UI.Shop
         
         async void GetDataFromServer()
         {
+            ServerDateReseult result = await ServerDate.GetDateFromServerAsync();
+            dateFromServer = result.ServerDate;
+            localTimeOffset = result.LocalTimeOffset;
 
             List<Task> tasks = new List<Task>()
             {
-                GetDateFromServerAsync(),
                 GetSkinsForSaleFromServerAsync(),
                 GetDailyRewardsFromServerAsync(),
                 GetCoinsOffertsFromServerAsync()
@@ -391,52 +393,6 @@ namespace UI.Shop
         
         
         
-        #region Date/Time
-
-        const string DATE_URL =  "http://www.google.com";
-        
-        void GetDateFromServer()
-        {
-            using (var response = 
-                WebRequest.Create(DATE_URL).GetResponse())
-                //string todaysDates =  response.Headers["date"];
-                dateFromServer = DateTime.ParseExact(response.Headers["date"],
-                    "ddd, dd MMM yyyy HH:mm:ss 'GMT'",
-                    CultureInfo.InvariantCulture.DateTimeFormat,
-                    DateTimeStyles.AssumeUniversal);    
-            
-            // dateFromServer = DateTime.UtcNow;
-            localTimeOffset = DateTime.Now - dateFromServer;
-
-        }
-        
-        async Task GetDateFromServerAsync()
-        {
-            using (var httpClient = new HttpClient())
-            {
-                HttpResponseMessage response = await httpClient.GetAsync(DATE_URL);
-                response.EnsureSuccessStatusCode();
-                
-                var headers = response.Headers;
-                
-                if (!headers.TryGetValues("date", out var dateValues))
-                    throw new Exception("Date header not found.");
-
-                string dateHeader = dateValues.FirstOrDefault();
-                if (string.IsNullOrEmpty(dateHeader))
-                    throw new Exception("Date header not found.");
-                
-                dateFromServer = DateTime.ParseExact(dateHeader,
-                    "ddd, dd MMM yyyy HH:mm:ss 'GMT'",
-                    CultureInfo.InvariantCulture.DateTimeFormat,
-                    DateTimeStyles.AssumeUniversal);
-            }
-            
-            localTimeOffset = DateTime.Now - dateFromServer;
-
-        }
-
-        #endregion
         
         
         

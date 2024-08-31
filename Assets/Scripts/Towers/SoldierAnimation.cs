@@ -218,18 +218,21 @@ namespace Towers
 
             if (Wepaon.DamageType == DamageType.Fire)
             {
-                ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
-                StartCoroutine(DoFireStream(fireStreamParticle, bulletSpeed, WeaponSide, target));
+                ParticleSystem fireStreamParticleSystem = Instantiate(FireStreamPrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+                Particle fireStreamParticle = fireStreamParticleSystem.GetComponent<Particle>();
+                fireStreamParticle.StartCoroutine(DoFireStream(fireStreamParticleSystem, bulletSpeed, WeaponSide, target));
             }
             else if (Wepaon.ShootingType == ShootingType.Shootable)
             {
                 LineRenderer lineRenderer = Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
-                StartCoroutine(DoProjectileBeam(lineRenderer, bulletSpeed, WeaponSide, targetPosition, Wepaon.DamageType == DamageType.Splash) );
+                Particle lineRendererParticle = lineRenderer.GetComponent<Particle>();
+                lineRendererParticle.StartCoroutine(DoProjectileBeam(lineRenderer, bulletSpeed, WeaponSide, targetPosition, Wepaon.DamageType == DamageType.Splash) );
             }
             else if (Wepaon.ShootingType == ShootingType.Throwable)
             {
                 PathCreator throwPath = Instantiate(ThrowPathPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathCreator>();
-                StartCoroutine(DoThrowPath(throwPath, WeaponSide, target, Wepaon.DamageType == DamageType.Splash) );
+                Particle throwPathParticle = throwPath.GetComponent<Particle>();
+                throwPathParticle.StartCoroutine(DoThrowPath(throwPath, WeaponSide, target, Wepaon.DamageType == DamageType.Splash) );
             }
         }
 
@@ -384,12 +387,14 @@ namespace Towers
 
         void PlayExplosionAnimation(Vector3 position)
         {
-            ParticleSystem explosionParticle = Instantiate(ExplosionPrefab, position, Quaternion.identity).GetComponent<ParticleSystem>();
-
-            explosionParticle.Play();
+            ParticleSystem explosionParticleSystem = Instantiate(ExplosionPrefab, position, Quaternion.identity).GetComponent<ParticleSystem>();
             
-            Destroy(explosionParticle.gameObject, 2f);
+            explosionParticleSystem.Play();
+            
+            Destroy(explosionParticleSystem.gameObject, 2f);
         }
+
+
         
 #endregion
         

@@ -56,7 +56,7 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
             m_AdUnitId = m_iOSAdUnitId;
         }
 
-        GamePlayerInformation.OnEndGame += ShowAds;
+        // GamePlayerInformation.OnEndGame += ShowAds;
     }
 
     void OnDestroy()
@@ -65,7 +65,7 @@ public class AdsController : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShow
         {
             Instance = null;
             
-            GamePlayerInformation.OnEndGame -= ShowAds;
+            // GamePlayerInformation.OnEndGame -= ShowAds;
         }
     }
 

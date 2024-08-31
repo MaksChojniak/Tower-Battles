@@ -108,8 +108,8 @@ public class TowerPreviewUI : MonoBehaviour
         placementText.text = $"{tower.PlacementType}";//"Ground/Cliff";
 
         // lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()));
-        lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount));
-        lockedPrice.text = $"Locked:  {StringFormatter.PriceFormat(tower.GetRequiredWinsCount())}";
+        lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredLevel(PlayerController.GetLocalPlayerData().Level));
+        lockedPrice.text = $"Locked:  {StringFormatter.PriceFormat(tower.GetRequiredLevel())}";
         
         unlockPanel.SetActive(!isUnlocked && !lockedPanel.activeSelf);
         
@@ -125,7 +125,7 @@ public class TowerPreviewUI : MonoBehaviour
         // PlayerTowerInventory playerTowerInventory = PlayerTowerInventory.Instance;
 
         // if (!towerData.IsRequiredWinsCount(playerTowerInventory.GetWinsCount()))
-        if (!towerData.IsRequiredWinsCount(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount))
+        if (!towerData.IsRequiredLevel(PlayerController.GetLocalPlayerData().Level))
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtWins);
             return false;

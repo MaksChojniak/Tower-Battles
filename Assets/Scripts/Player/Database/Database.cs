@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Storage;
+using UI.Battlepass;
 using UI.Shop;
 using UI.Shop.Daily_Rewards;
 using UnityEngine;
@@ -48,6 +49,7 @@ namespace Player.Database
             new DatabaseReference(){ DataType = typeof(DailyRewards), DataReference = "DailyRewards.json"},
             new DatabaseReference(){ DataType = typeof(SkinsForSale), DataReference = "SkinsForSale.json"},
             new DatabaseReference(){ DataType = typeof(SkinOffert[]), DataReference = "AllSkinOfferts.json"},
+            new DatabaseReference(){ DataType = typeof(BattlepassProgress), DataReference = "BattlepassProgress.json"},
         };
         
         
@@ -96,7 +98,18 @@ namespace Player.Database
         }
 
 
+        public async static Task DELETE<T>(string playerID = "")
+        {
 
+// #if UNITY_EDITOR
+//             return;
+// #endif
+            
+            if (playerID == "0")
+                return;
+
+            await RemoveDataJson(playerID, typeof(T));
+        }
 
 
 
@@ -198,8 +211,42 @@ namespace Player.Database
 
         
 #endregion
+
+
+
+#region Firebase Remove JSON
+
+        
+        async static Task RemoveDataJson(string playerID, Type dataReferenceType)
+        {
+            DatabaseReference reference = References.FirstOrDefault(r => r.DataType == dataReferenceType);
+            
+            if(reference == null)
+                throw new Exception($"Reference with type: {dataReferenceType.FullName} doesn't exist");
+            
+            await RemoveDataJson(playerID, reference.DataReference);
+        }
+
+        async static Task RemoveDataJson(string playerID, string dataReferenceName)
+        {
+            StorageReference storageReference = FirebaseStorage.DefaultInstance.RootReference; //GetReferenceFromUrl("gs://towerdefense-a8118.appspot.com");
+            
+            StorageReference playerReference = storageReference.Child(playerID);
+            StorageReference dataReference = playerReference.Child(dataReferenceName);
+            if(string.IsNullOrEmpty(playerID))
+                dataReference = storageReference.Child(dataReferenceName);
+            
+            var task = dataReference.DeleteAsync();
+            await Task.WhenAll(task);
+
+            if (task.IsCanceled || task.IsFaulted)
+                throw new Exception("Error while deleting file");
+            
+            Debug.Log($"Finished removing file");
+        }
         
         
+#endregion
         
         
     }

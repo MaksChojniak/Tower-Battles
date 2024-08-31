@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using DefaultNamespace;
 using MMK;
 using MMK.ScriptableObjects;
 using MMK.Towers;
 using TMPro;
 using Towers;
+using UI.Animations;
 using UnityEngine;
 
 namespace MMK
@@ -62,15 +65,18 @@ namespace MMK
         }
         TowerInformations currentClickedTower;
         [SerializeField] bool IsSomeTowerClicked => CurrentClickedTower != null;
-        
+
 
         [Space(18)]
-        [SerializeField] Color normalColor;
-        [SerializeField] Color nextValueColor;
-        [SerializeField] Color MaxedOutColor;
-        [SerializeField] Color cashColor;
-        [SerializeField] Color targetModeButtonNormalColor;
-        [SerializeField] Color targetModeButtonHighlightedColor;
+
+        [SerializeField] UIAnimation OpenPanelAnimation;
+        [SerializeField] UIAnimation ClosePanelAnimation;
+        // [SerializeField] Color normalColor;
+        // [SerializeField] Color nextValueColor;
+        // [SerializeField] Color MaxedOutColor;
+        // [SerializeField] Color cashColor;
+        // [SerializeField] Color targetModeButtonNormalColor;
+        // [SerializeField] Color targetModeButtonHighlightedColor;
 
 
 
@@ -106,7 +112,8 @@ namespace MMK
 
         void RegisterHandlers()
         {
-            SetActiveInformationsPanel += OnSetActiveInformationsPanel;
+            // SetActiveInformationsPanel += OnSetActiveInformationsPanel;
+            SetActiveInformationsPanel += WaitForAllTowers;
             TowerSpawner.OnStartPlacingTower += OnTowerPlaced;
             
         }
@@ -114,7 +121,8 @@ namespace MMK
         void UnregisterHandlers()
         {
             TowerSpawner.OnStartPlacingTower -= OnTowerPlaced;
-            SetActiveInformationsPanel -= OnSetActiveInformationsPanel;
+            // SetActiveInformationsPanel -= OnSetActiveInformationsPanel;
+            SetActiveInformationsPanel -= WaitForAllTowers;
 
         }
 
@@ -127,24 +135,64 @@ namespace MMK
         void OnTowerPlaced(TowerController towerController)
         {
             if(IsSomeTowerClicked)
-                SetActiveInformationsPanel(false, CurrentClickedTower);
+                OnSetActiveInformationsPanel(false, CurrentClickedTower);
 
+        }
+
+        
+        
+
+        class PanelActiveState
+        {
+            public bool ActiveState;
+            public TowerInformations Info;
+        }
+
+        List<PanelActiveState> panelActiveStateQueue = new List<PanelActiveState>();
+        async void WaitForAllTowers(bool activeState, TowerInformations Info)
+        {
+            panelActiveStateQueue.Add(new PanelActiveState() { ActiveState = activeState, Info = Info } );
+            
+            if(panelActiveStateQueue.Count > 1)
+                return;
+
+            while ( panelActiveStateQueue.Count < GameObject.FindObjectsOfType<TowerController>().Length )
+            {
+                await Task.Yield();
+            }
+
+            PanelActiveState panelState = panelActiveStateQueue.FirstOrDefault(element => element.ActiveState);
+
+            bool state = panelState != null;
+            TowerInformations info = panelState?.Info;
+
+            OnSetActiveInformationsPanel(state, info);
+
+            panelActiveStateQueue = new List<PanelActiveState>();
         }
         
 
         void OnSetActiveInformationsPanel(bool activeState, TowerInformations Info)
         {
-            if (!activeState && CurrentClickedTower != null && CurrentClickedTower.Controller != Info.Controller)
+            if (!activeState && CurrentClickedTower != null && Info != null && CurrentClickedTower.Controller != Info.Controller)
                 return;
             
-            InforamtionPanel.SetActive(activeState);
+            // InforamtionPanel.SetActive(activeState);
+            
+            
+            if (activeState)
+                OpenPanelAnimation.PlayAnimation();
+            else
+                ClosePanelAnimation.PlayAnimation();
 
+            
             if (!activeState)
             {
                 CurrentClickedTower = null;
                 return;
             }
-
+            
+            
             CurrentClickedTower = Info;
 
 
@@ -403,11 +451,11 @@ namespace MMK
             TowerInformationsUI.TowerImage.sprite = baseInformations.Sprite;
 
             string upgradeText = baseInformations.isMaxLevel ? 
-                StringFormatter.GetColoredText("Maxed Out", MaxedOutColor) :
-                $"Upgrade: " + StringFormatter.GetColoredText(baseInformations.UpgradePrice.ToString(), cashColor) + StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName, WithSpaces = true});
+                StringFormatter.GetColoredText("Maxed Out", GlobalSettingsManager.GetGlobalSettings.Invoke().MaxedOutColor) :
+                $"Upgrade: " + StringFormatter.GetColoredText(baseInformations.UpgradePrice.ToString(), GlobalSettingsManager.GetGlobalSettings.Invoke().CashColor) + StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName, WithSpaces = true});
             TowerInformationsUI.UpgradePriceText.text = upgradeText;
             
-            TowerInformationsUI.SellPriceText.text = $"Sell: " + StringFormatter.GetColoredText(baseInformations.SellPrice.ToString(), cashColor) + StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName, WithSpaces = true});
+            TowerInformationsUI.SellPriceText.text = $"Sell: " + StringFormatter.GetColoredText(baseInformations.SellPrice.ToString(), GlobalSettingsManager.GetGlobalSettings.Invoke().CashColor) + StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName, WithSpaces = true});
 
             TowerInformationsUI.MaxedOutImage.enabled = baseInformations.isMaxLevel;
 
@@ -426,11 +474,11 @@ namespace MMK
             string valueText = valuesHasSprites ? 
                 StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = dictionary[bool.Parse($"{propertyData.Value}")] }) : StringFormatter.GetFormattedDouble($"{propertyData.Value}");
             string nextValueText = valuesHasSprites ? 
-                StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = dictionary[bool.Parse($"{propertyData.NextValue}")] }) : StringFormatter.GetColoredText(StringFormatter.GetFormattedDouble($"{propertyData.NextValue}"), nextValueColor);
+                StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = dictionary[bool.Parse($"{propertyData.NextValue}")] }) : StringFormatter.GetColoredText(StringFormatter.GetFormattedDouble($"{propertyData.NextValue}"), GlobalSettingsManager.GetGlobalSettings.Invoke().NextValueColor);
             
             string text = $"<size=30>" + StringFormatter.GetSpriteText(propertyData.SpriteData) + $"   </size>" + $"{propertyData.PropertyName}: " + valueText;
             if (valueChanged)
-                text += StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().ArrowRightIconName, WithColor = true, Color = nextValueColor, WithSpaces = true, SpacesCount = 2}) + nextValueText;
+                text += StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().ArrowRightIconName, WithColor = true, Color = GlobalSettingsManager.GetGlobalSettings.Invoke().NextValueColor, WithSpaces = true, SpacesCount = 2}) + nextValueText;
             
             propertyText.text = text;
             
@@ -518,7 +566,7 @@ namespace MMK
                 return;
             }
             
-            SetActiveInformationsPanel(true, CurrentClickedTower);
+            OnSetActiveInformationsPanel(true, CurrentClickedTower);
         }
 
         
@@ -530,7 +578,7 @@ namespace MMK
             
             CurrentClickedTower.Controller.RemoveTower();
 
-            SetActiveInformationsPanel(false, CurrentClickedTower);
+            OnSetActiveInformationsPanel(false, CurrentClickedTower);
             
         }
 
@@ -580,9 +628,9 @@ namespace MMK
         void UpdateTargettingButtons(int Index)
         {
             foreach (var button in TowerInformationsUI.TargetModeButtons)
-                button.image.color = targetModeButtonNormalColor;
+                button.image.color = GlobalSettingsManager.GetGlobalSettings.Invoke().TargettingButtonBaseColor;
    
-            TowerInformationsUI.TargetModeButtons[Index].image.color = targetModeButtonHighlightedColor;
+            TowerInformationsUI.TargetModeButtons[Index].image.color = GlobalSettingsManager.GetGlobalSettings.Invoke().TargettingButtonSelectedColor;
         }
 
         

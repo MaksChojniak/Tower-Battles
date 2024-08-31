@@ -51,8 +51,8 @@ namespace MMK.ScriptableObjects
         
         public ulong GetUnlockedPrice() => BaseProperties.UnlockPrice;
         public bool IsUnlocked() => BaseProperties.IsUnlocked;
-        public ulong GetRequiredWinsCount() => BaseProperties.RequiredWinsCount;
-        public bool IsRequiredWinsCount(ulong currentWinsCount) => currentWinsCount >= BaseProperties.RequiredWinsCount;
+        public ulong GetRequiredLevel() => BaseProperties.RequiredLevel;
+        public bool IsRequiredLevel(ulong currentLevel) => currentLevel >= BaseProperties.RequiredLevel;
         // public void UnlockTower() =>  BaseProperties.IsUnlocked = true;
 
 
@@ -103,7 +103,7 @@ namespace MMK.ScriptableObjects
     public class BaseProperties
     {
         public ulong UnlockPrice;
-        public ulong RequiredWinsCount;
+        public ulong RequiredLevel;
         public bool IsUnlocked;
     }
     
