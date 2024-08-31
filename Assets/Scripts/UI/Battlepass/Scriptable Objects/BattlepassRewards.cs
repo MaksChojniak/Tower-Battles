@@ -21,7 +21,7 @@ namespace UI.Battlepass
         public int DaysDuration;
    
 
-        public Reward[] rewards = new Reward[RewardsCount];
+        public Rewards[] rewards = new Rewards[RewardsCount];
 
     }
 }

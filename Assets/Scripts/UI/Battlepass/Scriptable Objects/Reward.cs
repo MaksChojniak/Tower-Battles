@@ -18,6 +18,15 @@ namespace UI.Battlepass
     }
     
     [Serializable]
+    public class Rewards
+    {
+        public Reward Battlepass = new Reward();
+        public Reward PremiumBattlepass = new Reward();
+    }
+
+
+
+    [Serializable]
     public class Reward
     {
         public RewardType Type;
@@ -26,4 +35,5 @@ namespace UI.Battlepass
         public ulong Gems;
         public TowerSkin Skin;
     }
+    
 }

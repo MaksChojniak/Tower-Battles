@@ -146,6 +146,28 @@ namespace Editor
             EditorGUILayout.LabelField($"Tier {index+1}", EditorStyles.boldLabel);
                     
             SerializedProperty element = elements.GetArrayElementAtIndex(index);
+           
+            EditorGUILayout.LabelField("Free Battlepass");
+            SerializedProperty battlepassProperty = element.FindPropertyRelative("Battlepass");//.serializedObject.FindProperty("Battlepass");
+            PropertiesByType(battlepassProperty);
+            
+            EditorGUILayout.Space();
+            
+            EditorGUILayout.LabelField("Premium Battlepass");
+            SerializedProperty premiumBattlepassProperty = element.FindPropertyRelative("PremiumBattlepass");//.serializedObject.FindProperty("PremiumBattlepass");
+            PropertiesByType(premiumBattlepassProperty);
+            
+            
+
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space(10);
+
+        }
+
+
+        void PropertiesByType(SerializedProperty element)
+        {
             SerializedProperty typeProperty = element.FindPropertyRelative("Type");
 
             EditorGUILayout.PropertyField(typeProperty);
@@ -182,15 +204,7 @@ namespace Editor
                     EditorGUILayout.LabelField("None"); 
                     break;
             }
-
-            EditorGUILayout.EndVertical();
-
-            EditorGUILayout.Space(10);
-
         }
-        
-        
-
 
     }
     
