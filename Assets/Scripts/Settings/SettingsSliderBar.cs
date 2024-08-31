@@ -18,7 +18,7 @@ namespace DefaultNamespace
 
         [SerializeField] float _interval;
         bool readyToNextInvoke;
-        int _cachedSliderDirection;
+        [SerializeField] int _cachedSliderDirection;
 
         public void OnBeginHold(int value)
         {
@@ -42,9 +42,9 @@ namespace DefaultNamespace
 
         void OnHold(int value)
         {
-            float sliderValue = ((float)value / 100f);
+            // float sliderValue = (value / 100f);
 
-            slider.value += sliderValue;
+            slider.value += value;
             
             Invoke(nameof(SetReadyInvoke), _interval);
         }

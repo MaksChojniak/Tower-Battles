@@ -68,8 +68,8 @@ namespace Settings
 
         public void ChangeData(float value)
         {
-            int volume = (int)(value * 100f);
-            Settings.UIVolume = volume;
+            // int volume = (int)(value * 100f);
+            Settings.UIVolume = Mathf.RoundToInt(value);
 
             SettingsManager.SetAudioSettings(Settings);
         }
@@ -78,7 +78,7 @@ namespace Settings
         
         void UpdateUI()
         {
-            SliderBar.slider.value = Settings.UIVolume / 100f;
+            SliderBar.slider.value = Settings.UIVolume;
             
             string text = Settings.UIVolume.ToString();
             ValueText.text = text;

@@ -69,8 +69,8 @@ namespace DefaultNamespace
 
         public void ChangeData(float value)
         {
-            int volume = (int)(value * 100f);
-            Settings.MusicVolume = volume;
+            // int volume = (int)(value * 100f);
+            Settings.MusicVolume = Mathf.RoundToInt(value);
 
             SettingsManager.SetAudioSettings(Settings);
         }
@@ -79,7 +79,7 @@ namespace DefaultNamespace
         
         void UpdateUI()
         {
-            SliderBar.slider.value = Settings.MusicVolume / 100f;
+            SliderBar.slider.value = Settings.MusicVolume;
             
             string text = Settings.MusicVolume.ToString();
             ValueText.text = text;
