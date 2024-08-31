@@ -13,7 +13,7 @@ namespace Editor
     public class BattlepassRewardEditor : UnityEditor.Editor
     {
 
-        // bool showRewards;
+        bool showRewards;
         
         BattlepassRewards _target;
 
@@ -24,32 +24,47 @@ namespace Editor
             EditorGUILayout.Space();
 
             _target = (BattlepassRewards)target;
-            
-            
+
+
             DrawDateProperties();
-            
+
             EditorGUILayout.Space();
-            
-            InspectorTools.PropertyField( new PropertFieldData() { SerializedObject = serializedObject, PropertyName = "DaysDuration" , Caption = "Days Duration"} );
-            
-            
+
+            InspectorTools.PropertyField(new PropertFieldData()
+            {
+                SerializedObject = serializedObject,
+                PropertyName = "DaysDuration",
+                Caption = "Days Duration"
+            });
+
+
             EditorGUILayout.Space(18);
-            
-            EditorGUILayout.LabelField($"Rewards", EditorStyles.boldLabel);
-            
+
             SerializedProperty elements = serializedObject.FindProperty("rewards");
+
+
+            // if (elements.isExpanded)
+            // {
+            // EditorGUI.indentLevel++;
+
+            EditorGUILayout.BeginHorizontal();
             
+            showRewards = EditorGUILayout.Foldout(showRewards, "");
+            EditorGUILayout.LabelField("Rewards", EditorStyles.boldLabel);
             
-            if (elements.isExpanded)
+            EditorGUILayout.EndHorizontal();
+            
+            if (showRewards)
             {
                 EditorGUI.indentLevel++;
-
+                
                 for (int i = 0; i < elements.arraySize; i++)
                 {
                     DrawTierProperties(i, elements);
                 }
-
             }
+            
+            // }
 
 
             serializedObject.ApplyModifiedProperties();
