@@ -38,7 +38,7 @@ namespace Editor
             });
 
 
-            EditorGUILayout.Space(18);
+            EditorGUILayout.Space(28);
 
             SerializedProperty elements = serializedObject.FindProperty("rewards");
 
@@ -47,22 +47,27 @@ namespace Editor
             // {
             // EditorGUI.indentLevel++;
 
-            EditorGUILayout.BeginHorizontal();
-            
-            showRewards = EditorGUILayout.Foldout(showRewards, "");
+            // EditorGUILayout.BeginHorizontal();
+            //
+            // showRewards = EditorGUILayout.Foldout(showRewards, "");
+            // EditorGUILayout.LabelField("Rewards", EditorStyles.boldLabel);
+            //
+            // EditorGUILayout.EndHorizontal();
+            //
+            // if (showRewards)
+            // {
+                // EditorGUI.indentLevel++;
+                
             EditorGUILayout.LabelField("Rewards", EditorStyles.boldLabel);
             
-            EditorGUILayout.EndHorizontal();
-            
-            if (showRewards)
-            {
-                EditorGUI.indentLevel++;
+            EditorGUILayout.Space(8);
                 
-                for (int i = 0; i < elements.arraySize; i++)
-                {
-                    DrawTierProperties(i, elements);
-                }
+            for (int i = 0; i < elements.arraySize; i++)
+            {
+                DrawTierProperties(i, elements);
             }
+            
+            // }
             
             // }
 
@@ -116,10 +121,27 @@ namespace Editor
             EditorGUILayout.EndHorizontal();
         }
 
+        
+        private Texture2D MakeTex(int width, int height, Color col)
+        {
+            Color[] pix = new Color[width * height];
+
+            for (int i = 0; i < pix.Length; i++)
+                pix[i] = col;
+
+            Texture2D result = new Texture2D(width, height);
+            result.SetPixels(pix);
+            result.Apply();
+
+            return result;
+        }
 
 
         void DrawTierProperties(int index, SerializedProperty elements)
         {
+            GUIStyle coloredBoxStyle = new GUIStyle(GUI.skin.box);
+            coloredBoxStyle.normal.background = MakeTex(2, 2, new Color(40/255f, 40/255f, 40/255f));
+            EditorGUILayout.BeginVertical(coloredBoxStyle);
             
             EditorGUILayout.LabelField($"Tier {index+1}", EditorStyles.boldLabel);
                     
@@ -161,8 +183,10 @@ namespace Editor
                     break;
             }
 
-            EditorGUILayout.Space();
-            
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.Space(10);
+
         }
         
         
