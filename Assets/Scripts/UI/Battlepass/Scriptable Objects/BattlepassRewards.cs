@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Globalization;
-using UnityEditor;
 using UnityEngine;
-using static UnityEditor.Rendering.FilterWindow;
 
 namespace UI.Battlepass
 {
