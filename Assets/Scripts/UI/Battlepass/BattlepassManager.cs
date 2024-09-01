@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MMK;
 using Player;
 using Player.Database;
+using UI.Animations;
 using UI.Shop;
 using UnityEngine;
 
@@ -19,6 +20,22 @@ namespace UI.Battlepass
         public BattlepassRewards BattlepassRewards;
 
 
+        [Space(18)]
+        [Header("UI properties")]
+        [SerializeField] GameObject TilesContainer;
+        [SerializeField] RectTransform LockedRewardsMask;
+ 
+        [Space(8)]
+        [Header("Prefabs")]
+        [SerializeField] GameObject LargeRewardPrefab;
+        [SerializeField] GameObject SmallRewardPrefab;
+
+        [Space(8)]
+        [Header("Animations")]
+        [SerializeField] UIAnimation OpenRewardPreviewPanel;
+        [SerializeField] UIAnimation CloseRewardPreviewPanel;
+
+        
         
         DateTime dateFromServer = new DateTime();
         TimeSpan localTimeOffset = new TimeSpan();
@@ -30,7 +47,7 @@ namespace UI.Battlepass
         void Awake()
         {
             RegisterHandlers();
-
+            
             GetDataFromServer();
         }
 
