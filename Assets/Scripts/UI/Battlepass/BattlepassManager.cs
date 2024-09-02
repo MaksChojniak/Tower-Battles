@@ -24,9 +24,13 @@ namespace UI.Battlepass
         [Header("UI properties")]
         [HideInInspector] [SerializeField] GameObject TilesContainer;
         [SerializeField] BattlepassTierTile[] TilesUI;
-        [Space(4)]
-        [SerializeField] RectTransform LockedRewardsMask;
- 
+        [SerializeField] bool UpdateTiles;
+
+        [Space(8)]
+        [Header("Sprites")]
+        [SerializeField] Sprite[] CoinSprites;
+        [SerializeField] Sprite[] GemsSprites;
+
         [Space(8)]
         [Header("Prefabs")]
         [SerializeField] GameObject LargeRewardPrefab;
@@ -59,23 +63,29 @@ namespace UI.Battlepass
         }
 
 
-        [ContextMenu(nameof(UpdateUI))]
-        public void UpdateUI()
+        void OnValidate()
         {
-            List<BattlepassTierTile> tiles = new List<BattlepassTierTile>();
 
+            if (!UpdateTiles)
+                return;
+            UpdateTiles = false;
+                    
+            List<BattlepassTierTile> tiles = new List<BattlepassTierTile>();
+        
             for (int i = 0; i < TilesContainer.transform.childCount; i++)
             {
                 tiles.Add(TilesContainer.transform.GetChild(i).GetComponent<BattlepassTierTile>());
             }
 
             TilesUI = tiles.ToArray();
+            
         }
 
 
         void Update()
         {
-            UpdateBattlapassUI();
+            // UpdateBattlapassUI();
+            
         }
 
 
@@ -133,15 +143,21 @@ namespace UI.Battlepass
             
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
-                playerProgress = new BattlepassProgress() {LastTierUnlocked = -1, Rewards = new List<Reward>()};
+                playerProgress = new BattlepassProgress() { LastTierUnlocked = -1, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
             else
                 playerProgress = result.Data;
-            
+
+
+            await UpdateBattlapassUI();
         }
 
 
-        async void UpdateBattlapassUI()
+        
+        async Task UpdateBattlapassUI()
         {
+            if(playerProgress == null)
+                return;
+            
             // TODO add battlepass UI when kacper commit  
 
             for (int i = 0; i < BattlepassRewards.rewards.Length; i++)
@@ -151,12 +167,17 @@ namespace UI.Battlepass
                 RewardUI[] freeRewardsUI = GetRewards(rewards.Battlepass);
                 RewardUI[] premiumRewardsUI = GetRewards(rewards.PremiumBattlepass);
                 
-                TilesUI[i].SetFreeBattlepassImages(freeRewardsUI);
-                TilesUI[i].SetFreeTileLockedState(false);
 
+                TilesUI[i].SetFreeBattlepassImages(freeRewardsUI);
+                TilesUI[i].SetFreeTileLockedState(i < 3);
+                
                 TilesUI[i].SetPremiumBattlepassImages(premiumRewardsUI);
-                TilesUI[i].SetPremiumTileLockedState(false);
+                TilesUI[i].SetPremiumTileLockedState(i < 3);
+
+                TilesUI[i].SetPremiumBattlepassLockedState(playerProgress.HasPremiumBattlepass);
+
             }
+            
             
         }
 
@@ -205,11 +226,27 @@ namespace UI.Battlepass
 
         Sprite GetCoinsSpriteByAmmount(ulong amount)
         {
+            
+            if (amount <= 25)
+                return CoinSprites[0];
+            else
+                return CoinSprites[1];
+       
             return null;
         }
         
         Sprite GetGemsSpriteByAmmount(ulong amount)
         {
+        
+            if (amount <= 10)
+                return GemsSprites[0];
+            else if (amount <= 15)
+                return GemsSprites[1];
+            else if (amount <= 25)
+                return GemsSprites[2];
+            else
+                return GemsSprites[3];
+        
             return null;
         }
         

@@ -21,17 +21,26 @@ namespace UI.Battlepass
         public SetLockedStateDelegate SetFreeTileLockedState;
         public SetLockedStateDelegate SetPremiumTileLockedState;
         
+        public SetLockedStateDelegate SetPremiumBattlepassLockedState;
+        
 
-        Transform _freeBattlepassContainer;
-        Transform _premiumBattlepassContainer;
+        
+        Transform _freeBattlepass;
+        Transform _freeBattlepassRewardContainer => _freeBattlepass.GetChild(0);
+        Transform _freeBattlepassTierLockedMask => _freeBattlepass.GetChild(2);
+        
+        Transform _premiumBattlepass;
+        Transform _premiumBattlepassRewardContainer => _premiumBattlepass.GetChild(0);
+        Transform _premiumBattlepassTierLockedMask => _premiumBattlepass.GetChild(2);
+        Transform _premiumBattlepassLockedMask => _premiumBattlepass.GetChild(3);
         
 
         void Awake()
         {
             RegisterHandlers();
 
-            _freeBattlepassContainer = this.transform.GetChild(1);
-            _premiumBattlepassContainer = this.transform.GetChild(2);
+            _freeBattlepass = this.transform.GetChild(1);
+            _premiumBattlepass = this.transform.GetChild(2);
         }
 
         void OnDestroy()
@@ -52,10 +61,14 @@ namespace UI.Battlepass
             SetFreeTileLockedState += OnSetFreeTileLockedState;
             SetPremiumTileLockedState += OnSetPremiumTileLockedState;
 
+            SetPremiumBattlepassLockedState += OnSetPremiumBattlepassLockedState;
+
         }
         
         void UnregisterHandlers()
         {
+            SetPremiumBattlepassLockedState -= OnSetPremiumBattlepassLockedState;
+            
             SetPremiumTileLockedState -= OnSetPremiumTileLockedState;
             SetFreeTileLockedState -= OnSetFreeTileLockedState;
             
@@ -68,9 +81,12 @@ namespace UI.Battlepass
 
 
 
-        void OnSetFreeBattlepassImages(RewardUI[] rewardsUI) => SetImagesToContainer(_freeBattlepassContainer.GetChild(0), rewardsUI);
+#region Set Rewards Images & Prefabs
+
         
-        void OnSetPremiumBattlepassImages(RewardUI[] rewardsUI) => SetImagesToContainer(_premiumBattlepassContainer.GetChild(0), rewardsUI);
+        void OnSetFreeBattlepassImages(RewardUI[] rewardsUI) => SetImagesToContainer(_freeBattlepassRewardContainer, rewardsUI);
+        
+        void OnSetPremiumBattlepassImages(RewardUI[] rewardsUI) => SetImagesToContainer(_premiumBattlepassRewardContainer, rewardsUI);
 
 
 
@@ -80,28 +96,41 @@ namespace UI.Battlepass
             {
                 GameObject reward = Instantiate(rewardUI.Prefab, Vector3.zero, Quaternion.identity, container);
                 
-                Image image = reward.GetComponent<Image>();
+                Image image = reward.transform.GetChild(0).GetComponent<Image>();
                 image.sprite = rewardUI.Sprite;
             }
             
         }
         
         
+#endregion
+
+
+
+#region Set Unlocked Tile State
+
         
+        void OnSetFreeTileLockedState(bool lockState) => SetTileLockState(_freeBattlepassTierLockedMask, !lockState);
         
-        void OnSetFreeTileLockedState(bool lockState) => SetTileLockState(_freeBattlepassContainer, lockState);
-        
-        void OnSetPremiumTileLockedState(bool lockState) => SetTileLockState(_freeBattlepassContainer, lockState);
+        void OnSetPremiumTileLockedState(bool lockState) => SetTileLockState(_premiumBattlepassTierLockedMask, !lockState);
 
 
         
-        void SetTileLockState(Transform container, bool lockState)
-        {
-            
-        }
+        void SetTileLockState(Transform panel, bool lockState) => panel.gameObject.SetActive(lockState);
         
         
+#endregion
+
+
+
+#region Set Premium Battlepass Lockstate
+
         
+        void OnSetPremiumBattlepassLockedState(bool lockState) => _premiumBattlepassLockedMask.gameObject.SetActive(!lockState);
+
+        
+#endregion
+
 
     }
 }
