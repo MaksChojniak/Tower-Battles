@@ -22,7 +22,9 @@ namespace UI.Battlepass
 
         [Space(18)]
         [Header("UI properties")]
-        [SerializeField] GameObject TilesContainer;
+        [HideInInspector] [SerializeField] GameObject TilesContainer;
+        [SerializeField] BattlepassTierTile[] TilesUI;
+        [Space(4)]
         [SerializeField] RectTransform LockedRewardsMask;
  
         [Space(8)]
@@ -35,7 +37,6 @@ namespace UI.Battlepass
         [SerializeField] UIAnimation OpenRewardPreviewPanel;
         [SerializeField] UIAnimation CloseRewardPreviewPanel;
 
-        
         
         DateTime dateFromServer = new DateTime();
         TimeSpan localTimeOffset = new TimeSpan();
@@ -55,6 +56,20 @@ namespace UI.Battlepass
         {
             UnregisterHandlers();
             
+        }
+
+
+        [ContextMenu(nameof(UpdateUI))]
+        public void UpdateUI()
+        {
+            List<BattlepassTierTile> tiles = new List<BattlepassTierTile>();
+
+            for (int i = 0; i < TilesContainer.transform.childCount; i++)
+            {
+                tiles.Add(TilesContainer.transform.GetChild(i).GetComponent<BattlepassTierTile>());
+            }
+
+            TilesUI = tiles.ToArray();
         }
 
 
@@ -128,7 +143,77 @@ namespace UI.Battlepass
         async void UpdateBattlapassUI()
         {
             // TODO add battlepass UI when kacper commit  
+
+            for (int i = 0; i < BattlepassRewards.rewards.Length; i++)
+            {
+                Rewards rewards = BattlepassRewards.rewards[i];
+
+                RewardUI[] freeRewardsUI = GetRewards(rewards.Battlepass);
+                RewardUI[] premiumRewardsUI = GetRewards(rewards.PremiumBattlepass);
+                
+                TilesUI[i].SetFreeBattlepassImages(freeRewardsUI);
+                TilesUI[i].SetFreeTileLockedState(false);
+
+                TilesUI[i].SetPremiumBattlepassImages(premiumRewardsUI);
+                TilesUI[i].SetPremiumTileLockedState(false);
+            }
+            
         }
+
+
+        
+        
+        
+        RewardUI[] GetRewards(Reward reward)
+        {
+            List<RewardUI> rewardsUI = new List<RewardUI>();
+            
+            switch (reward.Type)
+            {
+                case RewardType.Coins:
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), } );
+                    break;
+                case RewardType.Coins_Gems:
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), } );
+                    break;
+                case RewardType.Coins_Skin:
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), } );
+                    rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
+                    break;
+                case RewardType.Gems:
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), } );
+                    break;
+                case RewardType.Gems_Skin:
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), } );
+                    rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
+                    break;
+                case RewardType.Skin:
+                    rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
+                    break;
+                case RewardType.Coins_Gems_Skin:
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), } );
+                    rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
+                    break;
+                case RewardType.None:
+                    break;
+            }
+
+            return rewardsUI.ToArray();
+        }
+
+        Sprite GetCoinsSpriteByAmmount(ulong amount)
+        {
+            return null;
+        }
+        
+        Sprite GetGemsSpriteByAmmount(ulong amount)
+        {
+            return null;
+        }
+        
+        
         
         
         // if (TimeToEndBattlepass.TotalMilliseconds < 0)
