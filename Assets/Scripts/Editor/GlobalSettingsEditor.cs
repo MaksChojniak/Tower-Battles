@@ -63,6 +63,7 @@ namespace Editor
                 GUI.enabled = false;
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "CashIconName", Caption = "Cash Icon Name"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "CoinsIconName", Caption = "Coins Icon Name"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "GemsIconName", Caption = "Gems Icon Name"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "HeartIconName", Caption = "Heart Icon Name"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "FirerateIconName", Caption = "Firerate Icon Name"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "RadarIconName", Caption = "Radar Icon Name"});

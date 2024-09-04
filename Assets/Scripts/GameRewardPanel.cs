@@ -122,7 +122,7 @@ namespace Assets.Scripts
         public void ClaimReward()
         {
             // PlayerTowerInventory.ChangeBalance(MoneyReward);
-            PlayerData.ChangeBalance(MoneyReward);
+            PlayerData.ChangeCoinsBalance(MoneyReward);
 
             // if(TrophyReward > 0)
             //     PlayerTowerInventory.AddWin();

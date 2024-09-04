@@ -28,6 +28,7 @@ namespace MMK
 
         public string CashIconName = "cash";
         public string CoinsIconName = "coins";
+        public string GemsIconName = "gem";
         public string HeartIconName = "heart";
         public string FirerateIconName = "firerate";
         public string RadarIconName = "radar";

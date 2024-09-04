@@ -497,7 +497,7 @@ namespace UI.Shop
             switch (reward.Type)
             {
                 case RewardType.Coins:
-                    PlayerData.ChangeBalance((long)reward.CoinsBalance);
+                    PlayerData.ChangeCoinsBalance((long)reward.CoinsBalance);
                     break;
                 case RewardType.Experience:
                     PlayerData.ChangeExperience((long)reward.XP);

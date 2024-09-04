@@ -35,8 +35,10 @@ public class PlayerInventoryStatsUI : MonoBehaviour
     
     void RegisterHandlers()
     {
-        PlayerData.OnChangeBalance += UpdateBalanceText;
-        PlayerData.OnChangeWinsCount += UpdateWinCountText;
+        PlayerData.OnChangeCoinsBalance += UpdateCoinsBalanceText;
+        
+        PlayerData.OnChangeGemsBalance += UpdateGemsBalanceText;
+        
         PlayerData.OnChangeExperience += UpdateExperienceText;
         
     }
@@ -44,9 +46,12 @@ public class PlayerInventoryStatsUI : MonoBehaviour
     
     void UnregisterHandlers()
     {
-        PlayerData.OnChangeBalance -= UpdateBalanceText;
-        PlayerData.OnChangeWinsCount -= UpdateWinCountText;
         PlayerData.OnChangeExperience -= UpdateExperienceText;
+        
+        PlayerData.OnChangeGemsBalance -= UpdateGemsBalanceText;
+        
+        PlayerData.OnChangeCoinsBalance -= UpdateCoinsBalanceText;
+        
     }
     
     
@@ -64,20 +69,22 @@ public class PlayerInventoryStatsUI : MonoBehaviour
             return;
 
 
-        UpdateBalanceText(PlayerController.GetLocalPlayerData().WalletData.Balance);
-        UpdateWinCountText(PlayerController.GetLocalPlayerData().PlayerGamesData.WinsCount);
+        UpdateCoinsBalanceText(PlayerController.GetLocalPlayerData().WalletData.Coins);
+        
+        UpdateGemsBalanceText(PlayerController.GetLocalPlayerData().WalletData.Gems);
+        
         UpdateExperienceText(PlayerController.GetLocalPlayerData().ExperiencePoins);
 
     }
 
-    void UpdateBalanceText(ulong value)
+    void UpdateCoinsBalanceText(ulong value)
     {
         moneyText.text = $"{StringFormatter.PriceFormat(value)}{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().CoinsIconName })}";
     }
 
-    void UpdateWinCountText(ulong value)
+    void UpdateGemsBalanceText(ulong value)
     {
-        winsCountText.text = $"{StringFormatter.PriceFormat(value)} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().TrophyIconName })}";
+        winsCountText.text = $"{StringFormatter.PriceFormat(value)} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().GemsIconName })}";
     }
 
     void UpdateExperienceText(ulong value)

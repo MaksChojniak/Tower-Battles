@@ -247,7 +247,7 @@ namespace UI
             
             
             if (reward.Coins > 0)
-                PlayerData.ChangeBalance(reward.Coins);
+                PlayerData.ChangeCoinsBalance(reward.Coins);
             if (reward.XP > 0)
                 PlayerData.ChangeExperience(reward.XP);
 

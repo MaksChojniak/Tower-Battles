@@ -132,14 +132,14 @@ public class TowerPreviewUI : MonoBehaviour
         }
         
         // if (towerData.GetUnlockedPrice() > PlayerTowerInventory.Instance.GetBalance())
-        if (towerData.GetUnlockedPrice() > PlayerController.GetLocalPlayerData().WalletData.Balance)
+        if (towerData.GetUnlockedPrice() > PlayerController.GetLocalPlayerData().WalletData.Coins)
         {
             WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
             return false;
         }
 
         // PlayerTowerInventory.ChangeBalance(-towerData.GetUnlockedPrice());
-        PlayerData.ChangeBalance(-(long)towerData.GetUnlockedPrice());
+        PlayerData.ChangeCoinsBalance(-(long)towerData.GetUnlockedPrice());
         towerData.UnlockTower();
 
         inventory.UpdateTiles();

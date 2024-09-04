@@ -24,7 +24,7 @@ namespace Player
     [Serializable]
     public struct WalletData
     {
-        public ulong Balance;
+        public ulong Coins;
         public ulong Gems;
 
         public Dictionary<ulong,string> Payements;
@@ -53,17 +53,30 @@ namespace Player
 
         #region Balance Events
 
-        public delegate void OnChangeBalanceDelegate(ulong value);
-        public static OnChangeBalanceDelegate OnChangeBalance;   
+        public delegate void OnChangeCoinsBalanceDelegate(ulong value);
+        public static OnChangeCoinsBalanceDelegate OnChangeCoinsBalance;   
         
-        public delegate void ChangeBalanceDelegate(long value);
-        public static ChangeBalanceDelegate ChangeBalance;
+        public delegate void ChangeCoinsBalanceDelegate(long value);
+        public static ChangeCoinsBalanceDelegate ChangeCoinsBalance;
 
-        public delegate ulong GetBalanceDelegate();
-        public static GetBalanceDelegate GetBalance;
+        public delegate ulong GetCoinsBalanceDelegate();
+        public static GetCoinsBalanceDelegate GetCoinsBalance;
         
         #endregion
         
+        
+        #region Gems Events
+
+        public delegate void OnChangeGemsBalanceDelegate(ulong value);
+        public static OnChangeGemsBalanceDelegate OnChangeGemsBalance;   
+        
+        public delegate void ChangeGemsBalanceDelegate(long value);
+        public static ChangeGemsBalanceDelegate ChangeGemsBalance;
+
+        public delegate ulong GetGemsBalanceDelegate();
+        public static GetGemsBalanceDelegate GetGemsBalance;
+        
+        #endregion
         
         
         #region XP Events
@@ -193,7 +206,7 @@ namespace Player
         {
             ChangeExperience += (value) =>
             {
-                ExperiencePoins = (ulong)((long)WalletData.Balance + value);
+                ExperiencePoins = (ulong)((long)ExperiencePoins + value);
                 
                 OnChangeExperience?.Invoke(ExperiencePoins);
             };
@@ -204,14 +217,25 @@ namespace Player
         
         void RegisterWalletEvents()
         {
-            ChangeBalance += (value) =>
+            ChangeCoinsBalance += (value) =>
             {
-                WalletData.Balance = (ulong)((long)WalletData.Balance + value);
+                WalletData.Coins = (ulong)((long)WalletData.Coins + value);
                 
-                OnChangeBalance?.Invoke(WalletData.Balance);
+                OnChangeCoinsBalance?.Invoke(WalletData.Coins);
             };
-            GetBalance += () => WalletData.Balance;
+            GetCoinsBalance += () => WalletData.Coins;
+            
+            
+            ChangeGemsBalance += (value) =>
+            {
+                WalletData.Gems = (ulong)((long)WalletData.Gems + value);
+                
+                OnChangeGemsBalance?.Invoke(WalletData.Gems);
+            };
+            GetGemsBalance += () => WalletData.Gems;
 
+            
+            
         }
         
         void RegisterTowerUnlockEvent()
