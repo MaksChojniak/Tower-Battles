@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ namespace UI.Battlepass
     {
         public GameObject Prefab;
         public Sprite Sprite;
+        public ulong Amount = 0;
     }
     
     public class BattlepassTierTile : MonoBehaviour
@@ -98,6 +100,9 @@ namespace UI.Battlepass
                 
                 Image image = reward.transform.GetChild(0).GetComponent<Image>();
                 image.sprite = rewardUI.Sprite;
+
+                TMP_Text amountText = reward.transform.GetChild(1).GetComponent<TMP_Text>();
+                amountText.text = rewardUI.Amount > 0 ? $"{rewardUI.Amount}" : "";
             }
             
         }

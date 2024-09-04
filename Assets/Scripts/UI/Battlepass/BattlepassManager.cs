@@ -192,30 +192,30 @@ namespace UI.Battlepass
             switch (reward.Type)
             {
                 case RewardType.Coins:
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
                     break;
                 case RewardType.Coins_Gems:
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), } );
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
                     break;
                 case RewardType.Coins_Skin:
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), } );
                     rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
                     break;
                 case RewardType.Gems:
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
                     break;
                 case RewardType.Gems_Skin:
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), } );
                     rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
                     break;
                 case RewardType.Skin:
                     rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
                     break;
                 case RewardType.Coins_Gems_Skin:
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), } );
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), } );
                     rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
+                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
                     break;
                 case RewardType.None:
                     break;
@@ -238,7 +238,7 @@ namespace UI.Battlepass
         Sprite GetGemsSpriteByAmmount(ulong amount)
         {
         
-            if (amount <= 15)
+            if (amount <= 25)
                 return GemsSprites[0];
             else
                 return GemsSprites[1];
