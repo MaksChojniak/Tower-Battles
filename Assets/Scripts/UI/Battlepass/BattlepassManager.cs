@@ -143,7 +143,7 @@ namespace UI.Battlepass
             
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
-                playerProgress = new BattlepassProgress() { LastTierUnlocked = -1, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
+                playerProgress = new BattlepassProgress() { LastTierUnlocked = 0, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
             else
                 playerProgress = result.Data;
 
@@ -169,10 +169,10 @@ namespace UI.Battlepass
                 
 
                 TilesUI[i].SetFreeBattlepassImages(freeRewardsUI);
-                TilesUI[i].SetFreeTileLockedState(i < 3);
+                TilesUI[i].SetFreeTileLockedState( i <= playerProgress.LastTierUnlocked);
                 
                 TilesUI[i].SetPremiumBattlepassImages(premiumRewardsUI);
-                TilesUI[i].SetPremiumTileLockedState(i < 3);
+                TilesUI[i].SetPremiumTileLockedState( i <= playerProgress.LastTierUnlocked);
 
                 TilesUI[i].SetPremiumBattlepassLockedState(playerProgress.HasPremiumBattlepass);
 
@@ -238,14 +238,10 @@ namespace UI.Battlepass
         Sprite GetGemsSpriteByAmmount(ulong amount)
         {
         
-            if (amount <= 10)
+            if (amount <= 15)
                 return GemsSprites[0];
-            else if (amount <= 15)
-                return GemsSprites[1];
-            else if (amount <= 25)
-                return GemsSprites[2];
             else
-                return GemsSprites[3];
+                return GemsSprites[1];
         
             return null;
         }

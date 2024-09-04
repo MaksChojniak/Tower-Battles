@@ -17,7 +17,7 @@ namespace UI.Battlepass
         public SetImagesDelegate SetFreeBattlepassImages;
         public SetImagesDelegate SetPremiumBattlepassImages;
 
-        public delegate void SetLockedStateDelegate(bool lockState);
+        public delegate void SetLockedStateDelegate(bool isUnlocked);
         public SetLockedStateDelegate SetFreeTileLockedState;
         public SetLockedStateDelegate SetPremiumTileLockedState;
         
@@ -110,13 +110,13 @@ namespace UI.Battlepass
 #region Set Unlocked Tile State
 
         
-        void OnSetFreeTileLockedState(bool lockState) => SetTileLockState(_freeBattlepassTierLockedMask, !lockState);
+        void OnSetFreeTileLockedState(bool isUnlocked) => SetTileLockState(_freeBattlepassTierLockedMask, isUnlocked);
         
-        void OnSetPremiumTileLockedState(bool lockState) => SetTileLockState(_premiumBattlepassTierLockedMask, !lockState);
+        void OnSetPremiumTileLockedState(bool isUnlocked) => SetTileLockState(_premiumBattlepassTierLockedMask, isUnlocked);
 
 
         
-        void SetTileLockState(Transform panel, bool lockState) => panel.gameObject.SetActive(lockState);
+        void SetTileLockState(Transform panel, bool isUnlocked) => panel.gameObject.SetActive(!isUnlocked);
         
         
 #endregion
@@ -126,7 +126,7 @@ namespace UI.Battlepass
 #region Set Premium Battlepass Lockstate
 
         
-        void OnSetPremiumBattlepassLockedState(bool lockState) => _premiumBattlepassLockedMask.gameObject.SetActive(!lockState);
+        void OnSetPremiumBattlepassLockedState(bool isUnlocked) => _premiumBattlepassLockedMask.gameObject.SetActive(!isUnlocked);
 
         
 #endregion

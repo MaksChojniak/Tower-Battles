@@ -7,7 +7,7 @@ namespace UI.Battlepass
     [Serializable]
     public class BattlepassProgress
     {
-        public int LastTierUnlocked = -1;
+        public int LastTierUnlocked = 0;
         public List<Reward> Rewards = new List<Reward>();
 
         public bool HasPremiumBattlepass;
