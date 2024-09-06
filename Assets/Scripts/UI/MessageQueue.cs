@@ -4,14 +4,16 @@ using System.Threading.Tasks;
 using TMPro;
 using UI.Animations;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
     [Serializable]
     public class Message
     {
-        public string Tittle;
+        public string Tittle = "";
         public List<MessageProperty> Properties = new List<MessageProperty>();
+        public Action OnClickAction = null;
     }
     [Serializable]
     public class MessageProperty
@@ -39,6 +41,8 @@ namespace UI
         [Header("UI Proprties")]
         [SerializeField] TMP_Text TittleText;
         [SerializeField] TMP_Text ContentText;
+        [SerializeField] GameObject ExtendedButton;
+        [SerializeField] Button MessageButton;
 
 
         [SerializeField] readonly Queue<Message> messagesQueue = new Queue<Message>();
@@ -77,25 +81,7 @@ namespace UI
         }
         
 #endregion
-
-
-        [Serializable]
-        public class DebugMessages
-        {
-            public Message[] Value;
-        }
-        [Space(38)]
-        [SerializeField] DebugMessages debugMessages;
-        [ContextMenu(nameof(AddMessagesToQueue))]
-        void AddMessagesToQueue()
-        {
-            foreach (var message in debugMessages.Value)
-            {
-                AddMessageToQueue(message);
-            }
-        }
-
-
+        
 
         void AddMessageToQueueProcess(params Message[] values)
         {
@@ -119,6 +105,15 @@ namespace UI
             
             Message message = messagesQueue.Peek();
 
+            bool hasInteractivity = message.OnClickAction != null;
+            
+            ExtendedButton.SetActive(hasInteractivity);
+            
+            MessageButton.interactable = hasInteractivity;
+            
+            MessageButton.onClick.RemoveAllListeners();
+            if(hasInteractivity)
+                MessageButton.onClick.AddListener( () => message.OnClickAction.Invoke() );
 
             string tittle = message.Tittle;
             string content = "";
