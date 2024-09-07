@@ -14,7 +14,7 @@ namespace Assets.Scripts.Settings
         UI
     }
     
-    
+    [AddComponentMenu("Audio Settings")]
     public class Audio : MonoBehaviour
     {
         
@@ -31,6 +31,7 @@ namespace Assets.Scripts.Settings
         [SerializeField] SettingsSliderBar SliderBar;
         [SerializeField] TMP_Text ValueText;
         
+        [Space(8)]
         [SerializeField] CanvasGroup LeftButton;
         [SerializeField] CanvasGroup RightButton;
         
@@ -91,7 +92,7 @@ namespace Assets.Scripts.Settings
         
         public void ChangeData(float progressBarValue)
         {
-            int value = Mathf.RoundToInt(progressBarValue * 100f);
+            int value = Mathf.RoundToInt(progressBarValue);
             
             AudioSettings audioSettings = new AudioSettings()
             {
@@ -131,7 +132,7 @@ namespace Assets.Scripts.Settings
             
             ValueText.text = value.ToString();
             
-            SliderBar.slider.value = value / 100f;
+            SliderBar.slider.value = value;
 
         }
         

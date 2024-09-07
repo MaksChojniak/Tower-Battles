@@ -81,7 +81,7 @@ namespace Player
         
         #region XP Events
 
-        public delegate void OnChangeExperienceDelegate(ulong value);
+        public delegate void OnChangeExperienceDelegate(ulong XP, ulong Lvl);
         public static OnChangeExperienceDelegate OnChangeExperience;   
         
         public delegate void ChangeExperienceDelegate(long value);
@@ -207,8 +207,9 @@ namespace Player
             ChangeExperience += (value) =>
             {
                 ExperiencePoins = (ulong)((long)ExperiencePoins + value);
+                Level = 0; // Update Level By XP
                 
-                OnChangeExperience?.Invoke(ExperiencePoins);
+                OnChangeExperience?.Invoke(Level, ExperiencePoins);
             };
             GetExperience += () => ExperiencePoins;
             

@@ -94,6 +94,11 @@ namespace UI.Battlepass
 
         void SetImagesToContainer(Transform container, RewardUI[] rewardsUI)
         {
+            for (int i = 0; i < container.childCount; i++)
+            {
+                Destroy(container.GetChild(i).gameObject);
+            }
+            
             foreach (var rewardUI in rewardsUI)
             {
                 GameObject reward = Instantiate(rewardUI.Prefab, Vector3.zero, Quaternion.identity, container);
@@ -120,10 +125,12 @@ namespace UI.Battlepass
         void OnSetPremiumTileLockedState(bool isUnlocked) => SetTileLockState(_premiumBattlepassTierLockedMask, isUnlocked);
 
 
-        
-        void SetTileLockState(Transform panel, bool isUnlocked) => panel.gameObject.SetActive(!isUnlocked);
-        
-        
+
+        void SetTileLockState(Transform panel, bool isUnlocked)
+        {
+            panel.gameObject.SetActive(!isUnlocked);
+        }
+
 #endregion
 
 

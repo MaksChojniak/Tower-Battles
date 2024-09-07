@@ -7,6 +7,7 @@ using Player.Database;
 using UI.Animations;
 using UI.Shop;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI.Battlepass
 {
@@ -24,6 +25,7 @@ namespace UI.Battlepass
         [Header("UI properties")]
         [HideInInspector] [SerializeField] GameObject TilesContainer;
         [SerializeField] BattlepassTierTile[] TilesUI;
+        [SerializeField] GameObject PremiumBattlepassLockedMask;
         [SerializeField] bool UpdateTiles;
 
         [Space(8)]
@@ -88,6 +90,19 @@ namespace UI.Battlepass
             
         }
 
+        
+
+        async void OnEnable()
+        {
+            await UpdateBattlapassUI();
+        }
+
+        async void OnDisable()
+        {
+            
+        }
+
+        
 
         void OnApplicationFocus(bool hasFocus)
         {
@@ -157,8 +172,9 @@ namespace UI.Battlepass
         {
             if(playerProgress == null)
                 return;
-            
-            // TODO add battlepass UI when kacper commit  
+
+
+            PremiumBattlepassLockedMask.SetActive(!playerProgress.HasPremiumBattlepass);
 
             for (int i = 0; i < BattlepassRewards.rewards.Length; i++)
             {

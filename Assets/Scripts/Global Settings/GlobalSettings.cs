@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace MMK
 {
+    
 
     [CreateAssetMenu(fileName = "Global Settings", menuName = "Global Settings")]
     public class GlobalSettings : ScriptableObject
@@ -22,13 +23,41 @@ namespace MMK
 
 #endregion
 
+
+
+#region Level/XP Stages
+
         
+        
+        
+
+        public Color GetCurrentLevelColor(ulong Level)
+        {
+            if (Level <= 20)
+                return Lvl_0_Color;
+            else if (Level <= 40)
+                return Lvl_1_Color;
+            else if (Level <= 60)
+                return Lvl_2_Color;
+            else if (Level <= 80)
+                return Lvl_3_Color;
+            else if (Level <= 90)
+                return Lvl_4_Color;
+            else
+                return Lvl_5_Color;
+        }
+        
+        
+#endregion
+        
+     
         
 #region Icons
 
         public string CashIconName = "cash";
         public string CoinsIconName = "coins";
         public string GemsIconName = "gem";
+        public string LevelIconName = "level";
         public string HeartIconName = "heart";
         public string FirerateIconName = "firerate";
         public string RadarIconName = "radar";
@@ -71,6 +100,13 @@ namespace MMK
         public Color RareColor = Color($"#4B85BC");                      //  RARE_RARITY_COLOR_HEX = "#822525";
         public Color EpicColor = Color($"#9E00D6");                      //  EPIC_RARITY_COLOR_HEX = "#822525";
         public Color ExclusiveColor = Color($"#AD0000");                 //  EXCLUSIVE_RARITY_COLOR_HEX = "#822525";
+        
+        public Color Lvl_0_Color = Color($"#");                    //  Lvl_0_COLOR_HEX = "#";
+        public Color Lvl_1_Color = Color($"#");                    //  Lvl_1_COLOR_HEX = "#";
+        public Color Lvl_2_Color = Color($"#");                    //  Lvl_2_COLOR_HEX = "#";
+        public Color Lvl_3_Color = Color($"#");                    //  Lvl_3_COLOR_HEX = "#";
+        public Color Lvl_4_Color = Color($"#");                    //  Lvl_4_COLOR_HEX = "#";
+        public Color Lvl_5_Color = Color($"#");                    //  Lvl_5_COLOR_HEX = "#";
 
 
 
