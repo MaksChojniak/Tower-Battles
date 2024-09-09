@@ -83,6 +83,7 @@ namespace MMK
 
         public Color CashColor = Color($"#1FEF00");                      //  CASH_COLOR_HEX = "#1FEF00";
         public Color CoinsColor = Color($"#FFB700");                     //  COINS_COLOR_HEX = "#FFB700";
+        public Color GemsColor = Color($"#FF99FD");                      //  GEMS_COLOR_HEX = "#FF99FD";
 
         public Color TrophyColor = Color($"#FFD700");                    //  TROPHY_COLOR_HEX = "#FFD700";
         public Color LosesColor = Color($"#A20708");                     //  LOSES_COLOR_HEX = "#A20708";
@@ -96,17 +97,19 @@ namespace MMK
         public Color SelectedColor = Color($"#06C300");                  //  SELECTED_COLOR_HEX = "#06C300";
         public Color UnselectedColor = Color($"#37373A");                //  UNSELECTED_COLOR_HEX = "#37373A";
 
+        public Color DefaultColor = Color($"#8F8FA4");                   //  DEFAULT_RARITY_COLOR_HEX = "#8F8FA4";
         public Color CommonColor = Color($"#59C032");                    //  COMMON_RARITY_COLOR_HEX = "#822525";
         public Color RareColor = Color($"#4B85BC");                      //  RARE_RARITY_COLOR_HEX = "#822525";
         public Color EpicColor = Color($"#9E00D6");                      //  EPIC_RARITY_COLOR_HEX = "#822525";
         public Color ExclusiveColor = Color($"#AD0000");                 //  EXCLUSIVE_RARITY_COLOR_HEX = "#822525";
+        public Color GoldColor = Color($"#926F34");                      //  GOLD_RARITY_COLOR_HEX = "#926F34";
         
-        public Color Lvl_0_Color = Color($"#");                    //  Lvl_0_COLOR_HEX = "#";
-        public Color Lvl_1_Color = Color($"#");                    //  Lvl_1_COLOR_HEX = "#";
-        public Color Lvl_2_Color = Color($"#");                    //  Lvl_2_COLOR_HEX = "#";
-        public Color Lvl_3_Color = Color($"#");                    //  Lvl_3_COLOR_HEX = "#";
-        public Color Lvl_4_Color = Color($"#");                    //  Lvl_4_COLOR_HEX = "#";
-        public Color Lvl_5_Color = Color($"#");                    //  Lvl_5_COLOR_HEX = "#";
+        public Color Lvl_0_Color = Color($"#2DB7FF");                    //  Lvl_0_COLOR_HEX = "#2DB7FF";
+        public Color Lvl_1_Color = Color($"#69FF2E");                    //  Lvl_1_COLOR_HEX = "#69FF2E";
+        public Color Lvl_2_Color = Color($"#FF2D86");                    //  Lvl_2_COLOR_HEX = "#FF2D86";
+        public Color Lvl_3_Color = Color($"#FF6109");                    //  Lvl_3_COLOR_HEX = "#FF6109";
+        public Color Lvl_4_Color = Color($"#AD0000");                    //  Lvl_4_COLOR_HEX = "#AD0000";
+        public Color Lvl_5_Color = Color($"#926F34");                    //  Lvl_5_COLOR_HEX = "#926F34";
 
 
 
@@ -115,6 +118,9 @@ namespace MMK
         {
             switch (_skin.Rarity)
             {
+                case SkinRarity.Default:
+                    return DefaultColor;
+                    break;
                 case SkinRarity.Common:
                     return CommonColor;
                     break;
@@ -126,6 +132,9 @@ namespace MMK
                     break;
                 case SkinRarity.Exclusive:
                     return ExclusiveColor;
+                    break;
+                case SkinRarity.Gold:
+                    return GoldColor;
                     break;
                 default:
                     return new Color(1,1,1,1);

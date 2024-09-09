@@ -41,8 +41,8 @@ namespace MMK
 
         public void Buy()
         {
-            if(TowerPreviewUI.BuyTower())
-                ClosePanelAnimation.PlayAnimation();
+            // if(TowerPreviewUI.BuyTower())
+            //     ClosePanelAnimation.PlayAnimation();
         }
 
         

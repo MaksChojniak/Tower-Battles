@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MMK;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using Player;
 using Player.Database;
 using UI.Animations;
@@ -51,14 +52,18 @@ namespace UI.Battlepass
 
         
 
-        void Awake()
+        // void Awake()
+        void OnEnable()
         {
             RegisterHandlers();
             
             GetDataFromServer();
+            
+            UpdateBattlapassUI();
         }
 
-        void OnDestroy()
+        // void OnDestroy()
+        void OnDisable()
         {
             UnregisterHandlers();
             
@@ -92,15 +97,15 @@ namespace UI.Battlepass
 
         
 
-        async void OnEnable()
-        {
-            await UpdateBattlapassUI();
-        }
-
-        async void OnDisable()
-        {
-            
-        }
+        // async void OnEnable()
+        // {
+        //     await UpdateBattlapassUI();
+        // }
+        //
+        // async void OnDisable()
+        // {
+        //     
+        // }
 
         
 
@@ -158,17 +163,20 @@ namespace UI.Battlepass
             
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
-                playerProgress = new BattlepassProgress() { LastTierUnlocked = 0, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
+                playerProgress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
             else
                 playerProgress = result.Data;
+            
+            
+            await Database.POST<BattlepassProgress>(playerProgress, playerID);
 
 
-            await UpdateBattlapassUI();
+            UpdateBattlapassUI();
         }
 
 
         
-        async Task UpdateBattlapassUI()
+        void UpdateBattlapassUI()
         {
             if(playerProgress == null)
                 return;
@@ -274,6 +282,49 @@ namespace UI.Battlepass
 #endregion
 
 
+
+        
+        
+        
+        public async static Task AddBattlepassExperienceProgress(long XP)
+        {
+            string playerID = PlayerController.GetLocalPlayerData().ID;
+            BattlepassProgress progress;
+            
+            var result = await Database.GET<BattlepassProgress>(playerID);
+            
+            // TODO chekc when is new event
+            if (result.Status == DatabaseStatus.Error)
+                progress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
+            else
+                progress = result.Data;
+
+            progress.ExperienceCollected += XP;
+            progress.UpdateUnlockedTiers();
+
+            await Database.POST<BattlepassProgress>(progress, playerID);
+        }
+        
+        
+        public async static Task AddBattlepassTierProgress(uint TiersCount)
+        {
+            string playerID = PlayerController.GetLocalPlayerData().ID;
+            BattlepassProgress progress;
+            
+            var result = await Database.GET<BattlepassProgress>(playerID);
+            
+            // TODO chekc when is new event
+            if (result.Status == DatabaseStatus.Error)
+                progress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
+            else
+                progress = result.Data;
+
+            progress.LastTierUnlocked += TiersCount;
+
+            await Database.POST<BattlepassProgress>(progress, playerID);
+        }
+        
+        
 
 
     }

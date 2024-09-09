@@ -8,6 +8,7 @@ using MMK;
 using MMK.Extensions;
 using MMK.ScriptableObjects;
 using Newtonsoft.Json;
+using UI.Battlepass;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -106,14 +107,23 @@ namespace Player
         public static AddGameResultDelegate AddGameResult;
         
         #endregion
+
+
+        #region Deck Events
+
+        public delegate void OnDeckChangedDelegate(TowerSerializable[] deckSerializable);
+        public static event OnDeckChangedDelegate OnDeckChanged;
+        
+        #endregion
         
 #endregion
         
         public string ID = "0";
         public string Nickname = "Unknown";
         
-        public uint Level = 0;
-        public ulong ExperiencePoins = 0;
+        public uint Level => GetLevelByTotalXP(TotalExperiencePoins);
+        public uint XP => GetXPByTotalXP(TotalExperiencePoins);
+        public ulong TotalExperiencePoins = 0;
 
         public WalletData WalletData = new WalletData();
 
@@ -137,8 +147,7 @@ namespace Player
             ID = sourceData.ID;
             Nickname = sourceData.Nickname;
             
-            Level = sourceData.Level;
-            ExperiencePoins = sourceData.ExperiencePoins;
+            TotalExperiencePoins = sourceData.TotalExperiencePoins;
             
             WalletData = sourceData.WalletData;
             
@@ -184,6 +193,8 @@ namespace Player
                     if(index < 0)
                         Debug.LogError("index of xd is lower than 0");
                     DeckSerializable[index] = value == null ? new TowerSerializable() : new TowerSerializable(value);
+                    
+                    OnDeckChanged?.Invoke(DeckSerializable);
                 };
                 
             }
@@ -206,12 +217,13 @@ namespace Player
         {
             ChangeExperience += (value) =>
             {
-                ExperiencePoins = (ulong)((long)ExperiencePoins + value);
-                Level = 0; // Update Level By XP
+                TotalExperiencePoins = (ulong)((long)TotalExperiencePoins + value);
                 
-                OnChangeExperience?.Invoke(Level, ExperiencePoins);
+                OnChangeExperience?.Invoke(Level, XP);
+
+                BattlepassManager.AddBattlepassExperienceProgress(value);
             };
-            GetExperience += () => ExperiencePoins;
+            GetExperience += () => TotalExperiencePoins;
             
         }
         
@@ -277,7 +289,25 @@ namespace Player
         }
 
 #endregion
-       
+
+
+
+
+
+
+
+        public static uint GetLevelByTotalXP(ulong Experience)
+        {
+            return 0;
+        }
+        
+        public static uint GetXPByTotalXP(ulong Experience)
+        {
+            return 0;
+        }
+        
+        
+        
         
         
     }

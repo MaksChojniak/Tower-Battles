@@ -4,12 +4,14 @@ using UnityEngine;
 
 namespace MMK.ScriptableObjects
 {
-    public enum SkinRarity
+    public enum SkinRarity : int
     {
-        Common,
-        Rare,
-        Epic,
-        Exclusive
+        Default = 0,
+        Common = 1,
+        Rare = 2,
+        Epic = 3,
+        Exclusive = 4,
+        Gold = 5,
     }
     
     [CreateAssetMenu(fileName = "Skin", menuName = "Towers/Skin")]

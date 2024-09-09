@@ -15,6 +15,7 @@ namespace DefaultNamespace
             SkinIsLocked,
             SecondBooster,
             NotEnoughtMoney,
+            NotEnoughtGems,
             MaxTowersCountPlaced,
             DeckIsEmpty,
             NotEnoughtWins,
@@ -76,6 +77,9 @@ namespace DefaultNamespace
                     break;
                 case WarningType.NotEnoughtMoney:
                     message = "Not Enough Coins!";
+                    break;
+                case WarningType.NotEnoughtGems:
+                    message = "Not Enough Gems!";
                     break;
                 case WarningType.MaxTowersCountPlaced:
                     message = $"{GlobalSettingsManager.GetGlobalSettings().MaxTowersCount}/{GlobalSettingsManager.GetGlobalSettings().MaxTowersCount} Towers are Placed";

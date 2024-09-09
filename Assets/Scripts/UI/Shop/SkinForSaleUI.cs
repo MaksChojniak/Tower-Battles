@@ -21,7 +21,7 @@ namespace UI.Shop
 
 
 
-        public void UpdateUI(SkinOffert skinOffert, SkinsForSaleUIProperties UIProperties)
+        public void UpdateUI(SkinOffert skinOffert)
         {
             // if(skinOffert == null || string.IsNullOrEmpty(skinOffert.TowerSkinID))
             //     return;
@@ -46,23 +46,7 @@ namespace UI.Shop
                 return;
             
             // Set Rarity Color & Text
-            Color colorOfRarity = Color.black;
-            switch (skin.Rarity)
-            {
-                case SkinRarity.Common:
-                    colorOfRarity = UIProperties.CommonColor;
-                    break;
-                case SkinRarity.Rare:
-                    colorOfRarity = UIProperties.RareColor;
-                    break;
-                case SkinRarity.Epic:
-                    colorOfRarity = UIProperties.EpicColor;
-                    break;
-                case SkinRarity.Exclusive:
-                    colorOfRarity = UIProperties.ExclusiveColor;
-                    break;
-            }
-            rarityColor.color = colorOfRarity;
+            rarityColor.color = GlobalSettingsManager.GetGlobalSettings.Invoke().GetRarityColorBySkin(skin);
             rarityText.text = $"{skin.Rarity.ToString()}";
 
             // Set Tower Name

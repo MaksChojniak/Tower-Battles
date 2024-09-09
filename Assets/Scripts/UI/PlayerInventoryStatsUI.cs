@@ -74,23 +74,24 @@ public class PlayerInventoryStatsUI : MonoBehaviour
         
         UpdateGemsBalanceText(PlayerController.GetLocalPlayerData().WalletData.Gems);
         
-        UpdateExperienceText(PlayerController.GetLocalPlayerData().Level ,PlayerController.GetLocalPlayerData().ExperiencePoins);
+        UpdateExperienceText(PlayerController.GetLocalPlayerData().Level ,PlayerController.GetLocalPlayerData().XP);
 
     }
 
     void UpdateCoinsBalanceText(ulong Coins)
     {
-        moneyText.text = $"{StringFormatter.PriceFormat(Coins)}{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().CoinsIconName })}";
+        moneyText.text = $"{StringFormatter.GetCoinsText( (long)Coins )}";
     }
 
     void UpdateGemsBalanceText(ulong Gems)
     {
-        winsCountText.text = $"{StringFormatter.PriceFormat(Gems)} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().GemsIconName })}";
+        winsCountText.text = $"{StringFormatter.GetGemsText( (long)Gems )}";
     }
 
     void UpdateExperienceText(ulong Level, ulong Experience)
     {
-        ExperienceText.text = $"{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().LevelIconName, WithColor = true, Color = GlobalSettingsManager.GetGlobalSettings().GetCurrentLevelColor(Level)  })}" + "  " + $"{Experience}/2000"; //"1050 / 2000";
+        ExperienceText.text = $"{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().LevelIconName, WithColor = true, Color = GlobalSettingsManager.GetGlobalSettings().GetCurrentLevelColor(Level) })}" + 
+                              "  " + $"{Experience}/2000"; //"1050 / 2000";
         LevelText.text = $"{Level}";
     }
 

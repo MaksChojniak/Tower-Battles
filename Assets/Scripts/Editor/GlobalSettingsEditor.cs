@@ -102,6 +102,7 @@ namespace Editor
                 
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "CashColor", Caption = "Cash Color"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "CoinsColor", Caption = "Coins Color"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "GemsColor", Caption = "Gems Color"});
                 
                 EditorGUILayout.Space(12);
                 
@@ -125,10 +126,12 @@ namespace Editor
                 
                 EditorGUILayout.Space(12);
                 
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "DefaultColor", Caption = "Default Rarity Color"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "CommonColor", Caption = "Common Rarity Color"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "RareColor", Caption = "Rare Rarity Color"});
-                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "EpicColor", Caption = " Epic Rarity Color"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "EpicColor", Caption = "Epic Rarity Color"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ExclusiveColor", Caption = "Exclusive Rarity Color"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "GoldColor", Caption = "Gold Rarity Color"});
                 
                 EditorGUILayout.Space(12);
                 

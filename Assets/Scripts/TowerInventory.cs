@@ -236,7 +236,8 @@ public class TowerInventory : MonoBehaviour
         TowerDeck.OnSelectSlot -= RemoveFromDeck;
         TowerDeck.OnSelectSlot += RemoveFromDeck;
         
-        if ( i < 0 || (selectedTower == i && selectedTowersIsOwned && TowerData.GetAllTowerInventoryData()[i].towerSO.IsUnlocked() ) )
+        // if ( i < 0 || (selectedTower == i && selectedTowersIsOwned && TowerData.GetAllTowerInventoryData()[i].towerSO.IsUnlocked() ) )
+        if ( i < 0 || selectedTower == i)
         {
             selectedTower = -1;
             selectedTowersIsOwned = false;

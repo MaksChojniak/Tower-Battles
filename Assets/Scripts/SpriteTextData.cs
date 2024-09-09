@@ -8,6 +8,8 @@ namespace MMK
         
         public bool WithSpaces;
         public int SpacesCount;
+
+        public string Size;
         
         public bool WithColor;
         public Color Color;

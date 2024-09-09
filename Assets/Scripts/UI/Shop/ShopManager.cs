@@ -16,11 +16,14 @@ using Newtonsoft.Json;
 using Player;
 using Player.Database;
 using TMPro;
+using UI.Battlepass;
 using UI.Shop.Daily_Rewards;
 using UI.Shop.Daily_Rewards.Scriptable_Objects;
 
 using DateTime = System.DateTime;
 using Random = Unity.Mathematics.Random;
+using Reward = UI.Shop.Daily_Rewards.Reward;
+using RewardType = UI.Shop.Daily_Rewards.Scriptable_Objects.RewardType;
 using Time = UnityEngine.Time;
 
 
@@ -30,11 +33,6 @@ namespace UI.Shop
     [Serializable]
     public class SkinsForSaleUIProperties
     {
-        public Color CommonColor;
-        public Color RareColor;
-        public Color EpicColor;
-        public Color ExclusiveColor;
-
         public BuySkinConfirmationPanel ConfirmationPanel;
     }
     
@@ -51,43 +49,57 @@ namespace UI.Shop
     
     
     
+    
     public class ShopManager : MonoBehaviour
     {
 
         SkinsForSale skinsForSale = new SkinsForSale();
         DailyRewards dailyRewards = new DailyRewards();
-        CoinsOffert[] CoinsOfferts = new CoinsOffert[COINS_OFFERTS_COUNT];
 
-        
-        [Space(8)]
+        [Header("Const Data")]
+        [SerializeField] BattlepassTicket[] BattlepassTickets;
+        [SerializeField] GemsExchange[] GemsExchangeOfferts;
+        [Space(18)]
         [Header("UI Properties")]
+        [SerializeField] GameObject ConfirmationOffertPrefab;
+        [SerializeField] GameObject ConfirmationSkinPrefab;
+        [Space(12)]
         [SerializeField] ScrollRect scrollRect;
         [Space(16)]
+        [Header("   Skins For Sale UI")]
         [SerializeField] SkinsForSaleUIProperties skinsForSaleUIProperties;
         [SerializeField] SkinForSaleUI[] skinsForSalePanels;
         [SerializeField] TMP_Text offertsTimerText;
         [Space(8)]
+        [Header("   Daily Rewards UI")]
         [SerializeField] DailyRewardUIProperties dailyRewardsUIProperties;
         [SerializeField] DailyRewardUI[] dalyRewardsPanels;
         [Space(8)]
+        [Header("   Ads Rewards UI")]
+        [SerializeField] AdRewardUI[] adRewardsPanels;
+        [Header("   Gems Exchange UI")]
+        [SerializeField] GemsExchangeUI[] gemsExchangePanels;
+        [Header("   Battlepass Tickets UI")]
+        [SerializeField] BattlepassTicketUI[] battlepassTicketsPanels;
+        [Header("   Coins Offerts UI")]
         [SerializeField] GameObject[] coinsOffertsPanels;
-        [Space(16)]
-        [SerializeField] 
+        
 
         public const int SKINS_FOR_SALE_COUNT = 3;
         public const int DAILY_REWARDS_COUNT = 7;
-        public const int COINS_OFFERTS_COUNT = 4;
 
 
 
-        void Awake()
+        // void Awake()
+        void OnEnable()
         {
             RegisterHandlers();
 
             GetDataFromServer();
         }
 
-        void OnDestroy()
+        // void OnDestroy()
+        void OnDisable()
         {
             UnregisterHandlers();
 
@@ -95,15 +107,15 @@ namespace UI.Shop
 
         
         
-        void OnEnable()
-        {
-            
-        }
-
-        void OnDisable()
-        {
-
-        }
+        // void OnEnable()
+        // {
+        //     
+        // }
+        //
+        // void OnDisable()
+        // {
+        //
+        // }
 
 
         
@@ -112,8 +124,12 @@ namespace UI.Shop
             UpdateSkinsForSaleUI();
                 
             UpdateDailyRewardsUI();
-
+            
+            UpdateAdsRewardsOffertsUI();
+            
             UpdateCoinsOffertsUI();
+
+            // UpdateCoinsOffertsUI();
         }
 
         
@@ -154,6 +170,7 @@ namespace UI.Shop
         
 #region Scroll Animation
 
+        
         [ContextMenu(nameof(CoinsScrollRect))]
         public void CoinsScrollRect()
         {
@@ -192,6 +209,7 @@ namespace UI.Shop
             scrollRect.verticalNormalizedPosition = targetPosition;
         }
         
+        
 #endregion
 
 
@@ -207,14 +225,18 @@ namespace UI.Shop
             dateFromServer = result.ServerDate;
             localTimeOffset = result.LocalTimeOffset;
 
-            List<Task> tasks = new List<Task>()
-            {
-                GetSkinsForSaleFromServerAsync(),
-                GetDailyRewardsFromServerAsync(),
-                GetCoinsOffertsFromServerAsync()
-            };
-            await Task.WhenAll(tasks);
-                
+            // List<Task> tasks = new List<Task>()
+            // {
+            //     GetSkinsForSaleFromServerAsync(),
+            //     GetDailyRewardsFromServerAsync(),
+            //     GetCoinsOffertsFromServerAsync()
+            // };
+            // await Task.WhenAll(tasks);
+            
+            await Task.Run(async () => await GetSkinsForSaleFromServerAsync());
+            await Task.Run(async () => await GetDailyRewardsFromServerAsync());
+            // await Task.Run(async () => await GetCoinsOffertsFromServerAsync());
+
             await Task.Yield();
 
         }
@@ -254,7 +276,7 @@ namespace UI.Shop
             
             for (int i = 0; i < skinsForSale.skinsForSale.Length; i++)
             {
-                skinsForSalePanels[i].UpdateUI(skinsForSale.skinsForSale[i], skinsForSaleUIProperties);
+                skinsForSalePanels[i].UpdateUI(skinsForSale.skinsForSale[i]);
             }
             
         }
@@ -264,7 +286,7 @@ namespace UI.Shop
         [ContextMenu(nameof(CalculateNewSkinsForSale))]
         async Task<SkinsForSale> CalculateNewSkinsForSale(SkinsForSale oldOfferts = null)
         {
-            Random random = new Random((uint)UnityEngine.Random.Range(0, 100));
+            Random random = new Random((uint)new System.Random().Next(0, 100));
             
             var createDateUTC = simulatedDateOnServerUTC.AddHours(8 - simulatedDateOnServerUTC.Hour).AddMinutes(-simulatedDateOnServerUTC.Minute).AddSeconds(-simulatedDateOnServerUTC.Second);
             if(simulatedDateOnServerUTC.Hour < 8)
@@ -348,7 +370,7 @@ namespace UI.Shop
         //     await Database.POST<SkinsForSale>(skinsForSale);
         // }
 
-        public void BuySkinFromOffert(int offertIndex)
+        public async void BuySkinFromOffert(int offertIndex)
         {
             SkinOffert skinOffert = skinsForSale.skinsForSale[offertIndex];
             
@@ -366,15 +388,56 @@ namespace UI.Shop
                 return;
             }
 
-            // if (PlayerData.GetBalance() < skin.UnlockPrice)
-            // {
-            //     WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
-            //     return;
-            // }
-            //
-            // PlayerData.ChangeBalance(-1 * (long)skin.UnlockPrice);
+            if (!tower.IsUnlocked())
+            {
+                WarningSystem.ShowWarning(WarningSystem.WarningType.LockedTower);
+                return;
+            }
+            
+            if (PlayerData.GetCoinsBalance?.Invoke() < skin.UnlockPrice)
+            {
+                WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+                return;
+            }
+            
+            
+            
+            bool onCloseConfirmationPanel = false;
+            bool pausePayements = false;
+            Confirmation confirmation = Instantiate(ConfirmationSkinPrefab).GetComponent<Confirmation>();
+            confirmation.ShowSkin( 
+                $"Would You Like To Buy\n{StringFormatter.GetSkinText(skin)} Skin For {StringFormatter.GetTowerText(tower)} Tower\nFor {StringFormatter.GetCoinsText( (long)skin.UnlockPrice, true, "66%" )}",
+                () =>
+                {
+                    onCloseConfirmationPanel = true;
+                    confirmation.StartLoadingAnimation();
+                },
+                () =>
+                {
+                    onCloseConfirmationPanel = true;
+                    pausePayements = true;
+                },
+                tower,
+                skin
+            );
 
-            skinsForSaleUIProperties.ConfirmationPanel.Open(tower, skin);
+            while (!onCloseConfirmationPanel)
+                await Task.Yield();
+
+            if (pausePayements)
+                return;
+            
+            
+            
+            PlayerData.ChangeCoinsBalance((long)skin.UnlockPrice);
+            skin.UnlockSkin();
+
+
+            await Task.Yield();
+            
+            confirmation.StopLoadingAnimation();
+
+            // skinsForSaleUIProperties.ConfirmationPanel.Open(tower, skin);
         }
         
         
@@ -602,17 +665,53 @@ namespace UI.Shop
         
         
         
-#region Coins Offerts
+#region Exchange Gems To Coins Offerts
 
-        
-        void GetCoinsOffertsFromServer()
+
+        public async void ExchangeGemsToCoins(int offertIndex)
         {
+            GemsExchange exchangeOffert = GemsExchangeOfferts[offertIndex];
 
-        }
 
-        async Task GetCoinsOffertsFromServerAsync()
-        {
+            if (PlayerData.GetGemsBalance?.Invoke() < exchangeOffert.GemsPrice)
+            {
+                WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtGems);
+                return;
+            }
+            
+            
+            
+            bool onCloseConfirmationPanel = false;
+            bool pausePayements = false;
+            Confirmation confirmation = Instantiate(ConfirmationOffertPrefab).GetComponent<Confirmation>();
+            confirmation.ShowOffert(
+                $"Would You Like To Exchange {StringFormatter.GetGemsText(exchangeOffert.GemsPrice, true, "66%" )} For {StringFormatter.GetCoinsText(exchangeOffert.CoinsReward, true, "66%" )}",
+                () =>
+                {
+                    onCloseConfirmationPanel = true;
+                    confirmation.StartLoadingAnimation();
+                },
+                () =>
+                {
+                    onCloseConfirmationPanel = true;
+                    pausePayements = true;
+                }
+            );
 
+            while (!onCloseConfirmationPanel)
+                await Task.Yield();
+
+            if (pausePayements)
+                return;
+            
+            
+            
+            PlayerData.ChangeGemsBalance(-exchangeOffert.GemsPrice);
+            PlayerData.ChangeCoinsBalance(exchangeOffert.CoinsReward);
+
+            await Task.Yield();
+            
+            confirmation.StopLoadingAnimation();
         }
 
 
@@ -624,6 +723,101 @@ namespace UI.Shop
         
 #endregion
         
+        
+        
+#region Gems Offerts
+
+        
+        public void BuyGemsOffert(int offertIndex)
+        {
+            
+        }
+
+
+        void UpdateGemsOffertsUI()
+        {
+            
+        }
+        
+        
+#endregion
+
+        
+        
+#region Battlepass Tickets Offerts
+
+        
+        public async void BuyTicketsOffert(int offertIndex)
+        {
+            BattlepassTicket ticketOffert = BattlepassTickets[offertIndex];
+
+            if (PlayerData.GetGemsBalance?.Invoke() < ticketOffert.GemsPrice)
+            {
+                WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtGems);
+                return;
+            }
+
+            
+            bool onCloseConfirmationPanel = false;
+            bool pausePayements = false;
+            Confirmation confirmation = Instantiate(ConfirmationOffertPrefab).GetComponent<Confirmation>();
+            confirmation.ShowOffert(
+                $"Would You Like To Buy {ticketOffert.TiersCount} Battlepass Tickets For {StringFormatter.GetGemsText(ticketOffert.GemsPrice, true, "66%" )}",
+                () =>
+                {
+                    onCloseConfirmationPanel = true;
+                    confirmation.StartLoadingAnimation();
+                },
+                () =>
+                {
+                    onCloseConfirmationPanel = true;
+                    pausePayements = true;
+                }
+                );
+
+            while (!onCloseConfirmationPanel)
+                await Task.Yield();
+
+            if (pausePayements)
+                return;
+                    
+
+
+            PlayerData.ChangeGemsBalance(-ticketOffert.GemsPrice);
+            await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
+
+            await Task.Yield();
+
+            confirmation.StopLoadingAnimation();
+
+        }
+
+
+        void UpdateBattlepassTicketsOffertsUI()
+        {
+            
+        }
+        
+        
+#endregion
+
+
+
+#region
+
+        
+        public void ShowAd()
+        {
+            
+        }
+
+        public void UpdateAdsRewardsOffertsUI()
+        {
+            
+        }
+        
+        
+#endregion
         
         
         

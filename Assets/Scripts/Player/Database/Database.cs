@@ -85,9 +85,9 @@ namespace Player.Database
         public async static Task POST<T>(T data, string playerID = "")
         {
             
-#if UNITY_EDITOR
-            return;
-#endif
+// #if UNITY_EDITOR
+//             return;
+// #endif
             
             if (playerID == "0")
                 return;
@@ -101,9 +101,9 @@ namespace Player.Database
         public async static Task DELETE<T>(string playerID = "")
         {
 
-// #if UNITY_EDITOR
-//             return;
-// #endif
+#if UNITY_EDITOR
+            return;
+#endif
             
             if (playerID == "0")
                 return;

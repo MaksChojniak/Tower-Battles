@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MMK.ScriptableObjects;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 
 namespace MMK
@@ -31,6 +33,9 @@ namespace MMK
         public static string GetSpriteText(SpriteTextData spriteTextData)
         {
             string text = "";
+
+            if (!string.IsNullOrEmpty(spriteTextData.Size))
+                text += $"<size={spriteTextData.Size}>";
             
             if (spriteTextData.WithSpaces)
                 text += string.Concat(Enumerable.Repeat(" ", spriteTextData.SpacesCount));
@@ -44,6 +49,9 @@ namespace MMK
             if (spriteTextData.WithSpaces)
                 text += string.Concat(Enumerable.Repeat(" ", spriteTextData.SpacesCount));
 
+            if (!string.IsNullOrEmpty(spriteTextData.Size))
+                text += $"</size>";
+            
             return text;
         }
 
@@ -94,6 +102,54 @@ namespace MMK
         
         
 #endregion
+
+
+
+#region Build In Examples
+
+        
+        public static string GetCoinsText(long Value, bool WithIcon = true, string IconSize = "")
+        {
+            string text = GetColoredText($"{Value}", GlobalSettingsManager.GetGlobalSettings.Invoke().CoinsColor);
+
+            if (WithIcon)
+                text += GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().CoinsIconName, Size = IconSize});
+
+            return text;
+        } 
+        
+        
+        public static string GetGemsText(long Value, bool WithIcon = true, string IconSize = "")
+        {
+            string text = GetColoredText($"{Value}", GlobalSettingsManager.GetGlobalSettings.Invoke().GemsColor);
+
+            if (WithIcon)
+                text += GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().GemsIconName, Size = IconSize});
+
+            return text;
+        } 
+        
+        
+       
+        
+        
+        public static string GetSkinText(TowerSkin Skin)
+        {
+            string text = GetColoredText(Skin.SkinName, GlobalSettingsManager.GetGlobalSettings.Invoke().GetRarityColorBySkin(Skin) );
+            
+            return text;
+        } 
+        
+        public static string GetTowerText(Tower Tower)
+        {
+            string text = GetColoredText(Tower.TowerName, GlobalSettingsManager.GetGlobalSettings.Invoke().GetRarityColorByTower(Tower) );
+            
+            return text;
+        } 
+        
+        
+#endregion
+        
         
         
     }
