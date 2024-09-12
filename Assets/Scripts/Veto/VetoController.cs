@@ -223,7 +223,7 @@ public class VetoController : MonoBehaviour
             Image outlineColor = outline.GetComponent<Image>();
             
 
-            if(scenesRange[i].Lenght <= 150)
+            if(scenesRange[i].Lenght <= 130)
             {
                 difficulty = "Hard";
                 ColorUtility.TryParseHtmlString("#F50F0F", out color);
