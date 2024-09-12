@@ -176,11 +176,13 @@ namespace UI.Battlepass
 
 
         
-        void UpdateBattlapassUI()
+        async void UpdateBattlapassUI()
         {
             if(playerProgress == null)
                 return;
 
+            
+            await Task.Yield();
 
             PremiumBattlepassLockedMask.SetActive(!playerProgress.HasPremiumBattlepass);
 
@@ -200,6 +202,8 @@ namespace UI.Battlepass
 
                 TilesUI[i].SetPremiumBattlepassLockedState(playerProgress.HasPremiumBattlepass);
 
+
+                await Task.Yield();
             }
             
             

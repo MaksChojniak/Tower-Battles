@@ -237,6 +237,7 @@ GameObject:
   - component: {fileID: 1103797266848452093}
   - component: {fileID: 275606027740697260}
   - component: {fileID: 5866799016447476266}
+  - component: {fileID: -5193039102484947674}
   - component: {fileID: 3823137214380430005}
   - component: {fileID: 6187996221384362476}
   - component: {fileID: 67996601624962828}
@@ -309,14 +310,28 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 2040, y: 1080}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5128205
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!114 &-5193039102484947674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1455154137744992767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 378d8be3c93b4532a7573fe0ab59278b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MinimumAspectRatio: {x: 4, y: 3}
+  MaximumAspectRatio: {x: 22, y: 10}
 --- !u!114 &3823137214380430005
 MonoBehaviour:
   m_ObjectHideFlags: 0

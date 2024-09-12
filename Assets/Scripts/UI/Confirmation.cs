@@ -126,20 +126,28 @@ namespace UI
             ClosePanelAnimationUI.PlayAnimation();
             await Task.Delay( Mathf.RoundToInt(ClosePanelAnimationUI.GetAnimationClip().length * 1000) );
             
-            Destroy(this.gameObject);
+            Destroy(this.gameObject); 
         }
 
+        DateTime startTime;
+        public void StartLoadingAnimation()
+        {
+            startTime = DateTime.Now;
 
-        public void StartLoadingAnimation() => StartLoadingAnimationUI.PlayAnimation();
+            StartLoadingAnimationUI.PlayAnimation();
+        }
 
         public async void StopLoadingAnimation()
         {
+            while( (DateTime.Now - startTime).TotalSeconds < 0.5f )
+                await Task.Yield();
+            
             EndLoadingAnimationUI.PlayAnimation();
             await Task.Delay( Mathf.RoundToInt(EndLoadingAnimationUI.GetAnimationClip().length * 1000) );
 
-            await Task.Delay( 1000 );
-            
-            Destroy(this.gameObject);
+            await Task.Delay( 550 );
+
+            OnClick();
         }
 
 

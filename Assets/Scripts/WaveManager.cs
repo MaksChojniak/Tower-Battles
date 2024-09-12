@@ -176,7 +176,8 @@ public class WaveManager : MonoBehaviour
     {
         int.TryParse(waveReward.ToString(), out int fixedWaveReward);
         if(waveRewardText != null)
-            waveRewardText.text = $"+ {StringFormatter.PriceFormat(fixedWaveReward)}";
+            waveRewardText.text = $"+ {StringFormatter.GetCashText(fixedWaveReward)}";
+            // waveRewardText.text = $"+ {StringFormatter.PriceFormat(fixedWaveReward)}";
         
         // if(waveRewardPanel != null)
         //     waveRewardPanel.SetActive(true);

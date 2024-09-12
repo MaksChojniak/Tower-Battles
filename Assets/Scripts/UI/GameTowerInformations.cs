@@ -182,7 +182,7 @@ namespace MMK
             
             if (activeState)
                 OpenPanelAnimation.PlayAnimation();
-            else
+            else if(CurrentClickedTower != null)
                 ClosePanelAnimation.PlayAnimation();
 
             

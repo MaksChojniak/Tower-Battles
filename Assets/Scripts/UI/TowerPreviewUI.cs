@@ -243,8 +243,6 @@ public class TowerPreviewUI : MonoBehaviour
 
         
 
-        await Task.Yield();
-        
         confirmation.StopLoadingAnimation();
         
         

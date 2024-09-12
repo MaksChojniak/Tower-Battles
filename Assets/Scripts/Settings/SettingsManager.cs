@@ -471,21 +471,21 @@ namespace MMK.Settings
 
             // CPU
             if (Hardware.CPU.Cores > 4)
-                score += (Hardware.CPU.Cores - 4f) * 2f;
+                score += (Hardware.CPU.Cores - 4f) * 1.5f;
             
             if (Hardware.CPU.CoresFrequency > 1.8f)
                 score += (Hardware.CPU.CoresFrequency - 1.8f) / 0.2f;
 
             // RAM
-            score += 5f * Hardware.RAM.Size;
+            score += 7f * Hardware.RAM.Size;
             Debug.Log($"Score: {score}");
             
             
-            if(score <= 35f)
+            if(score <= 40f)
                 return GraphicsQuality.Low;
-            else if (score <= 50f)
+            else if (score <= 65f)
                 return GraphicsQuality.Medium;
-            else if (score <= 75f)
+            else if (score <= 125f)
                 return GraphicsQuality.High;
             else
                 return GraphicsQuality.Ultra;

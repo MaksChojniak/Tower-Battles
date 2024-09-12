@@ -7,6 +7,7 @@ using System.Net.Http;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using Ads;
 using DefaultNamespace;
 using Firebase.Storage;
 using MMK;
@@ -803,12 +804,12 @@ namespace UI.Shop
 
 
 
-#region
+#region Ad Offerts
 
         
         public void ShowAd()
         {
-            
+            GoogleAds.ShowAd(RewardType.Coins, 50);
         }
 
         public void UpdateAdsRewardsOffertsUI()
