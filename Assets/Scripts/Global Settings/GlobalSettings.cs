@@ -235,7 +235,7 @@ namespace MMK
 
         public int vetoScene = 2;
 
-        public List<int> gameScenes = new List<int>() {3, 4, 5};
+        public List<int> gameScenes = new List<int>() {3, 4, 5, 6, 7};
         
 #endregion
 
@@ -269,11 +269,11 @@ namespace MMK
         public Tower[] Towers;
         public TowerSkin[] TowersSkins;
 
-#endregion
+        #endregion
 
 
 
-        
+
     }
     
     
