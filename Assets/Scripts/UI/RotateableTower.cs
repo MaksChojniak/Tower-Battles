@@ -10,7 +10,7 @@ namespace DefaultNamespace
 {
     public class RotateableTower : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
-        public delegate void SpawnTowerProcessDelegate(Tower tower, TowerSkin skin);
+        public delegate void SpawnTowerProcessDelegate(Tower tower, TowerSkin skin = null);
         public SpawnTowerProcessDelegate SpawnTowerProcess;
         
         
@@ -59,8 +59,11 @@ namespace DefaultNamespace
             
         }
 
-        void OnSpawnTowerProcess(Tower tower, TowerSkin skin)
+        void OnSpawnTowerProcess(Tower tower, TowerSkin skin = null)
         {
+            if (skin == null)
+                skin = tower.CurrentSkin;
+            
             SpawnTower(skin.TowerPrefab, tower.OriginPointOffset);
             
         }

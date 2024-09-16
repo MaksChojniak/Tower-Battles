@@ -110,7 +110,7 @@ namespace MMK
         
         public static string GetCoinsText(long Value, bool WithIcon = true, string IconSize = "")
         {
-            string text = GetColoredText($"{PriceFormat(Value)}", GlobalSettingsManager.GetGlobalSettings.Invoke().CoinsColor);
+            string text = GetColoredText($"{PriceFormat(Value)} ", GlobalSettingsManager.GetGlobalSettings.Invoke().CoinsColor);
 
             if (WithIcon)
                 text += GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().CoinsIconName, Size = IconSize});
@@ -119,8 +119,8 @@ namespace MMK
         } 
         
         public static string GetCashText(long Value, bool WithIcon = true, string IconSize = "")
-        {
-            string text = GetColoredText($"{PriceFormat(Value)}", GlobalSettingsManager.GetGlobalSettings.Invoke().CashColor);
+        { 
+            string text = GetColoredText($"{PriceFormat(Value)} ", GlobalSettingsManager.GetGlobalSettings.Invoke().CashColor);
 
             if (WithIcon)
                 text += GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().CashIconName, Size = IconSize});
@@ -131,7 +131,7 @@ namespace MMK
         
         public static string GetGemsText(long Value, bool WithIcon = true, string IconSize = "")
         {
-            string text = GetColoredText($"{PriceFormat(Value)}", GlobalSettingsManager.GetGlobalSettings.Invoke().GemsColor);
+            string text = GetColoredText($"{PriceFormat(Value)} ", GlobalSettingsManager.GetGlobalSettings.Invoke().GemsColor);
 
             if (WithIcon)
                 text += GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().GemsIconName, Size = IconSize});

@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
+using DefaultNamespace;
 using MMK;
+using MMK.ScriptableObjects;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 using Player;
 using Player.Database;
+using TMPro;
 using UI.Animations;
 using UI.Shop;
 using UnityEngine;
@@ -20,6 +25,8 @@ namespace UI.Battlepass
         
 
         public BattlepassRewards BattlepassRewards;
+        [SerializeField] BattlepassReward[] premiumBattlepassRewards;
+        [SerializeField] BattlepassReward[] freeBattlepassRewards;
 
 
         [Space(18)]
@@ -28,6 +35,19 @@ namespace UI.Battlepass
         [SerializeField] BattlepassTierTile[] TilesUI;
         [SerializeField] GameObject PremiumBattlepassLockedMask;
         [SerializeField] bool UpdateTiles;
+        [Space(12)]
+        [Header("Info panel UI")]
+        [SerializeField] TMP_Text ItemNameText;
+        [SerializeField] TMP_Text RarityTextText;
+        [SerializeField] GameObject ItemSpriteObject;
+        [SerializeField] Image RarityImage;
+        [SerializeField] Image RarityBarImage;
+        [SerializeField] Image Mask;
+        [SerializeField] GameObject ClaimButton;
+        [SerializeField] GameObject ClaimedButton;
+        [SerializeField] GameObject LockedButton;
+        RotateableTower ItemRotateableTower => ItemSpriteObject.transform.GetComponentInChildren<RotateableTower>(true);
+        Image ItemImage => ItemSpriteObject.transform.GetComponentInChildren<Image>(true);
 
         [Space(8)]
         [Header("Sprites")]
@@ -58,8 +78,6 @@ namespace UI.Battlepass
             RegisterHandlers();
             
             GetDataFromServer();
-            
-            UpdateBattlapassUI();
         }
 
         // void OnDestroy()
@@ -91,8 +109,7 @@ namespace UI.Battlepass
 
         void Update()
         {
-            // UpdateBattlapassUI();
-            
+
         }
 
         
@@ -123,12 +140,12 @@ namespace UI.Battlepass
 
         void RegisterHandlers()
         {
-            
+
         }
         
         void UnregisterHandlers()
         {
-            
+
         }
         
 #endregion
@@ -143,6 +160,10 @@ namespace UI.Battlepass
             localTimeOffset = result.LocalTimeOffset;
             
             await GetPlayerProgress();
+            
+            
+            UpdateBattlapassUI();
+            
                 
             await Task.Yield();
 
@@ -163,17 +184,53 @@ namespace UI.Battlepass
             
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
-                playerProgress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
+                playerProgress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
             else
                 playerProgress = result.Data;
-            
             
             await Database.POST<BattlepassProgress>(playerProgress, playerID);
 
 
-            UpdateBattlapassUI();
-        }
+            GetBattlepassRewards();
 
+        }
+        
+        void GetBattlepassRewards()
+        {
+            List<BattlepassReward> _freeBattlepassRewards = new List<BattlepassReward>();
+            List<BattlepassReward> _premiumBattlepassRewards = new List<BattlepassReward>();
+            
+            for (int tierIndex = 0; tierIndex < BattlepassRewards.rewards.Length; tierIndex++)
+            {
+                Rewards rewards = BattlepassRewards.rewards[tierIndex];
+
+                BattlepassReward[] freeBattlepassTierRewards = GetBattlepassRewards(rewards.Battlepass);
+                BattlepassReward[] premiumBattlepassTierRewards = GetBattlepassRewards(rewards.PremiumBattlepass);
+
+                for (int rewardIndex = 0; rewardIndex < freeBattlepassTierRewards.Length; rewardIndex++)
+                {
+                    BattlepassReward reward = freeBattlepassTierRewards[rewardIndex];
+                    reward.TierIndex = tierIndex;
+                    
+                    _freeBattlepassRewards.Add(reward);
+                }
+                
+                for (int rewardIndex = 0; rewardIndex < premiumBattlepassTierRewards.Length; rewardIndex++)
+                {
+                    BattlepassReward reward = premiumBattlepassTierRewards[rewardIndex];
+                    reward.TierIndex = tierIndex;
+                    
+                    _premiumBattlepassRewards.Add(reward);
+                }
+
+            }
+
+            freeBattlepassRewards = _freeBattlepassRewards.ToArray();
+            premiumBattlepassRewards = _premiumBattlepassRewards.ToArray();
+            
+        }
+        
+        
 
         
         async void UpdateBattlapassUI()
@@ -181,26 +238,30 @@ namespace UI.Battlepass
             if(playerProgress == null)
                 return;
 
-            
+             
             await Task.Yield();
 
             PremiumBattlepassLockedMask.SetActive(!playerProgress.HasPremiumBattlepass);
 
             for (int i = 0; i < BattlepassRewards.rewards.Length; i++)
             {
-                Rewards rewards = BattlepassRewards.rewards[i];
+                int tierIndex = i;
 
-                RewardUI[] freeRewardsUI = GetRewards(rewards.Battlepass);
-                RewardUI[] premiumRewardsUI = GetRewards(rewards.PremiumBattlepass);
+                BattlepassReward[] _freeBattlepassRewards = freeBattlepassRewards.Where(reward => reward.TierIndex == tierIndex).ToArray();
+                BattlepassReward[] _premiumBattlepassRewards = premiumBattlepassRewards.Where(reward => reward.TierIndex == tierIndex).ToArray();
+
+                RewardUI[] freeRewardsUI = GetRewards(_freeBattlepassRewards);
+                RewardUI[] premiumRewardsUI = GetRewards(_premiumBattlepassRewards);
                 
 
-                TilesUI[i].SetFreeBattlepassImages(freeRewardsUI);
+                TilesUI[i].SetFreeBattlepassImages(freeRewardsUI, (int rewardIndex) => OnNormalRewardClicked(tierIndex, rewardIndex) );
                 TilesUI[i].SetFreeTileLockedState( i <= playerProgress.LastTierUnlocked);
-                
-                TilesUI[i].SetPremiumBattlepassImages(premiumRewardsUI);
+
+                TilesUI[i].SetPremiumBattlepassImages(premiumRewardsUI, (int rewardIndex) => OnPremiumRewardClicked(tierIndex, rewardIndex) );
                 TilesUI[i].SetPremiumTileLockedState( i <= playerProgress.LastTierUnlocked);
 
                 TilesUI[i].SetPremiumBattlepassLockedState(playerProgress.HasPremiumBattlepass);
+                
 
 
                 await Task.Yield();
@@ -208,50 +269,75 @@ namespace UI.Battlepass
             
             
         }
-
-
         
         
         
-        RewardUI[] GetRewards(Reward reward)
+        static BattlepassReward[] GetBattlepassRewards(Reward reward)
         {
-            List<RewardUI> rewardsUI = new List<RewardUI>();
+            List<BattlepassReward> rewards = new List<BattlepassReward>();
             
             switch (reward.Type)
             {
                 case RewardType.Coins:
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Coins, Coins = reward.Coins} );
                     break;
                 case RewardType.Coins_Gems:
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Coins, Coins = reward.Coins} );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Gems, Gems = reward.Gems} );
                     break;
                 case RewardType.Coins_Skin:
-                    rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Skin, Skin = new TowerSkinSerializable(reward.Skin) } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Coins, Coins = reward.Coins} );
                     break;
                 case RewardType.Gems:
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Gems, Gems = reward.Gems} );
                     break;
                 case RewardType.Gems_Skin:
-                    rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Skin, Skin = new TowerSkinSerializable(reward.Skin) } );
                     break;
                 case RewardType.Skin:
-                    rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Skin, Skin = new TowerSkinSerializable(reward.Skin) } );
                     break;
                 case RewardType.Coins_Gems_Skin:
-                    rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = reward.Skin.TowerSprite, } );
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
-                    rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Skin, Skin = new TowerSkinSerializable(reward.Skin) } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Coins, Coins = reward.Coins} );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Gems, Gems = reward.Gems} );
                     break;
                 case RewardType.None:
                     break;
             }
 
+            return rewards.ToArray();
+        }
+        
+        
+        RewardUI[] GetRewards(BattlepassReward[] rewards)
+        {
+            List<RewardUI> rewardsUI = new List<RewardUI>();
+
+            foreach (var reward in rewards)
+            {
+                switch (reward.Type)
+                {
+                    case RewardType.Coins:
+                        rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
+                        break;
+                    case RewardType.Gems:
+                        rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
+                        break;
+                    case RewardType.Skin:
+                        rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = TowerSkin.GetTowerSkinByID(reward.Skin.ID).TowerSprite, } );
+                        break;
+                    case RewardType.None:
+                        break;
+                }
+            }
+
             return rewardsUI.ToArray();
         }
 
+        
+        
         Sprite GetCoinsSpriteByAmmount(ulong amount)
         {
             
@@ -287,6 +373,137 @@ namespace UI.Battlepass
 
 
 
+
+#region On Select Reward
+
+
+        BattlepassReward lastSelectedReward = null;
+        bool lastSelectedRewardIsNull => lastSelectedReward == null;
+        
+        
+        
+        void OnNormalRewardClicked(int tierIndex, int rewardIndex) => OnRewardClicked(tierIndex, rewardIndex, false);
+        
+        void OnPremiumRewardClicked(int tierIndex, int rewardIndex) => OnRewardClicked(tierIndex, rewardIndex, true);
+
+        
+        void OnRewardClicked(int tierIndex, int rewardIndex, bool isPremiumPreward)
+        {
+            BattlepassReward[] rewards = isPremiumPreward ? premiumBattlepassRewards : freeBattlepassRewards;
+            BattlepassReward reward = rewards.FirstOrDefault(_reward => _reward.TierIndex == tierIndex && _reward.RewardIndex == rewardIndex);
+
+            bool rewardIsNull = reward == null;
+            
+            
+            if (lastSelectedRewardIsNull && !rewardIsNull)
+                OpenRewardPreviewPanel.PlayAnimation();
+            else if (!lastSelectedRewardIsNull && rewardIsNull)
+                CloseRewardPreviewPanel.PlayAnimation();
+
+            lastSelectedReward = reward;
+            
+            if(rewardIsNull)
+                return;
+
+            string itemName = "";
+            string rarityName = "";
+            Color rarityColor = Color.white;
+            SkinRarity itemRarity = SkinRarity.Default;
+
+
+
+            bool isClaimed = playerProgress.IsClaimed(reward);
+            bool isLocked = tierIndex > playerProgress.LastTierUnlocked || (isPremiumPreward && !playerProgress.HasPremiumBattlepass);
+
+            ClaimedButton.SetActive(false);
+            LockedButton.SetActive(false);
+            ClaimButton.SetActive(false);
+            if (isClaimed)
+                ClaimedButton.SetActive(true);
+            else if (isLocked)
+                LockedButton.SetActive(true);
+            else
+                ClaimButton.SetActive(true);
+            
+            Mask.gameObject.SetActive(isClaimed || isLocked);
+            
+            
+            ItemRotateableTower.gameObject.SetActive(reward.Type == RewardType.Skin);
+            ItemImage.gameObject.SetActive(reward.Type != RewardType.Skin);
+            
+            
+            
+            switch (reward.Type)
+            {
+                case RewardType.Coins:
+                    itemName = $"{reward.Coins} {StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().CoinsIconName, Size = "66%"})}";
+                    
+                    itemRarity = GetCoinsRarityByAmmount(reward.Coins);
+                    rarityName = $"{itemRarity}";
+                    rarityColor =  GlobalSettingsManager.GetGlobalSettings.Invoke().GetRarityColorByRarity(itemRarity);
+                    
+                    ItemImage.sprite = GetCoinsSpriteByAmmount(reward.Coins);
+                    break;
+                case RewardType.Gems:
+                    itemName = $"{reward.Gems} {StringFormatter.GetSpriteText(new SpriteTextData(){SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().GemsIconName, Size = "66%"})}";
+                    
+                    itemRarity = GetGemsRarityByAmmount(reward.Gems);
+                    rarityName = $"{itemRarity}";
+                    rarityColor =  GlobalSettingsManager.GetGlobalSettings.Invoke().GetRarityColorByRarity(itemRarity);
+                    
+                    ItemImage.sprite = GetGemsSpriteByAmmount(reward.Gems);
+                    break;
+                case RewardType.Skin:
+                    TowerSkin skin = TowerSkin.GetTowerSkinByID(reward.Skin.ID);
+                    itemName = $"{skin.SkinName} Skin";
+                    
+                    rarityName = $"{reward.Skin.Rarity}";
+                    rarityColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetRarityColorBySkin(skin);
+                    
+                    ItemRotateableTower.SpawnTowerProcess?.Invoke( Tower.GetTowerBySkinID(reward.Skin.ID), skin);
+                    break;  
+            }
+
+
+            ItemNameText.text = itemName;
+            
+            RarityTextText.text = $"{StringFormatter.GetColoredText("Rarity | ", Color.white)}{StringFormatter.GetColoredText($"{rarityName}", rarityColor * new Color(2f, 2f, 2f))}";
+            RarityImage.color = rarityColor;// * new Color(1.65f, 1.65f, 1.65f);
+            RarityBarImage.color = new Color(rarityColor.r * 0.55f, rarityColor.g * 0.55f, rarityColor.b * 0.55f);
+
+
+            Debug.Log($"[Tier: {tierIndex}, Reward: {rewardIndex}, IsPremium: {isPremiumPreward}] is clicked ");
+
+
+        }
+        
+        
+        
+        static SkinRarity GetCoinsRarityByAmmount(ulong amount)
+        {
+            
+            if (amount <= 25)
+                return SkinRarity.Default;
+            else
+                return SkinRarity.Common;
+  
+        }
+        
+        static SkinRarity GetGemsRarityByAmmount(ulong amount)
+        {
+        
+            if (amount <= 25)
+                return SkinRarity.Common;
+            else
+                return SkinRarity.Rare;
+            
+        }
+        
+        
+#endregion
+
+
+
         
         
         
@@ -299,7 +516,7 @@ namespace UI.Battlepass
             
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
-                progress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
+                progress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
             else
                 progress = result.Data;
 
@@ -319,7 +536,7 @@ namespace UI.Battlepass
             
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
-                progress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, Rewards = new List<Reward>(), HasPremiumBattlepass = false, };
+                progress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
             else
                 progress = result.Data;
 

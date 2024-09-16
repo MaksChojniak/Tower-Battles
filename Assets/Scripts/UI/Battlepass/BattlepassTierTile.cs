@@ -15,7 +15,7 @@ namespace UI.Battlepass
     public class BattlepassTierTile : MonoBehaviour
     {
 
-        public delegate void SetImagesDelegate(RewardUI[] rewardsUI);
+        public delegate void SetImagesDelegate(RewardUI[] rewardsUI, Action<int> OnClickEvent);
         public SetImagesDelegate SetFreeBattlepassImages;
         public SetImagesDelegate SetPremiumBattlepassImages;
 
@@ -24,9 +24,9 @@ namespace UI.Battlepass
         public SetLockedStateDelegate SetPremiumTileLockedState;
         
         public SetLockedStateDelegate SetPremiumBattlepassLockedState;
-        
 
-        
+
+
         Transform _freeBattlepass;
         Transform _freeBattlepassRewardContainer => _freeBattlepass.GetChild(0);
         Transform _freeBattlepassTierLockedMask => _freeBattlepass.GetChild(2);
@@ -80,27 +80,31 @@ namespace UI.Battlepass
         }
 
 #endregion
-
+        
+        
 
 
 #region Set Rewards Images & Prefabs
 
         
-        void OnSetFreeBattlepassImages(RewardUI[] rewardsUI) => SetImagesToContainer(_freeBattlepassRewardContainer, rewardsUI);
+        void OnSetFreeBattlepassImages(RewardUI[] rewardsUI, Action<int> OnClickEvent) => SetImagesToContainer(_freeBattlepassRewardContainer, rewardsUI, OnClickEvent);
         
-        void OnSetPremiumBattlepassImages(RewardUI[] rewardsUI) => SetImagesToContainer(_premiumBattlepassRewardContainer, rewardsUI);
+        void OnSetPremiumBattlepassImages(RewardUI[] rewardsUI, Action<int> OnClickEvent) => SetImagesToContainer(_premiumBattlepassRewardContainer, rewardsUI, OnClickEvent);
 
 
 
-        void SetImagesToContainer(Transform container, RewardUI[] rewardsUI)
+        void SetImagesToContainer(Transform container, RewardUI[] rewardsUI, Action<int> OnClickEvent)
         {
             for (int i = 0; i < container.childCount; i++)
             {
                 Destroy(container.GetChild(i).gameObject);
             }
-            
-            foreach (var rewardUI in rewardsUI)
+
+            for (int i = 0; i < rewardsUI.Length; i++)
             {
+                int rewardIndex = i;
+                RewardUI rewardUI = rewardsUI[rewardIndex];
+                
                 GameObject reward = Instantiate(rewardUI.Prefab, Vector3.zero, Quaternion.identity, container);
                 
                 Image image = reward.transform.GetChild(0).GetComponent<Image>();
@@ -108,9 +112,18 @@ namespace UI.Battlepass
 
                 TMP_Text amountText = reward.transform.GetChild(1).GetComponent<TMP_Text>();
                 amountText.text = rewardUI.Amount > 0 ? $"{rewardUI.Amount}" : "";
+                
+                
+                
+                Button button = reward.GetComponent<Button>();
+                button.onClick.AddListener(() => OnClickEvent?.Invoke(rewardIndex) );
+
+                
             }
             
         }
+
+
         
         
 #endregion

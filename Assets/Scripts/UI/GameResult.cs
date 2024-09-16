@@ -164,7 +164,7 @@ namespace UI
             
             animator.PlayAnimation();
 
-            yield return new WaitForSeconds(animator.GetAnimationClip().length);
+            yield return new WaitForSeconds(animator.animationLenght);
 
 
             if (Random.Range(0, 100) % 2 == 0)

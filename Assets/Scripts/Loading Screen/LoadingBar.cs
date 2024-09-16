@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Ads;
 using Mirror;
@@ -10,7 +9,6 @@ using Player;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace Loading_Screen
@@ -69,7 +67,7 @@ namespace Loading_Screen
             taksToPlay = new List<Task>()
             {
                 FirebaseCheckDependencies.CheckAndFixDependencies(),
-                AdsCheckDependencies.CheckAndFixDependencies(),
+                GoogleAds.CheckAndFixDependencies(),
                 MaksLoadingAnimation(10f),
                 // KacperLoadingAnimation(10f),
             };

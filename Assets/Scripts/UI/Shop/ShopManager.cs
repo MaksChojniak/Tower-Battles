@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
@@ -20,11 +21,11 @@ using TMPro;
 using UI.Battlepass;
 using UI.Shop.Daily_Rewards;
 using UI.Shop.Daily_Rewards.Scriptable_Objects;
-
 using DateTime = System.DateTime;
 using Random = Unity.Mathematics.Random;
 using Reward = UI.Shop.Daily_Rewards.Reward;
 using RewardType = UI.Shop.Daily_Rewards.Scriptable_Objects.RewardType;
+using Task = System.Threading.Tasks.Task;
 using Time = UnityEngine.Time;
 
 
@@ -56,6 +57,7 @@ namespace UI.Shop
 
         SkinsForSale skinsForSale = new SkinsForSale();
         DailyRewards dailyRewards = new DailyRewards();
+        AdsRewards adsRewards = new AdsRewards();
 
         [Header("Const Data")]
         [SerializeField] BattlepassTicket[] BattlepassTickets;
@@ -78,6 +80,8 @@ namespace UI.Shop
         [Space(8)]
         [Header("   Ads Rewards UI")]
         [SerializeField] AdRewardUI[] adRewardsPanels;
+        [SerializeField] AdRewardUI currentAdReward;
+        [SerializeField] TMP_Text adsCounterText;
         [Header("   Gems Exchange UI")]
         [SerializeField] GemsExchangeUI[] gemsExchangePanels;
         [Header("   Battlepass Tickets UI")]
@@ -85,9 +89,15 @@ namespace UI.Shop
         [Header("   Coins Offerts UI")]
         [SerializeField] GameObject[] coinsOffertsPanels;
         
+        [Space(18)]
+        [SerializeField] TowerSkin[] avaiableSkins;
+        [SerializeField] RewardObject[] avaiableRewards;
+        [SerializeField] AvaiableAdRewards AvaiableAdRewards;
+        
 
         public const int SKINS_FOR_SALE_COUNT = 3;
         public const int DAILY_REWARDS_COUNT = 7;
+        public const int DAILY_ADS_LIMIT = 10;
 
 
 
@@ -97,6 +107,7 @@ namespace UI.Shop
             RegisterHandlers();
 
             GetDataFromServer();
+            
         }
 
         // void OnDestroy()
@@ -122,14 +133,19 @@ namespace UI.Shop
         
         void Update()
         {
-            UpdateSkinsForSaleUI();
-                
-            UpdateDailyRewardsUI();
-            
-            UpdateAdsRewardsOffertsUI();
-            
-            UpdateCoinsOffertsUI();
-
+            // UpdateSkinsForSaleUI();
+            UpdateSkinsOffertRestockCounterUI();
+            //     
+            // UpdateDailyRewardsUI();
+            //
+            //
+            // UpdateAdsRewardsOffertsUI();
+            //
+            //
+            // UpdateExchangeOffertsUI();
+            //
+            // UpdateBattlepassTicketsOffertsUI();
+            //
             // UpdateCoinsOffertsUI();
         }
 
@@ -225,18 +241,44 @@ namespace UI.Shop
             ServerDateReseult result = await ServerDate.GetDateFromServerAsync();
             dateFromServer = result.ServerDate;
             localTimeOffset = result.LocalTimeOffset;
-
-            // List<Task> tasks = new List<Task>()
-            // {
-            //     GetSkinsForSaleFromServerAsync(),
-            //     GetDailyRewardsFromServerAsync(),
-            //     GetCoinsOffertsFromServerAsync()
-            // };
-            // await Task.WhenAll(tasks);
             
-            await Task.Run(async () => await GetSkinsForSaleFromServerAsync());
-            await Task.Run(async () => await GetDailyRewardsFromServerAsync());
-            // await Task.Run(async () => await GetCoinsOffertsFromServerAsync());
+            
+            // SynchronizationContext unitySynchronizationContext = SynchronizationContext.Current;
+            // await Task.Run(async () =>
+            // {
+            //     await GetSkinsForSaleFromServerAsync();
+            //     
+            //     unitySynchronizationContext.Post( _ => UpdateSkinsForSaleUI(), null);
+            // });
+            // await Task.Run(async () =>
+            // {
+            //     await GetDailyRewardsFromServerAsync();
+            //     
+            //     unitySynchronizationContext.Post( _ => UpdateDailyRewardsUI(), null);
+            // });
+            // await Task.Run(async () =>
+            // {
+            //     await GetAdsRewardsFromServerAsync();
+            //     
+            //     unitySynchronizationContext.Post( _ => UpdateAdsRewardsOffertsUI(), null);
+            // });
+            
+            await Task.Run(async () => await GetSkinsForSaleFromServerAsync() );
+            await Task.Run(async () => await GetDailyRewardsFromServerAsync() );
+            await Task.Run(async () => await GetAdsRewardsFromServerAsync() );
+
+            
+            UpdateSkinsForSaleUI();
+            
+            UpdateDailyRewardsUI();
+            
+            UpdateAdsRewardsOffertsUI();
+            
+            UpdateExchangeOffertsUI();
+            
+            UpdateBattlepassTicketsOffertsUI();
+            
+            
 
             await Task.Yield();
 
@@ -247,12 +289,9 @@ namespace UI.Shop
 #region Skins Offerts
 
 
-        [SerializeField] TowerSkin[] avaiableSkins;
-        
-        void GetSkinsForSaleFromServer()
-        {
 
-        }
+    #region Get Data From Server
+
 
         async Task GetSkinsForSaleFromServerAsync()
         {
@@ -264,27 +303,16 @@ namespace UI.Shop
                 skinsForSale = await CalculateNewSkinsForSale(result.Data); // Calculate new offerts
             else
                 skinsForSale = result.Data;
-            
+
         }
+        
+        
+    #endregion
 
+        
 
-        void UpdateSkinsForSaleUI()
-        {
-            DateTime createTimeUTC = new DateTime(skinsForSale.CreateDateUTCTicks);
-            TimeSpan offsetToNextOfferts = createTimeUTC.AddDays(1) - simulatedDateOnServerUTC;
-
-            offertsTimerText.text = $"Next in: {offsetToNextOfferts.Hours}h {offsetToNextOfferts.Minutes}min";
-            
-            for (int i = 0; i < skinsForSale.skinsForSale.Length; i++)
-            {
-                skinsForSalePanels[i].UpdateUI(skinsForSale.skinsForSale[i]);
-            }
-            
-        }
-
-
-
-        [ContextMenu(nameof(CalculateNewSkinsForSale))]
+    #region Calculate New Offerts
+    
         async Task<SkinsForSale> CalculateNewSkinsForSale(SkinsForSale oldOfferts = null)
         {
             Random random = new Random((uint)new System.Random().Next(0, 100));
@@ -345,31 +373,24 @@ namespace UI.Shop
             return _skinsForSale;
         }
 
-
-        [ContextMenu(nameof(GenerateAllSkins))]
         SkinOffert[] GenerateAllSkins()
         {
             List<SkinOffert> offerts = new List<SkinOffert>();
 
             foreach (var avaiableSkin in avaiableSkins)
             {
-                if(avaiableSkin.Rarity != SkinRarity.Common)
+                if(avaiableSkin.Rarity != SkinRarity.Common && avaiableSkin.Rarity != SkinRarity.Gold)
                     offerts.Add(new SkinOffert() { TowerSkinID = avaiableSkin.ID });
             }
 
-
-            //offert.TowerSkin.Rarity != SkinRarity.Common)).ToList();
-            
             Debug.Log(JsonConvert.SerializeObject(offerts.ToArray()));
 
             return offerts.ToArray();
         }
         
+    #endregion
         
-        // async Task SaveSkinsForSale()
-        // {
-        //     await Database.POST<SkinsForSale>(skinsForSale);
-        // }
+        
 
         public async void BuySkinFromOffert(int offertIndex)
         {
@@ -438,48 +459,53 @@ namespace UI.Shop
             
             confirmation.StopLoadingAnimation();
 
+
+
+            UpdateSkinsForSaleUI();
+
             // skinsForSaleUIProperties.ConfirmationPanel.Open(tower, skin);
         }
         
         
+        void UpdateSkinsForSaleUI()
+        {
+            for (int i = 0; i < skinsForSale.skinsForSale.Length; i++)
+            {
+                skinsForSalePanels[i].UpdateUI(skinsForSale.skinsForSale[i]);
+            }
+            
+        }
+
+        void UpdateSkinsOffertRestockCounterUI()
+        {
+            if (skinsForSale == null)
+            {
+                offertsTimerText.text = $"No Offerts";
+                return;
+            }
+            
+            DateTime createTimeUTC = new DateTime(skinsForSale.CreateDateUTCTicks);
+            TimeSpan offsetToNextOfferts = createTimeUTC.AddDays(1) - simulatedDateOnServerUTC;
+
+            offertsTimerText.text = $"Next in: {offsetToNextOfferts.Hours}h {offsetToNextOfferts.Minutes}min";
+        }
+
+
 #endregion
 
 
 
 #region Daily Rewards Offerts
 
-        [SerializeField] RewardObject[] avaiableRewards;
-        
         DateTime dateFromServer = new DateTime();
         TimeSpan localTimeOffset = new TimeSpan();
         DateTime simulateDateOnServer => DateTime.Now - localTimeOffset;
         DateTime simulatedDateOnServerUTC => simulateDateOnServer.ToUniversalTime();
-        
-        
-        
-        
-        
-        
-        void GetDailyRewardsFromServer()
-        {
-            string playerID = PlayerController.GetLocalPlayerData().ID;
 
-            var result = Database.GET<DailyRewards>(playerID).Result;
 
-            if (result.Status == DatabaseStatus.Error)
-            {
-                dailyRewards = CalculateNewDailyRewards();
-                return;
-            }
 
-            if (result.Data.LastCalimedRewardIndex + 1 >= DAILY_REWARDS_COUNT)
-            {
-                dailyRewards = CalculateNewDailyRewards();
-                return;
-            }
 
-            dailyRewards = result.Data;
-        }
+    #region Get Data From Server
         
         async Task GetDailyRewardsFromServerAsync()
         {
@@ -488,90 +514,21 @@ namespace UI.Shop
             var result = await Database.GET<DailyRewards>(playerID);
 
             if (result.Status == DatabaseStatus.Error)
-                dailyRewards = CalculateNewDailyRewards(true);
+                dailyRewards = await CalculateNewDailyRewards(true);
             else if (result.Data.LastCalimedRewardIndex + 1 >= DAILY_REWARDS_COUNT)
-                dailyRewards = CalculateNewDailyRewards();
+                dailyRewards = await CalculateNewDailyRewards();
             else
                 dailyRewards = result.Data;
-            
 
-            await Database.POST<DailyRewards>(dailyRewards, playerID);
         }
 
+    #endregion
+    
         
-        void UpdateDailyRewardsUI()
-        {
-
-            for (int i = 0; i < dailyRewards.Rewards.Length; i++)
-            {
-                // Reward reward = dailyRewards.Rewards[i];
-                //
-                // RewardType type = RewardType.None;
-                // ulong value = 0;
-                //
-                // if (reward.Type == RewardType.Coins)
-                // {
-                //     value = reward.CoinsBalance;
-                //     type = reward.Type;
-                // }
-                // else if (reward.Type == RewardType.Experience)
-                // {
-                //     value = reward.XP;
-                //     type = reward.Type;
-                // }
-                //
-                //
-                //
-                // UpdateDailyRewardPanelUI(i, type, value);
-                dalyRewardsPanels[i].UpdateUI(i, dailyRewards, dailyRewardsUIProperties, simulatedDateOnServerUTC);
-            }
-            
-            
-        }
-
-
         
-        public async void ClaimReward(int index)
-        {
-            TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulatedDateOnServerUTC;
-            bool canClaim = dailyRewards.LastCalimedRewardIndex + 1 == index && (timeToClaim.TotalSeconds <= 0 );
-            
-            if(!canClaim)
-                return;
-
-            dailyRewards.LastClaimDateTicks = simulatedDateOnServerUTC.Ticks;
-            dailyRewards.LastCalimedRewardIndex += 1;
-            
-            
-            GiveDailyReward(dailyRewards.Rewards[dailyRewards.LastCalimedRewardIndex]);
-            
-
-            if (dailyRewards.LastCalimedRewardIndex + 1 >= DAILY_REWARDS_COUNT)
-                dailyRewards = CalculateNewDailyRewards();
-            
-            
-            string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
-            await Database.POST<DailyRewards>(dailyRewards, playerID);
-        }
-
-
-        void GiveDailyReward(Reward reward)
-        {
-            
-            switch (reward.Type)
-            {
-                case RewardType.Coins:
-                    PlayerData.ChangeCoinsBalance((long)reward.CoinsBalance);
-                    break;
-                case RewardType.Experience:
-                    PlayerData.ChangeExperience((long)reward.XP);
-                    break;
-            }
-            
-        }
-        
-
-        DailyRewards CalculateNewDailyRewards(bool isFirstDailyReward = false)
+    #region Calculate New Offerts
+    
+        async Task<DailyRewards> CalculateNewDailyRewards(bool isFirstDailyReward = false)
         {
             Random random = new Random((uint)UnityEngine.Random.Range(0, 100));
 
@@ -582,52 +539,37 @@ namespace UI.Shop
                 switch (i)
                 {
                     case 0:
-                        _rewardsObjects = avaiableRewards
-                            .Where(element => 
-                                element.RewardRarity == RewardRarity.Common )
-                            .ToArray();
+                        _rewardsObjects = avaiableRewards.Where(element => element.RewardRarity == RewardRarity.Common ).ToArray();
                         break;
                     case 1:
-                        _rewardsObjects = avaiableRewards
-                            .Where(element =>
-                                element.RewardRarity == RewardRarity.Common || 
-                                element.RewardRarity == (random.NextInt() % 20 == 0 ? RewardRarity.Common : RewardRarity.Uncommon) )
-                            .ToArray();
+                        _rewardsObjects = avaiableRewards.
+                            Where(element => element.RewardRarity == RewardRarity.Common || element.RewardRarity == (random.NextInt() % 20 == 0 ? RewardRarity.Common : RewardRarity.Uncommon) ).
+                            ToArray();
                         break;
                     case 2:
-                        _rewardsObjects = avaiableRewards
-                            .Where(element => 
-                                element.RewardRarity == RewardRarity.Common || 
-                                element.RewardRarity == (random.NextInt() % 5 == 0 ? RewardRarity.Uncommon : RewardRarity.Common) )
-                            .ToArray();
+                        _rewardsObjects = avaiableRewards.
+                            Where(element => element.RewardRarity == RewardRarity.Common || element.RewardRarity == (random.NextInt() % 5 == 0 ? RewardRarity.Uncommon : RewardRarity.Common) ).
+                            ToArray();
                         break;
                     case 3:
-                        _rewardsObjects = avaiableRewards
-                            .Where(element => 
-                                element.RewardRarity == RewardRarity.Uncommon )
-                            .ToArray();
+                        _rewardsObjects = avaiableRewards.
+                            Where(element => element.RewardRarity == RewardRarity.Uncommon ).
+                            ToArray();
                         break;
                     case 4:
-                        _rewardsObjects = avaiableRewards
-                            .Where(element => 
-                                element.RewardRarity == RewardRarity.Uncommon || 
-                                element.RewardRarity == (random.NextInt() % 5 == 0 ? RewardRarity.Rare : RewardRarity.Uncommon) )
-                            .ToArray();
+                        _rewardsObjects = avaiableRewards.
+                            Where(element => element.RewardRarity == RewardRarity.Uncommon || element.RewardRarity == (random.NextInt() % 5 == 0 ? RewardRarity.Rare : RewardRarity.Uncommon) ).
+                            ToArray();
                         break;
                     case 5:
-                        _rewardsObjects = avaiableRewards
-                            .Where(element => 
-                                element.RewardRarity == RewardRarity.Rare || 
-                                element.RewardRarity == (random.NextInt() % 5 == 0 ? RewardRarity.Epic : RewardRarity.Rare) )
-                            .ToArray();
+                        _rewardsObjects = avaiableRewards.
+                            Where(element => element.RewardRarity == RewardRarity.Rare || element.RewardRarity == (random.NextInt() % 5 == 0 ? RewardRarity.Epic : RewardRarity.Rare) ).
+                            ToArray();
                         break;
                     case 6:
-                        _rewardsObjects = avaiableRewards
-                            .Where(element => 
-                                element.RewardRarity == RewardRarity.Epic ||
-                                element.RewardRarity == (random.NextInt() % 10 == 0 ? RewardRarity.Legendary : RewardRarity.Epic) || 
-                                element.RewardRarity == (random.NextInt() % 25 == 0 ? RewardRarity.Exclusive : RewardRarity.Epic) )
-                            .ToArray();
+                        _rewardsObjects = avaiableRewards.
+                            Where(element => element.RewardRarity == RewardRarity.Epic || element.RewardRarity == (random.NextInt() % 10 == 0 ? RewardRarity.Legendary : RewardRarity.Epic) || element.RewardRarity == (random.NextInt() % 25 == 0 ? RewardRarity.Exclusive : RewardRarity.Epic) ).
+                            ToArray();
                         break;
                 }
 
@@ -650,17 +592,73 @@ namespace UI.Shop
                 Rewards = _rewards
             };
 
+            
+            string playerID = PlayerController.GetLocalPlayerData().ID;
+            await Database.POST<DailyRewards>(dailyRewards, playerID);
+            
 
             return rewards;
         }
-
-
-        // async Task SaveDailyRewards()
-        // {
-        //     string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
-        //     await Database.POST<DailyRewards>(dailyRewards, playerID);
-        // }
         
+    #endregion
+        
+        
+        
+        public async void ClaimReward(int index)
+        {
+            TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulatedDateOnServerUTC;
+            bool canClaim = dailyRewards.LastCalimedRewardIndex + 1 == index && (timeToClaim.TotalSeconds <= 0 );
+            
+            if(!canClaim)
+                return;
+
+            dailyRewards.LastClaimDateTicks = simulatedDateOnServerUTC.Ticks;
+            dailyRewards.LastCalimedRewardIndex += 1;
+            
+            
+            GiveDailyReward(dailyRewards.Rewards[dailyRewards.LastCalimedRewardIndex]);
+            
+
+            if (dailyRewards.LastCalimedRewardIndex + 1 >= DAILY_REWARDS_COUNT)
+                dailyRewards = await CalculateNewDailyRewards();
+            
+            
+            string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
+            await Database.POST<DailyRewards>(dailyRewards, playerID);
+
+
+
+            UpdateDailyRewardsUI();
+
+        }
+
+        void GiveDailyReward(Reward reward)
+        {
+            
+            switch (reward.Type)
+            {
+                case RewardType.Coins:
+                    PlayerData.ChangeCoinsBalance((long)reward.CoinsBalance);
+                    break;
+                case RewardType.Experience:
+                    PlayerData.ChangeExperience((long)reward.XP);
+                    break;
+            }
+            
+        }
+        
+        
+        void UpdateDailyRewardsUI()
+        {
+
+            for (int i = 0; i < dailyRewards.Rewards.Length; i++)
+            {
+                dalyRewardsPanels[i].UpdateUI(i, dailyRewards, dailyRewardsUIProperties, simulatedDateOnServerUTC);
+            }
+            
+            
+        }
+
         
 #endregion
         
@@ -668,7 +666,7 @@ namespace UI.Shop
         
 #region Exchange Gems To Coins Offerts
 
-
+        
         public async void ExchangeGemsToCoins(int offertIndex)
         {
             GemsExchange exchangeOffert = GemsExchangeOfferts[offertIndex];
@@ -713,11 +711,19 @@ namespace UI.Shop
             await Task.Yield();
             
             confirmation.StopLoadingAnimation();
+
+
+
+            UpdateExchangeOffertsUI();
         }
 
 
-        void UpdateCoinsOffertsUI()
+        void UpdateExchangeOffertsUI()
         {
+            for (int i = 0; i < gemsExchangePanels.Length; i++)
+            {
+                gemsExchangePanels[i].UpdateUI(GemsExchangeOfferts[i]);
+            }
             
         }
         
@@ -791,11 +797,18 @@ namespace UI.Shop
 
             confirmation.StopLoadingAnimation();
 
+
+            UpdateBattlepassTicketsOffertsUI();
         }
 
 
         void UpdateBattlepassTicketsOffertsUI()
         {
+
+            for (int i = 0; i < battlepassTicketsPanels.Length; i++)
+            {
+                battlepassTicketsPanels[i].UpdateUI(BattlepassTickets[i]);
+            }
             
         }
         
@@ -805,15 +818,138 @@ namespace UI.Shop
 
 
 #region Ad Offerts
-
         
-        public void ShowAd()
+        
+        
+    #region Get Data From Server
+    
+        async Task GetAdsRewardsFromServerAsync()
         {
-            GoogleAds.ShowAd(RewardType.Coins, 50);
+            string playerID = PlayerController.GetLocalPlayerData().ID;
+         
+            var result = await Database.GET<AdsRewards>(playerID);
+
+            if (result.Status == DatabaseStatus.Error)
+                adsRewards = await CalculateNewAdsRewards(); // Calculate new ads rewards
+            else if ((simulatedDateOnServerUTC - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
+                adsRewards = await CalculateNewAdsRewards(); // Calculate new ads rewards
+            else
+                adsRewards = result.Data;
+            
         }
+        
+    #endregion
+
+
+
+    #region Calculate New Offerts
+
+        async Task<AdsRewards> CalculateNewAdsRewards()
+        {
+            Random random = new Random((uint)new System.Random().Next(0, 100));
+
+            List<AdReward> avaiableAdsRewards = new List<AdReward>(AvaiableAdRewards.rewards);
+            
+            
+            var createDateUTC = simulatedDateOnServerUTC.AddHours(8 - simulatedDateOnServerUTC.Hour).AddMinutes(-simulatedDateOnServerUTC.Minute).AddSeconds(-simulatedDateOnServerUTC.Second);
+            if (simulatedDateOnServerUTC.Hour < 8)
+                createDateUTC = simulatedDateOnServerUTC.AddDays(-1).AddHours(8 - simulatedDateOnServerUTC.Hour).AddMinutes(-simulatedDateOnServerUTC.Minute).AddSeconds(-simulatedDateOnServerUTC.Second);
+
+
+            AdsRewards _adsRewards = new AdsRewards()
+            {
+                CreateDateUTCTicks = createDateUTC.Ticks,
+                rewards = new List<AdReward>(),
+            };
+
+            for (int i = 0; i < DAILY_ADS_LIMIT; i++)
+            {
+                List<AdReward> _avaiableAdsRewards = new List<AdReward>(avaiableAdsRewards);
+                if (i < 2)
+                    _avaiableAdsRewards = avaiableAdsRewards.Where(_reward => _reward.Amount < 10).ToList();
+                else if (i < 8)
+                    _avaiableAdsRewards = avaiableAdsRewards.Where(_reward => _reward.Amount < 25).ToList();
+                else if(i < DAILY_ADS_LIMIT - 1)
+                    _avaiableAdsRewards = avaiableAdsRewards.Where(_reward => _reward.Amount > 20 && _reward.Amount > 5).ToList();
+                else 
+                    _avaiableAdsRewards = avaiableAdsRewards.Where(_reward => _reward.Amount > 25).ToList();
+                
+                int randomIndex = random.NextInt(0, _avaiableAdsRewards.Count);
+
+                _adsRewards.rewards.Add(_avaiableAdsRewards[randomIndex]);
+            }
+
+            
+            string playerID = PlayerController.GetLocalPlayerData().ID;
+            await Database.POST<AdsRewards>(_adsRewards, playerID);
+            
+            
+            return _adsRewards;
+        }
+
+    #endregion
+        
+        
+        
+        public async void ShowAd()
+        {
+            if(adsRewards == null)
+                return;
+            
+            if(adsRewards.rewards.Count <= 0)
+                return;
+
+            AdReward reward = adsRewards.rewards[0];
+            
+            
+            GoogleAds.ShowAd(reward.Type,reward.Amount);
+            GoogleAds.OnGetReward += OnGetAdReward;
+        }
+
+        async void OnGetAdReward()
+        {
+            GoogleAds.OnGetReward -= OnGetAdReward;
+            
+            adsRewards.rewards.RemoveAt(0);
+            
+            string playerID = PlayerController.GetLocalPlayerData().ID;
+            await Database.POST<AdsRewards>(adsRewards, playerID);
+
+
+            UpdateAdsRewardsOffertsUI();
+        }
+        
 
         public void UpdateAdsRewardsOffertsUI()
         {
+            currentAdReward.gameObject.SetActive(false);
+            for (int i = 0; i < adRewardsPanels.Length; i++)
+            {
+                adRewardsPanels[i].gameObject.SetActive(false);
+            }
+            
+            
+            if(adsRewards == null || adsRewards.rewards.Count <= 0)
+                return;
+
+
+            adsCounterText.text = $"Videos Watched: {DAILY_ADS_LIMIT-adsRewards.rewards.Count}/{DAILY_ADS_LIMIT}";
+            
+            currentAdReward.gameObject.SetActive(true);
+            currentAdReward.UpdateUI(adsRewards.rewards[0], 0);
+            
+            for (int i = 0; i < adRewardsPanels.Length - 1; i++)
+            {
+                int rewardIndex = i + 1; 
+                
+                adRewardsPanels[i].gameObject.SetActive(rewardIndex < adsRewards.rewards.Count);
+                if(rewardIndex >= adsRewards.rewards.Count)
+                    continue;
+                
+                AdReward reward = adsRewards.rewards[rewardIndex];
+                
+                adRewardsPanels[i].UpdateUI(reward, rewardIndex);
+            }
             
         }
         

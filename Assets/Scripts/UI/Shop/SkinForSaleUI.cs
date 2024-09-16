@@ -64,7 +64,8 @@ namespace UI.Shop
             if (skin.IsUnlocked)
                 priceValue = "Owned";
             else
-                priceValue = $"{skin.UnlockPrice}{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = "coins", SpacesCount = 1, WithSpaces = true })}";
+                priceValue = $"{StringFormatter.GetCoinsText((long)skin.UnlockPrice, true, "80%")}";
+                // priceValue = $"{skin.UnlockPrice}{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = "coins", SpacesCount = 1, WithSpaces = true })}";
             // if (tower.IsUnlocked())
             // {
             //     if (skin.IsUnlocked)

@@ -155,7 +155,7 @@ public class TowerPreviewUI : MonoBehaviour
         unlockPanel.SetActive(!isUnlocked && !lockedPanel.activeSelf);
         
         ownedPanel.SetActive(isUnlocked);
-        unlockPrice.text = $"{tower.GetUnlockedPrice()}";
+        unlockPrice.text = $"{tower.GetUnlockedPrice()}{StringFormatter.GetSpriteText(new SpriteTextData() {SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().CoinsIconName, Size = "66%"})}";
 
         lastSelectedTowerIndex = index;
     }

@@ -140,7 +140,7 @@ namespace UI
             
             OpenMessagePanel.PlayAnimation();
             
-            await Task.Delay( Mathf.RoundToInt( OpenMessagePanel.GetAnimationClip().length * 1000 ) );
+            await Task.Delay( Mathf.RoundToInt( OpenMessagePanel.animationLenght * 1000 ) );
             
             
             await Task.Delay( Mathf.RoundToInt( 2.5f * 1000 ) );
@@ -148,7 +148,7 @@ namespace UI
             
             CloseMessagePanel.PlayAnimation();
             
-            await Task.Delay( Mathf.RoundToInt( CloseMessagePanel.GetAnimationClip().length * 1000 ) );
+            await Task.Delay( Mathf.RoundToInt( CloseMessagePanel.animationLenght * 1000 ) );
             
             messagesQueue.Dequeue();
 

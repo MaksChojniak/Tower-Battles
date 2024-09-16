@@ -182,7 +182,7 @@ public class WaveManager : MonoBehaviour
         // if(waveRewardPanel != null)
         //     waveRewardPanel.SetActive(true);
         OpenWaveRewardPanel.PlayAnimation();
-        yield return new WaitForSeconds(OpenWaveRewardPanel.GetAnimationClip().length);
+        yield return new WaitForSeconds(OpenWaveRewardPanel.animationLenght);
 
         yield return new WaitForSeconds(2.25f);
         

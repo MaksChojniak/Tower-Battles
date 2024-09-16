@@ -50,6 +50,7 @@ namespace Player.Database
             new DatabaseReference(){ DataType = typeof(SkinsForSale), DataReference = "SkinsForSale.json"},
             new DatabaseReference(){ DataType = typeof(SkinOffert[]), DataReference = "AllSkinOfferts.json"},
             new DatabaseReference(){ DataType = typeof(BattlepassProgress), DataReference = "BattlepassProgress.json"},
+            new DatabaseReference(){ DataType = typeof(AdsRewards), DataReference = "AdsRewards.json"},
         };
         
         

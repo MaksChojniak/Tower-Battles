@@ -124,7 +124,7 @@ namespace UI
         async void OnClick()
         {
             ClosePanelAnimationUI.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(ClosePanelAnimationUI.GetAnimationClip().length * 1000) );
+            await Task.Delay( Mathf.RoundToInt(ClosePanelAnimationUI.animationLenght * 1000) );
             
             Destroy(this.gameObject); 
         }
@@ -139,13 +139,13 @@ namespace UI
 
         public async void StopLoadingAnimation()
         {
-            while( (DateTime.Now - startTime).TotalSeconds < 0.5f )
+            while( (DateTime.Now - startTime).TotalSeconds < 0.75f )
                 await Task.Yield();
             
             EndLoadingAnimationUI.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(EndLoadingAnimationUI.GetAnimationClip().length * 1000) );
+            await Task.Delay( Mathf.RoundToInt(EndLoadingAnimationUI.animationLenght * 1000) );
 
-            await Task.Delay( 550 );
+            await Task.Delay( 500 );
 
             OnClick();
         }

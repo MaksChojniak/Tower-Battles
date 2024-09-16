@@ -142,11 +142,60 @@ namespace MMK
             
             }
         }
-        
-        
+
+
         public Color GetRarityColorByTower(Tower _tower)
         {
             switch (_tower.Rarity)
+            {
+                case TowerRarity.Common:
+                    return CommonColor;
+                    break;
+                case TowerRarity.Rare:
+                    return RareColor;
+                    break;
+                case TowerRarity.Exclusive:
+                    return ExclusiveColor;
+                    break;
+                default:
+                    return new Color(1,1,1,1);
+                    break;
+
+            }
+        }
+        
+        
+        public Color GetRarityColorByRarity(SkinRarity Rarity)
+        {
+            switch (Rarity)
+            {
+                case SkinRarity.Default:
+                    return DefaultColor;
+                    break;
+                case SkinRarity.Common:
+                    return CommonColor;
+                    break;
+                case SkinRarity.Rare:
+                    return RareColor;
+                    break;
+                case SkinRarity.Epic:
+                    return EpicColor;
+                    break;
+                case SkinRarity.Exclusive:
+                    return ExclusiveColor;
+                    break;
+                case SkinRarity.Gold:
+                    return GoldColor;
+                    break;
+                default:
+                    return new Color(1,1,1,1);
+                    break;
+            
+            }
+        }
+        public Color GetRarityColorByTower(TowerRarity Rarity)
+        {
+            switch (Rarity)
             {
                 case TowerRarity.Common:
                     return CommonColor;

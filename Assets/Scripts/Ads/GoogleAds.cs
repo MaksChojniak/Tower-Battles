@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using GoogleMobileAds.Api;
 using Player;
@@ -7,22 +9,27 @@ using UI;
 using UI.Animations;
 using UI.Shop.Daily_Rewards.Scriptable_Objects;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 namespace Ads
 {
     
     public class GoogleAds : MonoBehaviour
     {
+        public delegate void OnGetRewardDelegate();
+        public static event OnGetRewardDelegate OnGetReward;
+        
         public delegate void ShowAdDelegate(RewardType type = RewardType.None, long amount = 0);
         public static ShowAdDelegate ShowAd;
 
 
+        
 #region Ads Units IDs
         
         
         // These ad units are configured to always serve test ads.
 
-        const string TEST_UNIT = "ca-app-pub-3940256099942544/1033173712";
+        const string TEST_UNIT = "ca-app-pub-3940256099942544/5354046379";
 
         const string REWARDABLE_FULLSCREEN_NONE = "ca-app-pub-6306325732760549/9560036764";
         const string REWARDABLE_FULLSCREEN_5_COINS = "ca-app-pub-6306325732760549/3493321869";
@@ -83,7 +90,10 @@ namespace Ads
             else if (Type == RewardType.Experience) {}
             else
                 adUnit = REWARDABLE_FULLSCREEN_NONE;
-
+            
+#if UNITY_EDITOR
+            adUnit = TEST_UNIT;
+#endif
             return adUnit;
         }
 
@@ -91,10 +101,26 @@ namespace Ads
 #endregion
 
 
-        [SerializeField] GameObject AdBackgroundPrefab;
+        [SerializeField] UIAnimation OpenBackgroundAniation;
+        [SerializeField] UIAnimation CloseBackgroundAniation;
 
+
+        
+        SynchronizationContext unitySynchronizationContext;
+        
         RewardedInterstitialAd   _rewardedInterstitialAd;
 
+
+        
+        public async static Task CheckAndFixDependencies()
+        {
+            MobileAds.Initialize((InitializationStatus initStatus) => { });
+            
+            await Task.Yield();
+            
+        }
+        
+        
 
 
         void Awake()
@@ -110,6 +136,12 @@ namespace Ads
         {
             UnregisterHandlers();
             
+        }
+
+        
+        void Start()
+        {
+            unitySynchronizationContext = SynchronizationContext.Current;
         }
 
 
@@ -135,20 +167,20 @@ namespace Ads
 
 #region Load & Show Ads
 
-        
+
+        Action OnCloseAdCallback;
         async void ShowAdProcess(RewardType type = RewardType.None, long amount = 0)
         {
             string adUnitID = GetAdUnitID(type, amount);
             
-            
-            await LoadBackground();
             await LoadAd(adUnitID);
         }
         
         
         async Task LoadAd(string adUnitID)
         {
-            UnloadOrDestroyOldAd();
+            OpenBackgroundAniation.PlayAnimation();
+            await Task.Delay( Mathf.RoundToInt(OpenBackgroundAniation.animationLenght * 1000) );
 
             // Debug.Log("Loading the rewarded  ad.");
 
@@ -160,7 +192,7 @@ namespace Ads
         }
 
 
-        async void OnLoadAd(RewardedInterstitialAd ad, LoadAdError error)
+        void OnLoadAd(RewardedInterstitialAd ad, LoadAdError error)
         {
             // if error is not null, the load request failed.
             if (error != null || ad == null)
@@ -168,9 +200,6 @@ namespace Ads
                 Debug.LogError("Rewarded ad failed to load an ad " + "with error : " + error);
                 return;
             }
-
-            while (!backgroundIsLoaded)
-                await Task.Yield();
 
             // Debug.Log("Rewarded ad loaded with response : " + ad.GetResponseInfo());
 
@@ -197,7 +226,7 @@ namespace Ads
 
                     long amount = (long)reward.Amount;
                     
-                    GiveReward(type, amount);
+                    unitySynchronizationContext.Post( _ => GiveReward(type, amount), null);
                 });
             }
             else
@@ -210,9 +239,10 @@ namespace Ads
 
         void GiveReward(RewardType Type, long Amount)
         {
+            OnGetReward?.Invoke();
+            
             Debug.Log($"Give Reward [{Type} {Amount}]");
 
-            
             switch (Type)
             {
                 case RewardType.Coins:
@@ -223,10 +253,10 @@ namespace Ads
                 default:
                     break;
             }
-            
-            
-            // if(Type == RewardType.None)
-            //     return;
+
+
+            if(Type == RewardType.None)
+                return;
             
             
             MessageQueue.AddMessageToQueue(new Message()
@@ -239,67 +269,13 @@ namespace Ads
             });
 
         }
-        
 
+        
 #endregion
 
 
 
 
-#region Backgroud While Ad Is Active
-
-        GameObject _currentActiveAdBackground = null;
-        Ad _currentActiveAd => _currentActiveAdBackground == null ? null : _currentActiveAdBackground.GetComponent<Ad>();
-
-        bool backgroundIsLoaded;
-        
-        async Task LoadBackground()
-        {
-            // Unload If Exist
-            await UnloadBackground();
-            
-            
-            // Spawn Background
-            _currentActiveAdBackground = Instantiate(AdBackgroundPrefab);
-            DontDestroyOnLoad(_currentActiveAdBackground);
-            
-            
-            // Play Open Animation
-            UIAnimation animation = _currentActiveAd.OpenBackgroundAnimation;
-            animation.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(animation.GetAnimationClip().length * 1000) );
-
-            await Task.Yield();
-
-            backgroundIsLoaded = true;
-        }
-
-        
-        async Task UnloadBackground()
-        {
-            if(_currentActiveAdBackground == null)
-                return;
-
-            
-            // Play Open Animation
-            UIAnimation animation = _currentActiveAd.CloseBackgroundAnimation;
-            animation.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(animation.GetAnimationClip().length * 1000) );
-
-            await Task.Yield();
-            
-            backgroundIsLoaded = false;
-            
-            // Unload
-            Destroy(_currentActiveAdBackground.gameObject);
-            _currentActiveAdBackground = null;
-        }
-        
-#endregion 
-        
-        
-        
-        
         void RegisterEventHandlers(RewardedInterstitialAd ad)
         {
             // Raised when the ad is estimated to have earned money.
@@ -307,8 +283,8 @@ namespace Ads
             {
                 Debug.Log($"Rewarded ad paid {adValue.Value} {adValue.CurrencyCode}.");
             };
-            
-            // // Raised when an impression is recorded for an ad.
+
+            // Raised when an impression is recorded for an ad.
             // ad.OnAdImpressionRecorded += () =>
             // {
             //     // Debug.Log("Rewarded ad recorded an impression.");
@@ -323,43 +299,54 @@ namespace Ads
             // {
             //     // Debug.Log("Rewarded ad full screen content opened.");
             // };
-            
-            
+
+
             // Raised when the ad closed full screen content.
             ad.OnAdFullScreenContentClosed += () =>
             {
-                // Debug.Log("Rewarded ad full screen content closed.");
+                unitySynchronizationContext.Post(_ =>
+                {
+                    CloseBackground();
+
+                    OnCloseAdCallback?.Invoke();
+                    OnCloseAdCallback = null;
+
+                },null);
+
                 
                 UnloadOrDestroyOldAd();
             };
+
+
 
             // Raised when the ad failed to open full screen content.
             ad.OnAdFullScreenContentFailed += (AdError error) =>
             {
                 // Debug.LogError("Rewarded ad failed to open full screen content " + "with error : " + error);
-                
-                ShowAd();
             };
-            
-            
+
+
         }
 
 
 
-        async void UnloadOrDestroyOldAd()
+        void CloseBackground()
+        {
+            CloseBackgroundAniation.PlayAnimation(); 
+
+        }
+
+
+        void UnloadOrDestroyOldAd()
         {
             // Clean up the old ad before loading a new one.
             if (_rewardedInterstitialAd != null)
             {
-                await UnloadBackground();
-                
                 _rewardedInterstitialAd.Destroy();
                 _rewardedInterstitialAd = null;
             }
-            
-            
+         
         }
-
 
 
 

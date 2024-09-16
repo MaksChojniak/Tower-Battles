@@ -289,7 +289,7 @@ namespace UI
         public async void ClosePanel()
         {
             ClosePanelAnimation.PlayAnimation();
-            await Task.Delay(Mathf.RoundToInt(ClosePanelAnimation.GetAnimationClip().length * 1000));
+            await Task.Delay(Mathf.RoundToInt(ClosePanelAnimation.animationLenght * 1000));
             
             Destroy(this.gameObject);
         }
