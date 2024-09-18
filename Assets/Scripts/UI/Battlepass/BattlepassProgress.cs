@@ -12,6 +12,7 @@ namespace UI.Battlepass
     {
         public int TierIndex;
         public int RewardIndex;
+        public bool IsPremium;
 
         public RewardType Type;
         public ulong Coins;
@@ -39,7 +40,10 @@ namespace UI.Battlepass
         }
 
 
-        public bool IsClaimed(BattlepassReward reward) => ClaimedRewards.Any(_reward => _reward.TierIndex == reward.TierIndex && _reward.RewardIndex == reward.RewardIndex);
+        public bool IsClaimed(BattlepassReward reward) => ClaimedRewards.
+            Any(_reward => _reward.TierIndex == reward.TierIndex && 
+                           _reward.RewardIndex == reward.RewardIndex &&
+                           _reward.IsPremium == reward.IsPremium );
 
 
     }

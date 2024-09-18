@@ -1,6 +1,7 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 namespace UI.Battlepass
@@ -10,6 +11,7 @@ namespace UI.Battlepass
         public GameObject Prefab;
         public Sprite Sprite;
         public ulong Amount = 0;
+        public bool IsClaimed;
     }
     
     public class BattlepassTierTile : MonoBehaviour
@@ -23,7 +25,9 @@ namespace UI.Battlepass
         public SetLockedStateDelegate SetFreeTileLockedState;
         public SetLockedStateDelegate SetPremiumTileLockedState;
         
-        public SetLockedStateDelegate SetPremiumBattlepassLockedState;
+        
+        public delegate void SetBattlepassLockedStateDelegate(bool isUnlocked);
+        public SetBattlepassLockedStateDelegate SetPremiumBattlepassLockedState;
 
 
 
@@ -35,6 +39,10 @@ namespace UI.Battlepass
         Transform _premiumBattlepassRewardContainer => _premiumBattlepass.GetChild(0);
         Transform _premiumBattlepassTierLockedMask => _premiumBattlepass.GetChild(2);
         Transform _premiumBattlepassLockedMask => _premiumBattlepass.GetChild(3);
+
+
+        bool tierIsUnlocked;
+        bool premiumBattlepassIsUnlocked;
         
 
         void Awake()
@@ -87,13 +95,13 @@ namespace UI.Battlepass
 #region Set Rewards Images & Prefabs
 
         
-        void OnSetFreeBattlepassImages(RewardUI[] rewardsUI, Action<int> OnClickEvent) => SetImagesToContainer(_freeBattlepassRewardContainer, rewardsUI, OnClickEvent);
+        void OnSetFreeBattlepassImages(RewardUI[] rewardsUI, Action<int> OnClickEvent) => SetImagesToContainer(_freeBattlepassRewardContainer, rewardsUI, tierIsUnlocked, OnClickEvent);
         
-        void OnSetPremiumBattlepassImages(RewardUI[] rewardsUI, Action<int> OnClickEvent) => SetImagesToContainer(_premiumBattlepassRewardContainer, rewardsUI, OnClickEvent);
+        void OnSetPremiumBattlepassImages(RewardUI[] rewardsUI, Action<int> OnClickEvent) => SetImagesToContainer(_premiumBattlepassRewardContainer, rewardsUI, tierIsUnlocked && premiumBattlepassIsUnlocked, OnClickEvent);
 
 
 
-        void SetImagesToContainer(Transform container, RewardUI[] rewardsUI, Action<int> OnClickEvent)
+        void SetImagesToContainer(Transform container, RewardUI[] rewardsUI, bool isUnlocked, Action<int> OnClickEvent)
         {
             for (int i = 0; i < container.childCount; i++)
             {
@@ -112,8 +120,11 @@ namespace UI.Battlepass
 
                 TMP_Text amountText = reward.transform.GetChild(1).GetComponent<TMP_Text>();
                 amountText.text = rewardUI.Amount > 0 ? $"{rewardUI.Amount}" : "";
-                
-                
+
+                GameObject lockedMark = reward.transform.GetChild(3).gameObject;
+                lockedMark.SetActive(!isUnlocked);
+                GameObject unlockedMark = reward.transform.GetChild(4).gameObject;
+                unlockedMark.SetActive(isUnlocked && rewardUI.IsClaimed);
                 
                 Button button = reward.GetComponent<Button>();
                 button.onClick.AddListener(() => OnClickEvent?.Invoke(rewardIndex) );
@@ -139,9 +150,11 @@ namespace UI.Battlepass
 
 
 
-        void SetTileLockState(Transform panel, bool isUnlocked)
+        void SetTileLockState(Transform mask, bool isUnlocked)
         {
-            panel.gameObject.SetActive(!isUnlocked);
+            tierIsUnlocked = isUnlocked;
+            
+            mask.gameObject.SetActive(!tierIsUnlocked);
         }
 
 #endregion
@@ -150,10 +163,14 @@ namespace UI.Battlepass
 
 #region Set Premium Battlepass Lockstate
 
-        
-        void OnSetPremiumBattlepassLockedState(bool isUnlocked) => _premiumBattlepassLockedMask.gameObject.SetActive(!isUnlocked);
 
-        
+        void OnSetPremiumBattlepassLockedState(bool isUnlocked)
+        {
+            premiumBattlepassIsUnlocked = isUnlocked;
+            
+            _premiumBattlepassLockedMask.gameObject.SetActive(!premiumBattlepassIsUnlocked);
+        }
+
 #endregion
 
 

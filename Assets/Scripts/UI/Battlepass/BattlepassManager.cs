@@ -25,8 +25,7 @@ namespace UI.Battlepass
         
 
         public BattlepassRewards BattlepassRewards;
-        [SerializeField] BattlepassReward[] premiumBattlepassRewards;
-        [SerializeField] BattlepassReward[] freeBattlepassRewards;
+        BattlepassReward[] battlepassRewards;
 
 
         [Space(18)]
@@ -184,12 +183,14 @@ namespace UI.Battlepass
             
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
+            {
                 playerProgress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
+                
+                await Database.POST<BattlepassProgress>(playerProgress, playerID);
+            }
             else
                 playerProgress = result.Data;
             
-            await Database.POST<BattlepassProgress>(playerProgress, playerID);
-
 
             GetBattlepassRewards();
 
@@ -197,9 +198,8 @@ namespace UI.Battlepass
         
         void GetBattlepassRewards()
         {
-            List<BattlepassReward> _freeBattlepassRewards = new List<BattlepassReward>();
-            List<BattlepassReward> _premiumBattlepassRewards = new List<BattlepassReward>();
-            
+            List<BattlepassReward> _battlepassRewards = new List<BattlepassReward>();
+
             for (int tierIndex = 0; tierIndex < BattlepassRewards.rewards.Length; tierIndex++)
             {
                 Rewards rewards = BattlepassRewards.rewards[tierIndex];
@@ -211,23 +211,25 @@ namespace UI.Battlepass
                 {
                     BattlepassReward reward = freeBattlepassTierRewards[rewardIndex];
                     reward.TierIndex = tierIndex;
+                    reward.IsPremium = false;
                     
-                    _freeBattlepassRewards.Add(reward);
+                    _battlepassRewards.Add(reward);
                 }
                 
                 for (int rewardIndex = 0; rewardIndex < premiumBattlepassTierRewards.Length; rewardIndex++)
                 {
                     BattlepassReward reward = premiumBattlepassTierRewards[rewardIndex];
                     reward.TierIndex = tierIndex;
+                    reward.IsPremium = true;
                     
-                    _premiumBattlepassRewards.Add(reward);
+                    _battlepassRewards.Add(reward);
                 }
+                
 
             }
 
-            freeBattlepassRewards = _freeBattlepassRewards.ToArray();
-            premiumBattlepassRewards = _premiumBattlepassRewards.ToArray();
-            
+            battlepassRewards = _battlepassRewards.ToArray();
+
         }
         
         
@@ -247,18 +249,19 @@ namespace UI.Battlepass
             {
                 int tierIndex = i;
 
-                BattlepassReward[] _freeBattlepassRewards = freeBattlepassRewards.Where(reward => reward.TierIndex == tierIndex).ToArray();
-                BattlepassReward[] _premiumBattlepassRewards = premiumBattlepassRewards.Where(reward => reward.TierIndex == tierIndex).ToArray();
+                BattlepassReward[] _freeBattlepassRewards = battlepassRewards.Where(reward => reward.TierIndex == tierIndex && !reward.IsPremium).ToArray();
+                BattlepassReward[] _premiumBattlepassRewards = battlepassRewards.Where(reward => reward.TierIndex == tierIndex && reward.IsPremium).ToArray();
 
                 RewardUI[] freeRewardsUI = GetRewards(_freeBattlepassRewards);
                 RewardUI[] premiumRewardsUI = GetRewards(_premiumBattlepassRewards);
-                
+
+                bool isUnlocked = i <= playerProgress.LastTierUnlocked;
 
                 TilesUI[i].SetFreeBattlepassImages(freeRewardsUI, (int rewardIndex) => OnNormalRewardClicked(tierIndex, rewardIndex) );
-                TilesUI[i].SetFreeTileLockedState( i <= playerProgress.LastTierUnlocked);
+                TilesUI[i].SetFreeTileLockedState(isUnlocked);
 
                 TilesUI[i].SetPremiumBattlepassImages(premiumRewardsUI, (int rewardIndex) => OnPremiumRewardClicked(tierIndex, rewardIndex) );
-                TilesUI[i].SetPremiumTileLockedState( i <= playerProgress.LastTierUnlocked);
+                TilesUI[i].SetPremiumTileLockedState(isUnlocked);
 
                 TilesUI[i].SetPremiumBattlepassLockedState(playerProgress.HasPremiumBattlepass);
                 
@@ -317,20 +320,30 @@ namespace UI.Battlepass
 
             foreach (var reward in rewards)
             {
+                RewardUI rewardUI = new RewardUI();
+                
                 switch (reward.Type)
                 {
                     case RewardType.Coins:
-                        rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
+                        // rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, } );
+                        rewardUI = new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetCoinsSpriteByAmmount(reward.Coins), Amount = reward.Coins, };
                         break;
                     case RewardType.Gems:
-                        rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
+                        // rewardsUI.Add(new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, } );
+                        rewardUI = new RewardUI() { Prefab = SmallRewardPrefab, Sprite = GetGemsSpriteByAmmount(reward.Gems), Amount = reward.Gems, };
                         break;
                     case RewardType.Skin:
-                        rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = TowerSkin.GetTowerSkinByID(reward.Skin.ID).TowerSprite, } );
+                        // rewardsUI.Add(new RewardUI() { Prefab = LargeRewardPrefab, Sprite = TowerSkin.GetTowerSkinByID(reward.Skin.ID).TowerSprite, } );
+                        rewardUI = new RewardUI() { Prefab = LargeRewardPrefab, Sprite = TowerSkin.GetTowerSkinByID(reward.Skin.ID).TowerSprite, };
                         break;
                     case RewardType.None:
                         break;
                 }
+
+                rewardUI.IsClaimed = playerProgress.IsClaimed(reward);
+                    
+                    
+                rewardsUI.Add(rewardUI);
             }
 
             return rewardsUI.ToArray();
@@ -389,7 +402,7 @@ namespace UI.Battlepass
         
         void OnRewardClicked(int tierIndex, int rewardIndex, bool isPremiumPreward)
         {
-            BattlepassReward[] rewards = isPremiumPreward ? premiumBattlepassRewards : freeBattlepassRewards;
+            BattlepassReward[] rewards = battlepassRewards.Where(_reward => _reward.IsPremium == isPremiumPreward).ToArray();   //isPremiumPreward ? premiumBattlepassRewards : freeBattlepassRewards;
             BattlepassReward reward = rewards.FirstOrDefault(_reward => _reward.TierIndex == tierIndex && _reward.RewardIndex == rewardIndex);
 
             bool rewardIsNull = reward == null;
@@ -478,6 +491,26 @@ namespace UI.Battlepass
         }
         
         
+#region Collect Rewards
+
+        public async void ClaimReward()
+        {
+            if (lastSelectedRewardIsNull)
+                return;
+
+            playerProgress.ClaimedRewards.Add(lastSelectedReward);
+            
+            string playerID = PlayerController.GetLocalPlayerData().ID;
+            await Database.POST<BattlepassProgress>(playerProgress, playerID);
+            
+            
+            UpdateBattlapassUI();
+            
+            OnRewardClicked(lastSelectedReward.TierIndex, lastSelectedReward.RewardIndex, lastSelectedReward.IsPremium);
+        }
+        
+#endregion
+        
         
         static SkinRarity GetCoinsRarityByAmmount(ulong amount)
         {
@@ -502,8 +535,7 @@ namespace UI.Battlepass
         
 #endregion
 
-
-
+        
         
         
         
