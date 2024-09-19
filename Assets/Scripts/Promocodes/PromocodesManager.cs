@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Promocodes
 {
-    public class PromocodesManager : MonoBehaviour
+    [CreateAssetMenu(menuName = "Promocodes Generator", fileName = "Promocodes Generator")]
+    public class PromocodesManager : ScriptableObject
     {
         
         [Header("Promocode Properties")]
@@ -22,10 +23,32 @@ namespace Promocodes
 
         [Space(28)]
         [SerializeField] bool Generate;
+        [Space(12)]
+        [SerializeField] bool Clear;
 
 
+        void OnValidate()
+        {
+            if (Generate)
+            {
+                Generate = false;
 
-        [ContextMenu(nameof(GenerateCodes))]
+                GenerateCodes();
+            }
+            
+            
+            if (Clear)
+            {
+                Clear = false;
+
+                ClearProperties();
+            }
+            
+            
+            
+        }
+
+
         async void GenerateCodes()
         {
             await FirebaseCheckDependencies.CheckAndFixDependencies();
@@ -47,7 +70,7 @@ namespace Promocodes
             await Database.POST<Promocode[]>( promocodes.ToArray() );
 
 
-            Clear();
+            ClearProperties();
             
         }
 
@@ -64,10 +87,11 @@ namespace Promocodes
         }
 
 
-        void Clear()
+        void ClearProperties()
         {
             Reward = new PromocodeReward();
-            
+            promocodes = new List<Promocode>();
+
         }
         
     }
