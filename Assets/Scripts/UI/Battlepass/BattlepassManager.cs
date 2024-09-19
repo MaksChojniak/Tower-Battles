@@ -38,6 +38,7 @@ namespace UI.Battlepass
         [Header("Info panel UI")]
         [SerializeField] TMP_Text ItemNameText;
         [SerializeField] TMP_Text RarityTextText;
+        [SerializeField] TMP_Text CurrentLevelText;
         [SerializeField] GameObject ItemSpriteObject;
         [SerializeField] Image RarityImage;
         [SerializeField] Image RarityBarImage;
@@ -244,6 +245,8 @@ namespace UI.Battlepass
             await Task.Yield();
 
             PremiumBattlepassLockedMask.SetActive(!playerProgress.HasPremiumBattlepass);
+
+            CurrentLevelText.text = $"{playerProgress.LastTierUnlocked + 1}";
 
             for (int i = 0; i < BattlepassRewards.rewards.Length; i++)
             {

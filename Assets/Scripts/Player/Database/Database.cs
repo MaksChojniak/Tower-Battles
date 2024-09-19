@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Storage;
+using Promocodes;
 using UI.Battlepass;
 using UI.Shop;
 using UI.Shop.Daily_Rewards;
@@ -51,6 +52,7 @@ namespace Player.Database
             new DatabaseReference(){ DataType = typeof(SkinOffert[]), DataReference = "AllSkinOfferts.json"},
             new DatabaseReference(){ DataType = typeof(BattlepassProgress), DataReference = "BattlepassProgress.json"},
             new DatabaseReference(){ DataType = typeof(AdsRewards), DataReference = "AdsRewards.json"},
+            new DatabaseReference(){ DataType = typeof(Promocode[]), DataReference = "Promocodes.json"},
         };
         
         

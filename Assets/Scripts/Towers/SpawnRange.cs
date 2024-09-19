@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using DefaultNamespace;
 using MMK.Towers;
 using MMK;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 namespace Towers
@@ -114,49 +117,56 @@ namespace Towers
 
 
             GameObject[] collidedObjects = GetCollidedObjects(SpawnRangeObject.transform);
+
+
+            // if (!collidedObjects.Any(_collider => _collider.TryGetComponent<Ground>(out var _ground)))
+            //     return false;
+            
+            
+            collidedObjects = collidedObjects.
+                Where(_collider => !_collider.TryGetComponent<Path>(out var _path) || 
+                                   !_collider.TryGetComponent<Ground>(out var _ground) ).
+                ToArray();
+
             
             Debug.Log($"Spawn Range Colliders [count: {collidedObjects.Length}, ]");
 
-            // Check if collided object is other Spawn Range
-            foreach (var collidedObject in collidedObjects)
-            {
-                if (collidedObject.layer == SpawnRangeLayerMask)
-                {
-                    Debug.Log($"Spawn Range collided with other Spawn Range [owner: {this.gameObject.name}]");
-                    return false;
-                }
-                
-            }
             
+            if (collidedObjects.Length > 1)
+                return false;
+
+
             return true;
         }
+
 
 
 
         GameObject[] GetCollidedObjects(Transform root)
         {
             Collider[] colliders = new Collider[GlobalSettingsManager.GetGlobalSettings().MaxTowersCount];
-            
-            int collidersCount = Physics.OverlapBoxNonAlloc(root.position, root.lossyScale / 2, colliders, Quaternion.identity);
 
+            Vector3 position = root.position + new Vector3(0, root.localScale.y / 2, 0);
+            int collidersCount = Physics.OverlapBoxNonAlloc(position, root.localScale / 2, colliders, Quaternion.identity);
+
+            
+            colliders = colliders.ToList().GetRange(0, collidersCount).ToArray();
+
+            
             return colliders.
-                Where(_collider => _collider != null && _collider.gameObject != null).
                 Select(_collider => _collider.gameObject).
                 ToArray();
-        }
-        
-        
-        
-        
-        
-        
-        
-        
-        static bool IsGrounded(Transform root)
-        {
-            Vector3 SpawnRangePosition = root.position;
 
-            Vector3 localScale = root.localScale;
+        }
+
+
+
+        void OnDrawGizmos()
+        {
+            Vector3 localScale = SpawnRangeObject.transform.localScale;
+
+            Vector3 SpawnRangePosition = SpawnRangeObject.transform.position;
+           
 
             Vector3 pointA = SpawnRangePosition + new Vector3(-0.5f * localScale.x, 0, -0.5f * localScale.z);
             Vector3 pointB = SpawnRangePosition + new Vector3(0.5f * localScale.x, 0, -0.5f * localScale.z);
@@ -167,17 +177,86 @@ namespace Towers
 
             for(int i = 0; i < points.Length; i++)
             {
-                RaycastHit hit;
+                Gizmos.DrawCube(points[i] - new Vector3(0, localScale.y, 0), new Vector3(0.1f, localScale.y * 2, 0.1f));
+            }
+            
+        }
+        
+        
+        
+        
+        // static bool IsGrounded(Transform root)
+        // {
+        //     Vector3 localScale = root.localScale;
+        //
+        //     Vector3 SpawnRangePosition = root.position;
+        //    
+        //
+        //     Vector3 pointA = SpawnRangePosition + new Vector3(-0.5f * localScale.x, 0, -0.5f * localScale.z);
+        //     Vector3 pointB = SpawnRangePosition + new Vector3(0.5f * localScale.x, 0, -0.5f * localScale.z);
+        //     Vector3 pointC = SpawnRangePosition + new Vector3(0.5f * localScale.x, 0, 0.5f * localScale.z);
+        //     Vector3 pointD = SpawnRangePosition + new Vector3(-0.5f * localScale.x, 0, 0.5f * localScale.z);
+        //
+        //     Vector3[] points = { pointA, pointB, pointC, pointD };
+        //
+        //     for(int i = 0; i < points.Length; i++)
+        //     {
+        //         RaycastHit hit;
+        //         
+        //         Ray ray = new Ray(points[i], Vector3.down);
+        //         
+        //         if (!Physics.Raycast(ray, out hit, 0.25f) )
+        //             return false;
+        //         
+        //     }
+        //
+        //     return true;
+        // }
+        
+        
+        static bool IsGrounded(Transform root)
+        {
+            Vector3 localScale = root.localScale;
+
+            Vector3 SpawnRangePosition = root.position;
+           
+
+            Vector3 pointA = SpawnRangePosition + new Vector3(-0.5f * localScale.x, 0, -0.5f * localScale.z);
+            Vector3 pointB = SpawnRangePosition + new Vector3(0.5f * localScale.x, 0, -0.5f * localScale.z);
+            Vector3 pointC = SpawnRangePosition + new Vector3(0.5f * localScale.x, 0, 0.5f * localScale.z);
+            Vector3 pointD = SpawnRangePosition + new Vector3(-0.5f * localScale.x, 0, 0.5f * localScale.z);
+
+            Vector3[] points = { pointA, pointB, pointC, pointD };
+
+            GameObject ground = null;
+            
+            for(int i = 0; i < points.Length; i++)
+            {
+                Collider[] colliders = new Collider[GlobalSettingsManager.GetGlobalSettings().MaxTowersCount];
+
+                Vector3 pos = points[i] - new Vector3(0, localScale.y * 2, 0);
+                Vector3 size = new Vector3(0.1f, localScale.y * 2f, 0.1f);
+                int collidersCount = Physics.OverlapBoxNonAlloc(pos, size, colliders, Quaternion.identity);
                 
-                Ray ray = new Ray(points[i], Vector3.down);
+                colliders = colliders.ToList().GetRange(0, collidersCount).ToArray();
+
+                // if ( !colliders.Any(_collider => _collider.TryGetComponent<Ground>( out var _ground) ) )
+                //     return false;
                 
-                if (!Physics.Raycast(ray, out hit, 0.5f))
+                Collider groundCollider = colliders.FirstOrDefault(_collider => _collider.TryGetComponent<Ground>(out var _ground));
+                if (groundCollider == null)
+                    return false;
+
+                if (ground == null)
+                    ground = groundCollider.gameObject;
+                else if (groundCollider.gameObject != ground)
                     return false;
                 
             }
 
             return true;
         }
+        
         
         
     }
