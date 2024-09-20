@@ -243,7 +243,7 @@ namespace UI
             }
             
             if(message != null)
-                MessageQueue.AddMessageToQueue(message);
+                MessageQueue.AddMessageToQueue?.Invoke(message);
             
             
             if (reward.Coins > 0)

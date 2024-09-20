@@ -30,7 +30,7 @@ namespace UI.Battlepass
 
         [Space(18)]
         [Header("UI properties")]
-        [HideInInspector] [SerializeField] GameObject TilesContainer;
+        [SerializeField] GameObject TilesContainer;
         [SerializeField] BattlepassTierTile[] TilesUI;
         [SerializeField] GameObject PremiumBattlepassLockedMask;
         [SerializeField] bool UpdateTiles;
@@ -212,8 +212,9 @@ namespace UI.Battlepass
                 {
                     BattlepassReward reward = freeBattlepassTierRewards[rewardIndex];
                     reward.TierIndex = tierIndex;
+                    reward.RewardIndex = rewardIndex;
                     reward.IsPremium = false;
-                    
+
                     _battlepassRewards.Add(reward);
                 }
                 
@@ -221,6 +222,7 @@ namespace UI.Battlepass
                 {
                     BattlepassReward reward = premiumBattlepassTierRewards[rewardIndex];
                     reward.TierIndex = tierIndex;
+                    reward.RewardIndex = rewardIndex;
                     reward.IsPremium = true;
                     
                     _battlepassRewards.Add(reward);
@@ -300,6 +302,7 @@ namespace UI.Battlepass
                     break;
                 case RewardType.Gems_Skin:
                     rewards.Add(new BattlepassReward() { Type = RewardType.Skin, Skin = new TowerSkinSerializable(reward.Skin) } );
+                    rewards.Add(new BattlepassReward() { Type = RewardType.Gems, Gems = reward.Gems} );
                     break;
                 case RewardType.Skin:
                     rewards.Add(new BattlepassReward() { Type = RewardType.Skin, Skin = new TowerSkinSerializable(reward.Skin) } );
