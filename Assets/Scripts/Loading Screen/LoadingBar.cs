@@ -18,36 +18,31 @@ namespace Loading_Screen
 
         [Space(8)]
         [Header("UI Properties (Maks Loading Bar)")]
-        [SerializeField] Animator zombieAnimator;
-        [SerializeField] RectTransform zombieRect;
-        [SerializeField] TMP_Text fillAmountText;
+        [SerializeField] Animator animator;
+        [SerializeField] LineRenderer lineRenderer;
 
-        [Space(18)]
-        [Header("UI Properties (Kacper Loading Bar)")]
-        [HideInInspector] [SerializeField] Animator loadingAnimator;
+        [Space]
+        [SerializeField] Vector3 bulletStartPosition;
+        [SerializeField] Vector3 bulletEndPosition;
+        Vector3 bulletDirection => bulletEndPosition - bulletStartPosition;
+        [Space]
+        [SerializeField] AnimationClip startAnimationClip;
+        [SerializeField] AnimationClip loadingAnimationClip;
+        [SerializeField] AnimationClip endAnimationClip;
+        //[SerializeField] TMP_Text fillAmountText;
+
+        const string SPEED_ANIMATION_KEY = "_speed";
 
 
-        float fillAmount;
-
-        
         void Awake()
         {
-            fillAmount = 0f;
-            // fillBar.fillAmount = fillAmount;
+            progressValue = 0f;
+            lineRenderer.positionCount = 0;
+
         }
 
         async void Start()
         {
-            // StartCoroutine(FillBarAnimation());
-            // try
-            // {
-            //     await LoadingBarProcess();
-            // }
-            // catch (Exception exception)
-            // {
-            //     debugText = exception.ToString();
-            //     await Task.Delay(600000);
-            // }
             
             await LoadingBarProcess();
         }
@@ -55,10 +50,6 @@ namespace Loading_Screen
 
         async Task LoadingBarProcess()
         {
-            
-            // loadingAnimator.SetBool(startAnimation, true);
-            // await Task.Delay( Mathf.RoundToInt( loadingAnimator.GetCurrentAnimatorClipInfo(0).Length * 1000 ) );
-            zombieRect.anchoredPosition = new Vector2(-675, -70);
             
             
             List<Task> taksToPlay = new List<Task>();
@@ -68,8 +59,7 @@ namespace Loading_Screen
             {
                 FirebaseCheckDependencies.CheckAndFixDependencies(),
                 GoogleAds.CheckAndFixDependencies(),
-                MaksLoadingAnimation(10f),
-                // KacperLoadingAnimation(10f),
+                StartLoadingAnimation(),
             };
             await Task.WhenAll(taksToPlay);
             
@@ -77,8 +67,7 @@ namespace Loading_Screen
             taksToPlay = new List<Task>()
             {
                 LoginProcess(),
-                MaksLoadingAnimation(40f),
-                // KacperLoadingAnimation(40f),
+                LoadingAnimation(40f),
             };
             await Task.WhenAll(taksToPlay);
 
@@ -92,8 +81,7 @@ namespace Loading_Screen
             taksToPlay = new List<Task>()
             {
                 LoadScene(loadinsSceneOperation),
-                MaksLoadingAnimation(90f),
-                // KacperLoadingAnimation(90f),
+                LoadingAnimation(100f),
             };
             await Task.WhenAll(taksToPlay);
             
@@ -101,8 +89,7 @@ namespace Loading_Screen
 
             taksToPlay = new List<Task>()
             {
-                MaksLoadingAnimation(100f),
-                // KacperLoadingAnimation(100f),
+                EndLoadingAnimation(),
             };
             await Task.WhenAll(taksToPlay);
 
@@ -120,100 +107,87 @@ namespace Loading_Screen
 
 
 
-#region Maks Loading Bar
 
 
-        float speed
+        async Task StartLoadingAnimation()
         {
-            get
-            {
-                return _speed;
-            }
-            set
-            {
-                _speed = value;
-                zombieAnimator.speed = speed;
-            }
+            animator.Play(startAnimationClip.name);
+            await Task.Delay( Mathf.RoundToInt(startAnimationClip.length * 1000) );
         }
-        float _speed;
-        
-        async Task MaksLoadingAnimation(float progressValue)
+
+
+        float progressValue;
+        float speed = 0.05f;
+        float bulletSpeed => speed * 20f;
+        async Task LoadingAnimation(float _progressValue)
         {
-            speed = 0.5f;
-            
-            float value = (float)Math.Round(progressValue / 100f, 2);
-            fillAmount = Math.Clamp(value, 0f, 1f);
+           
+            animator.SetFloat(SPEED_ANIMATION_KEY, speed);
 
-            float minValue = -675;
-            float maxValue = 725;
-            float lenght = maxValue - minValue;
-            float targetPos = minValue + (lenght * fillAmount);
-
-            while (zombieRect.anchoredPosition.x < targetPos)
+            if (progressValue <= 0)
             {
-                speed = Math.Clamp(speed + Time.deltaTime, 0.5f, 2f);
+                animator.Play(loadingAnimationClip.name);
                 
-                zombieRect.anchoredPosition += Vector2.right * 10 * Time.deltaTime * Random.Range(0.5f, 1.5f) * (8 * speed);
+                lineRenderer.positionCount = 2;
+                lineRenderer.SetPosition(0, bulletStartPosition);
+                lineRenderer.SetPosition(1, bulletStartPosition);
+            }
 
-                fillAmountText.text = $"{Mathf.Round((zombieRect.anchoredPosition.x - minValue) / lenght * 100f)}%";
-                    
+
+            while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < loadingAnimationClip.length * _progressValue / 100f ||
+                (lineRenderer.GetPosition(1) - bulletStartPosition).magnitude < ( (bulletEndPosition - bulletStartPosition).magnitude * _progressValue / 100f) )
+            {
+                lineRenderer.SetPosition(1, lineRenderer.GetPosition(1) + bulletDirection.normalized * Time.deltaTime * bulletSpeed);
                 await Task.Yield();
             }
 
-            
-            speed = 0.5f;
-            
-            
-            await Task.Yield();
+                        
+            progressValue = _progressValue;
+
         }
 
-        
-#endregion
 
-
-
-#region Kacper Loading Bar
-
-
-        int startAnimation = Animator.StringToHash("");
-        int endAnimation = Animator.StringToHash("");
-
-        async Task KacperLoadingAnimation(float progressValue)
+        async Task EndLoadingAnimation()
         {
-            
-            float value = (float)Math.Round(progressValue / 100f, 2);
-            fillAmount = Math.Clamp(value, 0f, 1f);
-            
-            
+            animator.Play(endAnimationClip.name);
+
+
+            DateTime startTime = DateTime.Now;
+            while ((lineRenderer.GetPosition(1) - lineRenderer.GetPosition(0)).magnitude > 0.1f)
+            {
+                lineRenderer.SetPosition(0, lineRenderer.GetPosition(0) + bulletDirection.normalized * Time.deltaTime * bulletSpeed * 20f);
+                await Task.Yield();
+            }
+            lineRenderer.positionCount = 0;
+
+            while ( (DateTime.Now - startTime).TotalMilliseconds < Mathf.RoundToInt(endAnimationClip.length * 1000) )
+                await Task.Yield();
+
+
+            await Task.Delay(1500);
         }
 
-        
-#endregion
-        
-        
-        
-        
 
-        // async Task LoadingAnimation(float progressValue)
-        // {
-        //
-        //     float value = (float)Math.Round(progressValue / 100f, 2);
-        //     fillAmount = Math.Clamp(value, 0f, 1f);
-        //
-        //     while (fillBar.fillAmount < fillAmount)
-        //     {
-        //         fillBar.fillAmount += fillAmount * Time.deltaTime * Random.Range(0.5f, 1.5f);
-        //         fillAmountText.text = $"{Mathf.Round(fillBar.fillAmount * 100f)}%";
-        //         
-        //         await Task.Yield();
-        //     }
-        //     
-        //     
-        //     await Task.Yield();
-        // }
-        
-        
-        
+
+/*
+         
+        float startTime = Time.time;
+
+        Vector3 startPosition = lineRenderer.GetPosition(0);
+        Vector3 endPosition = lineRenderer.GetPosition(1);
+
+        Vector3 pos = startPosition;
+        while (pos != endPosition)
+        {
+            float t = (Time.time - startTime)/AnimationDuration;
+            pos = Vector3.Lerp(startPosition, endPosition, t);
+            lineRenderer.SetPosition(1, pos);
+            yield return null;
+        }
+         
+         */
+
+
 
 
         async Task LoginProcess()
@@ -238,6 +212,7 @@ namespace Loading_Screen
         }
 
 
+
         async Task LoadScene(AsyncOperation loadinsSceneOperation)
         {
             while (loadinsSceneOperation.progress < 0.9f)
@@ -259,37 +234,10 @@ namespace Loading_Screen
 
 
 
+        
 
 
 
-        IEnumerator FillBarAnimation()
-        {
-            float value = (float)Math.Round(Random.Range(1f, 20f) / 100f, 2);
-            fillAmount = Math.Clamp(fillAmount + value, 0f, 1f);
-
-
-            // while (fillBar.fillAmount < fillAmount)
-            // {
-            //     fillBar.fillAmount += fillAmount * Time.deltaTime;
-            //     fillAmountText.text = $"{Mathf.Round(fillBar.fillAmount * 100f)}%";
-            //     
-            //     yield return null;
-            // }
-            //
-            // fillBar.fillAmount = fillAmount;
-
-            if (fillAmount < 1f)
-            {
-                yield return new WaitForSeconds(Random.Range(0.1f, 0.5f));
-                StartCoroutine(FillBarAnimation());
-            }
-            else
-            {
-                yield return new WaitForSeconds(1f);
-                
-                SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings().mainMenuScene);
-            }
-        }
 
 
 
