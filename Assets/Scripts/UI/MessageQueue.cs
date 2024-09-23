@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using TMPro;
 using UI.Animations;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 
 namespace UI
@@ -46,6 +47,7 @@ namespace UI
 
 
         [SerializeField] readonly Queue<Message> messagesQueue = new Queue<Message>();
+
 
 
         void Awake()

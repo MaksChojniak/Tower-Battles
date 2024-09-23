@@ -39,6 +39,7 @@ namespace UI.Battlepass
         [SerializeField] TMP_Text ItemNameText;
         [SerializeField] TMP_Text RarityTextText;
         [SerializeField] TMP_Text CurrentLevelText;
+        [SerializeField] TMP_Text TimeToEndBattlepassText;
         [SerializeField] GameObject ItemSpriteObject;
         [SerializeField] Image RarityImage;
         [SerializeField] Image RarityBarImage;
@@ -249,6 +250,10 @@ namespace UI.Battlepass
             PremiumBattlepassLockedMask.SetActive(!playerProgress.HasPremiumBattlepass);
 
             CurrentLevelText.text = $"{playerProgress.LastTierUnlocked + 1}";
+            
+            string Days = TimeToEndBattlepass.Days > 0 ? $"  {TimeToEndBattlepass.Days} Days" : "";
+            string Hours = TimeToEndBattlepass.Hours > 0 ? $"  {TimeToEndBattlepass.Hours} Hours" : "";
+            TimeToEndBattlepassText.text = $"{StringFormatter.GetColoredText("Ends in:", GlobalSettings.Color("#00FFFF"))}{Days}{Hours}";
 
             for (int i = 0; i < BattlepassRewards.rewards.Length; i++)
             {

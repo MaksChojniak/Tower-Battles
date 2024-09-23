@@ -1,8 +1,10 @@
-﻿using DefaultNamespace;
+﻿using System.Collections.Generic;
+using DefaultNamespace;
 using MMK;
 using MMK.Settings;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Audio;
 using AudioSettings = MMK.Settings.AudioSettings;
 
 namespace Assets.Scripts.Settings
@@ -13,31 +15,40 @@ namespace Assets.Scripts.Settings
         Effects,
         UI
     }
-    
+
     [AddComponentMenu("Audio Settings")]
     public class Audio : MonoBehaviour
     {
-        
+
 
         [Header("Properties")]
         [SerializeField] AudioSettings AudioSettings;
 
         [Space(10)]
         [SerializeField] AudioType AudioType;
-        
-        
+        [Space]
+        [SerializeField] AudioMixer AudioMixer;
+
+
         [Space(12)]
         [Header("UI Properties")]
         [SerializeField] SettingsSliderBar SliderBar;
         [SerializeField] TMP_Text ValueText;
-        
+
         [Space(8)]
         [SerializeField] CanvasGroup LeftButton;
         [SerializeField] CanvasGroup RightButton;
-        
-        
-        
-        void Awake()
+
+
+        readonly Dictionary<AudioType, string> AudioVolumeKeys = new Dictionary<AudioType, string>()
+        {
+            { AudioType.UI, "Volume_UI" },
+            { AudioType.Effects, "Volume_EFFECTS" },
+            { AudioType.Music, "Volume_MUSIC" },
+        };
+
+
+void Awake()
         {
             RegisterHandlers();
        
@@ -83,7 +94,23 @@ namespace Assets.Scripts.Settings
 
         void OnDataChanged()
         {
-            // TODO Send AudioSettings to AudioManager 
+            string key = AudioVolumeKeys[AudioType];
+            float value = 0;
+            switch (AudioType)
+            {
+                case AudioType.UI:
+                    value = AudioSettings.UIVolume;
+                    break;
+                case AudioType.Effects:
+                    value = AudioSettings.EffectVolume;
+                    break;
+                case AudioType.Music:
+                    value = AudioSettings.MusicVolume;
+                    break;
+            }
+            value /= 100;
+
+            AudioMixer.SetFloat(key, Mathf.Log10(value) * 20);
 
             UpdateUI();
         }

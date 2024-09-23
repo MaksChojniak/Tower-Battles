@@ -230,7 +230,7 @@ namespace MMK
             return new Color(R, G, B, A);
         }
 
-        static Color Color(string colorHEX, int a = 255)
+        public static Color Color(string colorHEX, int a = 255)
         {
             float maxColorSize = 255f;
             float A;
@@ -244,7 +244,7 @@ namespace MMK
             return color;
         }
 
-        public static bool HexadecimalToDecimal(string hexadecimal, out UnityEngine.Color color)
+        static bool HexadecimalToDecimal(string hexadecimal, out UnityEngine.Color color)
         {
             color = UnityEngine.Color.white;
             
