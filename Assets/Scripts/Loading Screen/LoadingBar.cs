@@ -59,11 +59,11 @@ namespace Loading_Screen
             {
                 FirebaseCheckDependencies.CheckAndFixDependencies(),
                 GoogleAds.CheckAndFixDependencies(),
-                StartLoadingAnimation(),
             };
             await Task.WhenAll(taksToPlay);
-            
-            
+
+            await StartLoadingAnimation();
+
             taksToPlay = new List<Task>()
             {
                 LoginProcess(),
