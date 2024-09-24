@@ -110,13 +110,8 @@ public class AudioSelector : EditorWindow
     ListView scenesListView;
     List<Toggle> scenesToggles = new List<Toggle>();
 
-    TextField searchingComponentsInputField;
-
-    ListView componentsListView;
-    List<Button> componentsToggles = new List<Button>();
-
     ListView selectedComponentsListView;
-    List<Button> selectedCmponentsButtons = new List<Button>();
+    List<GameObject> selectedCmponentsButtons = new List<GameObject>();
 
     Button addAudioButton;
     
@@ -163,9 +158,6 @@ public class AudioSelector : EditorWindow
         scenesListView = scenesElement.Q<ListView>("ViewList_Scenes");
 
         selectedComponentsListView = componentsElement.Q<ListView>("ViewList_SelectedComponents");
-        searchingComponentsInputField = componentsElement.Q<TextField>("InputField_Components");
-
-        componentsListView = componentsElement.Q<ListView>("ViewList_Components");
 
         VisualElement scenesButtonsElement = scenesElement.Q<VisualElement>("Panel_ScenesButtons");
         VisualElement addAudioButtonsElement = componentsElement.Q<VisualElement>("Panel_AddAudioButton");
@@ -199,8 +191,7 @@ public class AudioSelector : EditorWindow
             Debug.Log("Selected Audio Clip: " + selectedAudioMixer?.name); // Log the selected clip (or null if none)
         });
         
-
-
+        
 
         // View List Scenes
         List<string> scenesNames = scenesData.scenes.Select(scene => scene.Name).ToList();
@@ -209,20 +200,21 @@ public class AudioSelector : EditorWindow
             scenesData.UpdateSceneSelection(scenesData.scenes[i], state);
         }, out scenesToggles);
 
-
-
-        // // View list Components
-        // List<string> componentsNames = componentData.components.Select(scene => scene.FullName).ToList();
-        // CreateToggle(componentsListView, componentsNames, (i, state) =>
-        // {
-        //     componentData.UpdateComponentSelection(componentData.components[i], state);
-        //     
-        //     translateButton.SetEnabled(isAnyComponentSelected);
-        // }, out componentsToggles);
-        // componentsListView.SetEnabled(isAnySceneSelected);
-
-
-
+        
+        selectedComponentsListView.makeItem = () => new ObjectField();
+        selectedComponentsListView.itemsSource = selectedCmponentsButtons;
+        selectedComponentsListView.bindItem = (element, i) =>
+        {
+            var objectField = element as ObjectField;
+        
+            objectField.objectType = typeof(GameObject);
+        
+            objectField.value = selectedCmponentsButtons[i];
+            objectField.RegisterValueChangedCallback(evt =>
+            {
+                selectedCmponentsButtons[i] = evt.newValue as GameObject;
+            });
+        };
         // Set up toggle and button
         selectAllButton.clicked += () =>
         {
@@ -233,6 +225,18 @@ public class AudioSelector : EditorWindow
         {
             scenesToggles.ForEach( sceneToggle => sceneToggle.value = false );
         };
+
+        
+        // // View list Components
+        // List<string> componentsNames = componentData.components.Select(scene => scene.FullName).ToList();
+        // CreateToggle(componentsListView, componentsNames, (i, state) =>
+        // {
+        //     componentData.UpdateComponentSelection(componentData.components[i], state);
+        //     
+        //     translateButton.SetEnabled(isAnyComponentSelected);
+        // }, out componentsToggles);
+        // componentsListView.SetEnabled(isAnySceneSelected);
+        
 
 
 
@@ -247,6 +251,9 @@ public class AudioSelector : EditorWindow
     }
 
 
+    
+    
+    
 
     void CreateToggle(ListView listView, List<string> names, Action<int, bool> callback, out List<Toggle> toggles)
     {
@@ -269,13 +276,6 @@ public class AudioSelector : EditorWindow
             toggle.RegisterValueChangedCallback(evt => callback(i, evt.newValue));
 
             _toggles.Add(toggle);
-            // toggle.RegisterValueChangedCallback(evt =>
-            // {
-            //     scenesData.UpdateSceneSelection(scene, evt.newValue);
-            //
-            //     componentListView.SetEnabled(isAnySceneSelected);
-            // });
-            // scenesToggles.Add(toggle);
         };
         listView.selectionType = SelectionType.Multiple;
 
@@ -309,11 +309,17 @@ public class AudioSelector : EditorWindow
         foreach (var component in components)
         {
             GameObject componentObject = ((MonoBehaviour)component).gameObject;
-
+            
+            if(componentObject.scene.rootCount == 0)
+                continue;
+            
             Audio.Audio audio;
             if (!componentObject.TryGetComponent<Audio.Audio>(out audio))
                 audio = componentObject.AddComponent<Audio.Audio>();
 
+            if (audio.IsCustom)
+                continue;
+            
             audio.Clip = selectedAudioClip;
             audio.AudioMixer = selectedAudioMixer;
 

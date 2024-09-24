@@ -8,15 +8,27 @@ using UnityEngine.UI;
 
 namespace Audio
 {
-    public enum AudioType
-    {
-        
-    }
+    // public enum AudioInvokeType
+    // {
+    //     PointerClick,
+    //     PointerDown,
+    //     PointerUp,
+    //     
+    //     PointerBeginDrag,
+    //     PointerDrag,
+    //     PointerEndDrag,
+    // }
     
     public class Audio : MonoBehaviour
     {
         public AudioClip Clip;
         public AudioMixerGroup AudioMixer;
+
+        [Space]
+        public EventTriggerType InvokeType;
+        
+        [Space]
+        public bool IsCustom;
 
         Button button;
         EventTrigger trigger;
@@ -59,7 +71,7 @@ namespace Audio
             if(trigger != null)
             {
                 EventTrigger.Entry entry = new EventTrigger.Entry();
-                entry.eventID = EventTriggerType.PointerClick;
+                entry.eventID = InvokeType;
                 entry.callback.AddListener((eventData) => { OnClick(); });
                 trigger.triggers.Add(entry);
             }
@@ -74,6 +86,11 @@ namespace Audio
         
 #endregion
 
+
+        public void SetClip(AudioClip audioClip)
+        {
+            Clip = audioClip;
+        }
         
         
         public async void OnClick()
@@ -97,6 +114,11 @@ namespace Audio
             
             Destroy(audioSource.gameObject);
         }
+        
+        
+        
+        
+        
         
 
     }
