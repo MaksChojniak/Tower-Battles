@@ -22,6 +22,9 @@ namespace Loading_Screen
         [SerializeField] LineRenderer lineRenderer;
 
         [Space]
+        [SerializeField] TMP_Text LoadingTittleText;
+        [SerializeField] TMP_Text LoadingProgressText;
+        [Space]
         [SerializeField] Vector3 bulletStartPosition;
         [SerializeField] Vector3 bulletEndPosition;
         Vector3 bulletDirection => bulletEndPosition - bulletStartPosition;
@@ -41,14 +44,46 @@ namespace Loading_Screen
 
         }
 
-        async void Start()
+        void Start()
         {
             
-            await LoadingBarProcess();
+            LoadingBarProcess();
+
+            UpdateLoadingText();
+            UpdateProgressText();
         }
 
 
-        async Task LoadingBarProcess()
+        int dotsCount = 0;
+        readonly int maxDotsCount = 3;
+        async void UpdateLoadingText()
+        {
+            while (true)
+            {
+                LoadingTittleText.text = $"Loading {new string('.', dotsCount)}";
+
+                dotsCount += 1;
+                if (dotsCount > maxDotsCount)
+                    dotsCount = 0;
+
+                await Task.Delay(450);
+            }
+            
+        }
+        
+        async void UpdateProgressText()
+        {
+            while (true)
+            {
+                LoadingProgressText.text = $"{Mathf.RoundToInt(progressValue)}%";
+
+                await Task.Yield();
+            }
+            
+        }
+        
+
+        async void LoadingBarProcess()
         {
             
             
@@ -61,6 +96,8 @@ namespace Loading_Screen
                 GoogleAds.CheckAndFixDependencies(),
             };
             await Task.WhenAll(taksToPlay);
+
+            await Task.Yield();
 
             await StartLoadingAnimation();
 
@@ -139,6 +176,8 @@ namespace Loading_Screen
             {
                 lineRenderer.SetPosition(1, lineRenderer.GetPosition(1) + bulletDirection.normalized * Time.deltaTime * bulletSpeed);
                 await Task.Yield();
+
+                progressValue = (lineRenderer.GetPosition(1) - bulletStartPosition).magnitude / (bulletEndPosition - bulletStartPosition).magnitude * 100f;
             }
 
                         
@@ -215,7 +254,9 @@ namespace Loading_Screen
 
         async Task LoadScene(AsyncOperation loadinsSceneOperation)
         {
-            while (loadinsSceneOperation.progress < 0.9f)
+            DateTime startTime = DateTime.Now;
+
+            while (loadinsSceneOperation.progress < 0.9f && (DateTime.Now - startTime).TotalSeconds < 5f )
                 await Task.Yield();
 
         }

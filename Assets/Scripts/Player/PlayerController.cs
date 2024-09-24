@@ -153,6 +153,9 @@ namespace Player
 
         async void OnSave()
         {
+            if (!isLoggedIn)
+                return;
+                    
             await Database.Database.POST<PlayerData>(PlayerData, PlayerData.ID);
 
         }
