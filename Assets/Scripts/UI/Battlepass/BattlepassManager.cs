@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -546,7 +547,140 @@ namespace UI.Battlepass
         
 #endregion
 
+
+
+#region Animation UI
+
         
+        [Space]
+        [SerializeField] ScrollRect scrollRect;
+        [SerializeField] CanvasGroup nextPage;
+        [SerializeField] CanvasGroup previousPage;
+        [SerializeField] CanvasGroup[] pageButtons;
+        [SerializeField] int pageIndex;
+        const int maxPageIndex = 5;
+        bool isScrollAnimation;
+
+        public void OnScroll(Vector2 value)
+        {
+            if(isScrollAnimation)
+                return;
+                
+            float scrollPosition = value.x;
+            
+            pageIndex = (int)(scrollPosition / (1f / maxPageIndex));
+            
+            UpdatePagesBttonsUI();
+        }
+        
+        public void NextPage(int direction)
+        {
+            if (direction < 0 && Mathf.Abs(scrollRect.horizontalNormalizedPosition - ((float)pageIndex / maxPageIndex)) > 0.02f)
+                direction = 0;
+                
+            if (pageIndex + direction < 0 || pageIndex + direction > maxPageIndex)
+                direction = 0;
+            
+            int _pageIndex = pageIndex + direction;
+
+            ChangePage(_pageIndex);
+        }
+
+        public void ChangePage(int _pageIndex)
+        {
+            pageIndex = _pageIndex;
+
+            // scrollRect.horizontalNormalizedPosition = (float)pageIndex / maxPageIndex;
+            StopAllCoroutines();
+            StartCoroutine(ScrolAnimation(_pageIndex));
+            
+            UpdatePagesBttonsUI();
+        }
+
+        void UpdatePagesBttonsUI()
+        {
+            for(int i = 0; i < pageButtons.Length; i++)
+                pageButtons[i].alpha = pageIndex == i ? 1f : 0.2f;
+            
+            
+            // previousPage.interactable = pageIndex != 0;
+            previousPage.interactable = scrollRect.horizontalNormalizedPosition > 0;
+            previousPage.alpha = previousPage.interactable ? 1f : 0.2f;
+            
+            nextPage.interactable =scrollRect.horizontalNormalizedPosition < 1;
+            nextPage.alpha = nextPage.interactable ? 1f : 0.2f;
+            
+        }
+
+        IEnumerator ScrolAnimation(int _pageIndex)
+        {
+            isScrollAnimation = true;
+            
+            while (Mathf.Abs(scrollRect.horizontalNormalizedPosition - ((float)_pageIndex / maxPageIndex) ) > 0.01f)
+            {
+                scrollRect.horizontalNormalizedPosition = Mathf.Lerp(scrollRect.horizontalNormalizedPosition, (float)_pageIndex / maxPageIndex, 0.2f);
+                yield return null;
+            }
+
+            scrollRect.horizontalNormalizedPosition = (float)_pageIndex / maxPageIndex;
+            
+            yield return null;
+            
+            UpdatePagesBttonsUI();
+            
+            isScrollAnimation = false;
+        }
+        
+        
+#endregion
+
+
+
+#region BuyPremiumBattlepass
+
+        
+        [SerializeField] GameObject ConfirmationPrefab;
+
+        public async void BuyPremiumBatlepass()
+        {
+            Confirmation confirmation = Instantiate(ConfirmationPrefab).GetComponent<Confirmation>();
+
+            bool onCloseConfirmationPanel = false;
+            bool pausePayements = false;
+            confirmation.ShowOffert(
+                "",
+                () =>
+                {
+                    onCloseConfirmationPanel = true;
+                    confirmation.StartLoadingAnimation();
+                },
+                () =>
+                {
+                    onCloseConfirmationPanel = true;
+                    pausePayements = true;
+                }
+            );
+            
+            while (!onCloseConfirmationPanel)
+                await Task.Yield();
+
+            if (pausePayements)
+                return;
+                    
+            
+            // PlayerData.ChangeGemsBalance(-ticketOffert.GemsPrice);
+            // await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
+
+            await Task.Yield();
+
+            confirmation.StopLoadingAnimation();
+            
+            
+            UpdateBattlapassUI();
+        }
+        
+        
+#endregion
         
         
         

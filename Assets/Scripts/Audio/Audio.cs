@@ -42,8 +42,8 @@ namespace Audio
             if (!this.TryGetComponent<EventTrigger>(out trigger))
                 Debug.LogWarning("Event Trigger is not exist");
             
-            if(button == null && trigger == null)
-                throw new NullReferenceException("Button and Trigger is null");
+            // if(button == null && trigger == null)
+            //     throw new NullReferenceException("Button and Trigger is null");
             
             if(Clip == null)
                 throw new NullReferenceException("Clip is null");
