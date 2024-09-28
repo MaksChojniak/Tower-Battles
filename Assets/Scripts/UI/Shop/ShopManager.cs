@@ -769,7 +769,7 @@ namespace UI.Shop
             bool pausePayements = false;
             Confirmation confirmation = Instantiate(ConfirmationOffertPrefab).GetComponent<Confirmation>();
             confirmation.ShowOffert(
-                $"Would You Like To Buy {ticketOffert.TiersCount} Battlepass Tickets For {StringFormatter.GetGemsText(ticketOffert.GemsPrice, true, "66%" )}",
+                $"Would You Like To Buy {StringFormatter.GetColoredText($"{ticketOffert.TiersCount} Battlepass Tickets", Color.white)} For {StringFormatter.GetGemsText(ticketOffert.GemsPrice, true, "66%" )}",
                 () =>
                 {
                     onCloseConfirmationPanel = true;

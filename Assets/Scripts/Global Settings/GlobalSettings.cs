@@ -325,11 +325,31 @@ namespace MMK
 #region Towers & Skins
 
         public Tower[] Towers;
+        public bool UpdateSkins;
         public TowerSkin[] TowersSkins;
 
         #endregion
 
 
+
+        void OnValidate()
+        {
+            if (UpdateSkins)
+            {
+                UpdateSkins = false;
+
+                List<TowerSkin> towersSkins = new List<TowerSkin>();
+                foreach (var Tower in Towers)
+                {
+                    foreach (var skin in Tower.TowerSkins)
+                    {
+                        towersSkins.Add(skin);
+                    }
+                }
+
+                TowersSkins = towersSkins.ToArray();
+            }
+        }
 
 
     }

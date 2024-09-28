@@ -64,9 +64,15 @@ public class TowerInventory : MonoBehaviour
     [Space(28)]
     [SerializeField] Tower[] _inventoryTowers;
     [SerializeField] Transform _tilesContainer;
+    [HideInInspector] [SerializeField] bool UpdateTilesButton;
     void OnValidate()
     {
         return;
+        
+        if (!UpdateTilesButton)
+            return;
+                
+        UpdateTilesButton = false;
         
         AllTowerInventoryData _baseTowerData = new AllTowerInventoryData();
         for (int i = 0; i < _inventoryTowers.Length; i++)

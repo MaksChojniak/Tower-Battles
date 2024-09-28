@@ -46,7 +46,7 @@ namespace Editor
             if (showBaseProperties)
             {
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, Property = baseProperties.FindPropertyRelative("UnlockPrice"), Caption = "Unlock Price"});
-                //InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, Property = baseProperties.FindPropertyRelative("RequiredWinsCount"), Caption = "Required Wins Count"});
+                InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, Property = baseProperties.FindPropertyRelative("RequiredLevel"), Caption = "Required Level"});
                 InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, Property = baseProperties.FindPropertyRelative("IsUnlocked"), Caption = "Is Unlocked"});
             }
             

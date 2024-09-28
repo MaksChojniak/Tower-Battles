@@ -8,6 +8,7 @@ using MMK.ScriptableObjects;
 using Newtonsoft.Json;
 using Player.Database;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Player
@@ -30,9 +31,9 @@ namespace Player
         
 
         [SyncVar] public PlayerData PlayerData = new PlayerData();
-        bool isLoggedIn => !string.IsNullOrEmpty(PlayerData.ID); 
-        
-        
+        bool isLoggedIn => !string.IsNullOrEmpty(PlayerData.ID);
+
+
         
         public async Task Login()
         {
@@ -184,22 +185,31 @@ namespace Player
         {
             foreach (Tower tower in  GlobalSettingsManager.GetGlobalSettings().Towers)
             {
-                TowerSerializable unlockedTower = PlayerData.UnlockedTowers.FirstOrDefault(t => t.ID == tower.ID);
+                TowerSerializable unlockedTower = PlayerData.UnlockedTowers.FirstOrDefault(_tower => _tower.ID == tower.ID);
                 bool towerIsUnlocked = unlockedTower != null;
-
                 
                 tower.BaseProperties.IsUnlocked = towerIsUnlocked;
 
                 tower.SkinIndex = towerIsUnlocked ? unlockedTower.SkinIndex : 0;
 
-                for (int i = 0; i < tower.TowerSkins.Length; i++)
-                {
-                    TowerSkinSerializable skin = unlockedTower?.TowerSkins.FirstOrDefault(skin => skin.ID == tower.TowerSkins[i].ID);
-                    string skinID = tower.TowerSkins[i].ID.Substring(2, 2);
-                    tower.TowerSkins[i].IsUnlocked = skinID == "01" || (towerIsUnlocked && skin != null && skin.IsUnlocked);
-                }
-
+                // for (int i = 0; i < tower.TowerSkins.Length; i++)
+                // {
+                //     TowerSkinSerializable skin = unlockedTower?.TowerSkins.FirstOrDefault(skin => skin.ID == tower.TowerSkins[i].ID);
+                //     string skinID = tower.TowerSkins[i].ID.Substring(2, 2);
+                //     tower.TowerSkins[i].IsUnlocked = skinID == "01" || (towerIsUnlocked && skin != null && skin.IsUnlocked);
+                // }
                 
+                await Task.Yield();
+            }
+            
+            
+            foreach (TowerSkin skin in  GlobalSettingsManager.GetGlobalSettings().TowersSkins)
+            {
+                TowerSkinSerializable unlockedSkin = PlayerData.UnlockedTowersSkins.FirstOrDefault(_skin => _skin.ID == skin.ID);
+                bool skinIsUnlocked = unlockedSkin != null;
+                
+                skin.IsUnlocked = skinIsUnlocked;
+
                 await Task.Yield();
             }
             

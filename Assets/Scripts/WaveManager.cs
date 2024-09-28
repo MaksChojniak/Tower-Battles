@@ -138,13 +138,18 @@ public class WaveManager : MonoBehaviour
 
         // if(skipWavePanel != null && !isLastWave)
         //     skipWavePanel.SetActive(true);
-        if(!isLastWave)
-            OpenSkipWavePanel.PlayAnimation();
+        if (!isLastWave)
+            StartCoroutine(ShowSkipWave());
 
 
         yield return new WaitUntil(new Func<bool>(() => IsReadyToNextWave() ));
 
-        SetSkipWaveState(false);
+        skipWave = false;
+        if (skiWavePanelOpened)
+        {
+            skiWavePanelOpened = false;
+            CloseSkipWavePanel.PlayAnimation();
+        }
         // skipWave = false;
         
         
@@ -170,6 +175,23 @@ public class WaveManager : MonoBehaviour
 
         UpdateWaves();
     }
+
+
+    bool skiWavePanelOpened = false;
+    IEnumerator ShowSkipWave()
+    {
+        DateTime startTime = DateTime.Now;
+
+        yield return new WaitUntil(new Func<bool>(() => (DateTime.Now - startTime).TotalSeconds >= 5 || IsReadyToNextWave() ));
+        
+        if (GameObject.FindGameObjectsWithTag("Enemy").Length <= 0)
+            yield break;
+
+        skiWavePanelOpened = true;
+        
+        OpenSkipWavePanel.PlayAnimation();
+    }
+    
 
     
     IEnumerator ShowWaveReward(uint waveReward)

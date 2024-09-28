@@ -7,6 +7,7 @@ using MMK;
 using Player;
 using TMPro;
 using UI.Animations;
+using UI.Shop.Daily_Rewards.Scriptable_Objects;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -34,6 +35,7 @@ namespace UI
 
 
         int wavesCount;
+        bool withRewardMultiplier;
         DateTime gameStartDate;
 
 
@@ -44,7 +46,7 @@ namespace UI
             RegisterHandlers();
 
             wavesCount = 0;
-
+            withRewardMultiplier = false;
         }
 
 
@@ -159,9 +161,9 @@ namespace UI
             OnEndGame?.Invoke();
 
             GameInfoText.text = $"Waves: {wavesCount}" + "    " + $"Time: {(DateTime.Now - gameStartDate).ToString(@"mm\:ss")}";
-        
+
             yield return new WaitForSeconds(1);
-            
+
             animator.PlayAnimation();
 
             yield return new WaitForSeconds(animator.animationLenght);
@@ -171,24 +173,25 @@ namespace UI
             {
                 AddButton.SetActive(true);
 
-                AddButton.GetComponent<Button>().onClick.AddListener( PlayAd );
+                AddButton.GetComponent<Button>().onClick.AddListener(PlayAd);
 
-                yield return new WaitForSeconds(4);
+                yield return new WaitForSeconds(4f);
+                
+                AddButton.SetActive(false);
+                
+                yield return new WaitForSeconds(1f);
 
             }
             else
-            {
-                yield return new WaitForSeconds(4);
-            }
-
+                yield return new WaitForSeconds(5f);
 
             StartCoroutine(LoadMenuScene());
         }
 
 
-        
-        
-        
+
+
+
         IEnumerator LoadMenuScene()
         {
             var openScene = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings.Invoke().mainMenuScene);
@@ -213,11 +216,12 @@ namespace UI
         {
             Debug.Log("Start Add");
                     
-            GoogleAds.ShowAd();
+            GoogleAds.ShowAd(RewardType.None);
 
+            withRewardMultiplier = true;
+            
             Debug.Log("End Add");
             
-            // StartCoroutine(LoadMenuScene());
         }
         
         
@@ -225,13 +229,24 @@ namespace UI
 
         void OpenRewardMessage()
         {
-            GameReward reward = new GameReward(wavesCount);
+            GameReward reward = new GameReward(wavesCount, withRewardMultiplier);
 
             List<MessageProperty> properties = new List<MessageProperty>();
+            
+            string bonusCoinsText = "";
+            if(reward.BonusCoins > 0)
+                bonusCoinsText = $" + {StringFormatter.GetCoinsText(reward.BonusCoins, true, "66%")}";
             if(reward.Coins > 0)
-                properties.Add(new MessageProperty(){ Name = "Coins", Value = $"{reward.Coins}"});
-            if(reward.XP > 0)
-                properties.Add(new MessageProperty(){ Name = "XP", Value = $"{reward.XP}"});
+                properties.Add(new MessageProperty(){ Name = "Coins", Value = $"{StringFormatter.GetCoinsText(reward.Coins, true, "66%")}{bonusCoinsText}"});
+
+            if (reward.XP > 0)
+            {
+                Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor((ulong)PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
+                string value = $@"{StringFormatter.GetColoredText($"{reward.XP}", levelColor)}{StringFormatter.GetSpriteText(new SpriteTextData()
+                    {SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}", WithColor = true, Color = levelColor, Size = "50%", WithSpaces = true, SpacesCount = 1 })}";
+                properties.Add(new MessageProperty(){ Name = "XP", Value = $"{value}"});
+            }
+            
             Message message = null;
 
             if (properties.Count > 0)
@@ -274,16 +289,19 @@ namespace UI
     public class GameReward
     {
         public long XP = 0;
+        public long BonusXP = 0;
         public long Coins = 0;
+        public long BonusCoins = 0;
 
+        public float RewardMultiplier;
 
-        public GameReward(int waveCount)
+        public GameReward(int waveCount, bool withRewardMultiplier)
         {
             
             if (waveCount < 5)
             {
-                Coins = 0;
-                XP = 0;
+                Coins = 10;
+                XP = 20;
             }
             else if (waveCount <= 10)
             {
@@ -310,6 +328,17 @@ namespace UI
                 Coins = 100;
                 XP = 250;
             }
+
+            
+            float[] multipliers = new float[] { 1.5f, 2f};
+            if (withRewardMultiplier)
+                RewardMultiplier = multipliers[Random.Range(0, multipliers.Length)];
+            else
+                RewardMultiplier = 1f;
+
+            
+            BonusCoins = Mathf.RoundToInt(Coins * (RewardMultiplier - 1) );
+            // BonusXP = Mathf.RoundToInt(XP * (rewardMultiplier - 1) );
             
             // TODO calcuate rewards for pvp
         }

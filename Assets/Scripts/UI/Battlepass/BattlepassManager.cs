@@ -50,6 +50,9 @@ namespace UI.Battlepass
         [SerializeField] GameObject LockedButton;
         RotateableTower ItemRotateableTower => ItemSpriteObject.transform.GetComponentInChildren<RotateableTower>(true);
         Image ItemImage => ItemSpriteObject.transform.GetComponentInChildren<Image>(true);
+        [Space]
+        [SerializeField] GameObject BuyBattlepassButton;
+        [SerializeField] GameObject BuyTierTicketsButton;
 
         [Space(8)]
         [Header("Sprites")]
@@ -180,6 +183,7 @@ namespace UI.Battlepass
         async Task GetPlayerProgress()
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;
+            playerProgress = null;
             
             
             var result = await Database.GET<BattlepassProgress>(playerID);
@@ -249,6 +253,9 @@ namespace UI.Battlepass
             await Task.Yield();
 
             PremiumBattlepassLockedMask.SetActive(!playerProgress.HasPremiumBattlepass);
+            
+            BuyBattlepassButton.SetActive(!playerProgress.HasPremiumBattlepass);
+            BuyTierTicketsButton.SetActive(playerProgress.HasPremiumBattlepass);
 
             CurrentLevelText.text = $"{playerProgress.LastTierUnlocked + 1}";
             
@@ -641,14 +648,16 @@ namespace UI.Battlepass
         
         [SerializeField] GameObject ConfirmationPrefab;
 
-        public async void BuyPremiumBatlepass()
+        public async void BuyPremiumBatlepass(int price)
         {
+            string playerID = PlayerController.GetLocalPlayerData().ID;
+            
             Confirmation confirmation = Instantiate(ConfirmationPrefab).GetComponent<Confirmation>();
 
             bool onCloseConfirmationPanel = false;
             bool pausePayements = false;
             confirmation.ShowOffert(
-                "",
+                $"Would You Like to Buy \n{StringFormatter.GetColoredText("Premium Battlepass", Color.white)} \nfor {StringFormatter.GetGemsText(price, true, "66%")}?",
                 () =>
                 {
                     onCloseConfirmationPanel = true;
@@ -667,8 +676,14 @@ namespace UI.Battlepass
             if (pausePayements)
                 return;
                     
+            while(playerProgress == null)
+                await Task.Yield();
             
-            // PlayerData.ChangeGemsBalance(-ticketOffert.GemsPrice);
+            
+            PlayerData.ChangeGemsBalance(-price);
+            
+            playerProgress.HasPremiumBattlepass = true;
+            await Database.POST<BattlepassProgress>(playerProgress, playerID);
             // await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
 
             await Task.Yield();

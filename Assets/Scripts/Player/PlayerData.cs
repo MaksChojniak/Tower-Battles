@@ -8,6 +8,7 @@ using MMK;
 using MMK.Extensions;
 using MMK.ScriptableObjects;
 using Newtonsoft.Json;
+using UI;
 using UI.Battlepass;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -130,6 +131,7 @@ namespace Player
         public PlayerGamesData PlayerGamesData = new PlayerGamesData();
 
         public HashSet<TowerSerializable> UnlockedTowers = new HashSet<TowerSerializable>();
+        public HashSet<TowerSkinSerializable> UnlockedTowersSkins = new HashSet<TowerSkinSerializable>();
 
         public TowerSerializable[] DeckSerializable = new TowerSerializable[5] {new TowerSerializable(), new TowerSerializable(), new TowerSerializable(), new TowerSerializable(), new TowerSerializable()};
 
@@ -139,6 +141,31 @@ namespace Player
 
         public PlayerData()
         {
+
+
+            if (GlobalSettingsManager.GetGlobalSettings?.Invoke() != null)
+            {
+                foreach (var skin in GlobalSettingsManager.GetGlobalSettings.Invoke().TowersSkins)
+                {
+                    if (skin.Rarity == SkinRarity.Default)
+                    {
+                        // skin.UnlockSkin();
+                        TowerSkinSerializable skinSerializable = new TowerSkinSerializable(skin);
+                        UnlockedTowersSkins.Add(skinSerializable);
+                    }
+                }
+            }
+
+
+            Tower baseTower = Tower.GetTowerBySkinID("0001");
+            if (baseTower != null)
+            {
+                // baseTower.UnlockTower();
+                TowerSerializable towerSerializable = new TowerSerializable(baseTower);
+                UnlockedTowers.Add(towerSerializable);
+            }
+
+            
 
         }
         
@@ -155,7 +182,17 @@ namespace Player
             
             UnlockedTowers = sourceData.UnlockedTowers;
             
+            UnlockedTowersSkins = sourceData.UnlockedTowersSkins;
+            
             DeckSerializable = sourceData.DeckSerializable;
+            
+            
+            // foreach (var towerSerializable in UnlockedTowers)
+            // {
+            //     Tower tower = Tower.GetTowerBySkinID(towerSerializable.ID);
+            //     tower.BaseProperties.IsUnlocked = towerSerializable.IsUnlocked;
+            //
+            // }
 
 
             InitDeck();
@@ -208,6 +245,7 @@ namespace Player
             RegisterWalletEvents();
             RegisterExperienceEvents();
             RegisterTowerUnlockEvent();
+            RegisterSkinUnlockEvent();
             RegisterWinsAndDefeatsEvents();
             
         }
@@ -218,7 +256,7 @@ namespace Player
             ChangeExperience += (value) =>
             {
                 TotalExperiencePoins = (ulong)((long)TotalExperiencePoins + value);
-                
+                    
                 OnChangeExperience?.Invoke(Level, XP);
 
                 BattlepassManager.AddBattlepassExperienceProgress(value);
@@ -263,6 +301,20 @@ namespace Player
             };
             
         }
+        
+        void RegisterSkinUnlockEvent()
+        {
+            TowerSkin.OnUnlockSkin += (skin) =>
+            {
+                // if(UnlockedTowers.Any(unlockedTower => unlockedTower.ID == tower.ID))
+                //     return;
+                UnlockedTowersSkins.RemoveWhere(_skin => _skin.ID == skin.ID);
+                
+                UnlockedTowersSkins.Add(new TowerSkinSerializable(skin));
+            };
+            
+        }
+        
 
         void RegisterWinsAndDefeatsEvents()
         {
@@ -298,12 +350,25 @@ namespace Player
 
         public static uint GetLevelByTotalXP(ulong Experience)
         {
-            return 0;
+            int x = (int)(( -70 + Mathf.Sqrt(4900 + (20 * Experience)) ) / 10f);
+            
+            return (uint)x;
+        }
+        
+        
+        public static uint GetXPByLevel(uint level)
+        {
+            int levelExperience = (int)(75f + ((level - 1) * 10) );
+
+            return (uint)levelExperience;
         }
         
         public static uint GetXPByTotalXP(ulong Experience)
         {
-            return 0;
+            int level = (int)GetLevelByTotalXP(Experience);
+            int levelExperience = (int)( (5f * level) * (level + 14f) ); 
+            
+            return (uint)((long)Experience - levelExperience);
         }
         
         

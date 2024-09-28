@@ -17,6 +17,10 @@ namespace MMK.ScriptableObjects
     [CreateAssetMenu(fileName = "Skin", menuName = "Towers/Skin")]
     public class TowerSkin : ScriptableObject
     {
+        public delegate void OnUnlockSkinDelegate(TowerSkin skin);
+        public static OnUnlockSkinDelegate OnUnlockSkin;
+        
+        
         public string ID;
 
         public string SkinName;
@@ -37,6 +41,29 @@ namespace MMK.ScriptableObjects
         void OnValidate()
         {
             SkinName = this.name;
+
+            switch (Rarity)
+            {
+                case SkinRarity.Default:
+                    UnlockSkin();
+                    UnlockPrice = 0;
+                    break;
+                case SkinRarity.Common:
+                    UnlockPrice = 1000;
+                    break;
+                case SkinRarity.Rare:
+                    UnlockPrice = 1750;
+                    break;
+                case SkinRarity.Epic:
+                    UnlockPrice = 2500;
+                    break;
+                case SkinRarity.Exclusive:
+                    UnlockPrice = 3250;
+                    break;
+                case SkinRarity.Gold:
+                    UnlockPrice = 30000;
+                    break;
+            }
         }
 
 
@@ -66,10 +93,11 @@ namespace MMK.ScriptableObjects
         {
             IsUnlocked = true;
             
-            Tower tower = Tower.GetTowerBySkinID(ID);
-            if(tower == null)
-                return;
-            Tower.OnUnlockTower?.Invoke(tower);
+            // Tower tower = Tower.GetTowerBySkinID(ID);
+            // if(tower == null)
+            //     return;
+            // Tower.OnUnlockTower?.Invoke(tower);
+            OnUnlockSkin?.Invoke(this);
         }
         
         

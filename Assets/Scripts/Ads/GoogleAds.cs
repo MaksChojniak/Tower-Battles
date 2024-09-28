@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using GoogleMobileAds.Api;
+using MMK;
 using Player;
 using UI;
 using UI.Animations;
@@ -258,13 +259,22 @@ namespace Ads
             if(Type == RewardType.None)
                 return;
             
-            
+            string amount = "";
+            if (Type == RewardType.Coins)
+                amount = $"{StringFormatter.GetCoinsText(Amount)}";
+            else if (Type == RewardType.Experience)
+            {
+                Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor((ulong)PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
+                amount = $@"{StringFormatter.GetColoredText($"{Amount}", levelColor)}{StringFormatter.GetSpriteText(new SpriteTextData()
+                    {SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}", WithColor = true, Color = levelColor, Size = "50%", WithSpaces = true, SpacesCount = 1 })}";
+            }
+
             MessageQueue.AddMessageToQueue?.Invoke(new Message()
             {
                 Tittle = "Ad Reward",
                 Properties = new List<MessageProperty>()
                 {
-                    new MessageProperty() { Name = $"{Type}", Value = $"{Amount}", },
+                    new MessageProperty() { Name = $"{Type}", Value = $"{amount}", },
                 },
             });
 

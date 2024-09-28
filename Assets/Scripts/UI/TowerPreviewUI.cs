@@ -39,11 +39,12 @@ public class TowerPreviewUI : MonoBehaviour
     [SerializeField] TMP_Text placementText;
 
     [Space(8)]
+    [SerializeField] GameObject lockedByLevelPanel;
+    TMP_Text lockedByLevelText => lockedByLevelPanel.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>();
     [SerializeField] GameObject lockedPanel;
-    [SerializeField] TMP_Text lockedPrice;
-    [SerializeField] GameObject ownedPanel;
-    [SerializeField] GameObject unlockPanel;
-    [SerializeField] TMP_Text unlockPrice;
+    TMP_Text lockedText => lockedPanel.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>();
+    [SerializeField] GameObject unlockedPanel;
+    TMP_Text unlockedPrice => unlockedPanel.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>();
 
     [Space(16)]
     [Header("Animations UI")]
@@ -148,15 +149,25 @@ public class TowerPreviewUI : MonoBehaviour
 
         placementText.text = $"{tower.PlacementType}";//"Ground/Cliff";
 
-        // lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredWinsCount(PlayerTowerInventory.Instance.GetWinsCount()));
-        lockedPanel.SetActive(!isUnlocked && !tower.IsRequiredLevel(PlayerController.GetLocalPlayerData().Level));
-        lockedPrice.text = $"Locked:  {StringFormatter.PriceFormat(tower.GetRequiredLevel())}";
         
-        unlockPanel.SetActive(!isUnlocked && !lockedPanel.activeSelf);
         
-        ownedPanel.SetActive(isUnlocked);
-        unlockPrice.text = $"{tower.GetUnlockedPrice()}{StringFormatter.GetSpriteText(new SpriteTextData() {SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().CoinsIconName, Size = "66%"})}";
+    #region Set Locked State Buttons
+        
+        bool isRequiredLevel  = tower.IsRequiredLevel(PlayerController.GetLocalPlayerData().Level);
+        
+        lockedByLevelPanel.SetActive(!isUnlocked && !isRequiredLevel);
+        lockedByLevelText.text = $"Required: {StringFormatter.PriceFormat(tower.GetRequiredLevel())} Lvl";
+        
+        lockedPanel.SetActive(!isUnlocked && isRequiredLevel);
+        lockedText.text = $"{StringFormatter.GetCoinsText((long)tower.GetUnlockedPrice(), true, "66%")}";
+        
+        unlockedPanel.SetActive(isUnlocked);
+        // unlockPrice.text = $"{tower.GetUnlockedPrice()}{StringFormatter.GetSpriteText(new SpriteTextData() {SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().CoinsIconName, Size = "66%"})}";
 
+    #endregion
+
+        
+        
         lastSelectedTowerIndex = index;
     }
 

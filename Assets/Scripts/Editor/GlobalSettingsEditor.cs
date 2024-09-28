@@ -236,6 +236,11 @@ namespace Editor
             
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "Towers", Caption = "Towers Settings"});
             
+            EditorGUILayout.Space();
+            
+            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "UpdateSkins", Caption = "Update Towers Skins"});
+            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "TowersSkins", Caption = "Towers Skins Settings"});
+            
 #endregion
 
 

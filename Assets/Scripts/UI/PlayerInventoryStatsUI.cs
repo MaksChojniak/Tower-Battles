@@ -13,6 +13,9 @@ public class PlayerInventoryStatsUI : MonoBehaviour
     [SerializeField] TMP_Text ExperienceText;
     [SerializeField] TMP_Text LevelText;
 
+    [Space]
+    [SerializeField] GameObject LevelProgressPreview;
+
 
 
     void OnEnable()
@@ -57,7 +60,14 @@ public class PlayerInventoryStatsUI : MonoBehaviour
     
     
 #endregion
-    
+
+
+
+    public void OpenLevelProgressPanel()
+    {
+        GameObject panel = Instantiate(LevelProgressPreview);
+        
+    }
     
     
     
@@ -91,7 +101,7 @@ public class PlayerInventoryStatsUI : MonoBehaviour
     void UpdateExperienceText(ulong Level, ulong Experience)
     {
         ExperienceText.text = $"{StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().LevelIconName, WithColor = true, Color = GlobalSettingsManager.GetGlobalSettings().GetCurrentLevelColor(Level) })}" + 
-                              "  " + $"{Experience}/2000"; //"1050 / 2000";
+                              "  " + $"{Experience}/{PlayerData.GetXPByLevel((uint)Level + 1)}"; //"1050 / 2000";
         LevelText.text = $"{Level}";
     }
 
