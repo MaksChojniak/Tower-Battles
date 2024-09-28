@@ -30,8 +30,10 @@ namespace UI
         [SerializeField] UIAnimation OpenLosePanel;
 
         [Space(16)]
+        [SerializeField] TMP_Text CoinsRewardText;
+        [SerializeField] TMP_Text XPRewardText;
         [SerializeField] TMP_Text GameInfoText;
-        [SerializeField] GameObject AddButton;
+        [SerializeField] Image AddTimeFillBar;
 
 
         int wavesCount;
@@ -156,11 +158,16 @@ namespace UI
         // }
 
 
-        async Task  OpenResultPanel(UIAnimation animator)
+        async Task OpenResultPanel(UIAnimation animator)
         {
+            GameReward reward = new GameReward(wavesCount);
+            
             OnEndGame?.Invoke();
 
             GameInfoText.text = $"Waves: {wavesCount}" + "    " + $"Time: {(DateTime.Now - gameStartDate).ToString(@"mm\:ss")}";
+
+            CoinsRewardText.text = $"{reward.Coins}";
+            XPRewardText.text = $"{reward.XP}";
 
             await Task.Delay(1000);
 
@@ -171,7 +178,7 @@ namespace UI
             
             isAdWatchedOrTimePassed = false;
 
-            WatchAdAnimationCoroutine = StartCoroutine(WatchAdAnimation());
+            StartCoroutine(WatchAdAnimation());
 
             while (!isAdWatchedOrTimePassed)
                 await Task.Yield();
@@ -179,25 +186,27 @@ namespace UI
             await Task.Delay(1000);
 
             await LoadMenuScene();
+
+            reward = new GameReward(wavesCount, withRewardMultiplier);
+            OpenRewardMessage(reward);
         }
 
 
         bool isAdWatchedOrTimePassed;
 
-        Coroutine WatchAdAnimationCoroutine;
         IEnumerator WatchAdAnimation()
         {
-            float time = 0;
+            float time = 3;
 
-            while (time <= 3)
+            while (time >= 0)
             {
-                // TODO apply   fillAmountBar.Amount = Mathf.Clamp01(time / 3f);
+                AddTimeFillBar.fillAmount = Mathf.Clamp01(time / 3f);
 
                 yield return new WaitForSeconds(Time.deltaTime);
-                time += 1;
+                time -= Time.deltaTime;
             }
-            
-            
+
+            yield return null;
 
             isAdWatchedOrTimePassed = true;
         }
@@ -217,17 +226,15 @@ namespace UI
             }
             
             await Task.Delay(1000);
-            
-            OpenRewardMessage();
+
         }
 
 
         
-        void PlayAd()
+        public void PlayAd()
         {
-            StopCoroutine(WatchAdAnimationCoroutine);
-            WatchAdAnimationCoroutine = null;
-            
+            StopAllCoroutines();
+
             Debug.Log("Start Add");
                     
             GoogleAds.ShowAd(RewardType.None);
@@ -239,6 +246,7 @@ namespace UI
                 
                 Debug.Log("End Add");
 
+                AddTimeFillBar.fillAmount = 0;
                 isAdWatchedOrTimePassed = true;
             };
             
@@ -247,10 +255,8 @@ namespace UI
         
 
 
-        void OpenRewardMessage()
+        void OpenRewardMessage(GameReward reward)
         {
-            GameReward reward = new GameReward(wavesCount, withRewardMultiplier);
-
             List<MessageProperty> properties = new List<MessageProperty>();
             
             string bonusCoinsText = "";
@@ -315,7 +321,7 @@ namespace UI
 
         public float RewardMultiplier;
 
-        public GameReward(int waveCount, bool withRewardMultiplier)
+        public GameReward(int waveCount, bool withRewardMultiplier = false)
         {
             
             if (waveCount < 5)
@@ -350,9 +356,8 @@ namespace UI
             }
 
             
-            float[] multipliers = new float[] { 1.5f, 2f};
             if (withRewardMultiplier)
-                RewardMultiplier = multipliers[Random.Range(0, multipliers.Length)];
+                RewardMultiplier = 2f;
             else
                 RewardMultiplier = 1f;
 

@@ -14,7 +14,7 @@ using PathCreation;
     [RequireComponent(typeof(EnemyInputHandler))]
     public class EnemyController : MonoBehaviour
     {
-        public delegate void SetBurningActiveDelegate(bool State);
+        public delegate void SetBurningActiveDelegate(bool State, int Level);
         public SetBurningActiveDelegate SetBurningActive; 
         
         [Header("Stats")]
@@ -118,13 +118,13 @@ using PathCreation;
         
 
 
-        void OnSetBurningActive(bool state)
+        void OnSetBurningActive(bool state, int level)
         {
             IsBurning = state;
 
             MovementComponent.SetSpeedMultiplier(IsBurning);
             
-            // TODO set bruning animation state
+            AnimationComponent.SetBurningAnimation(state, level);
         }
         
     }

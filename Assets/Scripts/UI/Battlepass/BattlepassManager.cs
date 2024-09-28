@@ -53,6 +53,8 @@ namespace UI.Battlepass
         [Space]
         [SerializeField] GameObject BuyBattlepassButton;
         [SerializeField] GameObject BuyTierTicketsButton;
+        [Space]
+        [SerializeField] TMP_Text PageCount;
 
         [Space(8)]
         [Header("Sprites")]
@@ -168,6 +170,7 @@ namespace UI.Battlepass
             
             
             UpdateBattlapassUI();
+            UpdatePagesBttonsUI();
             
                 
             await Task.Yield();
@@ -616,7 +619,9 @@ namespace UI.Battlepass
             
             nextPage.interactable =scrollRect.horizontalNormalizedPosition < 1;
             nextPage.alpha = nextPage.interactable ? 1f : 0.2f;
-            
+
+
+            PageCount.text = $"<b>Page {pageIndex + 1}</b> / {maxPageIndex + 1}";
         }
 
         IEnumerator ScrolAnimation(int _pageIndex)
