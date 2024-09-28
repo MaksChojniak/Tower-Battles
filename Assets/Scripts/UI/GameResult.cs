@@ -100,11 +100,11 @@ namespace UI
 
         
 
-        // async void LoseProcess() => await OpenResultPanel(OpenLosePanel);
-        async void LoseProcess() => StartCoroutine(OpenResultPanel(OpenLosePanel));
+        async void LoseProcess() => await OpenResultPanel(OpenLosePanel);
+        // async void LoseProcess() => StartCoroutine(OpenResultPanel(OpenLosePanel));
 
-        // async void WinProces() => await OpenResultPanel(OpenWinPanel);
-        async void WinProces() => StartCoroutine(OpenResultPanel(OpenWinPanel));
+        async void WinProces() => await OpenResultPanel(OpenWinPanel);
+        // async void WinProces() => StartCoroutine(OpenResultPanel(OpenWinPanel));
 
 
 
@@ -156,71 +156,91 @@ namespace UI
         // }
 
 
-        IEnumerator OpenResultPanel(UIAnimation animator)
+        async Task  OpenResultPanel(UIAnimation animator)
         {
             OnEndGame?.Invoke();
 
             GameInfoText.text = $"Waves: {wavesCount}" + "    " + $"Time: {(DateTime.Now - gameStartDate).ToString(@"mm\:ss")}";
 
-            yield return new WaitForSeconds(1);
+            await Task.Delay(1000);
 
             animator.PlayAnimation();
 
-            yield return new WaitForSeconds(animator.animationLenght);
+            await Task.Delay(Mathf.RoundToInt(animator.animationLenght * 1000));
 
+            
+            isAdWatchedOrTimePassed = false;
 
-            if (Random.Range(0, 100) % 2 == 0)
-            {
-                AddButton.SetActive(true);
+            WatchAdAnimationCoroutine = StartCoroutine(WatchAdAnimation());
 
-                AddButton.GetComponent<Button>().onClick.AddListener(PlayAd);
+            while (!isAdWatchedOrTimePassed)
+                await Task.Yield();
+            
+            await Task.Delay(1000);
 
-                yield return new WaitForSeconds(4f);
-                
-                AddButton.SetActive(false);
-                
-                yield return new WaitForSeconds(1f);
-
-            }
-            else
-                yield return new WaitForSeconds(5f);
-
-            StartCoroutine(LoadMenuScene());
+            await LoadMenuScene();
         }
 
 
+        bool isAdWatchedOrTimePassed;
+
+        Coroutine WatchAdAnimationCoroutine;
+        IEnumerator WatchAdAnimation()
+        {
+            float time = 0;
+
+            while (time <= 3)
+            {
+                // TODO apply   fillAmountBar.Amount = Mathf.Clamp01(time / 3f);
+
+                yield return new WaitForSeconds(Time.deltaTime);
+                time += 1;
+            }
+            
+            
+
+            isAdWatchedOrTimePassed = true;
+        }
+
+        
 
 
-
-        IEnumerator LoadMenuScene()
+        async Task LoadMenuScene()
         {
             var openScene = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings.Invoke().mainMenuScene);
             while (!openScene.isDone)
-                yield return null;
-            
+                await Task.Yield();
             
             for (int i = 0; i < this.transform.childCount; i++)
             {
                 Destroy(this.transform.GetChild(i).gameObject);
-            }    
-
-
-            yield return new WaitForSeconds(1);
+            }
+            
+            await Task.Delay(1000);
             
             OpenRewardMessage();
         }
+
+
         
-
-
         void PlayAd()
         {
+            StopCoroutine(WatchAdAnimationCoroutine);
+            WatchAdAnimationCoroutine = null;
+            
             Debug.Log("Start Add");
                     
             GoogleAds.ShowAd(RewardType.None);
-
-            withRewardMultiplier = true;
             
-            Debug.Log("End Add");
+            
+            GoogleAds.OnGetReward += () =>
+            {
+                withRewardMultiplier = true;
+                
+                Debug.Log("End Add");
+
+                isAdWatchedOrTimePassed = true;
+            };
             
         }
         
