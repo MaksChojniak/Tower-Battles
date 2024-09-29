@@ -18,8 +18,13 @@ using Random = UnityEngine.Random;
         public delegate void SetSelectedAnimationDelegate(bool state);
         public SetSelectedAnimationDelegate SetSelectedAnimation;
         
+        public delegate void SetBurningAnimationDelegate(bool state, int level);
+        public SetBurningAnimationDelegate SetBurningAnimation;
+
+        
         
         public GameObject BloodParticlePrefab;
+        public GameObject[] BurningParticlePrefabs;
 
         // public AnimationClip MoveClip;
         
@@ -102,10 +107,15 @@ using Random = UnityEngine.Random;
 
             SetSelectedAnimation += OnSetSelectedAnimation;
 
+            SetBurningAnimation += OnSetBurningAnimation;
+            EnemyController.HealthComponent.OnDie += () => OnSetBurningAnimation(false, 0);
+
         }
 
         void UnregisterHandlers()
         {
+            SetBurningAnimation -= OnSetBurningAnimation;
+            
             SetSelectedAnimation -= OnSetSelectedAnimation;
             
             EnemyController.MovementComponent.OnMove -= PlayMoveAnimation;
@@ -300,8 +310,32 @@ using Random = UnityEngine.Random;
         }
         
 #endregion
+
+
+
+#region Burning Animation
+
+        GameObject lastSpawnedBurningFlames;
+        void OnSetBurningAnimation(bool state, int level)
+        {
+
+            if (state)
+            {
+                lastSpawnedBurningFlames = Instantiate(BurningParticlePrefabs[level], this.transform.position, this.transform.rotation, this.transform);
+                
+                ParticleSystem particle = lastSpawnedBurningFlames.GetComponent<ParticleSystem>();
+                particle.Play();
+            }
+            else if(lastSpawnedBurningFlames != null)
+            {
+                Destroy(lastSpawnedBurningFlames);
+                lastSpawnedBurningFlames = null;
+            }
+            
+            
+        }
         
-        
+#endregion
         
         
     }

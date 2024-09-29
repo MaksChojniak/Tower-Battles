@@ -332,7 +332,7 @@ namespace Towers
 
         IEnumerator FireDamage(EnemyController enemy, int damage, float fireTime)
         {
-            enemy.SetBurningActive(true);
+            enemy.SetBurningActive(true, SoldierController.GetLevel());
 
             float time = fireTime;
             while (time >= 0)
@@ -350,7 +350,7 @@ namespace Towers
                 time -= Weapon.BurningInterval;
             }
             
-            enemy.SetBurningActive(false);
+            enemy.SetBurningActive(false, SoldierController.GetLevel());
         }
 
 

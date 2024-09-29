@@ -41,6 +41,7 @@ public class GamePlayerInformation : MonoBehaviour
     
     public long Balance;
     public int Health;
+    bool isDead;
 
     
     
@@ -62,6 +63,7 @@ public class GamePlayerInformation : MonoBehaviour
 
         Health = 100;
         Balance = 650;
+        isDead = false;
     }
 
     
@@ -118,7 +120,11 @@ public class GamePlayerInformation : MonoBehaviour
         {
             Health = 0;
 
-            OnDie?.Invoke();
+            if (!isDead)
+            {
+                isDead = true;
+                OnDie?.Invoke();
+            }
         }
 
         UpdateHealth?.Invoke(Health);

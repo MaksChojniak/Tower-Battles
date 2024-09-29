@@ -30,8 +30,10 @@ namespace UI
         [SerializeField] UIAnimation OpenLosePanel;
 
         [Space(16)]
+        [SerializeField] TMP_Text CoinsRewardText;
+        [SerializeField] TMP_Text XPRewardText;
         [SerializeField] TMP_Text GameInfoText;
-        [SerializeField] GameObject AddButton;
+        [SerializeField] Image AddTimeFillBar;
 
 
         int wavesCount;
@@ -100,11 +102,11 @@ namespace UI
 
         
 
-        // async void LoseProcess() => await OpenResultPanel(OpenLosePanel);
-        async void LoseProcess() => StartCoroutine(OpenResultPanel(OpenLosePanel));
+        async void LoseProcess() => await OpenResultPanel(OpenLosePanel);
+        // async void LoseProcess() => StartCoroutine(OpenResultPanel(OpenLosePanel));
 
-        // async void WinProces() => await OpenResultPanel(OpenWinPanel);
-        async void WinProces() => StartCoroutine(OpenResultPanel(OpenWinPanel));
+        async void WinProces() => await OpenResultPanel(OpenWinPanel);
+        // async void WinProces() => StartCoroutine(OpenResultPanel(OpenWinPanel));
 
 
 
@@ -156,81 +158,105 @@ namespace UI
         // }
 
 
-        IEnumerator OpenResultPanel(UIAnimation animator)
+        async Task OpenResultPanel(UIAnimation animator)
         {
+            GameReward reward = new GameReward(wavesCount);
+            
             OnEndGame?.Invoke();
 
             GameInfoText.text = $"Waves: {wavesCount}" + "    " + $"Time: {(DateTime.Now - gameStartDate).ToString(@"mm\:ss")}";
 
-            yield return new WaitForSeconds(1);
+            CoinsRewardText.text = $"{reward.Coins}";
+            XPRewardText.text = $"{reward.XP}";
+
+            await Task.Delay(1000);
 
             animator.PlayAnimation();
 
-            yield return new WaitForSeconds(animator.animationLenght);
+            await Task.Delay(Mathf.RoundToInt(animator.animationLenght * 1000));
 
+            
+            isAdWatchedOrTimePassed = false;
 
-            if (Random.Range(0, 100) % 2 == 0)
-            {
-                AddButton.SetActive(true);
+            StartCoroutine(WatchAdAnimation());
 
-                AddButton.GetComponent<Button>().onClick.AddListener(PlayAd);
+            while (!isAdWatchedOrTimePassed)
+                await Task.Yield();
+            
+            await Task.Delay(1000);
 
-                yield return new WaitForSeconds(4f);
-                
-                AddButton.SetActive(false);
-                
-                yield return new WaitForSeconds(1f);
+            await LoadMenuScene();
 
-            }
-            else
-                yield return new WaitForSeconds(5f);
-
-            StartCoroutine(LoadMenuScene());
+            reward = new GameReward(wavesCount, withRewardMultiplier);
+            OpenRewardMessage(reward);
         }
 
 
+        bool isAdWatchedOrTimePassed;
+
+        IEnumerator WatchAdAnimation()
+        {
+            float time = 3;
+
+            while (time >= 0)
+            {
+                AddTimeFillBar.fillAmount = Mathf.Clamp01(time / 3f);
+
+                yield return new WaitForSeconds(Time.deltaTime);
+                time -= Time.deltaTime;
+            }
+
+            yield return null;
+
+            isAdWatchedOrTimePassed = true;
+        }
+
+        
 
 
-
-        IEnumerator LoadMenuScene()
+        async Task LoadMenuScene()
         {
             var openScene = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings.Invoke().mainMenuScene);
             while (!openScene.isDone)
-                yield return null;
-            
+                await Task.Yield();
             
             for (int i = 0; i < this.transform.childCount; i++)
             {
                 Destroy(this.transform.GetChild(i).gameObject);
-            }    
-
-
-            yield return new WaitForSeconds(1);
+            }
             
-            OpenRewardMessage();
+            await Task.Delay(1000);
+
         }
+
+
         
-
-
-        void PlayAd()
+        public void PlayAd()
         {
+            StopAllCoroutines();
+
             Debug.Log("Start Add");
                     
             GoogleAds.ShowAd(RewardType.None);
-
-            withRewardMultiplier = true;
             
-            Debug.Log("End Add");
+            
+            GoogleAds.OnGetReward += () =>
+            {
+                withRewardMultiplier = true;
+                
+                Debug.Log("End Add");
+
+                AddTimeFillBar.fillAmount = 0;
+                isAdWatchedOrTimePassed = true;
+            };
             
         }
         
         
 
 
-        void OpenRewardMessage()
+        void OpenRewardMessage(GameReward reward)
         {
-            GameReward reward = new GameReward(wavesCount, withRewardMultiplier);
-
             List<MessageProperty> properties = new List<MessageProperty>();
             
             string bonusCoinsText = "";
@@ -295,7 +321,7 @@ namespace UI
 
         public float RewardMultiplier;
 
-        public GameReward(int waveCount, bool withRewardMultiplier)
+        public GameReward(int waveCount, bool withRewardMultiplier = false)
         {
             
             if (waveCount < 5)
@@ -330,9 +356,8 @@ namespace UI
             }
 
             
-            float[] multipliers = new float[] { 1.5f, 2f};
             if (withRewardMultiplier)
-                RewardMultiplier = multipliers[Random.Range(0, multipliers.Length)];
+                RewardMultiplier = 2f;
             else
                 RewardMultiplier = 1f;
 

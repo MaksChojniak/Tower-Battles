@@ -77,6 +77,7 @@ namespace UI.Shop
         [Header("   Daily Rewards UI")]
         [SerializeField] DailyRewardUIProperties dailyRewardsUIProperties;
         [SerializeField] DailyRewardUI[] dalyRewardsPanels;
+        [SerializeField] TMP_Text nextDailyRewardTimerText;
         [Space(8)]
         [Header("   Ads Rewards UI")]
         [SerializeField] AdRewardUI[] adRewardsPanels;
@@ -134,7 +135,8 @@ namespace UI.Shop
         void Update()
         {
             // UpdateSkinsForSaleUI();
-            UpdateSkinsOffertRestockCounterUI();
+            UpdateSkinsOffertRestockTimerUI();
+            UpdateNextDailyOffertsTimerUI();
             //     
             // UpdateDailyRewardsUI();
             //
@@ -476,7 +478,7 @@ namespace UI.Shop
             
         }
 
-        void UpdateSkinsOffertRestockCounterUI()
+        void UpdateSkinsOffertRestockTimerUI()
         {
             if (skinsForSale == null)
             {
@@ -650,7 +652,10 @@ namespace UI.Shop
         
         void UpdateDailyRewardsUI()
         {
-
+            if (dailyRewards == null)
+                return;
+            
+            
             for (int i = 0; i < dailyRewards.Rewards.Length; i++)
             {
                 dalyRewardsPanels[i].UpdateUI(i, dailyRewards, dailyRewardsUIProperties, simulatedDateOnServerUTC);
@@ -659,7 +664,21 @@ namespace UI.Shop
             
         }
 
-        
+
+        void UpdateNextDailyOffertsTimerUI()
+        {
+            if (dailyRewards == null)
+            {
+                nextDailyRewardTimerText.text = $"No Offerts";
+                return;
+            }
+
+            TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulatedDateOnServerUTC;
+            nextDailyRewardTimerText.text = $"Next in: {timeToClaim.Hours}h {timeToClaim.Minutes}min";
+            
+        }
+
+
 #endregion
         
         
