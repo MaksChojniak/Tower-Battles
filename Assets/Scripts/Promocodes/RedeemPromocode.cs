@@ -114,9 +114,12 @@ namespace Promocodes
             
             // promocodes.Remove(code);
             promocodes[code].Properties.PlayersRedeemedCode.Add(playerID);
-            promocodes[code].Properties.UsesLeft -= 1;
-            if(promocodes[code].Properties.UsesLeft <= 0)
-                promocodes.Remove(code);
+            if (!promocodes[code].Properties.TimeLimitedCode)
+            {
+                promocodes[code].Properties.UsesLeft -= 1;
+                if (promocodes[code].Properties.UsesLeft <= 0)
+                    promocodes.Remove(code);
+            }
             
             await Database.POST<Dictionary<string, Promocode>>(promocodes);
 

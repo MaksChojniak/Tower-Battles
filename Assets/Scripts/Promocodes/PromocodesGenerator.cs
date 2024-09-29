@@ -14,8 +14,9 @@ namespace Promocodes
     public class PromocodesGenerator : ScriptableObject
     {
 
-        
+
         [Header("Code Properties")]
+        [SerializeField] string CustomName;
         [Range(1, 500)] [SerializeField] int CodesCount = 1;
         [Range(1, 30)] [SerializeField] int CodeLenght = 10;
         [Space]
@@ -136,7 +137,15 @@ namespace Promocodes
 
             for (int i = 0; i < CodesCount; i++)
             {
-                string code = await PromocodeUtils.GenerateCodesAsync(promocodes.Keys, CodeLenght);
+                string code = "";
+                if (!string.IsNullOrEmpty(CustomName) && !string.IsNullOrWhiteSpace(CustomName))
+                {
+                    code = CustomName;
+                    i = CodesCount - 1;
+                }
+                else
+                    await PromocodeUtils.GenerateCodesAsync(promocodes.Keys, CodeLenght);
+                
                 Promocode promocode = new Promocode()
                 {
                     Reward = reward,
@@ -163,6 +172,8 @@ namespace Promocodes
 
         void ClearProperties()
         {
+            CustomName = "";
+            
             CodesCount = 1;
             CodeLenght = 10;
 

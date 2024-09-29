@@ -50,6 +50,14 @@ namespace UI.Shop
     }
     
     
+    public enum ScrollTarget : int
+    {
+        Skins = 0,
+        DailyRewards = 27,
+        Coins = 69,
+        Tickets = 89,
+        Gems = 100,
+    }
     
     
     public class ShopManager : MonoBehaviour
@@ -189,39 +197,30 @@ namespace UI.Shop
         
 #region Scroll Animation
 
+
+
+        public void ScrollToSkinsOfferts() => ScrollToAnimation(ScrollTarget.Skins);
+        public void ScrollToDailyOfferts() => ScrollToAnimation(ScrollTarget.DailyRewards);
+        public void ScrollToCoinsOfferts() => ScrollToAnimation(ScrollTarget.Coins);
+        public void ScrollToTicketsOfferts() => ScrollToAnimation(ScrollTarget.Tickets);
+        public void ScrollToGemsOfferts() => ScrollToAnimation(ScrollTarget.Gems);
         
-        [ContextMenu(nameof(CoinsScrollRect))]
-        public void CoinsScrollRect()
-        {
-            //scrollRect.verticalNormalizedPosition = 0f;
-            ScrollBarAnimation(0f);
-        }
+        void ScrollToAnimation(ScrollTarget target) => ScrollBarAnimation(1f - ( (int)target / 100f ) );
 
-        [ContextMenu(nameof(DailyRewardScrollRect))]
-        public void DailyRewardScrollRect()
-        {
-
-            // scrollRect.verticalNormalizedPosition = Mathf.Lerp(1f, 0.275f, );
-            ScrollBarAnimation(0.275f);
-
-
-        }
 
 
         async void ScrollBarAnimation(float targetPosition)
         {
-            float speed = 5f;
-
-            while (Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition) >= 2 * Time.deltaTime )
+            float lastDistance = Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition);
+            
+            while (Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition) > 0.002f)
             {
-                float currentDistance = Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition);
-                int direction = ((targetPosition - scrollRect.verticalNormalizedPosition) >= 0 ? 1 : -1);
-
-                if (currentDistance > 0.1f && speed > 1f)
-                    speed *= 0.9f;
-
-                scrollRect.verticalNormalizedPosition += direction * speed * Time.deltaTime;      //Mathf.Lerp(scrollRect.verticalNormalizedPosition, targetPosition, 0.05f);
-
+                if(Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition) > lastDistance)
+                    return;
+                
+                scrollRect.verticalNormalizedPosition = Mathf.Lerp(scrollRect.verticalNormalizedPosition, targetPosition, 0.05f);
+                lastDistance = Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition);
+                
                 await Task.Yield();
             }
 
