@@ -48,9 +48,9 @@ namespace DefaultNamespace
 
         void UnregisterHandlers()
         {
-            TowerSpawner.OnTowerPlaced += DeactivePath;
+            TowerSpawner.OnTowerPlaced -= DeactivePath;
             
-            TowerSpawner.OnStartPlacingTower += ActivePath;
+            TowerSpawner.OnStartPlacingTower -= ActivePath;
             
         }
 

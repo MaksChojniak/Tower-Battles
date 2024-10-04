@@ -457,6 +457,7 @@ GameObject:
   - component: {fileID: 8908495800062719232}
   - component: {fileID: 8908495800062719233}
   - component: {fileID: 8908495800062719246}
+  - component: {fileID: 4936224101959190122}
   m_Layer: 5
   m_Name: Cancel
   m_TagString: Untagged
@@ -567,6 +568,23 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4936224101959190122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8908495800062719244}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8fd02e676be40e68aa7c7e83f7cab11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Clip: {fileID: 8300000, guid: 1f3d35c399cb58a418cfa9b8e6a57d6d, type: 3}
+  AudioMixer: {fileID: -738510002302932296, guid: fc259dfb114c18e4aa07b60a6eb19de3,
+    type: 2}
+  InvokeType: 4
+  IsCustom: 0
 --- !u!1 &8908495800194052389
 GameObject:
   m_ObjectHideFlags: 0
@@ -651,7 +669,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0.83333325
+  m_MatchWidthOrHeight: 0.8333333
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -1188,6 +1206,7 @@ GameObject:
   - component: {fileID: 8908495801313574983}
   - component: {fileID: 8908495801313574980}
   - component: {fileID: 8908495801313574981}
+  - component: {fileID: 6505060963950239558}
   m_Layer: 5
   m_Name: Accept
   m_TagString: Untagged
@@ -1298,6 +1317,23 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6505060963950239558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8908495801313574979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8fd02e676be40e68aa7c7e83f7cab11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Clip: {fileID: 8300000, guid: 1f3d35c399cb58a418cfa9b8e6a57d6d, type: 3}
+  AudioMixer: {fileID: -738510002302932296, guid: fc259dfb114c18e4aa07b60a6eb19de3,
+    type: 2}
+  InvokeType: 4
+  IsCustom: 0
 --- !u!1 &8908495801496552832
 GameObject:
   m_ObjectHideFlags: 0

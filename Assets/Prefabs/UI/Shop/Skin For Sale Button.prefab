@@ -478,6 +478,7 @@ GameObject:
   - component: {fileID: 4169079018345997640}
   - component: {fileID: 2322768792366499785}
   - component: {fileID: 563380860727240849}
+  - component: {fileID: 3619675437796212074}
   m_Layer: 5
   m_Name: Skin For Sale Button
   m_TagString: Untagged
@@ -578,6 +579,23 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3619675437796212074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4169079018345997647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8fd02e676be40e68aa7c7e83f7cab11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Clip: {fileID: 8300000, guid: 1f3d35c399cb58a418cfa9b8e6a57d6d, type: 3}
+  AudioMixer: {fileID: -738510002302932296, guid: fc259dfb114c18e4aa07b60a6eb19de3,
+    type: 2}
+  InvokeType: 4
+  IsCustom: 0
 --- !u!1 &4169079018426412323
 GameObject:
   m_ObjectHideFlags: 0

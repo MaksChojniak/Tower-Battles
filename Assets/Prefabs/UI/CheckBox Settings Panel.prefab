@@ -180,6 +180,7 @@ GameObject:
   - component: {fileID: 6222318383729205939}
   - component: {fileID: 6222318383729205949}
   - component: {fileID: 5358940241616097601}
+  - component: {fileID: 6585069351516948063}
   m_Layer: 5
   m_Name: CheckBox
   m_TagString: Untagged
@@ -314,6 +315,23 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &6585069351516948063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6222318383729205937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8fd02e676be40e68aa7c7e83f7cab11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Clip: {fileID: 8300000, guid: 1f3d35c399cb58a418cfa9b8e6a57d6d, type: 3}
+  AudioMixer: {fileID: -738510002302932296, guid: fc259dfb114c18e4aa07b60a6eb19de3,
+    type: 2}
+  InvokeType: 4
+  IsCustom: 0
 --- !u!1 &6222318384318844928
 GameObject:
   m_ObjectHideFlags: 0

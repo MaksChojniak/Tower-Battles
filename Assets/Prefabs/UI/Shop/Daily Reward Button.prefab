@@ -316,6 +316,7 @@ GameObject:
   - component: {fileID: 456999619983659021}
   - component: {fileID: 7599472246854359529}
   - component: {fileID: 5729877768007499825}
+  - component: {fileID: 4212607113985243077}
   m_Layer: 5
   m_Name: Daily Reward Button
   m_TagString: Untagged
@@ -444,6 +445,23 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4212607113985243077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7599472246854359531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8fd02e676be40e68aa7c7e83f7cab11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Clip: {fileID: 8300000, guid: 1f3d35c399cb58a418cfa9b8e6a57d6d, type: 3}
+  AudioMixer: {fileID: -738510002302932296, guid: fc259dfb114c18e4aa07b60a6eb19de3,
+    type: 2}
+  InvokeType: 4
+  IsCustom: 0
 --- !u!1 &7599472247127146710
 GameObject:
   m_ObjectHideFlags: 0

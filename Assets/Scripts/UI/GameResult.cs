@@ -323,37 +323,22 @@ namespace UI
 
         public GameReward(int waveCount, bool withRewardMultiplier = false)
         {
+            Coins = waveCount * 5;
             
-            if (waveCount < 5)
-            {
-                Coins = 10;
-                XP = 20;
-            }
-            else if (waveCount <= 10)
-            {
-                Coins = 20;
-                XP = 40;
-            }
-            else if (waveCount <= 15)
-            {
-                Coins = 30;
-                XP = 70;
-            }
-            else if (waveCount <= 20)
-            {
-                Coins = 50;
-                XP = 110;
-            }
-            else if (waveCount <= 25)
-            {
-                Coins = 80;
-                XP = 170;
-            }
-            else
-            {
-                Coins = 100;
-                XP = 250;
-            }
+            if (waveCount >= 5)
+                Coins += 5;
+            if (waveCount >= 10)
+                Coins += 10;
+            if (waveCount >= 15)
+                Coins += 15;
+            if (waveCount >= 20)
+                Coins += 20;
+            if (waveCount >= 25)
+                Coins += 25;
+            if (waveCount >= 30)
+                Coins += 25;
+
+            XP = Coins * 2;
 
             
             if (withRewardMultiplier)

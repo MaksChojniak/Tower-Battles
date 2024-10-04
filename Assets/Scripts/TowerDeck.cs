@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Player;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -29,6 +30,22 @@ public class TowerDeck : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        TowerInventory.OnSelectTile += async (index, tile, unlocked, tower) =>
+        {
+               if(tower != null && unlocked)
+                   OnAddToDeck?.Invoke();
+               else
+               {
+                   await Task.Yield();
+                   OnRemoveFromDeck?.Invoke();
+               }
+        };
+        // TowerInventory.OnSelectTile += (index, tile, unlocked, tower) =>
+        // {
+        //     if(tower != null && unlocked)
+        //         OnAddToDeck?.Invoke();
+        // };
     }
 
 
@@ -73,10 +90,10 @@ public class TowerDeck : MonoBehaviour
         //    deckTiles[i].ChangeColor(false);
         //}
         
-        if(_towerInventory.selectedTower >= 0)
-            OnAddToDeck?.Invoke();
-        else if (PlayerController.GetLocalPlayerData().Deck[i].Value != null)
-            OnRemoveFromDeck?.Invoke();
+        // if(_towerInventory.selectedTower >= 0)
+        //     OnAddToDeck?.Invoke();
+        // else if (PlayerController.GetLocalPlayerData().Deck[i].Value != null)
+        //     OnRemoveFromDeck?.Invoke();
 
         OnSelectSlot?.Invoke(i);
     }

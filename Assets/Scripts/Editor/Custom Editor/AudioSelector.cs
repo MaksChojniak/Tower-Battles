@@ -290,10 +290,10 @@ public class AudioSelector : EditorWindow
         {
             Scene scene = OpenScene(selectedScene);
 
-            await AddAudioComponents(typeof(UnityEngine.UI.Button));
-            await AddAudioComponents(typeof(EventTrigger));
+            // await AddAudioComponents(typeof(UnityEngine.UI.Button));
+            // await AddAudioComponents(typeof(EventTrigger));
 
-            // await RemoveAudioComponents();
+            await RemoveAudioComponents();
 
             SaveScene(scene);
             
@@ -310,7 +310,8 @@ public class AudioSelector : EditorWindow
         {
             GameObject componentObject = ((MonoBehaviour)component).gameObject;
             
-            if(componentObject.scene.rootCount == 0)
+            bool isPrefab = PrefabUtility.IsPartOfAnyPrefab(componentObject.gameObject);
+            if(isPrefab)
                 continue;
             
             Audio.Audio audio;
@@ -337,6 +338,10 @@ public class AudioSelector : EditorWindow
 
         for (int i = 0; i < buttons.Length; i++)
         {
+            bool isPrefab = PrefabUtility.IsPartOfAnyPrefab(buttons[i].gameObject);
+            if(!isPrefab)
+                continue;
+        
             DestroyImmediate(buttons[i]);
 
             await Task.Yield();

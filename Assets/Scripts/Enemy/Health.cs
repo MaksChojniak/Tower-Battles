@@ -16,6 +16,10 @@ using UnityEngine.UI;
         
         public delegate int GetHealthDelegate();
         public GetHealthDelegate GetHealth;
+        
+        
+        public delegate void EndPathDelegate();
+        public EndPathDelegate EndPath;
 
         public delegate void ChangeHealthDelegate(int Value);
         public ChangeHealthDelegate ChangeHealth;
@@ -33,6 +37,7 @@ using UnityEngine.UI;
         [Header("Stats")]
         [SerializeField] int HealthValue;
         [SerializeField] int BaseHealthValue;
+        bool isDead;
 
         
         public EnemyController EnemyController { private set; get; }
@@ -75,6 +80,8 @@ using UnityEngine.UI;
         {
             SetHealth += OnSetHealth;
             
+            EndPath += OnEndPath;
+            
             GetHealth += OnGetHealth;
             ChangeHealth += OnChangeHealth;
 
@@ -84,6 +91,8 @@ using UnityEngine.UI;
         {
             ChangeHealth -= OnChangeHealth;
             GetHealth -= OnGetHealth;
+
+            EndPath -= OnEndPath;
 
             SetHealth -= OnSetHealth;
 
@@ -109,14 +118,25 @@ using UnityEngine.UI;
                 HealthValue = 0;
             
             OnTakeDamage?.Invoke(EnemyController.IsBurning);
-            
-            if(HealthValue <= 0)
+
+            if (HealthValue <= 0 && !isDead)
+            {
+                isDead = true;
                 OnDie?.Invoke();
-            
+            }
+
             Debug.Log($"Change Health value  [value: {value}, health: {HealthValue}]");
 
             UpdateUI();
         }
+
+        void OnEndPath()
+        {
+            EndPath -= OnEndPath;
+
+            OnChangeHealth(-BaseHealthValue);
+        }
+        
 
 
         void UpdateUI()

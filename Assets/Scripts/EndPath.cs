@@ -37,7 +37,8 @@ public class EndPath : MonoBehaviour
             int healthValue = enemy.HealthComponent.GetHealth();
 
             GamePlayerInformation.ChangeHealth(-healthValue);
-            enemy.HealthComponent.ChangeHealth(-healthValue);
+            // enemy.HealthComponent.ChangeHealth?.Invoke(-healthValue);
+            enemy.HealthComponent.EndPath?.Invoke();
         }
     }
 

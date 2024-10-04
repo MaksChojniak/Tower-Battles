@@ -103,8 +103,11 @@ using PathCreation;
                 {
                     for (int i = 0; i < enemyToSpawn.Count; i++)
                     {
-                        EnemyController enemyController = Instantiate(enemyToSpawn.Enemy.EnemyPrefab, this.transform.position, this.transform.rotation, this.transform.parent).GetComponent<EnemyController>();
+                        GameObject enemy = Instantiate(enemyToSpawn.Enemy.EnemyPrefab, this.transform.position, this.transform.rotation, this.transform.parent);
+                        EnemyController enemyController = enemy.GetComponent<EnemyController>();
+                        
                         enemyController.MovementComponent.DistanceTravelled = MovementComponent.DistanceTravelled;
+                        // Instantiate(enemyToSpawn.Enemy.EnemyPrefab, Vector3.zero, Quaternion.identity, this.transform.parent).GetComponent<EnemyController>().MovementComponent.DistanceTravelled = MovementComponent.DistanceTravelled - 50;
                     }
                 }
 
