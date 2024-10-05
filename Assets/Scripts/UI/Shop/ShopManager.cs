@@ -212,15 +212,17 @@ namespace UI.Shop
         async void ScrollBarAnimation(float targetPosition)
         {
             float lastDistance = Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition);
+            await Task.Yield();
             
             while (Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition) > 0.002f)
             {
-                if(Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition) > lastDistance)
+                float currentDistance = Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition);
+                if(currentDistance > lastDistance * 1.1f)
                     return;
                 
                 scrollRect.verticalNormalizedPosition = Mathf.Lerp(scrollRect.verticalNormalizedPosition, targetPosition, 0.05f);
                 lastDistance = Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition);
-                
+
                 await Task.Yield();
             }
 
