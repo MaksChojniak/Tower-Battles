@@ -212,10 +212,10 @@ namespace UI.Shop
 
         async void ScrollBarAnimation(float targetPosition)
         {
-
             if (this.transform.root.TryGetComponent<Animator>(out Animator animator))
             {
-                while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f || !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Contains("Idle"))
+
+                while (!animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Contains("Towers_Idle") )
                     await Task.Yield();
             } 
         
