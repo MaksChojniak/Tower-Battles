@@ -145,6 +145,7 @@ namespace UI.Shop
             // UpdateSkinsForSaleUI();
             UpdateSkinsOffertRestockTimerUI();
             UpdateNextDailyOffertsTimerUI();
+            UpdateDailyRewardsUI();
             //     
             // UpdateDailyRewardsUI();
             //
@@ -211,6 +212,13 @@ namespace UI.Shop
 
         async void ScrollBarAnimation(float targetPosition)
         {
+
+            if (this.transform.root.TryGetComponent<Animator>(out Animator animator))
+            {
+                while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f || !animator.GetCurrentAnimatorClipInfo(0)[0].clip.name.Contains("Idle"))
+                    await Task.Yield();
+            } 
+        
             float lastDistance = Mathf.Abs(scrollRect.verticalNormalizedPosition - targetPosition);
             await Task.Yield();
             
@@ -533,7 +541,7 @@ namespace UI.Shop
     
         async Task<DailyRewards> CalculateNewDailyRewards(bool isFirstDailyReward = false)
         {
-            Random random = new Random((uint)UnityEngine.Random.Range(0, 100));
+            Random random = new Random((uint)new System.Random().Next(0, 100));
 
             Reward[] _rewards = new Reward[DAILY_REWARDS_COUNT];
             for (int i = 0; i < DAILY_REWARDS_COUNT; i++)
@@ -576,7 +584,8 @@ namespace UI.Shop
                         break;
                 }
 
-                RewardObject _rewardObject = _rewardsObjects[UnityEngine.Random.Range(0, _rewardsObjects.Length)];
+                // RewardObject _rewardObject = _rewardsObjects[UnityEngine.Random.Range(0, _rewardsObjects.Length)];
+                RewardObject _rewardObject = _rewardsObjects[new System.Random().Next(0, _rewardsObjects.Length)];
 
                 Reward _reward = new Reward()
                 {
