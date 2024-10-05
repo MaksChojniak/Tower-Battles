@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using DefaultNamespace;
 using MMK;
 using MMK.ScriptableObjects;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using Player;
 using Player.Database;
 using TMPro;
@@ -55,6 +54,8 @@ namespace UI.Battlepass
         [SerializeField] GameObject BuyTierTicketsButton;
         [Space]
         [SerializeField] TMP_Text PageCount;
+        [SerializeField] Image ProgressXPBar;
+        [SerializeField] TMP_Text ProgressXPText;
 
         [Space(8)]
         [Header("Sprites")]
@@ -194,7 +195,7 @@ namespace UI.Battlepass
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
             {
-                playerProgress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
+                playerProgress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
                 
                 await Database.POST<BattlepassProgress>(playerProgress, playerID);
             }
@@ -255,6 +256,14 @@ namespace UI.Battlepass
              
             await Task.Yield();
 
+            ProgressXPBar.fillAmount = (float)playerProgress.CurrentTierXP / BattlepassProgress.BATTLEPASS_TIER_XP_VALUE;
+            ProgressXPText.text = $"{playerProgress.CurrentTierXP}/{BattlepassProgress.BATTLEPASS_TIER_XP_VALUE} " + 
+                                  $@"<voffset=3.5>{StringFormatter.GetSpriteText(new SpriteTextData()
+                                      {SpriteName = GlobalSettingsManager.GetGlobalSettings.Invoke().LevelIconName,
+                                          WithColor = true, Color = GlobalSettingsManager.GetGlobalSettings.Invoke().Lvl_0_Color,
+                                          Size = "60%"
+                                      })}";
+            
             PremiumBattlepassLockedMask.SetActive(!playerProgress.HasPremiumBattlepass);
             
             BuyBattlepassButton.SetActive(!playerProgress.HasPremiumBattlepass);
@@ -713,12 +722,12 @@ namespace UI.Battlepass
             
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
-                progress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
+                progress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
             else
                 progress = result.Data;
 
             progress.ExperienceCollected += XP;
-            progress.UpdateUnlockedTiers();
+            // progress.UpdateUnlockedTiers();
 
             await Database.POST<BattlepassProgress>(progress, playerID);
         }
@@ -733,12 +742,14 @@ namespace UI.Battlepass
             
             // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
-                progress = new BattlepassProgress() { ExperienceCollected = 0, LastTierUnlocked = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
+                progress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
             else
                 progress = result.Data;
 
-            progress.LastTierUnlocked += TiersCount;
-
+            // progress.LastTierUnlocked += TiersCount;
+            progress.ExperienceCollected += TiersCount * BattlepassProgress.BATTLEPASS_TIER_XP_VALUE;
+            // progress.UpdateUnlockedTiers();
+            
             await Database.POST<BattlepassProgress>(progress, playerID);
         }
         

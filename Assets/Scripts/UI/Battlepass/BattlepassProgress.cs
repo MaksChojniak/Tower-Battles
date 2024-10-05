@@ -27,18 +27,22 @@ namespace UI.Battlepass
     {
         public long ExperienceCollected;
         
-        public uint LastTierUnlocked = 0;
+        public uint LastTierUnlocked => GetTiersCountByTotalXP(ExperienceCollected);
+        public long CurrentTierXP => GetXPByTotalXP(ExperienceCollected);
+        
+        
         public List<BattlepassReward> ClaimedRewards = new List<BattlepassReward>();
 
         public bool HasPremiumBattlepass;
 
+        public const int BATTLEPASS_TIER_XP_VALUE = 250; 
 
 
-        public void UpdateUnlockedTiers()
-        {
-            LastTierUnlocked = (uint)Mathf.FloorToInt(ExperienceCollected / 100f);
-        }
 
+        // public void UpdateUnlockedTiers()
+        // {
+        //     LastTierUnlocked = (uint)((float)ExperienceCollected / BATTLEPASS_TIER_XP_VALUE);
+        // }
 
         public bool IsClaimed(BattlepassReward reward) => ClaimedRewards.
             Any(_reward => _reward.TierIndex == reward.TierIndex && 
@@ -46,6 +50,22 @@ namespace UI.Battlepass
                            _reward.IsPremium == reward.IsPremium );
 
 
+        
+        
+        
+        public static uint GetTiersCountByTotalXP(long experience)
+        {
+            float tier = (float)experience / BATTLEPASS_TIER_XP_VALUE;
+            return (uint)tier;
+        }
+        public long GetXPByTotalXP(long experience)
+        {
+            uint tier = GetTiersCountByTotalXP(experience);
+            long tiersXP = tier * BATTLEPASS_TIER_XP_VALUE;
+
+            return experience - tiersXP;
+        }
+        
     }
     
 }
