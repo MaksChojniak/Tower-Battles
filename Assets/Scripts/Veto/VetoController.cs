@@ -98,15 +98,22 @@ public class VetoController : MonoBehaviour
     Coroutine StartGameCoroutine;
     void Update()
     {
-        if (time >= 0)
+        if (time > 0)
         { 
             time -= Time.deltaTime;
         }
         else
         {
+            time = 0;
+
+            foreach (Button mapButton in mapButtons)
+            {
+                mapButton.interactable = false;
+            }
+            
             if (StartGameCoroutine == null)
                 StartGameCoroutine = StartCoroutine(StartGameScene());
-        
+
         }
 
         vetoButton.SetActive(haveVeto);
@@ -283,8 +290,9 @@ public class VetoController : MonoBehaviour
             return;
         }
 
-        if (StartGameCoroutine == null)
-            StartGameCoroutine = StartCoroutine(StartGameScene());
+        // if (StartGameCoroutine == null)
+        //     StartGameCoroutine = StartCoroutine(StartGameScene());
+        time = 0;
     }
 
 

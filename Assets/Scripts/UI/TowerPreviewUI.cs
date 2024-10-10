@@ -8,6 +8,7 @@ using Player;
 using TMPro;
 using UI;
 using UI.Animations;
+using UI.Shop;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,12 +18,14 @@ public class TowerPreviewUI : MonoBehaviour
 {
     [SerializeField] TowerInventory inventory;
     [SerializeField] RotateableTower rotateableTower;
+    [SerializeField] ShopManager ShopManager;
 
     
     [Space(8)]
     [Header("Prefabs")]
     [SerializeField] GameObject ConfirmationTowerPrefab;
     [SerializeField] GameObject SkinChangerWindow;
+    [SerializeField] GameObject NotEnoughtCurrencyPrefab;
     
     [Space(18)]
     [Header("Properties UI")]
@@ -50,6 +53,8 @@ public class TowerPreviewUI : MonoBehaviour
     [Header("Animations UI")]
     [SerializeField] UIAnimation OpenTowerPreview;
     [SerializeField] UIAnimation CloseTowerPreview;
+    [Space]
+    [SerializeField] UIAnimation OpenShop;
 
     [Space(18)]
     [SerializeField] GameObject skinChangeButton;
@@ -205,7 +210,7 @@ public class TowerPreviewUI : MonoBehaviour
         // if (!towerData.IsRequiredWinsCount(playerTowerInventory.GetWinsCount()))
         if (!lastSelectedTower.IsRequiredLevel(PlayerController.GetLocalPlayerData().Level))
         {
-            WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtWins);
+            // WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtLevel);
             // return false;
             return;
         }
@@ -213,7 +218,16 @@ public class TowerPreviewUI : MonoBehaviour
         // if (towerData.GetUnlockedPrice() > PlayerTowerInventory.Instance.GetBalance())
         if (lastSelectedTower.GetUnlockedPrice() > PlayerController.GetLocalPlayerData().WalletData.Coins)
         {
-            WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+            // WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+            NotEnoughtCurrency panel = Instantiate(NotEnoughtCurrencyPrefab).GetComponent<NotEnoughtCurrency>();
+            panel.ShowCoinsPanel?.Invoke((long)lastSelectedTower.GetUnlockedPrice(), 
+                (long)PlayerController.GetLocalPlayerData().WalletData.Coins, 
+                () => {
+                    OpenShop.PlayAnimation();
+                    
+                    ShopManager.ScrollToCoinsOfferts();
+                }
+                );
             // return false;
             return;
         }

@@ -34,6 +34,7 @@ namespace UI
         [SerializeField] TMP_Text XPRewardText;
         [SerializeField] TMP_Text GameInfoText;
         [SerializeField] Image AddTimeFillBar;
+        [SerializeField] Button AdButton;
 
 
         int wavesCount;
@@ -183,6 +184,8 @@ namespace UI
             while (!isAdWatchedOrTimePassed)
                 await Task.Yield();
             
+            AdButton.interactable = false;
+            
             await Task.Delay(1000);
 
             await LoadMenuScene();
@@ -288,7 +291,7 @@ namespace UI
             
             
             if (reward.Coins > 0)
-                PlayerData.ChangeCoinsBalance(reward.Coins);
+                PlayerData.ChangeCoinsBalance(reward.Coins + reward.BonusCoins);
             if (reward.XP > 0)
                 PlayerData.ChangeExperience(reward.XP);
 

@@ -53,10 +53,10 @@ namespace UI.Shop
     public enum ScrollTarget : int
     {
         Skins = 0,
-        DailyRewards = 27,
-        Coins = 69,
-        Tickets = 89,
-        Gems = 100,
+        DailyRewards = 2482,//2700,
+        Coins = 6204,//6850,
+        Tickets = 7955,//8900,
+        Gems = 10000,
     }
     
     
@@ -206,7 +206,7 @@ namespace UI.Shop
         public void ScrollToTicketsOfferts() => ScrollToAnimation(ScrollTarget.Tickets);
         public void ScrollToGemsOfferts() => ScrollToAnimation(ScrollTarget.Gems);
         
-        void ScrollToAnimation(ScrollTarget target) => ScrollBarAnimation(1f - ( (int)target / 100f ) );
+        void ScrollToAnimation(ScrollTarget target) => ScrollBarAnimation(1f - ( (int)target / 100f / 100f ) );
 
 
 
