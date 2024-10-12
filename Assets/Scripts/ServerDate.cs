@@ -3,8 +3,10 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UI.Battlepass;
+using UnityEngine;
 
 namespace MMK
 {
@@ -16,15 +18,71 @@ namespace MMK
     }
     
     
-    public static class ServerDate
+    public class ServerDate : MonoBehaviour
     {
+        static ServerDate Instance;
+
+        public delegate DateTime SimulatedDateOnServerUTCDelegate();
+        public static SimulatedDateOnServerUTCDelegate SimulatedDateOnServerUTC;
+        
+        static DateTime dateFromServer = new DateTime();
+        static TimeSpan localTimeOffset = new TimeSpan();
+        static DateTime simulateDateOnServer => DateTime.Now - localTimeOffset;
+        static DateTime simulatedDateOnServerUTC => simulateDateOnServer.ToUniversalTime();
+
+
+        void Awake()
+        {
+            if (Instance != null)
+            {
+                Destroy(this.gameObject);
+                return;
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+
+            SimulatedDateOnServerUTC += () => simulatedDateOnServerUTC;
+
+        }
+
+        void OnDestroy()
+        {
+            if (Instance != this)
+                return;
+
+
+            Instance = null;
+        }
         
         
-        #region Date/Time
+
+        
+        async void OnApplicationFocus(bool hasFocus)
+        {
+
+            if (hasFocus)
+                await GetDateFromSerer();
+
+        }
+
+        public async static Task GetDateFromSerer()
+        {
+            ServerDateReseult result = await ServerDate.GetDateFromServerAsync();
+            dateFromServer = result.ServerDate;
+            localTimeOffset = result.LocalTimeOffset;
+
+            await Task.Yield();
+        }
+        
+
+
+
+#region Date/Time
 
         const string DATE_URL =  "http://www.google.com";
         
-        public static ServerDateReseult GetDateFromServer()
+         static ServerDateReseult GetDateFromServer()
         {
             DateTime dateFromServer;
             TimeSpan localTimeOffset;
@@ -47,7 +105,7 @@ namespace MMK
             };
         }
         
-        public async static Task<ServerDateReseult> GetDateFromServerAsync()
+        async static Task<ServerDateReseult> GetDateFromServerAsync()
         {
             DateTime dateFromServer;
             TimeSpan localTimeOffset;
@@ -83,7 +141,9 @@ namespace MMK
             };
         }
 
-        #endregion
+#endregion
+      
+        
         
     }
 }

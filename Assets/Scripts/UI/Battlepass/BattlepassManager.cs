@@ -21,11 +21,11 @@ namespace UI.Battlepass
     {
 
         
-        BattlepassProgress playerProgress;
+        static BattlepassProgress playerProgress = null;
         
 
-        public BattlepassRewards BattlepassRewards;
-        BattlepassReward[] battlepassRewards;
+        static BattlepassRewards BattlepassRewards;
+        static BattlepassReward[] battlepassRewards;
 
 
         [Space(18)]
@@ -72,29 +72,6 @@ namespace UI.Battlepass
         [SerializeField] UIAnimation OpenRewardPreviewPanel;
         [SerializeField] UIAnimation CloseRewardPreviewPanel;
 
-        
-        DateTime dateFromServer = new DateTime();
-        TimeSpan localTimeOffset = new TimeSpan();
-        DateTime simulateDateOnServer => DateTime.Now - localTimeOffset;
-        DateTime simulatedDateOnServerUTC => simulateDateOnServer.ToUniversalTime();
-
-        
-
-        // void Awake()
-        void OnEnable()
-        {
-            RegisterHandlers();
-            
-            GetDataFromServer();
-        }
-
-        // void OnDestroy()
-        void OnDisable()
-        {
-            UnregisterHandlers();
-            
-        }
-
 
         void OnValidate()
         {
@@ -102,37 +79,41 @@ namespace UI.Battlepass
             if (!UpdateTiles)
                 return;
             UpdateTiles = false;
-                    
+
             List<BattlepassTierTile> tiles = new List<BattlepassTierTile>();
-        
+
             for (int i = 0; i < TilesContainer.transform.childCount; i++)
             {
                 tiles.Add(TilesContainer.transform.GetChild(i).GetComponent<BattlepassTierTile>());
             }
 
             TilesUI = tiles.ToArray();
-            
+
         }
 
 
+
+        void OnEnable()
+        {
+            RegisterHandlers();
+            
+            UpdatePagesBttonsUI();
+            GetDataFromServer();
+        }
+        
+        void OnDisable()
+        {
+            UnregisterHandlers();
+            
+        }
+        
+
+        
         void Update()
         {
 
         }
 
-        
-
-        // async void OnEnable()
-        // {
-        //     await UpdateBattlapassUI();
-        // }
-        //
-        // async void OnDisable()
-        // {
-        //     
-        // }
-
-        
 
         void OnApplicationFocus(bool hasFocus)
         {
@@ -163,36 +144,40 @@ namespace UI.Battlepass
         
         async void GetDataFromServer()
         {
-            ServerDateReseult result = await ServerDate.GetDateFromServerAsync();
-            dateFromServer = result.ServerDate;
-            localTimeOffset = result.LocalTimeOffset;
-            
-            await GetPlayerProgress();
-            
-            
             UpdateBattlapassUI();
-            UpdatePagesBttonsUI();
+
+            await DownloadDataFromServer();
+
+            UpdateBattlapassUI();
             
                 
             await Task.Yield();
 
+        }
+        
+
+        public async static Task DownloadDataFromServer()
+        {
+            BattlepassRewards = Resources.Load<BattlepassRewards>("Battlepass Rewards");
+            
+            await GetPlayerProgress();
         }
 
 
 #region Battlepass
 
 
-        TimeSpan TimeToEndBattlepass => BattlepassRewards.CreatedDateUTC.AddDays(BattlepassRewards.DaysDuration) - simulatedDateOnServerUTC;
+        TimeSpan TimeToEndBattlepass => BattlepassRewards.CreatedDateUTC.AddDays(BattlepassRewards.DaysDuration) - ServerDate.SimulatedDateOnServerUTC();
 
-        async Task GetPlayerProgress()
+        async static Task GetPlayerProgress()
         {
+            
             string playerID = PlayerController.GetLocalPlayerData().ID;
-            playerProgress = null;
+            // playerProgress = null;
             
             
             var result = await Database.GET<BattlepassProgress>(playerID);
             
-            // TODO chekc when is new event
             if (result.Status == DatabaseStatus.Error)
             {
                 playerProgress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
@@ -203,11 +188,11 @@ namespace UI.Battlepass
                 playerProgress = result.Data;
             
 
-            GetBattlepassRewards();
+            await GetBattlepassRewards();
 
         }
         
-        void GetBattlepassRewards()
+        async static Task GetBattlepassRewards()
         {
             List<BattlepassReward> _battlepassRewards = new List<BattlepassReward>();
 
@@ -237,8 +222,8 @@ namespace UI.Battlepass
                     
                     _battlepassRewards.Add(reward);
                 }
-                
 
+                await Task.Yield();
             }
 
             battlepassRewards = _battlepassRewards.ToArray();
@@ -250,11 +235,9 @@ namespace UI.Battlepass
         
         async void UpdateBattlapassUI()
         {
-            if(playerProgress == null)
+            if(playerProgress == null || BattlepassRewards == null)
                 return;
 
-             
-            await Task.Yield();
 
             ProgressXPBar.fillAmount = (float)playerProgress.CurrentTierXP / BattlepassProgress.BATTLEPASS_TIER_XP_VALUE;
             ProgressXPText.text = $"{playerProgress.CurrentTierXP}/{BattlepassProgress.BATTLEPASS_TIER_XP_VALUE} " + 
@@ -530,6 +513,7 @@ namespace UI.Battlepass
                 return;
 
             playerProgress.ClaimedRewards.Add(lastSelectedReward);
+            // TODO give reward to player
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
             await Database.POST<BattlepassProgress>(playerProgress, playerID);

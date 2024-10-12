@@ -30,16 +30,10 @@ namespace Promocodes
         string code;
 
 
-        DateTime dateFromServer = new DateTime();
-        TimeSpan localTimeOffset = new TimeSpan();
-        DateTime simulateDateOnServer => DateTime.Now - localTimeOffset;
-        DateTime simulatedDateOnServerUTC => simulateDateOnServer.ToUniversalTime();
         
         async void Awake()
         {
-            ServerDateReseult result = await ServerDate.GetDateFromServerAsync();
-            dateFromServer = result.ServerDate;
-            localTimeOffset = result.LocalTimeOffset;
+
         }
 
 
@@ -67,7 +61,7 @@ namespace Promocodes
 
             PromocodeProperties properties = promocodes[code].Properties;
 
-            if (!properties.CodeIsValid(simulatedDateOnServerUTC))
+            if (!properties.CodeIsValid(ServerDate.SimulatedDateOnServerUTC()))
             {
                 promocodes.Remove(code);
                 await Database.POST<Dictionary<string, Promocode>>(promocodes);

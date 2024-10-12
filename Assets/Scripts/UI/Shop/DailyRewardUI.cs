@@ -1,4 +1,5 @@
 ﻿using System;
+using MMK;
 using TMPro;
 using UI.Shop.Daily_Rewards;
 using UI.Shop.Daily_Rewards.Scriptable_Objects;
@@ -20,7 +21,7 @@ namespace UI.Shop
         [SerializeField] GameObject claimStateCheckmark; // = claimButton.transform.GetChild(1).gameObject;
 
 
-        public void UpdateUI(int index, DailyRewards dailyRewards, DailyRewardUIProperties UIProperties, DateTime simulateDateOnServer)
+        public void UpdateUI(int index, DailyRewards dailyRewards, DailyRewardUIProperties UIProperties)
         {
             Reward reward = dailyRewards.Rewards[index];
             
@@ -36,7 +37,9 @@ namespace UI.Shop
             
             bool isClaimedReward = dailyRewards.LastCalimedRewardIndex >= index;
             bool isNextReward = dailyRewards.LastCalimedRewardIndex + 1 == index;
-            TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulateDateOnServer;
+            
+            DateTime createTimeUTC = new DateTime(dailyRewards.LastClaimDateTicks);
+            TimeSpan timeToClaim = createTimeUTC.AddDays(1) - ServerDate.SimulatedDateOnServerUTC();
             bool canClaim = dailyRewards.LastCalimedRewardIndex + 1 == index && ( timeToClaim.TotalSeconds <= 0 );
 
             

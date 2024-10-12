@@ -79,12 +79,6 @@ namespace Promocodes
         [Space(12)]
         [SerializeField] bool Clear;
 
-        
-        DateTime dateFromServer = new DateTime();
-        TimeSpan localTimeOffset = new TimeSpan();
-        DateTime simulateDateOnServer => DateTime.Now - localTimeOffset;
-        DateTime simulatedDateOnServerUTC => simulateDateOnServer.ToUniversalTime();
-        
 
         void OnValidate()
         {
@@ -110,10 +104,6 @@ namespace Promocodes
 
         async void GenerateCodes()
         {
-            ServerDateReseult result = await ServerDate.GetDateFromServerAsync();
-            dateFromServer = result.ServerDate;
-            localTimeOffset = result.LocalTimeOffset;
-            
             string debugLog = "Promocodes \n";
             
             await FirebaseCheckDependencies.CheckAndFixDependencies();
@@ -132,7 +122,7 @@ namespace Promocodes
                 UsesLeft = Uses,
                 TimeLimitedCode = TimeLimitedCode,
                 HoursDuration = HoursDuration,
-                CreateCodeDateUTC = simulatedDateOnServerUTC.Ticks
+                CreateCodeDateUTC = ServerDate.SimulatedDateOnServerUTC().Ticks
             };
 
             for (int i = 0; i < CodesCount; i++)

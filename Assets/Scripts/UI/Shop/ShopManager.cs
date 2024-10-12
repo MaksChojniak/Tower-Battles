@@ -63,9 +63,9 @@ namespace UI.Shop
     public class ShopManager : MonoBehaviour
     {
 
-        SkinsForSale skinsForSale = new SkinsForSale();
-        DailyRewards dailyRewards = new DailyRewards();
-        AdsRewards adsRewards = new AdsRewards();
+        static SkinsForSale skinsForSale = new SkinsForSale();
+        static DailyRewards dailyRewards = new DailyRewards();
+        static AdsRewards adsRewards = new AdsRewards();
 
         [Header("Const Data")]
         [SerializeField] BattlepassTicket[] BattlepassTickets;
@@ -99,9 +99,9 @@ namespace UI.Shop
         [SerializeField] GameObject[] coinsOffertsPanels;
         
         [Space(18)]
-        [SerializeField] TowerSkin[] avaiableSkins;
-        [SerializeField] RewardObject[] avaiableRewards;
-        [SerializeField] AvaiableAdRewards AvaiableAdRewards;
+        static AvaiableTowerSkins AvaiableSkins;
+        static AvaiableDailyRewards AvaiableDailyRewards;
+        static AvaiableAdRewards AvaiableAdRewards;
         
 
         public const int SKINS_FOR_SALE_COUNT = 3;
@@ -109,8 +109,7 @@ namespace UI.Shop
         public const int DAILY_ADS_LIMIT = 10;
 
 
-
-        // void Awake()
+        
         void OnEnable()
         {
             RegisterHandlers();
@@ -118,46 +117,23 @@ namespace UI.Shop
             GetDataFromServer();
             
         }
-
-        // void OnDestroy()
+        
         void OnDisable()
         {
             UnregisterHandlers();
 
         }
 
-        
-        
-        // void OnEnable()
-        // {
-        //     
-        // }
-        //
-        // void OnDisable()
-        // {
-        //
-        // }
 
 
-        
         void Update()
         {
-            // UpdateSkinsForSaleUI();
             UpdateSkinsOffertRestockTimerUI();
+            
             UpdateNextDailyOffertsTimerUI();
+            
             UpdateDailyRewardsUI();
-            //     
-            // UpdateDailyRewardsUI();
-            //
-            //
-            // UpdateAdsRewardsOffertsUI();
-            //
-            //
-            // UpdateExchangeOffertsUI();
-            //
-            // UpdateBattlepassTicketsOffertsUI();
-            //
-            // UpdateCoinsOffertsUI();
+
         }
 
         
@@ -249,36 +225,29 @@ namespace UI.Shop
         
         async void GetDataFromServer()
         {
-            ServerDateReseult result = await ServerDate.GetDateFromServerAsync();
-            dateFromServer = result.ServerDate;
-            localTimeOffset = result.LocalTimeOffset;
+            UpdateUI();
+
+            await DownloadDataFromServer();
             
-            
-            // SynchronizationContext unitySynchronizationContext = SynchronizationContext.Current;
-            // await Task.Run(async () =>
-            // {
-            //     await GetSkinsForSaleFromServerAsync();
-            //     
-            //     unitySynchronizationContext.Post( _ => UpdateSkinsForSaleUI(), null);
-            // });
-            // await Task.Run(async () =>
-            // {
-            //     await GetDailyRewardsFromServerAsync();
-            //     
-            //     unitySynchronizationContext.Post( _ => UpdateDailyRewardsUI(), null);
-            // });
-            // await Task.Run(async () =>
-            // {
-            //     await GetAdsRewardsFromServerAsync();
-            //     
-            //     unitySynchronizationContext.Post( _ => UpdateAdsRewardsOffertsUI(), null);
-            // });
+            UpdateUI();
+
+            await Task.Yield();
+
+        }
+
+        public async static Task DownloadDataFromServer()
+        {
+            AvaiableSkins = Resources.Load<AvaiableTowerSkins>("Avaiable Tower Skins");
+            AvaiableDailyRewards = Resources.Load<AvaiableDailyRewards>("Avaiable Daily Rewards");
+            AvaiableAdRewards = Resources.Load<AvaiableAdRewards>("Avaiable Ad Rewards");
             
             await Task.Run(async () => await GetSkinsForSaleFromServerAsync() );
             await Task.Run(async () => await GetDailyRewardsFromServerAsync() );
             await Task.Run(async () => await GetAdsRewardsFromServerAsync() );
-
-            
+        }
+        
+        void UpdateUI()
+        {
             UpdateSkinsForSaleUI();
             
             UpdateDailyRewardsUI();
@@ -288,11 +257,6 @@ namespace UI.Shop
             UpdateExchangeOffertsUI();
             
             UpdateBattlepassTicketsOffertsUI();
-            
-            
-
-            await Task.Yield();
-
         }
         
         
@@ -304,13 +268,13 @@ namespace UI.Shop
     #region Get Data From Server
 
 
-        async Task GetSkinsForSaleFromServerAsync()
+        async static Task GetSkinsForSaleFromServerAsync()
         {
             var result = await Database.GET<SkinsForSale>();
 
             if (result.Status == DatabaseStatus.Error)
                 skinsForSale = await CalculateNewSkinsForSale(); // Calculate new offerts
-            else if ((simulatedDateOnServerUTC - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
+            else if ((ServerDate.SimulatedDateOnServerUTC() - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
                 skinsForSale = await CalculateNewSkinsForSale(result.Data); // Calculate new offerts
             else
                 skinsForSale = result.Data;
@@ -324,13 +288,13 @@ namespace UI.Shop
 
     #region Calculate New Offerts
     
-        async Task<SkinsForSale> CalculateNewSkinsForSale(SkinsForSale oldOfferts = null)
+        async static Task<SkinsForSale> CalculateNewSkinsForSale(SkinsForSale oldOfferts = null)
         {
             Random random = new Random((uint)new System.Random().Next(0, 100));
             
-            var createDateUTC = simulatedDateOnServerUTC.AddHours(8 - simulatedDateOnServerUTC.Hour).AddMinutes(-simulatedDateOnServerUTC.Minute).AddSeconds(-simulatedDateOnServerUTC.Second);
-            if(simulatedDateOnServerUTC.Hour < 8)
-                createDateUTC = simulatedDateOnServerUTC.AddDays(-1).AddHours(8 - simulatedDateOnServerUTC.Hour).AddMinutes(-simulatedDateOnServerUTC.Minute).AddSeconds(-simulatedDateOnServerUTC.Second);
+            var createDateUTC = ServerDate.SimulatedDateOnServerUTC().AddHours(8 - ServerDate.SimulatedDateOnServerUTC().Hour).AddMinutes(-ServerDate.SimulatedDateOnServerUTC().Minute).AddSeconds(-ServerDate.SimulatedDateOnServerUTC().Second);
+            if(ServerDate.SimulatedDateOnServerUTC().Hour < 8)
+                createDateUTC = ServerDate.SimulatedDateOnServerUTC().AddDays(-1).AddHours(8 - ServerDate.SimulatedDateOnServerUTC().Hour).AddMinutes(-ServerDate.SimulatedDateOnServerUTC().Minute).AddSeconds(-ServerDate.SimulatedDateOnServerUTC().Second);
             
             SkinsForSale _skinsForSale = new SkinsForSale()
             {
@@ -384,11 +348,11 @@ namespace UI.Shop
             return _skinsForSale;
         }
 
-        SkinOffert[] GenerateAllSkins()
+        static SkinOffert[] GenerateAllSkins()
         {
             List<SkinOffert> offerts = new List<SkinOffert>();
 
-            foreach (var avaiableSkin in avaiableSkins)
+            foreach (var avaiableSkin in AvaiableSkins.rewards)
             {
                 if(avaiableSkin.Rarity != SkinRarity.Common && avaiableSkin.Rarity != SkinRarity.Gold)
                     offerts.Add(new SkinOffert() { TowerSkinID = avaiableSkin.ID });
@@ -426,10 +390,13 @@ namespace UI.Shop
                 WarningSystem.ShowWarning(WarningSystem.WarningType.LockedTower);
                 return;
             }
-            
-            if (PlayerData.GetCoinsBalance?.Invoke() < skin.UnlockPrice)
+
+            long balance = (long)PlayerData.GetCoinsBalance.Invoke();
+            long price = (long)skin.UnlockPrice;
+            if (balance < price)
             {
-                WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+                // WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtMoney);
+                skinsForSalePanels[offertIndex].gameObject.GetComponent<NotEnoughtCurrencyInvoker>().ShowWarningPanel(price, balance);
                 return;
             }
             
@@ -496,7 +463,7 @@ namespace UI.Shop
             }
             
             DateTime createTimeUTC = new DateTime(skinsForSale.CreateDateUTCTicks);
-            TimeSpan offsetToNextOfferts = createTimeUTC.AddDays(1) - simulatedDateOnServerUTC;
+            TimeSpan offsetToNextOfferts = createTimeUTC.AddDays(1) - ServerDate.SimulatedDateOnServerUTC();
 
             offertsTimerText.text = $"Next in: {offsetToNextOfferts.Hours}h {offsetToNextOfferts.Minutes}min";
         }
@@ -508,17 +475,10 @@ namespace UI.Shop
 
 #region Daily Rewards Offerts
 
-        DateTime dateFromServer = new DateTime();
-        TimeSpan localTimeOffset = new TimeSpan();
-        DateTime simulateDateOnServer => DateTime.Now - localTimeOffset;
-        DateTime simulatedDateOnServerUTC => simulateDateOnServer.ToUniversalTime();
-
-
-
 
     #region Get Data From Server
         
-        async Task GetDailyRewardsFromServerAsync()
+        async static Task GetDailyRewardsFromServerAsync()
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;
 
@@ -539,7 +499,7 @@ namespace UI.Shop
         
     #region Calculate New Offerts
     
-        async Task<DailyRewards> CalculateNewDailyRewards(bool isFirstDailyReward = false)
+        async static Task<DailyRewards> CalculateNewDailyRewards(bool isFirstDailyReward = false)
         {
             Random random = new Random((uint)new System.Random().Next(0, 100));
 
@@ -550,35 +510,35 @@ namespace UI.Shop
                 switch (i)
                 {
                     case 0:
-                        _rewardsObjects = avaiableRewards.Where(element => element.RewardRarity == RewardRarity.Common ).ToArray();
+                        _rewardsObjects = AvaiableDailyRewards.rewards.Where(element => element.RewardRarity == RewardRarity.Common ).ToArray();
                         break;
                     case 1:
-                        _rewardsObjects = avaiableRewards.
+                        _rewardsObjects = AvaiableDailyRewards.rewards.
                             Where(element => element.RewardRarity == RewardRarity.Common || element.RewardRarity == (random.NextInt() % 20 == 0 ? RewardRarity.Common : RewardRarity.Uncommon) ).
                             ToArray();
                         break;
                     case 2:
-                        _rewardsObjects = avaiableRewards.
+                        _rewardsObjects = AvaiableDailyRewards.rewards.
                             Where(element => element.RewardRarity == RewardRarity.Common || element.RewardRarity == (random.NextInt() % 5 == 0 ? RewardRarity.Uncommon : RewardRarity.Common) ).
                             ToArray();
                         break;
                     case 3:
-                        _rewardsObjects = avaiableRewards.
+                        _rewardsObjects = AvaiableDailyRewards.rewards.
                             Where(element => element.RewardRarity == RewardRarity.Uncommon ).
                             ToArray();
                         break;
                     case 4:
-                        _rewardsObjects = avaiableRewards.
+                        _rewardsObjects = AvaiableDailyRewards.rewards.
                             Where(element => element.RewardRarity == RewardRarity.Uncommon || element.RewardRarity == (random.NextInt() % 5 == 0 ? RewardRarity.Rare : RewardRarity.Uncommon) ).
                             ToArray();
                         break;
                     case 5:
-                        _rewardsObjects = avaiableRewards.
+                        _rewardsObjects = AvaiableDailyRewards.rewards.
                             Where(element => element.RewardRarity == RewardRarity.Rare || element.RewardRarity == (random.NextInt() % 5 == 0 ? RewardRarity.Epic : RewardRarity.Rare) ).
                             ToArray();
                         break;
                     case 6:
-                        _rewardsObjects = avaiableRewards.
+                        _rewardsObjects = AvaiableDailyRewards.rewards.
                             Where(element => element.RewardRarity == RewardRarity.Epic || element.RewardRarity == (random.NextInt() % 10 == 0 ? RewardRarity.Legendary : RewardRarity.Epic) || element.RewardRarity == (random.NextInt() % 25 == 0 ? RewardRarity.Exclusive : RewardRarity.Epic) ).
                             ToArray();
                         break;
@@ -599,14 +559,14 @@ namespace UI.Shop
 
             DailyRewards rewards = new DailyRewards()
             {
-                LastClaimDateTicks = isFirstDailyReward ? simulatedDateOnServerUTC.AddDays(-1).Ticks : simulatedDateOnServerUTC.Ticks,
+                LastClaimDateTicks = isFirstDailyReward ? ServerDate.SimulatedDateOnServerUTC().AddDays(-1).Ticks : ServerDate.SimulatedDateOnServerUTC().Ticks,
                 LastCalimedRewardIndex = -1,
                 Rewards = _rewards
             };
 
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
-            await Database.POST<DailyRewards>(dailyRewards, playerID);
+            await Database.POST<DailyRewards>(rewards, playerID);
             
 
             return rewards;
@@ -618,13 +578,15 @@ namespace UI.Shop
         
         public async void ClaimReward(int index)
         {
-            TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulatedDateOnServerUTC;
+            DateTime createTimeUTC = new DateTime(dailyRewards.LastClaimDateTicks);
+            TimeSpan timeToClaim = createTimeUTC.AddDays(1) - ServerDate.SimulatedDateOnServerUTC();
+            
             bool canClaim = dailyRewards.LastCalimedRewardIndex + 1 == index && (timeToClaim.TotalSeconds <= 0 );
             
             if(!canClaim)
                 return;
 
-            dailyRewards.LastClaimDateTicks = simulatedDateOnServerUTC.Ticks;
+            dailyRewards.LastClaimDateTicks = ServerDate.SimulatedDateOnServerUTC().Ticks;
             dailyRewards.LastCalimedRewardIndex += 1;
             
             
@@ -668,7 +630,7 @@ namespace UI.Shop
             
             for (int i = 0; i < dailyRewards.Rewards.Length; i++)
             {
-                dalyRewardsPanels[i].UpdateUI(i, dailyRewards, dailyRewardsUIProperties, simulatedDateOnServerUTC);
+                dalyRewardsPanels[i].UpdateUI(i, dailyRewards, dailyRewardsUIProperties);
             }
             
             
@@ -683,8 +645,12 @@ namespace UI.Shop
                 return;
             }
 
-            TimeSpan timeToClaim = new DateTime(dailyRewards.LastClaimDateTicks).AddDays(1) - simulatedDateOnServerUTC;
-            nextDailyRewardTimerText.text = $"Next in: {timeToClaim.Hours}h {timeToClaim.Minutes}min";
+            DateTime createTimeUTC = new DateTime(dailyRewards.LastClaimDateTicks);
+            TimeSpan timeToClaim = createTimeUTC.AddDays(1) - ServerDate.SimulatedDateOnServerUTC();
+            if(timeToClaim.TotalMilliseconds <= 0)
+                nextDailyRewardTimerText.text = $"Offert Ready to Claim";
+            else
+                nextDailyRewardTimerText.text = $"Next in: {timeToClaim.Hours}h {timeToClaim.Minutes}min";
             
         }
 
@@ -701,9 +667,12 @@ namespace UI.Shop
             GemsExchange exchangeOffert = GemsExchangeOfferts[offertIndex];
 
 
-            if (PlayerData.GetGemsBalance?.Invoke() < exchangeOffert.GemsPrice)
+            long balance = (long)PlayerData.GetGemsBalance?.Invoke();
+            long price = (long)exchangeOffert.GemsPrice;
+            if (balance < price)
             {
-                WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtGems);
+                // WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtGems);
+                gemsExchangePanels[offertIndex].gameObject.GetComponent<NotEnoughtCurrencyInvoker>().ShowWarningPanel(price, balance);
                 return;
             }
             
@@ -787,9 +756,12 @@ namespace UI.Shop
         {
             BattlepassTicket ticketOffert = BattlepassTickets[offertIndex];
 
-            if (PlayerData.GetGemsBalance?.Invoke() < ticketOffert.GemsPrice)
+            long balance = (long)PlayerData.GetGemsBalance?.Invoke();
+            long price = (long)ticketOffert.GemsPrice;
+            if (balance < price)
             {
-                WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtGems);
+                // WarningSystem.ShowWarning(WarningSystem.WarningType.NotEnoughtGems);
+                battlepassTicketsPanels[offertIndex].gameObject.GetComponent<NotEnoughtCurrencyInvoker>().ShowWarningPanel(price, balance);
                 return;
             }
 
@@ -852,7 +824,7 @@ namespace UI.Shop
         
     #region Get Data From Server
     
-        async Task GetAdsRewardsFromServerAsync()
+        async static Task GetAdsRewardsFromServerAsync()
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;
          
@@ -860,7 +832,7 @@ namespace UI.Shop
 
             if (result.Status == DatabaseStatus.Error)
                 adsRewards = await CalculateNewAdsRewards(); // Calculate new ads rewards
-            else if ((simulatedDateOnServerUTC - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
+            else if ((ServerDate.SimulatedDateOnServerUTC() - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
                 adsRewards = await CalculateNewAdsRewards(); // Calculate new ads rewards
             else
                 adsRewards = result.Data;
@@ -873,16 +845,16 @@ namespace UI.Shop
 
     #region Calculate New Offerts
 
-        async Task<AdsRewards> CalculateNewAdsRewards()
+        async static Task<AdsRewards> CalculateNewAdsRewards()
         {
             Random random = new Random((uint)new System.Random().Next(0, 100));
 
             List<AdReward> avaiableAdsRewards = new List<AdReward>(AvaiableAdRewards.rewards);
             
             
-            var createDateUTC = simulatedDateOnServerUTC.AddHours(8 - simulatedDateOnServerUTC.Hour).AddMinutes(-simulatedDateOnServerUTC.Minute).AddSeconds(-simulatedDateOnServerUTC.Second);
-            if (simulatedDateOnServerUTC.Hour < 8)
-                createDateUTC = simulatedDateOnServerUTC.AddDays(-1).AddHours(8 - simulatedDateOnServerUTC.Hour).AddMinutes(-simulatedDateOnServerUTC.Minute).AddSeconds(-simulatedDateOnServerUTC.Second);
+            var createDateUTC = ServerDate.SimulatedDateOnServerUTC().AddHours(8 - ServerDate.SimulatedDateOnServerUTC().Hour).AddMinutes(-ServerDate.SimulatedDateOnServerUTC().Minute).AddSeconds(-ServerDate.SimulatedDateOnServerUTC().Second);
+            if (ServerDate.SimulatedDateOnServerUTC().Hour < 8)
+                createDateUTC = ServerDate.SimulatedDateOnServerUTC().AddDays(-1).AddHours(8 - ServerDate.SimulatedDateOnServerUTC().Hour).AddMinutes(-ServerDate.SimulatedDateOnServerUTC().Minute).AddSeconds(-ServerDate.SimulatedDateOnServerUTC().Second);
 
 
             AdsRewards _adsRewards = new AdsRewards()
@@ -911,6 +883,7 @@ namespace UI.Shop
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
             await Database.POST<AdsRewards>(_adsRewards, playerID);
+            
             
             
             return _adsRewards;

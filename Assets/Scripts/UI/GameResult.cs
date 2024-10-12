@@ -185,6 +185,7 @@ namespace UI
                 await Task.Yield();
             
             AdButton.interactable = false;
+            AdButton.gameObject.SetActive(false);
             
             await Task.Delay(1000);
 

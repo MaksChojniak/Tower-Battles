@@ -7,6 +7,8 @@ using Mirror;
 using MMK;
 using Player;
 using TMPro;
+using UI.Battlepass;
+using UI.Shop;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -94,6 +96,7 @@ namespace Loading_Screen
             {
                 FirebaseCheckDependencies.CheckAndFixDependencies(),
                 GoogleAds.CheckAndFixDependencies(),
+                ServerDate.GetDateFromSerer(),
             };
             await Task.WhenAll(taksToPlay);
 
@@ -105,6 +108,21 @@ namespace Loading_Screen
             {
                 LoginProcess(),
                 LoadingAnimation(40f),
+            };
+            await Task.WhenAll(taksToPlay);
+            
+            
+            taksToPlay = new List<Task>()
+            {
+                LoadBattlepassRewards(),
+                LoadingAnimation(60f),
+            };
+            await Task.WhenAll(taksToPlay);
+            
+            taksToPlay = new List<Task>()
+            {
+                LoadShopOfferts(),
+                LoadingAnimation(70f),
             };
             await Task.WhenAll(taksToPlay);
 
@@ -131,27 +149,21 @@ namespace Loading_Screen
             await Task.WhenAll(taksToPlay);
 
             
-            
-            // loadingAnimator.SetBool(endAnimation, true);
-            // await Task.Delay( Mathf.RoundToInt( loadingAnimator.GetCurrentAnimatorClipInfo(0).Length * 1000 ) );
-            
-            
-            
             loadinsSceneOperation.allowSceneActivation = true;
 
         }
 
 
 
-
-
-
+        
+#region Animation
+        
+        
         async Task StartLoadingAnimation()
         {
             animator.Play(startAnimationClip.name);
             await Task.Delay( Mathf.RoundToInt(startAnimationClip.length * 1000) );
         }
-
 
         float progressValue;
         float speed = 0.05f;
@@ -184,8 +196,7 @@ namespace Loading_Screen
             progressValue = _progressValue;
 
         }
-
-
+        
         async Task EndLoadingAnimation()
         {
             animator.Play(endAnimationClip.name);
@@ -207,25 +218,7 @@ namespace Loading_Screen
         }
 
 
-
-/*
-         
-        float startTime = Time.time;
-
-        Vector3 startPosition = lineRenderer.GetPosition(0);
-        Vector3 endPosition = lineRenderer.GetPosition(1);
-
-        Vector3 pos = startPosition;
-        while (pos != endPosition)
-        {
-            float t = (Time.time - startTime)/AnimationDuration;
-            pos = Vector3.Lerp(startPosition, endPosition, t);
-            lineRenderer.SetPosition(1, pos);
-            yield return null;
-        }
-         
-         */
-
+#endregion
 
 
 
@@ -250,6 +243,12 @@ namespace Loading_Screen
 
         }
 
+
+        async Task LoadShopOfferts() => await ShopManager.DownloadDataFromServer();
+        
+        
+        async Task LoadBattlepassRewards() => await BattlepassManager.DownloadDataFromServer();
+        
 
 
         async Task LoadScene(AsyncOperation loadinsSceneOperation)

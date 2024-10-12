@@ -232,6 +232,7 @@ GameObject:
   - component: {fileID: 1898173891794682699}
   - component: {fileID: 4293579576571779948}
   - component: {fileID: 389720290000980194}
+  - component: {fileID: 4522755669972901741}
   m_Layer: 5
   m_Name: Not Enought Currency
   m_TagString: Untagged
@@ -369,11 +370,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TittleText: {fileID: 9134756319931596065}
   ContentText: {fileID: 9134756320209769400}
+  ButtonText: {fileID: 9134756320658941222}
   OutsideButton: {fileID: 9134756320184599274}
   DeclineButton: {fileID: 502729001787088367}
   AcceptButton: {fileID: 9134756320887657791}
-  ClosePanelAnimationUI: {fileID: 389720290000980194}
+  OpenPanelAnimationUI: {fileID: 389720290000980194}
+  ClosePanelAnimationUI: {fileID: 4522755669972901741}
 --- !u!114 &389720290000980194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3919093279174252332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: 236ca4758e67c97449c224b8b7686753, type: 2}
+  IsReversed: 0
+--- !u!114 &4522755669972901741
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -653,9 +670,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9134756320184599279}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &9134756320209769406
 GameObject:
