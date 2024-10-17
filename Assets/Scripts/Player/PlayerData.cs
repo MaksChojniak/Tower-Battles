@@ -253,13 +253,13 @@ namespace Player
 
         void RegisterExperienceEvents()
         {
-            ChangeExperience += (value) =>
+            ChangeExperience += async (value) =>
             {
                 TotalExperiencePoins = (ulong)((long)TotalExperiencePoins + value);
                     
                 OnChangeExperience?.Invoke(Level, XP);
 
-                BattlepassManager.AddBattlepassExperienceProgress(value);
+                await BattlepassManager.AddBattlepassExperienceProgress(value);
             };
             GetExperience += () => TotalExperiencePoins;
             

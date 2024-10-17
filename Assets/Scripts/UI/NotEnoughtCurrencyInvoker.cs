@@ -13,6 +13,16 @@ namespace UI
         Coins, 
         Gems,
     }
+
+    [Serializable]
+    public class AnimationClipExtended
+    {
+        public AnimationClip Clip;
+        public bool IsReversed;
+        
+        public string GetName() => Clip.name + (IsReversed ? "_Reversed" : "");
+        public float GetLenght() => Clip.length;
+    }
     
     public class NotEnoughtCurrencyInvoker : MonoBehaviour
     {
@@ -20,7 +30,7 @@ namespace UI
         [SerializeField] CurrencyType CurrencyType;
 
         [Space]
-        [SerializeField] AnimationClip[] Clips;
+        [SerializeField] AnimationClipExtended[] Clips;
         [SerializeField] List<(string name, float lenght)> ClipsInfo = new List<(string, float)>();
         [SerializeField] UnityEvent Events;
 
@@ -29,7 +39,7 @@ namespace UI
         {
             foreach (var clip in Clips)
             {
-                ClipsInfo.Add(new (clip.name, clip.length));
+                ClipsInfo.Add(new (clip.GetName(), clip.GetLenght()));
             }
         }
 

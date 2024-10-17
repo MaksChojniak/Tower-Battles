@@ -9,6 +9,7 @@ using Player;
 using TMPro;
 using UI.Battlepass;
 using UI.Shop;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -87,8 +88,6 @@ namespace Loading_Screen
 
         async void LoadingBarProcess()
         {
-            
-            
             List<Task> taksToPlay = new List<Task>();
 
 

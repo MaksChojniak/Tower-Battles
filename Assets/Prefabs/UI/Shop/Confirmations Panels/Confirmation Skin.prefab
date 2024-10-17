@@ -195,7 +195,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 8400000, guid: 95d8855f334ab5d478cf327133bbeb47, type: 2}
+  m_Texture: {fileID: 8400000, guid: f8834a4725e55844ca8e7d19e8a7a709, type: 2}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -244,7 +244,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3181363283597158032}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1000, y: -1000, z: 1000}
+  m_LocalPosition: {x: 1000, y: -2000, z: 1000}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -352,7 +352,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7669706387764669980}
   - component: {fileID: 8812370431752328611}
-  - component: {fileID: 6157068976144414752}
   - component: {fileID: 1757786963591715468}
   m_Layer: 0
   m_Name: Camera
@@ -409,7 +408,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 128
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 8400000, guid: 95d8855f334ab5d478cf327133bbeb47, type: 2}
+  m_TargetTexture: {fileID: 8400000, guid: f8834a4725e55844ca8e7d19e8a7a709, type: 2}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
@@ -419,14 +418,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &6157068976144414752
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4455230268367223455}
-  m_Enabled: 1
 --- !u!114 &1757786963591715468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -905,9 +896,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8908495799674924805}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &8908495800062719244
 GameObject:
@@ -1067,6 +1058,7 @@ GameObject:
   - component: {fileID: 5641538999791185198}
   - component: {fileID: 8170640442623861849}
   - component: {fileID: 2822022522629445837}
+  - component: {fileID: 3940362382794205804}
   m_Layer: 5
   m_Name: Confirmation Skin
   m_TagString: Untagged
@@ -1210,7 +1202,8 @@ MonoBehaviour:
   AcceptButton: {fileID: 8908495801313574981}
   StartLoadingAnimationUI: {fileID: 5641538999791185198}
   EndLoadingAnimationUI: {fileID: 8170640442623861849}
-  ClosePanelAnimationUI: {fileID: 2822022522629445837}
+  OpenPanelAnimationUI: {fileID: 2822022522629445837}
+  ClosePanelAnimationUI: {fileID: 3940362382794205804}
 --- !u!114 &5641538999791185198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1240,6 +1233,20 @@ MonoBehaviour:
   Animation: {fileID: 7400000, guid: 3a108c9b0271ddd4e99aed04b25d64a6, type: 2}
   IsReversed: 0
 --- !u!114 &2822022522629445837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8908495800194052389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: 6aa84b8a0847f0e4d98449ada4383c2c, type: 2}
+  IsReversed: 0
+--- !u!114 &3940362382794205804
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -352,7 +352,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7669706387764669980}
   - component: {fileID: 8812370431752328611}
-  - component: {fileID: 6157068976144414752}
   - component: {fileID: 1757786963591715468}
   m_Layer: 0
   m_Name: Camera
@@ -419,14 +418,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &6157068976144414752
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4455230268367223455}
-  m_Enabled: 1
 --- !u!114 &1757786963591715468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -905,9 +896,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8908495799674924805}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &8908495800062719244
 GameObject:
@@ -1067,6 +1058,7 @@ GameObject:
   - component: {fileID: 5641538999791185198}
   - component: {fileID: 8170640442623861849}
   - component: {fileID: 2822022522629445837}
+  - component: {fileID: 1140337747065992771}
   m_Layer: 5
   m_Name: Confirmation Tower
   m_TagString: Untagged
@@ -1210,7 +1202,8 @@ MonoBehaviour:
   AcceptButton: {fileID: 8908495801313574981}
   StartLoadingAnimationUI: {fileID: 5641538999791185198}
   EndLoadingAnimationUI: {fileID: 8170640442623861849}
-  ClosePanelAnimationUI: {fileID: 2822022522629445837}
+  OpenPanelAnimationUI: {fileID: 2822022522629445837}
+  ClosePanelAnimationUI: {fileID: 1140337747065992771}
 --- !u!114 &5641538999791185198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1240,6 +1233,20 @@ MonoBehaviour:
   Animation: {fileID: 7400000, guid: f0a13510bc64ca74d91943341114da03, type: 2}
   IsReversed: 0
 --- !u!114 &2822022522629445837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8908495800194052389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: b06b57b9fe271c945b645fe96659821e, type: 2}
+  IsReversed: 0
+--- !u!114 &1140337747065992771
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
