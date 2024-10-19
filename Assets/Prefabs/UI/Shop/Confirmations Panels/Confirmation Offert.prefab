@@ -441,9 +441,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8908495799674924805}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &8908495800062719244
 GameObject:
@@ -603,6 +603,7 @@ GameObject:
   - component: {fileID: 5641538999791185198}
   - component: {fileID: 8170640442623861849}
   - component: {fileID: 2822022522629445837}
+  - component: {fileID: 7516337607307988964}
   m_Layer: 5
   m_Name: Confirmation Offert
   m_TagString: Untagged
@@ -746,7 +747,8 @@ MonoBehaviour:
   AcceptButton: {fileID: 8908495801313574981}
   StartLoadingAnimationUI: {fileID: 5641538999791185198}
   EndLoadingAnimationUI: {fileID: 8170640442623861849}
-  ClosePanelAnimationUI: {fileID: 2822022522629445837}
+  OpenPanelAnimationUI: {fileID: 2822022522629445837}
+  ClosePanelAnimationUI: {fileID: 7516337607307988964}
 --- !u!114 &5641538999791185198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -776,6 +778,20 @@ MonoBehaviour:
   Animation: {fileID: 7400000, guid: dca4184d586a39f4d83eb278e6268f05, type: 2}
   IsReversed: 0
 --- !u!114 &2822022522629445837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8908495800194052389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: 9fad574590254c144a0696fee07f28bf, type: 2}
+  IsReversed: 0
+--- !u!114 &7516337607307988964
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

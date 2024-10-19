@@ -644,52 +644,76 @@ namespace UI.Battlepass
 #region BuyPremiumBattlepass
 
         
-        [SerializeField] GameObject ConfirmationPrefab;
-
         public async void BuyPremiumBatlepass(int price)
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;
             
-            Confirmation confirmation = Instantiate(ConfirmationPrefab).GetComponent<Confirmation>();
+            // Confirmation confirmation = Instantiate(ConfirmationPrefab).GetComponent<Confirmation>();
+            //
+            // bool onCloseConfirmationPanel = false;
+            // bool pausePayements = false;
+            // confirmation.ShowOffert(
+            //     $"Would You Like to Buy \n{StringFormatter.GetColoredText("Premium Battlepass", Color.white)} \nfor {StringFormatter.GetGemsText(price, true, "66%")}?",
+            //     () =>
+            //     {
+            //         onCloseConfirmationPanel = true;
+            //         confirmation.StartLoadingAnimation();
+            //     },
+            //     () =>
+            //     {
+            //         onCloseConfirmationPanel = true;
+            //         pausePayements = true;
+            //     }
+            // );
+            //
+            // while (!onCloseConfirmationPanel)
+            //     await Task.Yield();
+            //
+            // if (pausePayements)
+            //     return;
+            //         
+            // while(playerProgress == null)
+            //     await Task.Yield();
+            //
+            //
+            // PlayerData.ChangeGemsBalance(-price);
+            //
+            // playerProgress.HasPremiumBattlepass = true;
+            // await Database.POST<BattlepassProgress>(playerProgress, playerID);
+            // // await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
+            //
+            // await Task.Yield();
+            //
+            // confirmation.StopLoadingAnimation();
+            //
+            //
+            // UpdateBattlapassUI();
 
-            bool onCloseConfirmationPanel = false;
-            bool pausePayements = false;
-            confirmation.ShowOffert(
-                $"Would You Like to Buy \n{StringFormatter.GetColoredText("Premium Battlepass", Color.white)} \nfor {StringFormatter.GetGemsText(price, true, "66%")}?",
-                () =>
-                {
-                    onCloseConfirmationPanel = true;
-                    confirmation.StartLoadingAnimation();
-                },
-                () =>
-                {
-                    onCloseConfirmationPanel = true;
-                    pausePayements = true;
-                }
-            );
-            
-            while (!onCloseConfirmationPanel)
-                await Task.Yield();
-
-            if (pausePayements)
+            long balance = (long)PlayerController.GetLocalPlayerData.Invoke().WalletData.Gems;
+            if (balance < price)
+            {
+                this.GetComponent<NotEnoughtCurrencyInvoker>().ShowWarningPanel(price, balance);
                 return;
-                    
-            while(playerProgress == null)
+            }
+            
+            
+            this.gameObject.GetComponent<ConfirmationInvoker>().ShowConfirmation(
+                $"Would You Like to Buy \n{StringFormatter.GetColoredText("Premium Battlepass", Color.white)} \nfor {StringFormatter.GetGemsText(price, true, "66%")}?",
+                OnAccept );
+
+            
+            async Task OnAccept()
+            {
+                PlayerData.ChangeGemsBalance(-price);
+                
+                playerProgress.HasPremiumBattlepass = true;
+                await Database.POST<BattlepassProgress>(playerProgress, playerID);
+
                 await Task.Yield();
+                
+                UpdateBattlapassUI();
+            }
             
-            
-            PlayerData.ChangeGemsBalance(-price);
-            
-            playerProgress.HasPremiumBattlepass = true;
-            await Database.POST<BattlepassProgress>(playerProgress, playerID);
-            // await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
-
-            await Task.Yield();
-
-            confirmation.StopLoadingAnimation();
-            
-            
-            UpdateBattlapassUI();
         }
         
         

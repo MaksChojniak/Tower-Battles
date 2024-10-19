@@ -1,18 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using Ads;
 using DefaultNamespace;
-using Firebase.Storage;
 using MMK;
-using MMK.Extensions;
 using MMK.ScriptableObjects;
 using Newtonsoft.Json;
 using Player;
@@ -26,7 +20,6 @@ using Random = Unity.Mathematics.Random;
 using Reward = UI.Shop.Daily_Rewards.Reward;
 using RewardType = UI.Shop.Daily_Rewards.Scriptable_Objects.RewardType;
 using Task = System.Threading.Tasks.Task;
-using Time = UnityEngine.Time;
 
 
 namespace UI.Shop
@@ -72,9 +65,6 @@ namespace UI.Shop
         [SerializeField] GemsExchange[] GemsExchangeOfferts;
         [Space(18)]
         [Header("UI Properties")]
-        [SerializeField] GameObject ConfirmationOffertPrefab;
-        [SerializeField] GameObject ConfirmationSkinPrefab;
-        [Space(12)]
         [SerializeField] ScrollRect scrollRect;
         [Space(16)]
         [Header("   Skins For Sale UI")]
@@ -290,7 +280,7 @@ namespace UI.Shop
     
         async static Task<SkinsForSale> CalculateNewSkinsForSale(SkinsForSale oldOfferts = null)
         {
-            Random random = new Random((uint)new System.Random().Next(0, 100));
+            Random random = new Random((uint)new System.Random().Next(1, 100));
             
             var createDateUTC = ServerDate.SimulatedDateOnServerUTC().AddHours(8 - ServerDate.SimulatedDateOnServerUTC().Hour).AddMinutes(-ServerDate.SimulatedDateOnServerUTC().Minute).AddSeconds(-ServerDate.SimulatedDateOnServerUTC().Second);
             if(ServerDate.SimulatedDateOnServerUTC().Hour < 8)
@@ -400,46 +390,22 @@ namespace UI.Shop
                 return;
             }
             
-            
-            
-            bool onCloseConfirmationPanel = false;
-            bool pausePayements = false;
-            Confirmation confirmation = Instantiate(ConfirmationSkinPrefab).GetComponent<Confirmation>();
-            confirmation.ShowSkin( 
+
+            this.gameObject.GetComponent<ConfirmationInvoker>().ShowConfirmation(
                 $"Would You Like To Buy\n{StringFormatter.GetSkinText(skin)} Skin For {StringFormatter.GetTowerText(tower)} Tower\nFor {StringFormatter.GetCoinsText( (long)skin.UnlockPrice, true, "66%" )}",
-                () =>
-                {
-                    onCloseConfirmationPanel = true;
-                    confirmation.StartLoadingAnimation();
-                },
-                () =>
-                {
-                    onCloseConfirmationPanel = true;
-                    pausePayements = true;
-                },
-                tower,
-                skin
-            );
+                skin,
+                OnAccept);
 
-            while (!onCloseConfirmationPanel)
+            
+            async Task OnAccept()
+            {
+                PlayerData.ChangeCoinsBalance(-(long)skin.UnlockPrice);
+                skin.UnlockSkin();
+                
                 await Task.Yield();
-
-            if (pausePayements)
-                return;
-            
-            
-            
-            PlayerData.ChangeCoinsBalance((long)skin.UnlockPrice);
-            skin.UnlockSkin();
-
-
-            await Task.Yield();
-            
-            confirmation.StopLoadingAnimation();
-
-
-
-            UpdateSkinsForSaleUI();
+                
+                UpdateSkinsForSaleUI();
+            }
 
             // skinsForSaleUIProperties.ConfirmationPanel.Open(tower, skin);
         }
@@ -501,7 +467,7 @@ namespace UI.Shop
     
         async static Task<DailyRewards> CalculateNewDailyRewards(bool isFirstDailyReward = false)
         {
-            Random random = new Random((uint)new System.Random().Next(0, 100));
+            Random random = new Random((uint)new System.Random().Next(1, 100));
 
             Reward[] _rewards = new Reward[DAILY_REWARDS_COUNT];
             for (int i = 0; i < DAILY_REWARDS_COUNT; i++)
@@ -678,41 +644,21 @@ namespace UI.Shop
             
             
             
-            bool onCloseConfirmationPanel = false;
-            bool pausePayements = false;
-            Confirmation confirmation = Instantiate(ConfirmationOffertPrefab).GetComponent<Confirmation>();
-            confirmation.ShowOffert(
+            this.gameObject.GetComponent<ConfirmationInvoker>().ShowConfirmation(
                 $"Would You Like To Exchange {StringFormatter.GetGemsText(exchangeOffert.GemsPrice, true, "66%" )} For {StringFormatter.GetCoinsText(exchangeOffert.CoinsReward, true, "66%" )}",
-                () =>
-                {
-                    onCloseConfirmationPanel = true;
-                    confirmation.StartLoadingAnimation();
-                },
-                () =>
-                {
-                    onCloseConfirmationPanel = true;
-                    pausePayements = true;
-                }
-            );
+                OnAccept );
 
-            while (!onCloseConfirmationPanel)
+            
+            async Task OnAccept()
+            {
+                PlayerData.ChangeGemsBalance(-exchangeOffert.GemsPrice);
+                PlayerData.ChangeCoinsBalance(exchangeOffert.CoinsReward);
+                
                 await Task.Yield();
-
-            if (pausePayements)
-                return;
+                
+                UpdateExchangeOffertsUI();
+            }
             
-            
-            
-            PlayerData.ChangeGemsBalance(-exchangeOffert.GemsPrice);
-            PlayerData.ChangeCoinsBalance(exchangeOffert.CoinsReward);
-
-            await Task.Yield();
-            
-            confirmation.StopLoadingAnimation();
-
-
-
-            UpdateExchangeOffertsUI();
         }
 
 
@@ -766,40 +712,54 @@ namespace UI.Shop
             }
 
             
-            bool onCloseConfirmationPanel = false;
-            bool pausePayements = false;
-            Confirmation confirmation = Instantiate(ConfirmationOffertPrefab).GetComponent<Confirmation>();
-            confirmation.ShowOffert(
+            // bool onCloseConfirmationPanel = false;
+            // bool pausePayements = false;
+            // Confirmation confirmation = Instantiate(ConfirmationOffertPrefab).GetComponent<Confirmation>();
+            // confirmation.ShowOffert(
+            //     $"Would You Like To Buy {StringFormatter.GetColoredText($"{ticketOffert.TiersCount} Battlepass Tickets", Color.white)} For {StringFormatter.GetGemsText(ticketOffert.GemsPrice, true, "66%" )}",
+            //     () =>
+            //     {
+            //         onCloseConfirmationPanel = true;
+            //         confirmation.StartLoadingAnimation();
+            //     },
+            //     () =>
+            //     {
+            //         onCloseConfirmationPanel = true;
+            //         pausePayements = true;
+            //     }
+            //     );
+            //
+            // while (!onCloseConfirmationPanel)
+            //     await Task.Yield();
+            //
+            // if (pausePayements)
+            //     return;
+            //         
+            //
+            //
+            // PlayerData.ChangeGemsBalance(-ticketOffert.GemsPrice);
+            // await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
+            //
+            // await Task.Yield();
+            //
+            // confirmation.StopLoadingAnimation();
+            //
+            //
+            // UpdateBattlepassTicketsOffertsUI();
+            
+            this.gameObject.GetComponent<ConfirmationInvoker>().ShowConfirmation(
                 $"Would You Like To Buy {StringFormatter.GetColoredText($"{ticketOffert.TiersCount} Battlepass Tickets", Color.white)} For {StringFormatter.GetGemsText(ticketOffert.GemsPrice, true, "66%" )}",
-                () =>
-                {
-                    onCloseConfirmationPanel = true;
-                    confirmation.StartLoadingAnimation();
-                },
-                () =>
-                {
-                    onCloseConfirmationPanel = true;
-                    pausePayements = true;
-                }
-                );
-
-            while (!onCloseConfirmationPanel)
-                await Task.Yield();
-
-            if (pausePayements)
-                return;
-                    
+                OnAccept);
 
 
-            PlayerData.ChangeGemsBalance(-ticketOffert.GemsPrice);
-            await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
+            async Task OnAccept()
+            {
+                PlayerData.ChangeGemsBalance(-ticketOffert.GemsPrice);
+                await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
 
-            await Task.Yield();
+                UpdateBattlepassTicketsOffertsUI();
+            }
 
-            confirmation.StopLoadingAnimation();
-
-
-            UpdateBattlepassTicketsOffertsUI();
         }
 
 
@@ -847,7 +807,7 @@ namespace UI.Shop
 
         async static Task<AdsRewards> CalculateNewAdsRewards()
         {
-            Random random = new Random((uint)new System.Random().Next(0, 100));
+            Random random = new Random((uint)new System.Random().Next(1, 100));
 
             List<AdReward> avaiableAdsRewards = new List<AdReward>(AvaiableAdRewards.rewards);
             

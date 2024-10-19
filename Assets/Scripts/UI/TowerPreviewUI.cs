@@ -22,7 +22,6 @@ public class TowerPreviewUI : MonoBehaviour
 
     [Space(8)]
     [Header("Prefabs")]
-    [SerializeField] GameObject ConfirmationTowerPrefab;
     [SerializeField] GameObject SkinChangerWindow;
 
     [Space(18)]
@@ -229,61 +228,36 @@ public class TowerPreviewUI : MonoBehaviour
 
         
         
-        
-        bool onCloseConfirmationPanel = false;
-        bool pausePayements = false;
-        Confirmation confirmation = Instantiate(ConfirmationTowerPrefab).GetComponent<Confirmation>();
-        confirmation.ShowTower(
-            $"Would You Like To Buy\n{StringFormatter.GetTowerText(lastSelectedTower)} Tower For {StringFormatter.GetCoinsText( (long)lastSelectedTower.BaseProperties.UnlockPrice, true,"66%" )}",
-            () =>
-            {
-                onCloseConfirmationPanel = true;
-                confirmation.StartLoadingAnimation();
-            },
-            () =>
-            {
-                onCloseConfirmationPanel = true;
-                pausePayements = true;
-            },
-            lastSelectedTower
-        );
 
-        while (!onCloseConfirmationPanel)
+        this.gameObject.GetComponent<ConfirmationInvoker>().ShowConfirmation(
+            $"Would You Like To Buy\n{StringFormatter.GetTowerText(lastSelectedTower)} Tower For {StringFormatter.GetCoinsText( (long)lastSelectedTower.BaseProperties.UnlockPrice, true,"66%" )}",
+            lastSelectedTower,
+            OnAccept);
+
+
+        async Task OnAccept()
+        {
+            PlayerData.ChangeCoinsBalance(-(long)lastSelectedTower.GetUnlockedPrice());
+            lastSelectedTower.UnlockTower();
+
             await Task.Yield();
 
-        if (pausePayements)
-            return;
-        
-        
-        
-        
-        // PlayerTowerInventory.ChangeBalance(-towerData.GetUnlockedPrice());
-        PlayerData.ChangeCoinsBalance(-(long)lastSelectedTower.GetUnlockedPrice());
-        lastSelectedTower.UnlockTower();
+            inventory.UpdateTiles();
 
-        
-
-        confirmation.StopLoadingAnimation();
-        
-        
-        
-        
-        inventory.UpdateTiles();
-
-        var allTowersInventoryData = inventory.TowerData.GetAllTowerInventoryData();
-        for (int i = 0; i < allTowersInventoryData.Length; i++)
-        {
-            if (allTowersInventoryData[i].towerSO == lastSelectedTower)
+            var allTowersInventoryData = inventory.TowerData.GetAllTowerInventoryData();
+            for (int i = 0; i < allTowersInventoryData.Length; i++)
             {
-                lastSelectedTowerIndex = i;
-                break;
+                if (allTowersInventoryData[i].towerSO == lastSelectedTower)
+                {
+                    lastSelectedTowerIndex = i;
+                    break;
+                }
             }
+        
+            inventory.SelectTower(lastSelectedTowerIndex);
         }
         
-        inventory.SelectTower(lastSelectedTowerIndex);
-
         
-        // return true;
     }
     
 #endregion

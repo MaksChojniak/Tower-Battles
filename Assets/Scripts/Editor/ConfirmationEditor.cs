@@ -60,6 +60,7 @@ namespace Editor
             
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "StartLoadingAnimationUI", Caption = "Start Loading Animation UI"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "EndLoadingAnimationUI", Caption = "End Loading Animation UI"});
+            InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "OpenPanelAnimationUI", Caption = "Open Panel Animation UI"});
             InspectorTools.PropertyField(new PropertFieldData(){SerializedObject = serializedObject, PropertyName = "ClosePanelAnimationUI", Caption = "Close Panel Animation UI"});
             
             
