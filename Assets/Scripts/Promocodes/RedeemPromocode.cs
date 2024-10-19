@@ -121,6 +121,7 @@ namespace Promocodes
             
             MessageQueue.AddMessageToQueue?.Invoke(new Message()
             {
+                MessageType = MessageType.Normal,
                 Tittle = "Promocode Rewards",
                 Properties = messageProperties,
             });

@@ -375,7 +375,8 @@ AudioSource:
   m_GameObject: {fileID: 3950183428279133408}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -738510002302932296, guid: fc259dfb114c18e4aa07b60a6eb19de3,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 62cd9830a9a08ea45a2377b9d9c5c157, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -386,8 +387,8 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
+  MinDistance: 989.10895
+  MaxDistance: 999
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -474,7 +475,7 @@ GameObject:
   - component: {fileID: 6019880115331426091}
   - component: {fileID: 6016914519012768356}
   m_Layer: 5
-  m_Name: Current LvL
+  m_Name: Current Level (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -612,9 +613,10 @@ GameObject:
   - component: {fileID: 7625391941099180657}
   - component: {fileID: 1963791354006025441}
   - component: {fileID: 149366055697192238}
-  - component: {fileID: 8311389318722644149}
+  - component: {fileID: 5852386387322086448}
   - component: {fileID: 7874532634750030464}
-  - component: {fileID: 1688101914489604976}
+  - component: {fileID: 2488032368890141554}
+  - component: {fileID: 4011138059248511097}
   m_Layer: 5
   m_Name: Level Up Panel
   m_TagString: Untagged
@@ -662,7 +664,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &4873842174434523679
 MonoBehaviour:
@@ -681,7 +683,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0.83333325
+  m_MatchWidthOrHeight: 0.8333333
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -738,7 +740,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &8311389318722644149
+--- !u!114 &5852386387322086448
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -747,10 +749,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 5063406818660157815}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8b5a0c033fc4d7190ab732547581c1b, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b2daa68fe5b41ca975083b6a0fb20d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ClosePanelAnimation: {fileID: 7874532634750030464}
+  LevelsRewards: {fileID: 11400000, guid: e1dd3ae113c1e0545abb1809475fd823, type: 2}
+  LevelText: {fileID: 6016914519012768356}
+  RewardText: {fileID: 6785115991443341272}
+  StarAudioSource: {fileID: 5573840484303127058}
+  OpenPanelAnimation: {fileID: 7874532634750030464}
+  LevelUpAnimation: {fileID: 4011138059248511097}
+  ClosePanelAnimation: {fileID: 2488032368890141554}
 --- !u!114 &7874532634750030464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -764,8 +772,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Animation: {fileID: 7400000, guid: e63dcba84db5b0d43b066273e840af6f, type: 2}
-  IsReversed: 1
---- !u!114 &1688101914489604976
+  IsReversed: 0
+--- !u!114 &2488032368890141554
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -774,10 +782,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 5063406818660157815}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5c84a1b4f44759449ed890182ad1baa, type: 3}
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aud1: {fileID: 5573840484303127058}
+  Animation: {fileID: 7400000, guid: e63dcba84db5b0d43b066273e840af6f, type: 2}
+  IsReversed: 1
+--- !u!114 &4011138059248511097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5063406818660157815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9838d64a664348c496b58acfd8012e5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Animation: {fileID: 7400000, guid: c56e941581b3473418102fb360033145, type: 2}
+  IsReversed: 0
 --- !u!1 &6124799740292928790
 GameObject:
   m_ObjectHideFlags: 0
@@ -789,8 +812,9 @@ GameObject:
   - component: {fileID: 831343911383724118}
   - component: {fileID: 6135230735445958734}
   - component: {fileID: 6785115991443341272}
+  - component: {fileID: 6489510291039153116}
   m_Layer: 11
-  m_Name: Rewards
+  m_Name: Rewards (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -914,6 +938,18 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!225 &6489510291039153116
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6124799740292928790}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7438347579379628205
 GameObject:
   m_ObjectHideFlags: 0
@@ -1010,7 +1046,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7438347579413183331
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1078,7 +1114,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7438347579413183330}
   m_Enabled: 1
-  m_Alpha: 0
+  m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -1126,9 +1162,21 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8311389318722644149}
-        m_TargetAssemblyTypeName: UI.LevelRewardsPreview, Assembly-CSharp
-        m_MethodName: ClosePanel
+      - m_Target: {fileID: 5852386387322086448}
+        m_TargetAssemblyTypeName: UI.LevelUpHandler, Assembly-CSharp
+        m_MethodName: Close
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 5852386387322086448}
+        m_TargetAssemblyTypeName: UI.LevelUpHandler, Assembly-CSharp
+        m_MethodName: GiveRewards
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

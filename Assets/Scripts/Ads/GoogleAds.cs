@@ -271,6 +271,7 @@ namespace Ads
 
             MessageQueue.AddMessageToQueue?.Invoke(new Message()
             {
+                MessageType = MessageType.Normal,
                 Tittle = "Ad Reward",
                 Properties = new List<MessageProperty>()
                 {

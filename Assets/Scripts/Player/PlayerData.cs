@@ -56,7 +56,7 @@ namespace Player
         #region Balance Events
 
         public delegate void OnChangeCoinsBalanceDelegate(ulong value);
-        public static OnChangeCoinsBalanceDelegate OnChangeCoinsBalance;   
+        public static event OnChangeCoinsBalanceDelegate OnChangeCoinsBalance;   
         
         public delegate void ChangeCoinsBalanceDelegate(long value);
         public static ChangeCoinsBalanceDelegate ChangeCoinsBalance;
@@ -70,7 +70,7 @@ namespace Player
         #region Gems Events
 
         public delegate void OnChangeGemsBalanceDelegate(ulong value);
-        public static OnChangeGemsBalanceDelegate OnChangeGemsBalance;   
+        public static event OnChangeGemsBalanceDelegate OnChangeGemsBalance;   
         
         public delegate void ChangeGemsBalanceDelegate(long value);
         public static ChangeGemsBalanceDelegate ChangeGemsBalance;
@@ -83,8 +83,11 @@ namespace Player
         
         #region XP Events
 
+        public delegate void OnLevelUpDelegate(uint Lvl);
+        public static event OnLevelUpDelegate OnLevelUp;   
+        
         public delegate void OnChangeExperienceDelegate(ulong XP, ulong Lvl);
-        public static OnChangeExperienceDelegate OnChangeExperience;   
+        public static event OnChangeExperienceDelegate OnChangeExperience;   
         
         public delegate void ChangeExperienceDelegate(long value);
         public static ChangeExperienceDelegate ChangeExperience;
@@ -255,7 +258,12 @@ namespace Player
         {
             ChangeExperience += async (value) =>
             {
+                uint oldLevel = Level;
+                
                 TotalExperiencePoins = (ulong)((long)TotalExperiencePoins + value);
+
+                if (Level > oldLevel)
+                    OnLevelUp?.Invoke(Level);
                     
                 OnChangeExperience?.Invoke(Level, XP);
 

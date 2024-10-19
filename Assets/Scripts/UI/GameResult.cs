@@ -282,7 +282,8 @@ namespace UI
             if (properties.Count > 0)
             {
                 message = new Message();
-                
+
+                message.MessageType = MessageType.GameReward;
                 message.Tittle = "Game Rewards";
                 message.Properties = properties;
             }
