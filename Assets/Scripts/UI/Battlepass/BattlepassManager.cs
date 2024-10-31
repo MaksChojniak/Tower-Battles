@@ -734,13 +734,37 @@ namespace UI.Battlepass
             else
                 progress = result.Data;
 
+            await ShowBattlepassMessage(progress, XP);
+
             progress.ExperienceCollected += XP;
             // progress.UpdateUnlockedTiers();
 
             await Database.POST<BattlepassProgress>(progress, playerID);
         }
-        
-        
+
+        async static Task ShowBattlepassMessage(BattlepassProgress progress, long XP)
+        {
+            long oldExperience = progress.ExperienceCollected % BattlepassProgress.BATTLEPASS_TIER_XP_VALUE;
+            
+            long newExperience = (progress.ExperienceCollected % BattlepassProgress.BATTLEPASS_TIER_XP_VALUE) + XP;
+
+            MessageQueue.AddMessageToQueue?.Invoke(new Message()
+            {
+                MessageType = MessageType.BattlepassProgress,
+                Tittle = $"Tier",
+                Properties = new List<MessageProperty>()
+                {
+                    new MessageProperty() { Name = $"{newExperience} XP To Tier" },
+                    new MessageProperty() { Name = $"{progress.LastTierUnlocked + 1}" },
+                    new MessageProperty() { Name = $"{oldExperience}/{BattlepassProgress.BATTLEPASS_TIER_XP_VALUE}" },
+                    new MessageProperty() { Name = $"{newExperience}/{BattlepassProgress.BATTLEPASS_TIER_XP_VALUE}" }
+                },
+            });
+
+            await Task.Yield();
+        }
+
+
         public async static Task AddBattlepassTierProgress(uint TiersCount)
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;

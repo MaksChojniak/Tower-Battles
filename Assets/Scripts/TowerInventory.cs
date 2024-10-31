@@ -78,107 +78,96 @@ public class TowerInventory : MonoBehaviour
         for (int i = 0; i < _inventoryTowers.Length; i++)
         {
             Tower tower = _inventoryTowers[i];
-            TowerTileUI tileUI = _tilesContainer.GetChild(1).GetChild(0).GetComponent<TowerTileUI>();
-            
-            List<TowerInventoryData> towersByRarity = new List<TowerInventoryData>();
+            // TowerTileUI tileUI = _tilesContainer.GetChild(1).GetChild(0).GetComponent<TowerTileUI>();
+            //
+            // List<TowerInventoryData> towersByRarity = new List<TowerInventoryData>();
             switch (tower.Rarity)
             {
                 case TowerRarity.Common:
-                    towersByRarity = _baseTowerData.commonTowers.ToList();
-
-                    tileUI = _tilesContainer.GetChild(1).GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
-
+                    // towersByRarity = _baseTowerData.commonTowers.ToList();
+                    //
+                    // // tileUI = _tilesContainer.GetChild(1).GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
+                    // tileUI = (towersByRarity.Count >= 4 ? _tilesContainer.GetChild(2).GetChild(towersByRarity.Count - 4) : _tilesContainer.GetChild(1).GetChild(towersByRarity.Count) ).
+                    //     GetComponent<TowerTileUI>();
+                    SetupTowerData(tower, (1,2), ref _baseTowerData.commonTowers);
                     break;
                 case TowerRarity.Rare:
-                    towersByRarity = _baseTowerData.rareTowers.ToList();
-
-                    tileUI = _tilesContainer.GetChild(3).GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
-
+                    // towersByRarity = _baseTowerData.rareTowers.ToList();
+                    //
+                    // // tileUI = _tilesContainer.GetChild(3).GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
+                    // tileUI = (towersByRarity.Count >= 4 ? _tilesContainer.GetChild(5).GetChild(towersByRarity.Count - 4) : _tilesContainer.GetChild(4).GetChild(towersByRarity.Count) ).
+                    //     GetComponent<TowerTileUI>();
+                    SetupTowerData(tower, (4,5), ref _baseTowerData.rareTowers);
                     break;
                 case TowerRarity.Exclusive:
-                    towersByRarity = _baseTowerData.exclusiveTowers.ToList();
-
-                    tileUI = _tilesContainer.GetChild(5).GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
-
+                    // towersByRarity = _baseTowerData.exclusiveTowers.ToList();
+                    //
+                    // // tileUI = _tilesContainer.GetChild(5).GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
+                    // tileUI = (towersByRarity.Count >= 4 ? _tilesContainer.GetChild(8).GetChild(towersByRarity.Count - 4) : _tilesContainer.GetChild(7).GetChild(towersByRarity.Count) ).
+                    //     GetComponent<TowerTileUI>();
+                    SetupTowerData(tower, (7,8), ref _baseTowerData.exclusiveTowers);
                     break;
             }
             
 
+            // TowerInventoryData towerData = new TowerInventoryData(tower, tileUI);
+            //
+            // towersByRarity.Add(towerData);
+            // switch (tower.Rarity)
+            // {
+            //     case TowerRarity.Common:
+            //         _baseTowerData.commonTowers = towersByRarity.ToArray();
+            //         break;
+            //     case TowerRarity.Rare:
+            //         _baseTowerData.rareTowers = towersByRarity.ToArray();
+            //         break;
+            //     case TowerRarity.Exclusive:
+            //         _baseTowerData.exclusiveTowers = towersByRarity.ToArray();
+            //         break;
+            // }
+        }
+
+
+        void SetupTowerData(Tower tower, (int index_1,int index_2) indexes, ref TowerInventoryData[] towers)
+        {
+            List<TowerInventoryData> towersByRarity = towers.ToList();
+            
+            TowerTileUI tileUI = (towersByRarity.Count >= 4 ? _tilesContainer.GetChild(indexes.index_2).GetChild(towersByRarity.Count - 4) : _tilesContainer.GetChild(indexes.index_1).GetChild(towersByRarity.Count) ).
+                GetComponent<TowerTileUI>();
+            
             TowerInventoryData towerData = new TowerInventoryData(tower, tileUI);
 
             towersByRarity.Add(towerData);
-            switch (tower.Rarity)
-            {
-                case TowerRarity.Common:
-                    _baseTowerData.commonTowers = towersByRarity.ToArray();
-                    break;
-                case TowerRarity.Rare:
-                    _baseTowerData.rareTowers = towersByRarity.ToArray();
-                    break;
-                case TowerRarity.Exclusive:
-                    _baseTowerData.exclusiveTowers = towersByRarity.ToArray();
-                    break;
-            }
+            
+            towers = towersByRarity.ToArray();
         }
+        
 
         
-        // switch (tower.Rarity)
-        //     {
-        //         case TowerRarity.Common:
-        //             towersByRarity = _baseTowerData.commonTowers.ToList();
-        //             tilesContainer = _tilesContainer.GetChild(1);
-        //             
-        //             tileUI = tilesContainer.GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
-        //             for (int j = 0; j < tilesContainer.childCount; j++)
-        //             {
-        //                 tilesContainer.GetChild(j).GetComponent<Button>().enabled = j <= tilesContainer.childCount;
-        //                 tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j <= tilesContainer.childCount);
-        //             }
-        //             break;
-        //         case TowerRarity.Rare:
-        //             towersByRarity = _baseTowerData.rareTowers.ToList();
-        //             tilesContainer = _tilesContainer.GetChild(3);
-        //             
-        //             tileUI = tilesContainer.GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
-        //             for (int j = 0; j < tilesContainer.childCount; j++)
-        //             {
-        //                 tilesContainer.GetChild(j).GetComponent<Button>().enabled = j <= tilesContainer.childCount;
-        //                 tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j <= tilesContainer.childCount);
-        //             }
-        //             break;
-        //         case TowerRarity.Exclusive:
-        //             towersByRarity = _baseTowerData.exclusiveTowers.ToList();
-        //             tilesContainer = _tilesContainer.GetChild(5);
-        //             
-        //             tileUI = tilesContainer.GetChild(towersByRarity.Count).GetComponent<TowerTileUI>();
-        //             for (int j = 0; j < tilesContainer.childCount; j++)
-        //             {
-        //                 tilesContainer.GetChild(j).GetComponent<Button>().enabled = j <= tilesContainer.childCount;
-        //                 tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j <= tilesContainer.childCount);
-        //             }
-        //             break;
-        //     }
+
+        SetTilesUI(_tilesContainer.GetChild(1), _baseTowerData.commonTowers);
+        SetTilesUI(_tilesContainer.GetChild(2), _baseTowerData.commonTowers, true);
+
+        SetTilesUI(_tilesContainer.GetChild(4), _baseTowerData.rareTowers);
+        SetTilesUI(_tilesContainer.GetChild(5), _baseTowerData.rareTowers, true);
+        
+        SetTilesUI(_tilesContainer.GetChild(7), _baseTowerData.exclusiveTowers);
+        SetTilesUI(_tilesContainer.GetChild(8), _baseTowerData.exclusiveTowers, true);
 
 
-        Transform tilesContainer = null;
-        tilesContainer = _tilesContainer.GetChild(1);
-        for (int j = 0; j < tilesContainer.childCount; j++)
+        void SetTilesUI(Transform tilesContainer, TowerInventoryData[] towers, bool extended = false)
         {
-            tilesContainer.GetChild(j).GetComponent<Button>().enabled = j < _baseTowerData.commonTowers.Length;
-            tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j < _baseTowerData.commonTowers.Length);
+            for (int j = 0; j < tilesContainer.childCount; j++)
+            {
+                int towersLengh = extended ? towers.Length - 4 : towers.Length;
+                bool haveTower = j < towersLengh;
+                
+                tilesContainer.GetChild(j).GetComponent<Image>().enabled = haveTower;
+                tilesContainer.GetChild(j).GetComponent<Button>().enabled = haveTower;
+                tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(haveTower);
+            }
         }
-        tilesContainer = _tilesContainer.GetChild(3);
-        for (int j = 0; j < tilesContainer.childCount; j++)
-        {
-            tilesContainer.GetChild(j).GetComponent<Button>().enabled = j < _baseTowerData.rareTowers.Length;
-            tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j < _baseTowerData.rareTowers.Length);
-        }
-        tilesContainer = _tilesContainer.GetChild(5);
-        for (int j = 0; j < tilesContainer.childCount; j++)
-        {
-            tilesContainer.GetChild(j).GetComponent<Button>().enabled = j < _baseTowerData.exclusiveTowers.Length;
-            tilesContainer.GetChild(j).GetChild(0).gameObject.SetActive(j < _baseTowerData.exclusiveTowers.Length);
-        }
+        
 
 
         for (int i = 0; i < _baseTowerData.commonTowers.Length; i++)

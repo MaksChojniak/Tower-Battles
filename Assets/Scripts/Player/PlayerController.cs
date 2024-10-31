@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Mirror;
 using MMK;
 using MMK.ScriptableObjects;
 using Newtonsoft.Json;
 using Player.Database;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Player
 {
     
-    public class PlayerController : NetworkBehaviour
+    public class PlayerController : MonoBehaviour
     {
+        
         public delegate void SaveDelegate();
         public static event SaveDelegate Save;
         
@@ -30,7 +28,7 @@ namespace Player
         public static GetLocalPlayerDataDelegate GetLocalPlayerData;
         
 
-        [SyncVar] public PlayerData PlayerData = new PlayerData();
+        public PlayerData PlayerData = new PlayerData();
         bool isLoggedIn => !string.IsNullOrEmpty(PlayerData.ID);
 
 
@@ -52,7 +50,8 @@ namespace Player
             
             PlayerData = callback.Data;
             Debug.Log($"Player LoggedIn Successfully at {callback.Date.ToString()}");
-            
+
+            this.gameObject.name = $"Player [ID:{PlayerData.ID}]";
 
             Load?.Invoke();
         }
@@ -65,7 +64,8 @@ namespace Player
         {
             DontDestroyOnLoad(this.gameObject);
             
-            
+            this.gameObject.name = "Player [ID:Unknown]";
+
             GetLocalPlayer += OnGetLocalPlayer;
             GetLocalPlayerData += OnGetLocalPlayerData;
             
@@ -105,36 +105,6 @@ namespace Player
 
 
 
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-            
-            GetLocalPlayer -= OnGetLocalPlayer;
-        }
-
-        public override void OnStopClient()
-        {
-            GetLocalPlayer += OnGetLocalPlayer;
-         
-            base.OnStopClient();
-        }
-
-
-
-        public override void OnStartAuthority()
-        {
-            base.OnStartAuthority();
-        
-            GetLocalPlayer += OnGetLocalPlayer;
-        }
-        
-        public override void OnStopAuthority()
-        {
-            GetLocalPlayer -= OnGetLocalPlayer;
-            
-            base.OnStopAuthority();
-        }
-        
         
         PlayerController OnGetLocalPlayer() => this;
 

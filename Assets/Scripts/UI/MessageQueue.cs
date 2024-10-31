@@ -45,7 +45,6 @@ namespace UI
         public GameObject ExtendedMessagePanel;
         public Button MessageButton;
     }
-    
 
 
     public class MessageQueue : MonoBehaviour
@@ -66,10 +65,10 @@ namespace UI
         [Space]
         [SerializeField] MessageObjectUI NormalMessage;
         [Space]
-        [SerializeField] MessageObjectUI BattlepassProgressMessage;
+        [SerializeField] GameObject BattlepassProgressMessage;
         [Space]
         [SerializeField] MessageObjectUI GameRewardMessage;
-        GameObject[] MessagesPanels => new[] {NormalMessage.MessageObject, BattlepassProgressMessage.MessageObject, GameRewardMessage.MessageObject};
+        GameObject[] MessagesPanels => new[] {NormalMessage.MessageObject, BattlepassProgressMessage, GameRewardMessage.MessageObject};
 
 
         [SerializeField] readonly Queue<Message> messagesQueue = new Queue<Message>();
@@ -152,25 +151,7 @@ namespace UI
         
         async Task ShowMessage(Message message)
         {
-            string tittle = message.Tittle;
-            string content = "";
-
-            foreach (var value in message.Properties)
-            {
-                if (string.IsNullOrEmpty(value.Name))
-                    continue;
-
-                if (!string.IsNullOrEmpty(content))
-                    content += "\n";
-
-                content += value.Name;
-
-                if (!string.IsNullOrEmpty(value.Value))
-                    content += $": {value.Value}";
-
-            }
-            
-            MessagePanelByType(message, content, tittle);
+            await MessagePanelByType(message);
             
             
             OpenMessagePanel.PlayAnimation();
@@ -187,7 +168,7 @@ namespace UI
         }
 
 
-        async void MessagePanelByType(Message message, string content, string tittle)
+        async Task MessagePanelByType(Message message)
         {
             foreach (var panels in MessagesPanels)
                 panels.SetActive(false);
@@ -195,23 +176,42 @@ namespace UI
             switch (message.MessageType)
             {
                 case MessageType.Normal:
-                    await SetupMessage(NormalMessage, message, content, tittle);
+                    await SetupMessage(NormalMessage, message);
                     break;
                 case MessageType.BattlepassProgress:
-                    await SetupMessage(BattlepassProgressMessage, message, content, tittle);
+                    await SetupBattlepassMessage(BattlepassProgressMessage, message);
                     break;
                 case MessageType.GameReward:
-                    await SetupMessage(GameRewardMessage, message, content, tittle);
+                    await SetupMessage(GameRewardMessage, message);
                     break;
+                default:
+                    throw new NullReferenceException($"Don't have that message type");
             }
-
-            throw new NullReferenceException("Don't have that message type");
+            
         }
 
         
         
-        async Task SetupMessage(MessageObjectUI messageObjectUI, Message message, string content, string tittle)
+        async Task SetupMessage(MessageObjectUI messageObjectUI, Message message)
         {
+            string tittle = message.Tittle;
+            string content = "";
+            foreach (var value in message.Properties)
+            {
+                if (string.IsNullOrEmpty(value.Name))
+                    continue;
+
+                if (!string.IsNullOrEmpty(content))
+                    content += "\n";
+
+                content += value.Name;
+
+                if (!string.IsNullOrEmpty(value.Value))
+                    content += $": {value.Value}";
+
+            }
+            
+            
             bool hasInteractivity = message.OnClickAction != null;
             
             await RegisterOnClick(messageObjectUI.ExtendedMessagePanel, messageObjectUI.MessageButton, hasInteractivity, message.OnClickAction);
@@ -221,7 +221,14 @@ namespace UI
             messageObjectUI.TittleText.text = tittle;
             messageObjectUI.ContentText.text = content;
         }
-        
+
+
+        async Task SetupBattlepassMessage(GameObject messageObjectUI, Message message)
+        {
+            messageObjectUI.GetComponent<BattlepassMessage>().ShowMessage(message);
+
+            messageObjectUI.SetActive(true);
+        }
 
 
         async Task RegisterOnClick(GameObject extendedMessage, Button button, bool hasInteractivity, Action onClick = null)

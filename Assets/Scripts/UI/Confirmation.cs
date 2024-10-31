@@ -137,7 +137,7 @@ namespace UI
         void OnShow(string content, Action<Func<Task>> onAccept, Tower tower, TowerSkin skin)
         {
             if(RotateableTower != null)
-                RotateableTower.SpawnTowerProcess(tower, skin);
+                RotateableTower.SpawnTowerProcess?.Invoke(tower, skin);
             
             OnShow(content, onAccept);
         }

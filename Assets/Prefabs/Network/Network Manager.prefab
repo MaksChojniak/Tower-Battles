@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8455845326181947432}
   - component: {fileID: -5233670959416407576}
   - component: {fileID: 1846629277090212706}
+  - component: {fileID: 1300764944667159648}
   m_Layer: 0
   m_Name: Network Manager
   m_TagString: Untagged
@@ -61,7 +62,7 @@ MonoBehaviour:
   disconnectInactiveConnections: 1
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 8972405471471208274, guid: ef75ac5a57b5e5b4fa9a51fe92a48ed4,
+  playerPrefab: {fileID: 8972405471471208274, guid: e9b9934dbe1589f46a80cf5c49f55b98,
     type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
@@ -81,7 +82,6 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 5
   timeInterpolationGui: 0
-  playerName: Player
 --- !u!114 &-5233670959416407576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,3 +133,17 @@ MonoBehaviour:
       m_Calls: []
   secretHandshake: 8173708224405744633
   discoveredServers: []
+--- !u!114 &1300764944667159648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8455845326181947436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0

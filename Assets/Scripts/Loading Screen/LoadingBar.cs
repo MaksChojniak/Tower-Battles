@@ -19,6 +19,9 @@ namespace Loading_Screen
     public class LoadingBar : MonoBehaviour
     {
 
+        [Space]
+        [SerializeField] GameObject PlayerPrefab;
+
         [Space(8)]
         [Header("UI Properties (Maks Loading Bar)")]
         [SerializeField] Animator animator;
@@ -227,6 +230,12 @@ namespace Loading_Screen
 
             PlayerController player = null;
 
+            if (PlayerController.GetLocalPlayer?.Invoke() == null)
+            {
+                GameObject playerObject = Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
+                DontDestroyOnLoad(playerObject);
+            }
+            
             while (player == null)
             {
                 player = PlayerController.GetLocalPlayer?.Invoke();
