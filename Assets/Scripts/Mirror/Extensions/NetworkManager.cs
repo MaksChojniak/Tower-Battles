@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Player;
-using Unity.VisualScripting;
-using UnityEditorInternal.Profiling;
-using UnityEngine;
-using UnityEngine.Rendering;
+﻿using UnityEngine;
 
 namespace Mirror.Extensions
 {
