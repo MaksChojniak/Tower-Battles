@@ -56,7 +56,6 @@ namespace Towers
             SoldierController = this.GetComponent<SoldierController>();
             
             ReadyToShoot = false;
-            lastShootDate = DateTime.MinValue;
 
             RegisterHandlers();
             
@@ -73,15 +72,9 @@ namespace Towers
             
         }
 
-        DateTime lastShootDate;
-        //float time;
+
         void Update()
         {
-            //time += Time.deltaTime;
-            //if (time >= Weapon.Firerate)
-            //    ReadyToShoot = true;
-            if ((DateTime.Now - lastShootDate).TotalSeconds >= Weapon.Firerate)
-                ReadyToShoot = true;
 
 
             if (ReadyToShoot)
@@ -91,12 +84,7 @@ namespace Towers
                 ShootStatus status = Shoot();
 
                 if (status == ShootStatus.Successfully)
-                {
-                    lastShootDate = DateTime.Now;
-                    ReadyToShoot = false;
-                }
-
-                //this.Invoke( () => ReadyToShoot = true, Weapon.Firerate);
+                    this.Invoke( () => ReadyToShoot = true, Weapon.Firerate);
                 else
                     ReadyToShoot = true;
             }
