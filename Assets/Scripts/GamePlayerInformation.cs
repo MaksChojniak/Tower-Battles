@@ -8,10 +8,6 @@ using UnityEngine.SceneManagement;
 
 public class GamePlayerInformation : MonoBehaviour
 {
-    public static GamePlayerInformation Instance;
-
-    
-    
     public delegate void OnDieDelegate();
     public static event OnDieDelegate OnDie;
 
@@ -48,9 +44,6 @@ public class GamePlayerInformation : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
-        
-        
         // WaveManager.OnEndAllWaves += OnEndAllWaves;
         WaveManager.OnEndWave += GetWaveReward;
 
@@ -124,6 +117,8 @@ public class GamePlayerInformation : MonoBehaviour
             {
                 isDead = true;
                 OnDie?.Invoke();
+                
+                // ChangeHealth -= OnChangeHealth;
             }
         }
 

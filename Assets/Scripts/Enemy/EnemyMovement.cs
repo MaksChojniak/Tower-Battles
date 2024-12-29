@@ -29,11 +29,14 @@ public class EnemyMovement : MonoBehaviour
     
     
     PathCreator pathCreator;
+    VertexPath path;
 
-    
+
+
     void Awake()
     {
         pathCreator = GameObject.FindGameObjectWithTag("Path").GetComponent<PathCreator>();
+        path = pathCreator.path;
         
         EnemyController = this.GetComponent<EnemyController>();
         
@@ -49,7 +52,8 @@ public class EnemyMovement : MonoBehaviour
 
     void Start()
     {
-        
+        //transform.position = path.GetPointAtDistance(DistanceTravelled);
+        //transform.rotation = path.GetRotationAtDistance(DistanceTravelled);
     }
 
     void Update()
@@ -102,10 +106,17 @@ public class EnemyMovement : MonoBehaviour
     void Move()
     {
         DistanceTravelled += CurrentSpeed * 2.5f * Time.deltaTime;
-        transform.position = pathCreator.path.GetPointAtDistance(DistanceTravelled);
-        transform.rotation = pathCreator.path.GetRotationAtDistance(DistanceTravelled);
+        transform.position = path.GetPointAtDistance(DistanceTravelled);
+        transform.rotation = path.GetRotationAtDistance(DistanceTravelled);
 
-        Debug.Log($"Distance Travelled: {pathCreator.path.length}");
+        //transform.SetPositionAndRotation(path.GetPointAtDistance(DistanceTravelled), path.GetRotationAtDistance(DistanceTravelled));
+        //Vector3 dir = path.GetDirectionAtDistance(DistanceTravelled);
+        //transform.LookAt(dir);
+        //transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+        //transform.position += dir;
+
+
+        //Debug.Log($"Distance Travelled: {pathCreator.path.length}");
 
         OnMove?.Invoke(CurrentSpeed);
     }

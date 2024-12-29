@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ads;
+using Assets.Scripts;
 using MMK;
 using Player;
 using TMPro;
@@ -23,6 +24,9 @@ namespace UI
     {
         public delegate void OnEndGameDelegate();
         public static event OnEndGameDelegate OnEndGame;
+        
+        public delegate void ExitFromGameDelegate();
+        public static ExitFromGameDelegate ExitFromGame;
         
         
         [Space(8)]
@@ -84,10 +88,14 @@ namespace UI
 
             WaveManager.OnStartWave += OnStartWave;
 
+            ExitFromGame += OnExitFromGame;
+
         }
 
         void UnregisterHandlers()
         {
+            ExitFromGame -= OnExitFromGame;
+            
             WaveManager.OnEndWave -= OnEndWave;
             
             WaveManager.OnEndAllWaves -= WinProces;
@@ -177,11 +185,12 @@ namespace UI
             await Task.Delay(Mathf.RoundToInt(animator.animationLenght * 1000));
 
             
-            isAdWatchedOrTimePassed = false;
+            isTimePassed = false;
+            adRewardDelivered = false;
 
             StartCoroutine(WatchAdAnimation());
 
-            while (!isAdWatchedOrTimePassed)
+            while (!isTimePassed && !adRewardDelivered)
                 await Task.Yield();
             
             AdButton.interactable = false;
@@ -196,7 +205,7 @@ namespace UI
         }
 
 
-        bool isAdWatchedOrTimePassed;
+        bool isTimePassed;
 
         IEnumerator WatchAdAnimation()
         {
@@ -204,6 +213,9 @@ namespace UI
 
             while (time >= 0)
             {
+                if (isPlayingAd)
+                    yield return new WaitUntil( () => !isPlayingAd );
+                
                 AddTimeFillBar.fillAmount = Mathf.Clamp01(time / 3f);
 
                 yield return new WaitForSeconds(Time.deltaTime);
@@ -212,7 +224,7 @@ namespace UI
 
             yield return null;
 
-            isAdWatchedOrTimePassed = true;
+            isTimePassed = true;
         }
 
         
@@ -234,10 +246,25 @@ namespace UI
         }
 
 
+
+
+        public async void OnExitFromGame()
+        {
+            await LoadMenuScene();
+
+            GameReward reward = new GameReward(wavesCount).HalfReward();
+            OpenRewardMessage(reward);
+        }
+
+
+
+        bool isPlayingAd;
+        bool adRewardDelivered;
         
         public void PlayAd()
         {
-            StopAllCoroutines();
+            isPlayingAd = true;
+            // StopAllCoroutines();
 
             Debug.Log("Start Add");
                     
@@ -246,19 +273,26 @@ namespace UI
             
             GoogleAds.OnGetReward += () =>
             {
+                StopAllCoroutines();
+            
                 withRewardMultiplier = true;
+                AddTimeFillBar.fillAmount = 0;
+                
+                adRewardDelivered = true;
+                
+                Debug.Log("Add Reward Delivered");
+            };
+
+            GoogleAds.OnCloseAd += () =>
+            {
+                isPlayingAd = false;
                 
                 Debug.Log("End Add");
-
-                AddTimeFillBar.fillAmount = 0;
-                isAdWatchedOrTimePassed = true;
             };
-            
+
         }
         
         
-
-
         void OpenRewardMessage(GameReward reward)
         {
             List<MessageProperty> properties = new List<MessageProperty>();
@@ -357,6 +391,27 @@ namespace UI
             
             // TODO calcuate rewards for pvp
         }
+
+        public GameReward()
+        {
+            
+        }
+        
+
+        public GameReward HalfReward()
+        {
+            Coins = Mathf.RoundToInt((float)Coins / 2);
+            Coins -= Coins % 5;
+            
+            XP = Coins * 2;
+            
+            return new GameReward()
+            {
+                Coins = Coins,
+                XP = XP
+            };
+        }
+        
         
     }
     

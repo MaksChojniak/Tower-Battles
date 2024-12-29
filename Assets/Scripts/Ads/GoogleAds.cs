@@ -20,6 +20,9 @@ namespace Ads
         public delegate void OnGetRewardDelegate();
         public static event OnGetRewardDelegate OnGetReward;
         
+        public delegate void OnCloseAdDelegate();
+        public static event OnCloseAdDelegate OnCloseAd;
+        
         public delegate void ShowAdDelegate(RewardType type = RewardType.None, long amount = 0);
         public static ShowAdDelegate ShowAd;
 
@@ -168,8 +171,7 @@ namespace Ads
 
 #region Load & Show Ads
 
-
-        Action OnCloseAdCallback;
+        
         async void ShowAdProcess(RewardType type = RewardType.None, long amount = 0)
         {
             string adUnitID = GetAdUnitID(type, amount);
@@ -180,7 +182,8 @@ namespace Ads
         
         async Task LoadAd(string adUnitID)
         {
-            OpenBackgroundAniation.PlayAnimation();
+            unitySynchronizationContext.Post( _ => OpenBackgroundAniation.PlayAnimation(), null);
+            // OpenBackgroundAniation.PlayAnimation();
             await Task.Delay( Mathf.RoundToInt(OpenBackgroundAniation.animationLenght * 1000) );
 
             // Debug.Log("Loading the rewarded  ad.");
@@ -310,7 +313,7 @@ namespace Ads
             // {
             //     // Debug.Log("Rewarded ad full screen content opened.");
             // };
-
+            
 
             // Raised when the ad closed full screen content.
             ad.OnAdFullScreenContentClosed += () =>
@@ -319,8 +322,7 @@ namespace Ads
                 {
                     CloseBackground();
 
-                    OnCloseAdCallback?.Invoke();
-                    OnCloseAdCallback = null;
+                    OnCloseAd?.Invoke();
 
                 },null);
 

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using TMPro;
+using UI.Animations;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +15,7 @@ namespace UI
         [SerializeField] Image Fillbar; 
 
         
-        public async void ShowMessage(Message message)
+        public async void ShowMessage(Message message, UIAnimation OpenMessagePanelAnimation)
         {
             int tier = int.Parse(message.Properties[1].Name);
 
@@ -28,6 +29,8 @@ namespace UI
             TittleText.text = $"{message.Tittle} {tier}";
             ContentText.text = $"{message.Properties[0].Name} {tier + 1}";
             Fillbar.fillAmount = oldFillAmount;
+            
+            await Task.Delay(Mathf.RoundToInt(OpenMessagePanelAnimation.animationLenght * 1000));
 
             while (Mathf.Abs(newFillAmount - oldFillAmount) > 0.005f)
             {

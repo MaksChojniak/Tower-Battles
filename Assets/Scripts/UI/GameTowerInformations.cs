@@ -638,8 +638,8 @@ namespace MMK
         
         void UpdateTargettingText(TargetMode Mode)
         {
-            TowerInformationsUI.TargetModeText.text = $"Targets" + "\n" +
-                                                      $"[{Mode.ToString()}]";
+            TowerInformationsUI.TargetModeText.text = $"Target Mode" + "\n" +
+                                                      $"{Mode.ToString()}";
         }
         
   #endregion

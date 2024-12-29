@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using Firebase.Auth;
 using MMK.Extensions;
 using MMK.ScriptableObjects;
 using MMK.Towers;
@@ -54,7 +56,8 @@ namespace Towers
             SoldierController = this.GetComponent<SoldierController>();
             
             ReadyToShoot = false;
-            
+            lastShootDate = DateTime.MinValue;
+
             RegisterHandlers();
             
         }
@@ -70,17 +73,30 @@ namespace Towers
             
         }
 
+        DateTime lastShootDate;
+        //float time;
         void Update()
         {
+            //time += Time.deltaTime;
+            //if (time >= Weapon.Firerate)
+            //    ReadyToShoot = true;
+            if ((DateTime.Now - lastShootDate).TotalSeconds >= Weapon.Firerate)
+                ReadyToShoot = true;
+
 
             if (ReadyToShoot)
             {
                 ReadyToShoot = false;
                 
                 ShootStatus status = Shoot();
-                
-                if(status == ShootStatus.Successfully)
-                    this.Invoke( () => ReadyToShoot = true, Weapon.Firerate);
+
+                if (status == ShootStatus.Successfully)
+                {
+                    lastShootDate = DateTime.Now;
+                    ReadyToShoot = false;
+                }
+
+                //this.Invoke( () => ReadyToShoot = true, Weapon.Firerate);
                 else
                     ReadyToShoot = true;
             }
@@ -191,8 +207,8 @@ namespace Towers
 
         ShootResult SingleShootInSpread()
         {
-            EnemyController[] enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
-            if(enemies.Length <= 0)
+            List<EnemyController> enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
+            if(enemies.Count <= 0)
                 return new ShootResult()
                 {
                     Status = ShootStatus.Canceled,
@@ -221,7 +237,7 @@ namespace Towers
             int givenDamage = 0;
             int damageValue = Weapon.Damage;
                 
-            for (int i = 0 ; i < enemies.Length; i++)
+            for (int i = 0 ; i < enemies.Count; i++)
             {
                 if(i >= Weapon.MaxEnemiesInSpread)
                     break;
@@ -251,8 +267,8 @@ namespace Towers
 
         ShootResult SingleShootInSplash()
         {
-            EnemyController[] enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
-            if(enemies.Length <= 0)
+            List<EnemyController> enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
+            if(enemies.Count <= 0)
                 return new ShootResult()
                 {
                     Status = ShootStatus.Canceled,
@@ -281,7 +297,7 @@ namespace Towers
             int givenDamage = 0;
             int damageValue = Weapon.Damage;
                 
-            for (int i = 0 ; i < enemies.Length; i++)
+            for (int i = 0 ; i < enemies.Count; i++)
             {
                 if(i >= Weapon.MaxEnemiesInSpread)
                     break;
@@ -357,10 +373,10 @@ namespace Towers
         ShootResult ThrowableShoot()
         {
             float objectFlyTime = 0.75f;
-            
 
-            EnemyController[] enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
-            if(enemies.Length <= 0)
+
+            List<EnemyController> enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
+            if(enemies.Count <= 0)
                 return new ShootResult()
                 {
                     Status = ShootStatus.Canceled,
@@ -375,7 +391,7 @@ namespace Towers
                 int givenDamage = 0;
                 int damageValue = Weapon.Damage;
                 
-                for (int i = 0 ; i < enemies.Length; i++)
+                for (int i = 0 ; i < enemies.Count; i++)
                 {
                     if(i >= Weapon.MaxEnemiesInSpread)
                         break;

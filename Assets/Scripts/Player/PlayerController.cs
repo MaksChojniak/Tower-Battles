@@ -143,7 +143,8 @@ namespace Player
   
             
             playerData.ID = PlayerData.ID;
-            PlayerData = new PlayerData(playerData);
+            // PlayerData = new PlayerData(playerData);
+            PlayerData = playerData;
 
             await UpdateTowersLockstate();
             

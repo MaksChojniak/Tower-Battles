@@ -225,7 +225,7 @@ namespace UI
 
         async Task SetupBattlepassMessage(GameObject messageObjectUI, Message message)
         {
-            messageObjectUI.GetComponent<BattlepassMessage>().ShowMessage(message);
+            messageObjectUI.GetComponent<BattlepassMessage>().ShowMessage(message, OpenMessagePanel);
 
             messageObjectUI.SetActive(true);
         }

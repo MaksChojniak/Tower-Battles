@@ -16,19 +16,7 @@ namespace Mirror.Extensions
     [AddComponentMenu("Network/Custom Network Manager")]
     public class NetworkManager : Mirror.NetworkManager
     {
-        public delegate void OnServerStartedDelegate();
-        public static OnServerStartedDelegate OnServerStarted;
-
-        public delegate void OnServerStoppedDelegate();
-        public static OnServerStoppedDelegate OnServerStopped;
-
-
-        public delegate void OnClientStartedDelegate();
-        public static OnClientStartedDelegate OnClientStarted;
-
-        public delegate void OnClientStoppedDelegate();
-        public static OnClientStoppedDelegate OnClientStopped;
-
+        public static NetworkManager Singleton => (NetworkManager)singleton; 
 
 
 
@@ -39,6 +27,12 @@ namespace Mirror.Extensions
         {
             base.Awake();
         }
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+        }
+        
 
 
         public override void OnClientConnect()
@@ -52,40 +46,29 @@ namespace Mirror.Extensions
             base.OnClientDisconnect();
         }
 
-
-
+        
         public override void OnStartServer()
         {
             base.OnStartServer();
 
-            OnServerStarted?.Invoke();
         }
 
         public override void OnStopServer()
         {
             base.OnStopServer();
-
-            OnServerStopped?.Invoke();
         }
-
 
 
         public override void OnStartClient()
         {
             base.OnStartClient();
 
-            OnClientStarted?.Invoke();
-            
-            // NetworkClient.RegisterHandler<AddPlayerOnClient>(OnClientAddPlayer);
         }
 
         public override void OnStopClient()
         {
-            // NetworkClient.UnregisterHandler<AddPlayerOnClient>();
-            
             base.OnStopClient();
-
-            OnClientStopped?.Invoke();
+            
         }
 
 
@@ -94,26 +77,11 @@ namespace Mirror.Extensions
 
 
 
-
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
         {
-            GameObject playerObject = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-            DontDestroyOnLoad(playerObject);
-            
-            NetworkIdentity playerIdentity = playerObject.GetComponent<NetworkIdentity>();
 
-
-            // base.OnServerAddPlayer(conn);
-
-            // conn.Send(new AddPlayerOnClient());
         }
 
-        
-        // void OnClientAddPlayer(AddPlayerOnClient networkMessage)
-        // {
-        //    
-        // }
-        
 
     }
 

@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8455845326181947434}
   - component: {fileID: 8455845326181947432}
+  - component: {fileID: 5979797785100732229}
   - component: {fileID: -5233670959416407576}
   - component: {fileID: 1846629277090212706}
-  - component: {fileID: 1300764944667159648}
   m_Layer: 0
   m_Name: Network Manager
   m_TagString: Untagged
@@ -82,6 +82,24 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 5
   timeInterpolationGui: 0
+--- !u!114 &5979797785100732229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8455845326181947436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0ff239f0800475ab24d35b2bbbd3e30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ConnectionFinder: {fileID: 1846629277090212706}
+  findingTimeout: 5
+  SearchingLobbyPrefab: {fileID: 466814711370085207, guid: 7606e557716740d429e060d691672089,
+    type: 3}
+  WaitingForPlayersPrefab: {fileID: 3725946911849033840, guid: 41df76512b80b074299d79de616b7032,
+    type: 3}
 --- !u!114 &-5233670959416407576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,20 +148,17 @@ MonoBehaviour:
   transport: {fileID: -5233670959416407576}
   OnServerFound:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5979797785100732229}
+        m_TargetAssemblyTypeName: Mirror.Extensions.LobbyFinder, Assembly-CSharp
+        m_MethodName: OnFindConnection
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   secretHandshake: 8173708224405744633
-  discoveredServers: []
---- !u!114 &1300764944667159648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8455845326181947436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetX: 0
-  offsetY: 0

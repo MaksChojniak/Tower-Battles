@@ -178,7 +178,7 @@ namespace MMK.Towers
     [RequireComponent(typeof(SelectedRing))]
     [RequireComponent(typeof(TowerLevel))]
     // [RequireComponent(typeof(ViewRange))]
-    public abstract class TowerController : NetworkBehaviour
+    public abstract class TowerController : MonoBehaviour
     {
         public delegate int GetLevelDelegate();
         public GetLevelDelegate GetLevel;

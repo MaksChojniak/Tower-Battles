@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -46,10 +47,18 @@ namespace DefaultNamespace
 
             slider.value += value;
             
-            Invoke(nameof(SetReadyInvoke), _interval);
+            // Invoke(nameof(SetReadyInvoke), _interval);
+            SetReadyInvoke(_interval);
         }
 
-        void SetReadyInvoke() => readyToNextInvoke = true;
+        async void SetReadyInvoke(float delay = 0)
+        {
+            await Task.Delay( Mathf.RoundToInt(delay * 1000) );
+            
+            readyToNextInvoke = true;
+        }
+
+
 
         void Update()
         {
@@ -58,10 +67,11 @@ namespace DefaultNamespace
                 readyToNextInvoke = false;
 
                 if (_interval > 0.035f)
-                    _interval -= Time.deltaTime * 2;
+                    _interval -= Time.unscaledDeltaTime * 2;
                 
                 onPointerHold?.Invoke(_cachedSliderDirection);
             }
         }
+        
     }
 }

@@ -57,7 +57,7 @@ namespace DefaultNamespace
             {
                 HealthBarImage.fillAmount = Mathf.Lerp(HealthBarImage.fillAmount, targetHealthFillAmount, speed);
 
-                yield return new WaitForSeconds(0.01f);
+                yield return null;
             }
         }
 

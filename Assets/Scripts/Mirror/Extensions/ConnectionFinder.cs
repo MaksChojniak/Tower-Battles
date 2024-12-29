@@ -1,12 +1,8 @@
-﻿  using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using Mirror.Discovery;
-using Unity.VisualScripting;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Mirror.Extensions
 {
@@ -14,9 +10,11 @@ namespace Mirror.Extensions
     public struct ServerData
     {
         public int playersCount;
-        public int maxPlayersCount;
+        public int maxPlayersCount; 
 
         public bool serverIsFull => playersCount >= maxPlayersCount;
+
+        public LobbyType lobbyType;
         
         [Tooltip("Date in miliseconds")]
         public double dateOfCreate;
@@ -46,8 +44,7 @@ namespace Mirror.Extensions
     [AddComponentMenu("Network/Custom Auto Connection Finder")]
     public class ConnectionFinder : NetworkDiscoveryBase<ServerRequest, ServerResponse>
     {
-        
-        [SerializeField] List<ServerResponse> discoveredServers = new List<ServerResponse>();
+        readonly Dictionary<DateTime, ServerResponse> discoveredServers = new Dictionary<DateTime, ServerResponse>();
 
 
         void Awake()
@@ -68,12 +65,6 @@ namespace Mirror.Extensions
 
         void RegisterHandlers()
         {
-            NetworkManager.OnServerStarted += Advertise;
-            NetworkManager.OnServerStopped += StopDiscovery;
-            
-            NetworkManager.OnClientStarted += StopDiscovery;
-            NetworkManager.OnClientStopped += StopDiscovery;
-            
             OnServerFound.AddListener(OnServerDiscovered);
 
         }
@@ -81,17 +72,11 @@ namespace Mirror.Extensions
         void UnregisterHandlers()
         {
             OnServerFound.RemoveListener(OnServerDiscovered);
-            
-            NetworkManager.OnClientStopped -= StopDiscovery;
-            NetworkManager.OnClientStarted -= StopDiscovery;
-            
-            NetworkManager.OnServerStopped -= StopDiscovery;
-            NetworkManager.OnServerStarted -= Advertise;
+
             
         }
         
 #endregion
-
 
 
         [ContextMenu(nameof(Advertise))]
@@ -99,8 +84,7 @@ namespace Mirror.Extensions
         {
             if (!NetworkServer.active)
                 throw new Exception("Server is not active");
-            
-            
+
             AdvertiseServer();
             Debug.Log(nameof(Advertise));
         }
@@ -112,130 +96,25 @@ namespace Mirror.Extensions
             
             StartDiscovery();
             Debug.Log(nameof(Discover));
-
-            foreach (var discoveredServer in discoveredServers)
-            {
-                Debug.Log(discoveredServer.serverData.GetDate().ToString());
-            }
         }
-        
-        // void OnGUI()
-        // {
-        //     if (NetworkManager.singleton == null)
-        //         return;
-        //
-        //     if (!NetworkClient.isConnected && !NetworkServer.active && !NetworkClient.active)
-        //         DrawGUI();
-        //
-        //     if (NetworkServer.active || NetworkClient.active)
-        //         StopButtons();
-        // }
-        //
-        // void DrawGUI()
-        // {
-        //     GUILayout.BeginArea(new Rect(10, 100, 300, 500));
-        //     GUILayout.BeginHorizontal();
-        //
-        //     if (GUILayout.Button("Find Servers"))
-        //     {
-        //         discoveredServers.Clear();
-        //         StartDiscovery();
-        //     }
-        //
-        //     // LAN Host
-        //     if (GUILayout.Button("Start Host"))
-        //     {
-        //         discoveredServers.Clear();
-        //         NetworkManager.singleton.StartHost();
-        //         AdvertiseServer();
-        //     }
-        //
-        //     // Dedicated server
-        //     if (GUILayout.Button("Start Server"))
-        //     {
-        //         discoveredServers.Clear();
-        //         NetworkManager.singleton.StartServer();
-        //         AdvertiseServer();
-        //     }
-        //
-        //     GUILayout.EndHorizontal();
-        //
-        //     // show list of found server
-        //
-        //     GUILayout.Label($"Discovered Servers [{discoveredServers.Count}]:");
-        //
-        //
-        //     foreach (ServerResponse info in discoveredServers.Values)
-        //         if (GUILayout.Button(info.EndPoint.Address.ToString()))
-        //             Connect(info);
-        //
-        //     GUILayout.EndScrollView();
-        //     GUILayout.EndArea();
-        // }
-        //
-        // void StopButtons()
-        // {
-        //     GUILayout.BeginArea(new Rect(10, 40, 100, 25));
-        //
-        //     // stop host if host mode
-        //     if (NetworkServer.active && NetworkClient.isConnected)
-        //     {
-        //         if (GUILayout.Button("Stop Host"))
-        //         {
-        //             NetworkManager.singleton.StopHost();
-        //             StopDiscovery();
-        //         }
-        //     }
-        //     // stop client if client-only
-        //     else if (NetworkClient.isConnected)
-        //     {
-        //         if (GUILayout.Button("Stop Client"))
-        //         {
-        //             NetworkManager.singleton.StopClient();
-        //             StopDiscovery();
-        //         }
-        //     }
-        //     // stop server if server-only
-        //     else if (NetworkServer.active)
-        //     {
-        //         if (GUILayout.Button("Stop Server"))
-        //         {
-        //             NetworkManager.singleton.StopServer();
-        //             StopDiscovery();
-        //         }
-        //     }
-        //
-        //     GUILayout.EndArea();
-        // }
-        //
-        //
-        // void Connect(ServerResponse info)
-        // {
-        //     StopDiscovery();
-        //     NetworkManager.singleton.StartClient(info.uri);
-        // }
-
         
         
         
         
         public void OnServerDiscovered(ServerResponse info)
         {
-            ServerResponse findedServer = discoveredServers.FirstOrDefault(server => server.serverId == info.serverId);
-            
-            if (findedServer.serverId != 0)
-                discoveredServers.Remove(findedServer);
-            
-            discoveredServers.Add(info);
+            if(discoveredServers.TryAdd(info.serverData.GetDate(), info))
+                return;
 
-            // discoveredServers = discoveredServers.OrderByDescending( server =>(DateTime.Now - server.GetDate()).TotalMilliseconds ).ToList();
-            discoveredServers = discoveredServers.
-                Where( server => !server.serverData.serverIsFull ).
-                OrderBy( server => server.serverData.dateOfCreate ).
-                ToList();
-            
+            discoveredServers[info.serverData.GetDate()] = info;
+
+
+            // discoveredServers = discoveredServers.
+            //     Where( server => !server.serverData.serverIsFull ).
+            //     OrderBy( server => server.serverData.dateOfCreate ).
+            //     ToList();
+
         }
-
 
 
 
@@ -271,7 +150,7 @@ namespace Mirror.Extensions
                     serverData = new ServerData()
                     {
                         playersCount = NetworkServer.connections.Count,
-                        maxPlayersCount = NetworkManager.singleton.maxConnections,
+                        maxPlayersCount = NetworkManager.Singleton.maxConnections,
                         dateOfCreate = new TimeSpan(DateTime.Now.Ticks).TotalMilliseconds,
                     },
 
@@ -327,6 +206,9 @@ namespace Mirror.Extensions
         #endregion
         
 #endregion
+        
+        
+        
         
     }
 }
