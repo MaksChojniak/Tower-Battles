@@ -182,11 +182,11 @@ namespace Towers
         
         void PlayShootAnimation(EnemyController target, Side[] WeaponSides, bool EnemyInCenter, Weapon Wepaon)
         {
-            
+
             foreach (var WeaponSide in WeaponSides)
             {
                 ShootAnimation(WeaponSide);
-                
+
                 BulletAnimation(target, WeaponSide, Wepaon);
             }
 

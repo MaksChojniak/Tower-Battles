@@ -1,8 +1,10 @@
 ﻿
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace MMK.Enemy
 {
@@ -12,11 +14,7 @@ namespace MMK.Enemy
         [SerializeField] GameObject[] Hitboxes;
         
         
-        const int maxDistance = 1000;
-        
-        static int UILayer => LayerMask.NameToLayer("UI");
-        static int RagdollLayer => LayerMask.NameToLayer("Ragdoll");
-        
+        const int maxDistance = 1000;        
         
         public EnemyController EnemyController { private set; get; }
 
@@ -32,12 +30,13 @@ namespace MMK.Enemy
         void Awake()
         {
             EnemyController = this.GetComponent<EnemyController>();
-            
+
+            GameSceneInputHandler.OnInputClicked += CheckClickedObject;
         }
 
         void OnDestroy()
         {
-            
+            GameSceneInputHandler.OnInputClicked -= CheckClickedObject;
         }
 
         void Start()
@@ -47,52 +46,61 @@ namespace MMK.Enemy
 
         void Update()
         {
-            ClickListener();
 
         }
 
         
-        
-        void ClickListener()
+
+
+
+        void CheckClickedObject(TouchData data)
         {
-            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-            {
-                CheckClickedObject();
-
-            }
-            
-            
-        }
-
-
-        void CheckClickedObject()
-        {
-            Vector3 screenPosition = Input.GetTouch(0).position;
-            
-            GameObject UIComponent = InputHandlerExtension.UIRaycast(InputHandlerExtension.ScreenPosToPointerData(screenPosition));
-            if (UIComponent != null && UIComponent.layer == UILayer)
+            if (data.HittedObjectUI)
                 return;
-            
-            Ray ray = UnityEngine.Camera.main.ScreenPointToRay(screenPosition);
-            RaycastHit hit;
-            
+
             bool enemyIsClicked = false;
 
-            if (Physics.Raycast(ray, out hit, maxDistance)) //, HitboxLayer))
+            if (data.IsObjectHitted(out var hit))
             {
                 float maxEnemyDistance = 1.75f;
                 GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy").
                     Where(enemy => enemy.TryGetComponent<EnemyController>(out var enemyController) &&
                                    enemyController.HealthComponent.GetHealth() > 0 &&
                                    Vector2.Distance(new Vector2(enemy.transform.position.x, enemy.transform.position.z), new Vector2(hit.point.x, hit.point.z)) < maxEnemyDistance).
-                    OrderBy(enemy => Vector2.Distance(new Vector2(enemy.transform.position.x, enemy.transform.position.z), new Vector2(hit.point.x, hit.point.z)) ).
+                    OrderBy(enemy => Vector2.Distance(new Vector2(enemy.transform.position.x, enemy.transform.position.z), new Vector2(hit.point.x, hit.point.z))).
                     ToArray();
-                
-                enemyIsClicked = (Hitboxes.Contains(hit.transform.gameObject) && hit.transform.gameObject.layer != RagdollLayer) || (enemies.Length > 0 && enemies[0] == this.gameObject) ;
+
+                enemyIsClicked = (Hitboxes.Contains(hit.transform.gameObject) && hit.transform.gameObject.layer != GameSceneInputHandler.RagdollLayer) || (enemies.Length > 0 && enemies[0] == this.gameObject);
             }
 
-
             EnemyController.AnimationComponent.SetSelectedAnimation(enemyIsClicked);
+
+
+
+            //Ray ray = new Ray();
+
+            //if (!data.IsObjectHitted(out ray))
+            //    return;
+
+            //RaycastHit hit;
+
+            //bool enemyIsClicked = false;
+
+            //if (Physics.Raycast(ray, out hit, maxDistance)) //, HitboxLayer))
+            //{
+            //    float maxEnemyDistance = 1.75f;
+            //    GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy").
+            //        Where(enemy => enemy.TryGetComponent<EnemyController>(out var enemyController) &&
+            //                       enemyController.HealthComponent.GetHealth() > 0 &&
+            //                       Vector2.Distance(new Vector2(enemy.transform.position.x, enemy.transform.position.z), new Vector2(hit.point.x, hit.point.z)) < maxEnemyDistance).
+            //        OrderBy(enemy => Vector2.Distance(new Vector2(enemy.transform.position.x, enemy.transform.position.z), new Vector2(hit.point.x, hit.point.z))).
+            //        ToArray();
+
+            //    enemyIsClicked = (Hitboxes.Contains(hit.transform.gameObject) && hit.transform.gameObject.layer != GameSceneInputHandler.RagdollLayer) || (enemies.Length > 0 && enemies[0] == this.gameObject);
+            //}
+
+
+            //EnemyController.AnimationComponent.SetSelectedAnimation(enemyIsClicked);
         }
 
 

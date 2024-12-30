@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using DefaultNamespace;
 using MMK;
 using MMK.Towers;
+using Org.BouncyCastle.Bcpg;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.EventSystems.EventTrigger;
@@ -28,7 +30,7 @@ namespace Towers
         public delegate EnemyController GetEnemyByModeDelegate(TargetMode Mode, bool EnableBurningEnemy = true);
         public GetEnemyByModeDelegate GetEnemyByMode;
         
-        public delegate List<EnemyController> GetEnemiesInSpreadByModeDelegate(TargetMode Mode, float spread);
+        public delegate void GetEnemiesInSpreadByModeDelegate(TargetMode Mode, float spread, out int count, out EnemyController[] enemies);
         public GetEnemiesInSpreadByModeDelegate GetEnemiesInSpreadByMode;
 
 
@@ -63,11 +65,13 @@ namespace Towers
         [Header("Stats")]
         [SerializeField] float ViewRangeValue;
         [SerializeField] bool HasHiddenDetecion;
-        
+
         [Space(18)]
         [Header("(Readonly)")]
         //[SerializeField] EnemyController[] enemiesInRange;
-        [SerializeField] List<EnemyController> allEnemies = new List<EnemyController>();
+        const int maxEnemiesCount = 100;
+        EnemyController[] allEnemies = new EnemyController[maxEnemiesCount];
+        int lastAllEnemiesIndex = -1;
 
         [Space(20)]
         [Header("Debug (ReadOnly)")]
@@ -154,14 +158,29 @@ namespace Towers
 
         void FindEnemiesInRange()
         {
-            allEnemies.Clear();
+            lastAllEnemiesIndex = 0;
 
-            var objectsWitTag = GameObject.FindGameObjectsWithTag("Enemy");
-            for(int i  = 0; i < objectsWitTag.Length; i++)
+
+            foreach(var objectWitTag in GameObject.FindGameObjectsWithTag("Enemy"))
             {
-                if(objectsWitTag[i].TryGetComponent<EnemyController>(out var enemy) && enemy.HealthComponent.GetHealth() > 0 && ((!HasHiddenDetecion && !enemy.Hidden) || (HasHiddenDetecion)))
-                    allEnemies.Add(enemy);
+                if (lastAllEnemiesIndex >= maxEnemiesCount)
+                    break;
+
+                if (objectWitTag.TryGetComponent<EnemyController>(out var enemy) && enemy.HealthComponent.GetHealth() > 0 && ((!HasHiddenDetecion && !enemy.Hidden) || (HasHiddenDetecion)))
+                {
+                    allEnemies[lastAllEnemiesIndex] = enemy;
+                    lastAllEnemiesIndex++;
+                }
             }
+            var objectsWitTag = GameObject.FindGameObjectsWithTag("Enemy");
+            //for(int i = 0; i < objectsWitTag.Length && lastAllEnemiesIndex < maxEnemiesCount; i++)
+            //{
+            //    if (objectsWitTag[i].TryGetComponent<EnemyController>(out var enemy) && enemy.HealthComponent.GetHealth() > 0 && ((!HasHiddenDetecion && !enemy.Hidden) || (HasHiddenDetecion)))
+            //    {
+            //        allEnemies[lastAllEnemiesIndex] = enemy;
+            //        lastAllEnemiesIndex++;
+            //    }
+            //}
 
             ////Vector3 centerOfCircle = this.transform.position;
 
@@ -208,12 +227,12 @@ namespace Towers
 
         EnemyController OnGetEnemyByMode(TargetMode mode, bool EnableBurningEnemy = true)
         {
-            List<EnemyController> enemies = new  List<EnemyController> ();
-            for(int i = 0; i < allEnemies.Count; i++)
-            {
-                if( ((!EnableBurningEnemy && !allEnemies[i].IsBurning) || EnableBurningEnemy) && Vector3.Distance(allEnemies[i].transform.position, this.transform.position) <= ViewRangeValue)
-                    enemies.Add (allEnemies[i]);
-            }
+            //List<EnemyController> enemies = new  List<EnemyController> ();
+            //for(int i = 0; i < allEnemies.Count; i++)
+            //{
+            //    if( ((!EnableBurningEnemy && !allEnemies[i].IsBurning) || EnableBurningEnemy) && Vector3.Distance(allEnemies[i].transform.position, this.transform.position) <= ViewRangeValue)
+            //        enemies.Add (allEnemies[i]);
+            //}
 
             //EnemyController[] enemies = allEnemies.Where(enemy => ((!EnableBurningEnemy && !enemy.IsBurning) || EnableBurningEnemy) && Vector3.Distance(enemy.transform.position, this.transform.position) <= ViewRangeValue).ToArray();
             //EnemyController[] enemies = new EnemyController[enemiesInRange.Length];
@@ -222,59 +241,95 @@ namespace Towers
             //if (!EnableBurningEnemy)
             //    enemies = enemies.Where(enemy => !enemy.IsBurning).ToArray();
             
-            Debug.Log($"enemies to calculates [count: {enemies.Count}, ]");
+            //Debug.Log($"enemies to calculates [count: {enemies.Count}, ]");
+
+            Array.Sort(allEnemies, (enemy1, enemy2) => ((!EnableBurningEnemy && !enemy1.IsBurning) || EnableBurningEnemy).CompareTo(((!EnableBurningEnemy && !enemy1.IsBurning) || EnableBurningEnemy)) );
+            lastAllEnemiesIndex = 0;
+            for (int i = 0; i < allEnemies.Length; i++)
+            {
+                if (allEnemies[i] != null && ((!EnableBurningEnemy && !allEnemies[i].IsBurning) || EnableBurningEnemy))
+                    lastAllEnemiesIndex++;
+                else
+                    break;
+            }
 
             switch (mode)
             {
                 case TargetMode.Closest:
                     //enemies = enemies.OrderByDescending( enemy => Vector3.Distance(enemy.transform.position, this.transform.position) ).ToArray();
-                    enemies.Sort((enemy1, enemy2) => Vector3.Distance(enemy1.transform.position, this.transform.position).CompareTo(Vector3.Distance(enemy2.transform.position, this.transform.position)));
+                    Array.Sort(allEnemies, 0, lastAllEnemiesIndex, Comparer<EnemyController>.Create((enemy1, enemy2) => Vector3.Distance(enemy1.transform.position, this.transform.position).CompareTo(Vector3.Distance(enemy2.transform.position, this.transform.position))));
                     break;
                 case TargetMode.First:
                     //enemies = enemies.OrderByDescending( enemy => enemy.MovementComponent.DistanceTravelled ).ToArray();
-                    enemies.Sort((enemy1, enemy2) => enemy2.MovementComponent.DistanceTravelled.CompareTo(enemy1.MovementComponent.DistanceTravelled));
+                    Array.Sort(allEnemies, 0, lastAllEnemiesIndex, Comparer<EnemyController>.Create((enemy1, enemy2) => enemy2.MovementComponent.DistanceTravelled.CompareTo(enemy1.MovementComponent.DistanceTravelled)));
                     break;
                 case TargetMode.Last:
                     //enemies = enemies.OrderBy (enemy => enemy.MovementComponent.DistanceTravelled ).ToArray();
-                    enemies.Sort((enemy1, enemy2) => enemy1.MovementComponent.DistanceTravelled.CompareTo(enemy2.MovementComponent.DistanceTravelled));
+                    Array.Sort(allEnemies, 0, lastAllEnemiesIndex, Comparer<EnemyController>.Create((enemy1, enemy2) => enemy1.MovementComponent.DistanceTravelled.CompareTo(enemy2.MovementComponent.DistanceTravelled)));
                     break;
                 case TargetMode.Strongest:
                     //enemies = enemies.OrderByDescending( enemy => enemy.HealthComponent.GetHealth() ).ToArray();
-                    enemies.Sort((enemy1, enemy2) => enemy2.HealthComponent.GetHealth().CompareTo(enemy1.HealthComponent.GetHealth()));
+                    Array.Sort(allEnemies, 0, lastAllEnemiesIndex, Comparer<EnemyController>.Create((enemy1, enemy2) => enemy2.HealthComponent.GetHealth().CompareTo(enemy1.HealthComponent.GetHealth())));
                     break;
                 case TargetMode.Weakest:
                     //enemies = enemies.OrderBy( enemy => enemy.HealthComponent.GetHealth() ).ToArray();
-                    enemies.Sort((enemy1, enemy2) => enemy1.HealthComponent.GetHealth().CompareTo(enemy2.HealthComponent.GetHealth()));
+                    Array.Sort(allEnemies, 0, lastAllEnemiesIndex, Comparer<EnemyController>.Create((enemy1, enemy2) => enemy1.HealthComponent.GetHealth().CompareTo(enemy2.HealthComponent.GetHealth())));
                     break;
             }
-            
-            if (enemies.Count <= 0)
-                return null;
-            
-            return enemies[0];
+
+            //if (enemies.Count <= 0)
+            //    return null;
+
+            //return enemies[0];
+            for (int i = 0; i < lastAllEnemiesIndex; i++)
+            {
+                if (allEnemies[i] != null && Vector3.Distance(allEnemies[i].transform.position, this.transform.position) <= ViewRangeValue)
+                    return allEnemies[i];
+            }
+
+            return null;
         }
 
 
-        List<EnemyController> OnGetEnemiesInSpreadByMode(TargetMode mode, float spread)
+        void OnGetEnemiesInSpreadByMode(TargetMode mode, float spread, out int count, out EnemyController[] enemies)
         {
+            count = -1;
+            enemies = null;
+
             EnemyController enemyInCenter = OnGetEnemyByMode(mode);
 
             if (enemyInCenter == null)
-                return new List<EnemyController>();
+                return;
+                //return (null, -1);
 
             //EnemyController[] enemiesInSpread = allEnemies.
             //    Where( enemy => Vector3.Distance(enemyInCenter.transform.position, enemy.transform.position) <= spread ).
             //    OrderBy( enemy => Vector3.Distance(enemyInCenter.transform.position, enemy.transform.position) ).
             //    ToArray();
-            List<EnemyController> enemiesInSpread = new List<EnemyController>();
-            for(int i = 0; i < allEnemies.Count; i++)
-            {
-                if(Vector3.Distance(enemyInCenter.transform.position, allEnemies[i].transform.position) <= spread)
-                    enemiesInSpread.Add(allEnemies[i]);
-            }
-            enemiesInSpread.Sort((enemy1, enemy2) => Vector3.Distance(enemy2.transform.position, enemyInCenter.transform.position).CompareTo(Vector3.Distance(enemy1.transform.position, enemyInCenter.transform.position)));
+            //List<EnemyController> enemiesInSpread = new List<EnemyController>();
+            //for(int i = 0; i < allEnemies.Count; i++)
+            //{
+            //    if(Vector3.Distance(enemyInCenter.transform.position, allEnemies[i].transform.position) <= spread)
+            //        enemiesInSpread.Add(allEnemies[i]);
+            //}
+            //enemiesInSpread.Sort((enemy1, enemy2) => Vector3.Distance(enemy2.transform.position, enemyInCenter.transform.position).CompareTo(Vector3.Distance(enemy1.transform.position, enemyInCenter.transform.position)));
 
-            return enemiesInSpread;
+            Array.Sort(allEnemies, 0, lastAllEnemiesIndex, Comparer<EnemyController>.Create((enemy1, enemy2) => Vector3.Distance(enemy1.transform.position, enemyInCenter.transform.position).CompareTo(Vector3.Distance(enemy2.transform.position, enemyInCenter.transform.position))));
+            lastAllEnemiesIndex = 0;
+            for (int i = 0; i < allEnemies.Length; i++)
+            {
+                //if (allEnemies[i] != null && Vector3.Distance(enemyInCenter.transform.position, allEnemies[i].transform.position) <= spread)
+                if (allEnemies[i] != null && Vector3.Distance(enemyInCenter.transform.position, allEnemies[i].transform.position) <= spread)
+                {
+                    allEnemies[lastAllEnemiesIndex] = allEnemies[i];
+                    lastAllEnemiesIndex++;
+                }
+            }
+
+            //return (allEnemies, lastAllEnemiesIndex);
+            count = lastAllEnemiesIndex;
+            enemies = allEnemies;
+            return;
         }
   
 #endregion

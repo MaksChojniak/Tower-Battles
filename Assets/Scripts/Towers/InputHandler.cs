@@ -27,9 +27,7 @@ namespace Towers
         const int maxDistance = 1000;
         
         
-        static int HitboxLayer => LayerMask.NameToLayer("Hitbox");
-        static int IgnoreLayer => LayerMask.NameToLayer("Ignore Raycast");
-        static int UILayer => LayerMask.NameToLayer("UI");
+        
         
         
         public TowerController TowerController { private set; get; }
@@ -38,12 +36,13 @@ namespace Towers
         void Awake()
         {
             TowerController = this.GetComponent<TowerController>();
-            
+
+            GameSceneInputHandler.OnInputClicked += CheckClickedObject;
         }
 
         void OnDestroy()
         {
-            
+            GameSceneInputHandler.OnInputClicked -= CheckClickedObject;
         }
 
         void Start()
@@ -53,9 +52,7 @@ namespace Towers
 
         void Update()
         {
-            HitboxObject.layer = TowerController.IsPlaced ? HitboxLayer : IgnoreLayer;
-            
-            ClickListener();
+            HitboxObject.layer = TowerController.IsPlaced ? GameSceneInputHandler. HitboxLayer : GameSceneInputHandler.IgnoreLayer;
 
         }
 
@@ -65,44 +62,23 @@ namespace Towers
         }
 
 
-        
-        
-        
 
-        void ClickListener()
+
+        void CheckClickedObject(TouchData data)
         {
-            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-            {
-                CheckClickedObject();
-
-            }
-            
-            
-        }
-
-
-        void CheckClickedObject()
-        {
-            Vector3 screenPosition = Input.GetTouch(0).position;
-
-            GameObject UIComponent = InputHandlerExtension.UIRaycast(InputHandlerExtension.ScreenPosToPointerData(screenPosition));
-            if (UIComponent != null && UIComponent.layer == UILayer)
+            if (data.HittedObjectUI)
                 return;
-
-            Ray ray = Camera.main.ScreenPointToRay(screenPosition);
-            RaycastHit hit;
 
             bool thisTowerIsClicked = false;
 
-            if (Physics.Raycast(ray, out hit, maxDistance)) //, HitboxLayer))
+            if (data.IsObjectHitted(out var hit))
                 thisTowerIsClicked = hit.transform.gameObject == HitboxObject;
 
-            
-            GameTowerInformations.SetActiveInformationsPanel?.Invoke( thisTowerIsClicked, TowerController.GetTowerInformations?.Invoke() );
-            
+            GameTowerInformations.SetActiveInformationsPanel?.Invoke(thisTowerIsClicked, TowerController.GetTowerInformations?.Invoke());
+
             TowerController.SelectedRingComponent.SetActiveRing(thisTowerIsClicked);
 
-            
+
             VisibilityMode visibilityMode = thisTowerIsClicked ? VisibilityMode.Active : VisibilityMode.Hidden;
 
             if (TowerController.TryGetController<SoldierController>(out var soldierController))
@@ -116,6 +92,32 @@ namespace Towers
             if (thisTowerIsClicked)
                 OnClicked?.Invoke();
 
+            //Ray ray = new Ray();
+            //RaycastHit hit;
+            //bool thisTowerIsClicked = false;
+
+            //if (Physics.Raycast(ray, out hit, maxDistance)) //, HitboxLayer))
+            //    thisTowerIsClicked = hit.transform.gameObject == HitboxObject;
+
+            
+            //GameTowerInformations.SetActiveInformationsPanel?.Invoke( thisTowerIsClicked, TowerController.GetTowerInformations?.Invoke() );
+            
+            //TowerController.SelectedRingComponent.SetActiveRing(thisTowerIsClicked);
+
+            
+            //VisibilityMode visibilityMode = thisTowerIsClicked ? VisibilityMode.Active : VisibilityMode.Hidden;
+
+            //if (TowerController.TryGetController<SoldierController>(out var soldierController))
+            //    soldierController.ViewRangeComponent.SetVisibility(visibilityMode);
+            //// if (TowerController.TryGetController<BoosterController>(out var boosterController))
+            ////     boosterController.ViewRangeComponent.SetVisibility(visibilityMode);
+            //// else if (TowerController.TryGetController<SpawnerController>(out var spawnerController))
+            ////     spawnerController.ViewRangeComponent.SetVisibility(visibilityMode);
+
+
+            //if (thisTowerIsClicked)
+            //    OnClicked?.Invoke();
+
         }
 
         
@@ -126,17 +128,4 @@ namespace Towers
 }
 
 
-public static class InputHandlerExtension
-{
 
-    public static GameObject UIRaycast (PointerEventData pointerData)
-    {
-        var results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointerData, results);
- 
-        return results.Count < 1 ? null : results[0].gameObject;
-    }
-    
-    public static PointerEventData ScreenPosToPointerData (Vector2 screenPos) => new(EventSystem.current){position = screenPos};
-    
-}

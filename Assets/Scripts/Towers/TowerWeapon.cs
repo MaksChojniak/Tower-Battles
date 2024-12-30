@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Firebase.Auth;
 using MMK.Extensions;
 using MMK.ScriptableObjects;
@@ -26,7 +27,7 @@ namespace Towers
         [Space(12)]
         [Header("Stats")]
         public bool ReadyToShoot;
-        
+
         public int TotalGivenDamage
         {
             get
@@ -42,9 +43,12 @@ namespace Towers
             }
         }
         int totalGivenDamage;
-        
+
         [SerializeField] Side WeaponSide;
-        
+
+        ShootResult result = new ShootResult();
+        readonly Side[] sides = new Side[2];
+
 
         public SoldierController SoldierController { private set; get; }
 
@@ -76,25 +80,29 @@ namespace Towers
         void Update()
         {
 
-
             if (ReadyToShoot)
             {
                 ReadyToShoot = false;
-                
-                ShootStatus status = Shoot();
 
-                if (status == ShootStatus.Successfully)
-                    this.Invoke( () => ReadyToShoot = true, Weapon.Firerate);
+                //ShootStatus status = Shoot();
+                Shoot();
+
+                //if (status == ShootStatus.Successfully)
+                if (result.Status == ShootStatus.Successfully)
+                    this.Invoke(SetReady, Weapon.Firerate);
+                //SetReady(Weapon.Firerate);
                 else
                     ReadyToShoot = true;
             }
         }
 
-        void FixedUpdate()
+        void SetReady()
         {
-            
+            //await Task.Delay(Mathf.RoundToInt(delay * 1000f));
+
+            ReadyToShoot = true;
         }
-        
+
         
         
         
@@ -127,81 +135,98 @@ namespace Towers
         
         
         
-        ShootStatus Shoot()
+        void Shoot()
         {
-                    
-            ShootResult Result = new ShootResult();
+
+            result.Status = ShootStatus.Canceled;
+            result.GivenDamage = 0;
+
 
             if (Weapon.ShootingType == ShootingType.Shootable)
             {
                 if (Weapon.DamageType == DamageType.Single)
-                    Result = SingleShootInSingle();
+                    SingleShootInSingle();
                 else if (Weapon.DamageType == DamageType.Spraed)
-                    Result = SingleShootInSpread();
+                    SingleShootInSpread();
                 else if (Weapon.DamageType == DamageType.Splash)
-                    Result = SingleShootInSplash();
+                    SingleShootInSplash();
                 else if (Weapon.DamageType == DamageType.Fire)
-                    Result = SingleShootFire();
+                    SingleShootFire();
             }
             else if (Weapon.ShootingType == ShootingType.Throwable)
             {
-                Result = ThrowableShoot();
+                ThrowableShoot();
             }
-            
+
+
             // if (Weapon.DamageType == DamageType.Single)
             //     Result = ShootInSingle();
             // else if (Weapon.DamageType == DamageType.Spraed)
             //     Result = ShootInSpread();
             // else if (Weapon.ShootingType == ShootingType.Throwable)
             //     Result = ThrowableShoot();
-            
-            TotalGivenDamage += Result.GivenDamage;
 
-            if (Result.Status == ShootStatus.Canceled)
-                return Result.Status;
+            TotalGivenDamage = TotalGivenDamage + result.GivenDamage;
+
+            if (result.Status == ShootStatus.Canceled)
+                return;
+                //return result.Status;
             
             if (Weapon.WeaponType == WeaponType.DualWield)
                 WeaponSide = WeaponSide == Side.Right ? Side.Left : Side.Right;
             
-            return Result.Status;
+            //return result.Status;
         }
 
         
-        ShootResult SingleShootInSingle()
+        void SingleShootInSingle()
         {
             EnemyController enemy = SoldierController.ViewRangeComponent.GetEnemyByMode(SoldierController.TargetMode);
             if(enemy == null)
-                return new ShootResult()
-                {
-                    Status = ShootStatus.Canceled,
-                    GivenDamage = 0
-                };
+            {
+                result.Status = ShootStatus.Canceled;
+                result.GivenDamage = 0;
+                return;
+            }
+                //return new ShootResult()
+                //{
+                //    Status = ShootStatus.Canceled,
+                //    GivenDamage = 0
+                //};
             
             int healthBeforeShoot = enemy.HealthComponent.GetHealth();
 
-            OnShoot?.Invoke(enemy, new[] {WeaponSide}, true, Weapon);
+            //OnShoot?.Invoke(enemy, new[] {WeaponSide}, true, Weapon);
+            OnShoot?.Invoke(enemy, sides, true, Weapon);
             enemy.HealthComponent.ChangeHealth(-Weapon.Damage);
 
             int healthAfterShoot = enemy.HealthComponent.GetHealth();
 
             int givenDamage = healthBeforeShoot - healthAfterShoot;
-            
-            return new ShootResult()
-            {
-                Status = ShootStatus.Successfully,
-                GivenDamage = givenDamage
-            };
+
+            //return new ShootResult()
+            //{
+            //    Status = ShootStatus.Successfully,
+            //    GivenDamage = givenDamage
+            //};
+            result.Status = ShootStatus.Successfully;
+            result.GivenDamage = givenDamage;
         }
 
-        ShootResult SingleShootInSpread()
+        void SingleShootInSpread()
         {
-            List<EnemyController> enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
-            if(enemies.Count <= 0)
-                return new ShootResult()
-                {
-                    Status = ShootStatus.Canceled,
-                    GivenDamage = 0
-                };
+            SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread, out int count, out EnemyController[] enemies);
+            if(count <= 0)
+            {
+                result.Status = ShootStatus.Canceled;
+                result.GivenDamage = 0;
+                return;
+            }
+                //return new ShootResult()
+                //{
+                //    Status = ShootStatus.Canceled,
+                //    GivenDamage = 0
+                //};
             
             // int step = Weapon.MaxEnemiesInSpread;
             //
@@ -225,7 +250,7 @@ namespace Towers
             int givenDamage = 0;
             int damageValue = Weapon.Damage;
                 
-            for (int i = 0 ; i < enemies.Count; i++)
+            for (int i = 0 ; i < count; i++)
             {
                 if(i >= Weapon.MaxEnemiesInSpread)
                     break;
@@ -234,7 +259,8 @@ namespace Towers
                     
                 int healthBeforeShoot = enemy.HealthComponent.GetHealth();
                     
-                OnShoot?.Invoke(enemy, new[] {WeaponSide}, i == 0, Weapon);
+                //OnShoot?.Invoke(enemy, new[] {WeaponSide}, i == 0, Weapon);
+                OnShoot?.Invoke(enemy, sides, i == 0, Weapon);
                 enemy.HealthComponent.ChangeHealth(-damageValue);
 
                 int healthAfterShoot = enemy.HealthComponent.GetHealth();
@@ -244,30 +270,39 @@ namespace Towers
                 if(damageValue > 1f)
                     damageValue -= 1;
             }
-                
 
-            return new ShootResult()
-            {
-                Status = ShootStatus.Successfully,
-                GivenDamage = givenDamage
-            };
+
+            //return new ShootResult()
+            //{
+            //    Status = ShootStatus.Successfully,
+            //    GivenDamage = givenDamage
+            //};
+            result.Status = ShootStatus.Successfully;
+            result.GivenDamage = givenDamage;
         }
 
-        ShootResult SingleShootInSplash()
+        void SingleShootInSplash()
         {
-            List<EnemyController> enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
-            if(enemies.Count <= 0)
-                return new ShootResult()
-                {
-                    Status = ShootStatus.Canceled,
-                    GivenDamage = 0
-                };
-            
+            //(EnemyController[] enemies, int count) enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
+            SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread, out int count, out EnemyController[] enemies);
+            if(count <= 0)
+            {
+                result.Status = ShootStatus.Canceled;
+                result.GivenDamage = 0;
+                return;
+            }
+            //return new ShootResult()
+            //{
+            //    Status = ShootStatus.Canceled,
+            //    GivenDamage = 0
+            //};
+
             // int step = Weapon.MaxEnemiesInSpread;
             //
             // int givenDamage = 0;
-            
-            OnShoot?.Invoke(enemies[0], new[] {WeaponSide}, true, Weapon);
+
+            //OnShoot?.Invoke(enemies.enemies[0], new[] {WeaponSide}, true, Weapon);
+            OnShoot?.Invoke(enemies[0], sides, true, Weapon);
             
             // foreach (var enemy in enemies)
             // {
@@ -285,7 +320,7 @@ namespace Towers
             int givenDamage = 0;
             int damageValue = Weapon.Damage;
                 
-            for (int i = 0 ; i < enemies.Count; i++)
+            for (int i = 0 ; i < count; i++)
             {
                 if(i >= Weapon.MaxEnemiesInSpread)
                     break;
@@ -304,34 +339,43 @@ namespace Towers
                     damageValue -= 1;
             }
 
-            return new ShootResult()
-            {
-                Status = ShootStatus.Successfully,
-                GivenDamage = givenDamage
-            };
+            //return new ShootResult()
+            //{
+            //    Status = ShootStatus.Successfully,
+            //    GivenDamage = givenDamage
+            //};
+            result.Status = ShootStatus.Successfully;
+            result.GivenDamage = givenDamage;
         }
         
-        ShootResult SingleShootFire()
+        void SingleShootFire()
         {
             EnemyController enemy = SoldierController.ViewRangeComponent.GetEnemyByMode(SoldierController.TargetMode, false);
             if(enemy == null)
-                return new ShootResult()
-                {
-                    Status = ShootStatus.Canceled,
-                    GivenDamage = 0
-                };
-            
-            Side[] sides = Weapon.WeaponType == WeaponType.DualWield ? new [] { Side.Right, Side.Left } : new [] { Side.Right };
+            {
+                result.Status = ShootStatus.Canceled;
+                result.GivenDamage = 0;
+                return;
+            }
+            //return new ShootResult()
+            //{
+            //    Status = ShootStatus.Canceled,
+            //    GivenDamage = 0
+            //};
+
+            //Side[] sides = Weapon.WeaponType == WeaponType.DualWield ? new [] { Side.Right, Side.Left } : new [] { Side.Right };
    
             OnShoot?.Invoke(enemy, sides, true, Weapon);
 
             enemy.StartCoroutine(FireDamage(enemy, Weapon.Damage, Weapon.BurningTime));
 
-            return new ShootResult()
-            {
-                Status = ShootStatus.Successfully,
-                GivenDamage = 0
-            };
+            //return new ShootResult()
+            //{
+            //    Status = ShootStatus.Successfully,
+            //    GivenDamage = 0
+            //};
+            result.Status = ShootStatus.Successfully;
+            result.GivenDamage = 0;
         }
 
         IEnumerator FireDamage(EnemyController enemy, int damage, float fireTime)
@@ -358,55 +402,67 @@ namespace Towers
         }
 
 
-        ShootResult ThrowableShoot()
+        void ThrowableShoot()
         {
             float objectFlyTime = 0.75f;
 
 
-            List<EnemyController> enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
-            if(enemies.Count <= 0)
-                return new ShootResult()
-                {
-                    Status = ShootStatus.Canceled,
-                    GivenDamage = 0
-                };
+            //(EnemyController[] enemies, int count) enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
+            SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread, out int count, out EnemyController[] enemies);
+            if (count <= 0)
+            {
+                result.Status = ShootStatus.Canceled;
+                result.GivenDamage = 0;
+                return;
+            }
+            //return new ShootResult()
+            //{
+            //    Status = ShootStatus.Canceled,
+            //    GivenDamage = 0
+            //};
+
+            //OnShoot?.Invoke(enemies.enemies[0], new[] {WeaponSide}, true, Weapon);
+            OnShoot?.Invoke(enemies[0], sides, true, Weapon);
             
-            OnShoot?.Invoke(enemies[0], new[] {WeaponSide}, true, Weapon);
             
-            
-            this.Invoke(() =>
+            this.Invoke(ThrowDamage, objectFlyTime);
+
+            //return new ShootResult()
+            //{
+            //    Status = ShootStatus.Successfully,
+            //    GivenDamage = 0
+            //};
+            result.Status = ShootStatus.Successfully;
+            result.GivenDamage = 0;
+
+
+            void ThrowDamage()
             {
                 int givenDamage = 0;
                 int damageValue = Weapon.Damage;
-                
-                for (int i = 0 ; i < enemies.Count; i++)
+
+                for (int i = 0; i < count; i++)
                 {
-                    if(i >= Weapon.MaxEnemiesInSpread)
+                    if (i >= Weapon.MaxEnemiesInSpread)
                         break;
 
                     EnemyController enemy = enemies[i];
-                    
+
                     int healthBeforeShoot = enemy.HealthComponent.GetHealth();
-                    
+
                     enemy.HealthComponent.ChangeHealth(-damageValue);
 
                     int healthAfterShoot = enemy.HealthComponent.GetHealth();
 
                     givenDamage += (healthBeforeShoot - healthAfterShoot);
-                    
-                    if(damageValue > 1f)
+
+                    if (damageValue > 1f)
                         damageValue -= 1;
                 }
-                
+
                 TotalGivenDamage += givenDamage;
+            }
 
-            }, objectFlyTime);
-
-            return new ShootResult()
-            {
-                Status = ShootStatus.Successfully,
-                GivenDamage = 0
-            };
         }
 
 
@@ -416,7 +472,7 @@ namespace Towers
         {
             totalGivenReward += givenDamage;
             
-            GamePlayerInformation.ChangeBalance(givenDamage);
+            GamePlayerInformation.ChangeBalance?.Invoke(givenDamage);
         }
         
         
@@ -424,6 +480,20 @@ namespace Towers
         void OnUpdateWeapon(Weapon weapon)
         {
             Weapon = weapon;
+
+            if (Weapon.ShootingType == ShootingType.Shootable)
+            {
+                if (Weapon.DamageType == DamageType.Single || Weapon.DamageType == DamageType.Spraed || Weapon.DamageType == DamageType.Splash)
+                {
+                    sides[0] = WeaponSide;
+                }
+                else if (Weapon.DamageType == DamageType.Fire)
+                {
+                    sides[0] = Side.Right;
+                    if(Weapon.WeaponType == WeaponType.DualWield)
+                    sides[1] = Side.Left;
+                }
+            }
         }
         
         
