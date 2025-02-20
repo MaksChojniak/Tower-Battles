@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using MMK;
 using TMPro;
 using UI;
@@ -39,9 +40,14 @@ public class WaveManager : MonoBehaviour
     [SerializeField] UIAnimation CloseSkipWavePanel;
     [SerializeField] bool skipWave;
 
+
+    Action StartNextWave;
+
+
     void Awake()
     {
         GameResult.OnEndGame += OnEndGame;
+        StartNextWave += UpdateWaves;
 
         ActualyWeveIndex = -1;
         
@@ -49,13 +55,14 @@ public class WaveManager : MonoBehaviour
 
     void OnDestroy()
     {
+        StartNextWave -= UpdateWaves;
         GameResult.OnEndGame -= OnEndGame;
         
     }
 
     void Start()
     {
-        StartCoroutine(PrepareWaves());
+        PrepareWaves();
     }
 
     
@@ -70,7 +77,7 @@ public class WaveManager : MonoBehaviour
     
     
 
-    IEnumerator PrepareWaves()
+    async void PrepareWaves()
     {
         SetActiveIndicator(true);
 
@@ -81,22 +88,23 @@ public class WaveManager : MonoBehaviour
             time -= delay;
 
             UpdateCountdown?.Invoke(Mathf.RoundToInt(time));
-            
-            yield return new WaitForSeconds(delay);
+
+            await Task.Delay(Mathf.RoundToInt(delay * 1000));
         }
         UpdateCountdown?.Invoke(-1);
 
         SetActiveIndicator(false);
 
-        UpdateWaves();
+        //UpdateWaves();
+        StartNextWave?.Invoke();
     }
 
     
-    void UpdateWaves()
+    async void UpdateWaves()
     {
         if (ActualyWeveIndex + 1 < Waves.Length)
         {
-            StartWave();
+            await StartWave();
         }
         else
         {
@@ -107,17 +115,17 @@ public class WaveManager : MonoBehaviour
     
     
 
-    void StartWave()
+    async Task StartWave()
     {
         OnStartWave?.Invoke();
         ActualyWeveIndex += 1;
         UpdateWaveCount?.Invoke(ActualyWeveIndex);
 
-        StartCoroutine(ProcessWave(Waves[ActualyWeveIndex]));
+        await ProcessWave(Waves[ActualyWeveIndex]);
     }
     
     
-    IEnumerator ProcessWave(WaveData wave)
+    async Task ProcessWave(WaveData wave)
     {
         bool isLastWave = ActualyWeveIndex + 1 >= Waves.Length;
 
@@ -130,10 +138,12 @@ public class WaveManager : MonoBehaviour
             {
                 GameObject enemy = Instantiate(stageData.enemy.EnemyPrefab, Vector3.one * -1000, Quaternion.identity, enemyStorage);
 
-                yield return new WaitForSeconds(stageData.sleepTime);
+                //yield return new WaitForSeconds(stageData.sleepTime);
+                await Task.Delay(Mathf.RoundToInt(stageData.sleepTime * 1000));
             }
 
-            yield return new WaitForSeconds(stage.stageSleepTime);
+            //yield return new WaitForSeconds(stage.stageSleepTime);
+            await Task.Delay(Mathf.RoundToInt(stage.stageSleepTime * 1000));
         }
 
         // if(skipWavePanel != null && !isLastWave)
@@ -142,7 +152,8 @@ public class WaveManager : MonoBehaviour
             StartCoroutine(ShowSkipWave());
 
 
-        yield return new WaitUntil(new Func<bool>(() => IsReadyToNextWave() ));
+        //yield return new WaitUntil(new Func<bool>(() => IsReadyToNextWave() ));
+        await TaskUtility.WaitUntil(new Func<bool>(() => IsReadyToNextWave()));
 
         skipWave = false;
         if (skiWavePanelOpened)
@@ -159,8 +170,9 @@ public class WaveManager : MonoBehaviour
 
         if (isLastWave)
         {
-            UpdateWaves();
-            yield break;
+            //UpdateWaves();
+            StartNextWave?.Invoke();
+            return;
         }
 
         uint waveReward = wave.waveReward;
@@ -169,11 +181,13 @@ public class WaveManager : MonoBehaviour
 
         SetActiveIndicator(true);
 
-        yield return new WaitForSeconds(wave.waveSleepTime);
+        //yield return new WaitForSeconds(wave.waveSleepTime);
+        await Task.Delay(Mathf.RoundToInt(wave.waveSleepTime * 1000));
 
         SetActiveIndicator(false);
 
-        UpdateWaves();
+        //UpdateWaves();
+        StartNextWave?.Invoke();
     }
 
 

@@ -97,21 +97,21 @@ using PathCreation;
             // Destroy(this.gameObject);
             
             
-            if (EnemyData.CanSpawnAfterDead)
-            {
-                foreach (var enemyToSpawn in EnemyData.EnemiesToSpawn)
-                {
-                    for (int i = 0; i < enemyToSpawn.Count; i++)
-                    {
-                        GameObject enemy = Instantiate(enemyToSpawn.Enemy.EnemyPrefab, this.transform.position, this.transform.rotation, this.transform.parent);
-                        EnemyController enemyController = enemy.GetComponent<EnemyController>();
+            //if (EnemyData.CanSpawnAfterDead)
+            //{
+            //    foreach (var enemyToSpawn in EnemyData.EnemiesToSpawn)
+            //    {
+            //        for (int i = 0; i < enemyToSpawn.Count; i++)
+            //        {
+            //            GameObject enemy = Instantiate(enemyToSpawn.Enemy.EnemyPrefab, this.transform.position, this.transform.rotation, this.transform.parent);
+            //            EnemyController enemyController = enemy.GetComponent<EnemyController>();
                         
-                        enemyController.MovementComponent.DistanceTravelled = MovementComponent.DistanceTravelled;
-                        // Instantiate(enemyToSpawn.Enemy.EnemyPrefab, Vector3.zero, Quaternion.identity, this.transform.parent).GetComponent<EnemyController>().MovementComponent.DistanceTravelled = MovementComponent.DistanceTravelled - 50;
-                    }
-                }
+            //            enemyController.MovementComponent.DistanceTravelled = MovementComponent.DistanceTravelled;
+            //            // Instantiate(enemyToSpawn.Enemy.EnemyPrefab, Vector3.zero, Quaternion.identity, this.transform.parent).GetComponent<EnemyController>().MovementComponent.DistanceTravelled = MovementComponent.DistanceTravelled - 50;
+            //        }
+            //    }
 
-            }
+            //}
             
             
             this.Invoke( () => Destroy(this.gameObject) , 1.5f);

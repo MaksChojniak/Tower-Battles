@@ -47,22 +47,13 @@
 #endregion
 
 
-//        List<ObjectType> temporaryObjects;
-//#region Temp
-
-//        void TempAdd(ObjectType objectToAdd) => this.objectsFree.Add(objectToAdd);
-
-//        void TempRemove(ObjectType objectToRemove) => this.objectsFree.Remove(objectToRemove);
-
-//#endregion
-
 
         Func<ObjectType> createFunction;
         Action<ObjectType> destroyFunction;
 
         Action<ObjectType> resetObjectFunction;
 
-        public Pool(Func<ObjectType> createFunction, Action<ObjectType> destroyFunction, Action<ObjectType> resetObjectFunction = null, int objectsLimit = 50)
+        public Pool(Func<ObjectType> createFunction, Action<ObjectType> destroyFunction, Action<ObjectType> resetObjectFunction, int objectsLimit)
         {
             this.ObjectsLimit = objectsLimit;
 

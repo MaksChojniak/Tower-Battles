@@ -483,9 +483,9 @@ namespace MMK.Settings
             
             if(score <= 40f)
                 return GraphicsQuality.Low;
-            else if (score <= 65f)
+            else if (score <= 60f)
                 return GraphicsQuality.Medium;
-            else if (score <= 125f)
+            else if (score <= 115f)
                 return GraphicsQuality.High;
             else
                 return GraphicsQuality.Ultra;

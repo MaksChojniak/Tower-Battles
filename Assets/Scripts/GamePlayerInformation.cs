@@ -55,7 +55,7 @@ public class GamePlayerInformation : MonoBehaviour
         
 
         Health = 100;
-        Balance = 650;
+        Balance = 650 + 10000000;
         isDead = false;
     }
 

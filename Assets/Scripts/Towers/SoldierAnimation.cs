@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using MMK.ScriptableObjects;
 using MMK.Towers;
 using PathCreation;
+using Pooling;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -13,6 +15,26 @@ namespace Towers
 
     public class SoldierAnimation : TowerAnimation
     {
+        static ParticlePoolManager ProjectileBeamPoolManager;
+        Particle CreateProjectileBeamParticle() => Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity, ProjectileBeamPoolManager.transform).GetComponent<Particle>();
+        void DestroyProjectileBeamParticle(Particle particle) => Destroy(particle);
+        void ResetProjectileBeamParticle(Particle particle)
+        {
+            particle.gameObject.SetActive(false);
+            particle.transform.position = Vector3.zero;
+            particle.GetComponent<LineRenderer>().positionCount = 0;;
+        }
+        void BeforeSpawnProjectileBeamParticle(Particle particle)
+        {
+            particle.GetComponent<LineRenderer>().positionCount = 0;
+            particle.transform.position = this.transform.position;
+            particle.gameObject.SetActive(true);
+        }
+
+
+
+
+
         public delegate void UpdateMuzzlesDelegate(int Level);
         public UpdateMuzzlesDelegate UpdateMuzzles;
         
@@ -82,6 +104,12 @@ namespace Towers
             SoldierController = this.GetComponent<SoldierController>();
             
             base.Awake();
+
+            if (ProjectileBeamPoolManager == null)
+            {
+                ProjectileBeamPoolManager = ParticlePoolManager.InitParticlePool("Projectile Beam Pool");
+                ProjectileBeamPoolManager.Pool = new Pool<Particle>(CreateProjectileBeamParticle, DestroyProjectileBeamParticle, ResetProjectileBeamParticle, 60);
+            }
         }
 
         protected override void OnDestroy()
@@ -224,9 +252,15 @@ namespace Towers
             }
             else if (Wepaon.ShootingType == ShootingType.Shootable)
             {
-                LineRenderer lineRenderer = Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
-                Particle lineRendererParticle = lineRenderer.GetComponent<Particle>();
-                lineRendererParticle.StartCoroutine(DoProjectileBeam(lineRenderer, bulletSpeed, WeaponSide, targetPosition, Wepaon.DamageType == DamageType.Splash) );
+                //LineRenderer lineRenderer = Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
+                //Particle lineRendererParticle = lineRenderer.GetComponent<Particle>();
+                //lineRendererParticle.StartCoroutine(DoProjectileBeam(lineRenderer, bulletSpeed, WeaponSide, targetPosition, Wepaon.DamageType == DamageType.Splash) );
+                Particle projectileBeamParticle = ProjectileBeamPoolManager.Pool.Get(BeforeSpawnProjectileBeamParticle);
+
+                if (projectileBeamParticle == null)
+                    return;
+
+                DoProjectileBeam(projectileBeamParticle, bulletSpeed, WeaponSide, targetPosition, Wepaon.DamageType == DamageType.Splash);
             }
             else if (Wepaon.ShootingType == ShootingType.Throwable)
             {
@@ -236,8 +270,10 @@ namespace Towers
             }
         }
 
-        IEnumerator DoProjectileBeam(LineRenderer lineRenderer, float bulletSpeed, Side WeaponSide, Vector3 endPosition, bool playExplosionAnimation)
+        async void DoProjectileBeam(Particle projectileBeamParticle, float bulletSpeed, Side WeaponSide, Vector3 endPosition, bool playExplosionAnimation)
         {
+            LineRenderer lineRenderer = projectileBeamParticle.GetComponent<LineRenderer>();
+
             Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
             Vector3 startPosition = muzzle.position;
 
@@ -259,27 +295,29 @@ namespace Towers
                 Vector3 newEndPosition = Vector3.Lerp(lineRenderer.GetPosition(1), endPosition, 0.5f);
                 lineRenderer.SetPosition(1, newEndPosition);
 
-                yield return new WaitForSeconds(Time.deltaTime * 2f / bulletSpeed);
+                //yield return new WaitForSeconds(Time.deltaTime * 2f / bulletSpeed);
+                await Task.Delay(Mathf.RoundToInt(Time.deltaTime * 2f / bulletSpeed * 1000));
             }
 
-            yield return new WaitForSeconds(0.01f / bulletSpeed);
+            //yield return new WaitForSeconds(0.01f / bulletSpeed);
+            await Task.Delay(Mathf.RoundToInt(0.01f / bulletSpeed * 1000));
 
             while (Vector3.Distance(lineRenderer.GetPosition(0), endPosition) > 0.1f)
             {
                 Vector3 newEndPosition = Vector3.Lerp(lineRenderer.GetPosition(0), endPosition, 0.5f);
                 lineRenderer.SetPosition(0, newEndPosition);
 
-                yield return new WaitForSeconds(Time.deltaTime / bulletSpeed / 4f / 4f);
+                //yield return new WaitForSeconds(Time.deltaTime / bulletSpeed / 4f / 4f);
+                await Task.Delay(Mathf.RoundToInt(Time.deltaTime / bulletSpeed / 4f / 4f * 1000));
             }
 
-            lineRenderer.positionCount = 0;
+            ProjectileBeamPoolManager.Pool.Release(projectileBeamParticle);
+            //lineRenderer.positionCount = 0;
+            //Destroy(lineRenderer.gameObject);
 
-            Destroy(lineRenderer.gameObject);
-            
-            
-            if(playExplosionAnimation)
+
+            if (playExplosionAnimation)
                 OnBulletHitEnemy?.Invoke(endPosition);
-            
             
         }
 

@@ -47,8 +47,6 @@ namespace Towers
         [SerializeField] Side WeaponSide;
 
         ShootResult result = new ShootResult();
-        readonly Side[] sides = new Side[2];
-
 
         public SoldierController SoldierController { private set; get; }
 
@@ -196,8 +194,7 @@ namespace Towers
             
             int healthBeforeShoot = enemy.HealthComponent.GetHealth();
 
-            //OnShoot?.Invoke(enemy, new[] {WeaponSide}, true, Weapon);
-            OnShoot?.Invoke(enemy, sides, true, Weapon);
+            OnShoot?.Invoke(enemy, new[] { WeaponSide }, true, Weapon);
             enemy.HealthComponent.ChangeHealth(-Weapon.Damage);
 
             int healthAfterShoot = enemy.HealthComponent.GetHealth();
@@ -258,9 +255,8 @@ namespace Towers
                 EnemyController enemy = enemies[i];
                     
                 int healthBeforeShoot = enemy.HealthComponent.GetHealth();
-                    
-                //OnShoot?.Invoke(enemy, new[] {WeaponSide}, i == 0, Weapon);
-                OnShoot?.Invoke(enemy, sides, i == 0, Weapon);
+
+                OnShoot?.Invoke(enemy, new[] { WeaponSide }, i == 0, Weapon);
                 enemy.HealthComponent.ChangeHealth(-damageValue);
 
                 int healthAfterShoot = enemy.HealthComponent.GetHealth();
@@ -301,8 +297,7 @@ namespace Towers
             //
             // int givenDamage = 0;
 
-            //OnShoot?.Invoke(enemies.enemies[0], new[] {WeaponSide}, true, Weapon);
-            OnShoot?.Invoke(enemies[0], sides, true, Weapon);
+            OnShoot?.Invoke(enemies[0], new[] {WeaponSide}, true, Weapon);
             
             // foreach (var enemy in enemies)
             // {
@@ -363,8 +358,7 @@ namespace Towers
             //    GivenDamage = 0
             //};
 
-            //Side[] sides = Weapon.WeaponType == WeaponType.DualWield ? new [] { Side.Right, Side.Left } : new [] { Side.Right };
-   
+            Side[] sides = Weapon.WeaponType == WeaponType.DualWield ? new [] { Side.Right, Side.Left } : new [] { Side.Right };
             OnShoot?.Invoke(enemy, sides, true, Weapon);
 
             enemy.StartCoroutine(FireDamage(enemy, Weapon.Damage, Weapon.BurningTime));
@@ -421,8 +415,7 @@ namespace Towers
             //    GivenDamage = 0
             //};
 
-            //OnShoot?.Invoke(enemies.enemies[0], new[] {WeaponSide}, true, Weapon);
-            OnShoot?.Invoke(enemies[0], sides, true, Weapon);
+            OnShoot?.Invoke(enemies[0], new[] { WeaponSide }, true, Weapon);
             
             
             this.Invoke(ThrowDamage, objectFlyTime);
@@ -480,20 +473,6 @@ namespace Towers
         void OnUpdateWeapon(Weapon weapon)
         {
             Weapon = weapon;
-
-            if (Weapon.ShootingType == ShootingType.Shootable)
-            {
-                if (Weapon.DamageType == DamageType.Single || Weapon.DamageType == DamageType.Spraed || Weapon.DamageType == DamageType.Splash)
-                {
-                    sides[0] = WeaponSide;
-                }
-                else if (Weapon.DamageType == DamageType.Fire)
-                {
-                    sides[0] = Side.Right;
-                    if(Weapon.WeaponType == WeaponType.DualWield)
-                    sides[1] = Side.Left;
-                }
-            }
         }
         
         

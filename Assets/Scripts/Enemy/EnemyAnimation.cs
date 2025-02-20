@@ -17,10 +17,8 @@ using Random = UnityEngine.Random;
 // {
 public class EnemyAnimation : MonoBehaviour
 {
-    #region Blood Particle Pool
-    public static GameObject BloodParticleContainer;
-    public static Pool<Particle> BloodParticlePool;
-    Particle CreateBloodParticle() => Instantiate(BloodParticlePrefab, BloodParticleContainer.transform).GetComponent<Particle>();
+    static ParticlePoolManager BloodPoolManager;
+    Particle CreateBloodParticle() => Instantiate(BloodParticlePrefab, BloodPoolManager.transform).GetComponent<Particle>();
     void DestroyBloodParticle(Particle particle) => Destroy(particle);
     void ResetBloodParticle(Particle particle)
     {
@@ -32,7 +30,8 @@ public class EnemyAnimation : MonoBehaviour
         particle.transform.position = this.transform.position;
         particle.gameObject.SetActive(true);
     }
-    #endregion
+
+
 
 
 
@@ -69,10 +68,10 @@ public class EnemyAnimation : MonoBehaviour
 
     void Awake()
     {
-        if (BloodParticlePool == null)
+        if (BloodPoolManager == null)
         {
-            BloodParticleContainer = new GameObject("Blood Particle Pool");
-            BloodParticlePool = new Pool<Particle>(CreateBloodParticle, DestroyBloodParticle, ResetBloodParticle, objectsLimit: 50);
+            BloodPoolManager = ParticlePoolManager.InitParticlePool("Blood Pool");
+            BloodPoolManager.Pool = new Pool<Particle>(CreateBloodParticle, DestroyBloodParticle, ResetBloodParticle, 40);
         }
 
 
@@ -277,7 +276,11 @@ public class EnemyAnimation : MonoBehaviour
         {
             //Particle bloodParticle = Instantiate(BloodParticlePrefab, this.transform.position, this.transform.rotation).GetComponent<Particle>();
             //bloodParticle.StartCoroutine(PlayBloodAnimation(bloodParticle.gameObject));
-            Particle bloodParticle = BloodParticlePool.Get(BeforeSpawnBloodParticle);
+            Particle bloodParticle = BloodPoolManager.Pool.Get(BeforeSpawnBloodParticle);
+            
+            if (bloodParticle == null)
+                return;
+
             PlayBloodAnimation(bloodParticle);
 
         }
@@ -293,7 +296,7 @@ public class EnemyAnimation : MonoBehaviour
         while (bloodParticleSystem != null && bloodParticleSystem.isPlaying)
             await Task.Yield();
 
-        BloodParticlePool.Release(bloodParticle);
+        BloodPoolManager.Pool.Release(bloodParticle);
     }
     
 

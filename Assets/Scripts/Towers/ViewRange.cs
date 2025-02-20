@@ -166,13 +166,13 @@ namespace Towers
                 if (lastAllEnemiesIndex >= maxEnemiesCount)
                     break;
 
-                if (objectWitTag.TryGetComponent<EnemyController>(out var enemy) && enemy.HealthComponent.GetHealth() > 0 && ((!HasHiddenDetecion && !enemy.Hidden) || (HasHiddenDetecion)))
+                if (objectWitTag.layer !=GameSceneInputHandler.RagdollLayer && objectWitTag.TryGetComponent<EnemyController>(out var enemy) && enemy.HealthComponent.GetHealth() > 0 && ((!HasHiddenDetecion && !enemy.Hidden) || (HasHiddenDetecion)))
                 {
                     allEnemies[lastAllEnemiesIndex] = enemy;
                     lastAllEnemiesIndex++;
                 }
             }
-            var objectsWitTag = GameObject.FindGameObjectsWithTag("Enemy");
+            //var objectsWitTag = GameObject.FindGameObjectsWithTag("Enemy");
             //for(int i = 0; i < objectsWitTag.Length && lastAllEnemiesIndex < maxEnemiesCount; i++)
             //{
             //    if (objectsWitTag[i].TryGetComponent<EnemyController>(out var enemy) && enemy.HealthComponent.GetHealth() > 0 && ((!HasHiddenDetecion && !enemy.Hidden) || (HasHiddenDetecion)))
@@ -283,7 +283,7 @@ namespace Towers
             //return enemies[0];
             for (int i = 0; i < lastAllEnemiesIndex; i++)
             {
-                if (allEnemies[i] != null && Vector3.Distance(allEnemies[i].transform.position, this.transform.position) <= ViewRangeValue)
+                if (allEnemies[i] != null && allEnemies[i].HealthComponent.GetHealth() > 0 && Vector3.Distance(allEnemies[i].transform.position, this.transform.position) <= ViewRangeValue)
                     return allEnemies[i];
             }
 
@@ -319,7 +319,7 @@ namespace Towers
             for (int i = 0; i < allEnemies.Length; i++)
             {
                 //if (allEnemies[i] != null && Vector3.Distance(enemyInCenter.transform.position, allEnemies[i].transform.position) <= spread)
-                if (allEnemies[i] != null && Vector3.Distance(enemyInCenter.transform.position, allEnemies[i].transform.position) <= spread)
+                if (allEnemies[i] != null && allEnemies[i].HealthComponent.GetHealth() > 0 && Vector3.Distance(enemyInCenter.transform.position, allEnemies[i].transform.position) <= spread)
                 {
                     allEnemies[lastAllEnemiesIndex] = allEnemies[i];
                     lastAllEnemiesIndex++;
