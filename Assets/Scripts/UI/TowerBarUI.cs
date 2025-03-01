@@ -39,7 +39,7 @@ public class TowerBarUI : MonoBehaviour
 
     void Update()
     {
-        TowersCount.text = $"{GameObject.FindGameObjectsWithTag("Tower").Length}/{GlobalSettingsManager.GetGlobalSettings().MaxTowersCount} Towers";
+        TowersCount.text = $"{GameObject.FindObjectsOfType<TowerController>().Length}/{GlobalSettingsManager.GetGlobalSettings().MaxTowersCount} Towers";
         
     }
 

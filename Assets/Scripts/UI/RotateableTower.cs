@@ -27,11 +27,22 @@ namespace DefaultNamespace
         
         Vector3 _startMousePosition;
 
+
+
+        private void Awake()
+        {
+            SpawnTowerProcess += OnSpawnTowerProcess;
+        }
+
+        private void OnDestroy()
+        {
+            SpawnTowerProcess -= OnSpawnTowerProcess;
+        }
+
         void OnEnable()
         {
-            TowerInventory.OnSelectTile += OnSelectTile;
-            SpawnTowerProcess += OnSpawnTowerProcess;
-            
+            //Debug.Log($"OnEnable");
+            TowerInventory.OnSelectTile += OnSelectTile;           
             
             if(Tower == null)
                 return;
@@ -41,13 +52,15 @@ namespace DefaultNamespace
 
         void OnDisable()
         {
-            SpawnTowerProcess -= OnSpawnTowerProcess;
+            //Debug.Log($"OnEnable");
             TowerInventory.OnSelectTile -= OnSelectTile;
         }
 
         
         void OnSelectTile(int index, GameObject tileUI, bool isUnlocked, Tower tower)
         {
+            Debug.Log($"OnSelectTile");
+
             if(tower == null)
                 return;
 
@@ -61,6 +74,8 @@ namespace DefaultNamespace
 
         void OnSpawnTowerProcess(Tower tower, TowerSkin skin = null)
         {
+            Debug.Log($"OnSpawnTowerProcess");
+
             if (skin == null)
                 skin = tower.CurrentSkin;
             
@@ -71,8 +86,10 @@ namespace DefaultNamespace
 
         void SpawnTower(GameObject towerPrefab, Vector3 offset)
         {
-            if(Tower != null)
+            if (Tower != null)
+            {
                 Destroy(Tower.gameObject);
+            }
             
             var towerObject = Instantiate(towerPrefab, TowerContainer);
 
@@ -87,7 +104,7 @@ namespace DefaultNamespace
 
             if (towerObject.transform.TryGetComponent<SoldierAnimation>(out var soldierAnimation))
             {
-                soldierAnimation.UpdateController(0);
+                soldierAnimation.UpdateController.Invoke(0);
                 soldierAnimation.ShootAnimation(Side.Right);
             }
             
