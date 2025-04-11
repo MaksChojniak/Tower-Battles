@@ -334,16 +334,7 @@ namespace MMK.Towers
             // Destroy Tower
             OnRemoveTower?.Invoke();
 
-
-            Dead(this.gameObject);
-            async static void Dead(GameObject obj)
-            {
-                Destroy(obj.GetComponent<TowerController>());
-                obj.SetActive(false);
-                await Task.Delay(10);
-
-                Destroy(obj);
-            }
+            Destroy(this.gameObject);
         }
 
 
