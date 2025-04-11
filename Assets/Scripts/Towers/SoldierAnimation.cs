@@ -15,24 +15,9 @@ namespace Towers
 
     public class SoldierAnimation : TowerAnimation
     {
-        static ParticlePoolManager ProjectileBeamPoolManager;
-        Particle CreateProjectileBeamParticle() => Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity, ProjectileBeamPoolManager.transform).GetComponent<Particle>();
-        void DestroyProjectileBeamParticle(Particle particle) => Destroy(particle);
-        void ResetProjectileBeamParticle(Particle particle)
-        {
-            particle.gameObject.SetActive(false);
-            particle.transform.position = Vector3.zero;
-            particle.GetComponent<LineRenderer>().positionCount = 0;;
-        }
-        void BeforeSpawnProjectileBeamParticle(Particle particle)
-        {
-            particle.GetComponent<LineRenderer>().positionCount = 0;
-            particle.transform.position = this.transform.position;
-            particle.gameObject.SetActive(true);
-        }
-
-
-
+        static ProjectileBeamParticlePool<Particle> projectileBeamParticlePool;
+        static ThrowPathParticlePool<Particle> throwPathParticlePool;
+        static FireStreamParticlePool<Particle> fireStreamParticlePool;
 
 
         public delegate void UpdateMuzzlesDelegate(int Level);
@@ -101,15 +86,11 @@ namespace Towers
 
         protected override void Awake()
         {
+            Debug.Log("Override Awake");
+
             SoldierController = this.GetComponent<SoldierController>();
             
-            base.Awake();
-
-            if (ProjectileBeamPoolManager == null)
-            {
-                ProjectileBeamPoolManager = ParticlePoolManager.InitParticlePool("Projectile Beam Pool");
-                ProjectileBeamPoolManager.Pool = new Pool<Particle>(CreateProjectileBeamParticle, DestroyProjectileBeamParticle, ResetProjectileBeamParticle, 60);
-            }
+            base.Awake();            
         }
 
         protected override void OnDestroy()
@@ -228,14 +209,15 @@ namespace Towers
             Animator.Play(SHOOT_CLIP_NAME, animationLayer);
         }
 
-        
-        
+
+
+
 #endregion
 
-        
-        
-#region Bullet Animation
-        
+
+
+        #region Bullet Animation
+
         float maxBulletTrailLenght = 6.5f;
         
         void BulletAnimation(EnemyController target, Side WeaponSide, Weapon Wepaon)
@@ -246,16 +228,26 @@ namespace Towers
 
             if (Wepaon.DamageType == DamageType.Fire)
             {
-                ParticleSystem fireStreamParticleSystem = Instantiate(FireStreamPrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
-                Particle fireStreamParticle = fireStreamParticleSystem.GetComponent<Particle>();
-                fireStreamParticle.StartCoroutine(DoFireStream(fireStreamParticleSystem, bulletSpeed, WeaponSide, target));
+                //ParticleSystem fireStreamParticleSystem = Instantiate(FireStreamPrefab, Vector3.zero, Quaternion.identity).GetComponent<ParticleSystem>();
+                ////Particle fireStreamParticle = fireStreamParticleSystem.GetComponent<Particle>();
+                ////fireStreamParticle.StartCoroutine(DoFireStream(fireStreamParticleSystem, bulletSpeed, WeaponSide, target));
+                //fireStreamParticleSystem.GetComponent<Particle>().StartCoroutine(DoFireStream(fireStreamParticleSystem, bulletSpeed, WeaponSide, target));
+                if (fireStreamParticlePool == null && FireStreamPrefab != null)
+                    fireStreamParticlePool = this.CreatFireStreamPool<Particle>(FireStreamPrefab, 20);
+
+                Particle fireStreamParticle = fireStreamParticlePool.Get();
+
+                if (fireStreamParticle == null)
+                    return;
+
+                DoFireStream(fireStreamParticle, bulletSpeed, WeaponSide, target);
             }
             else if (Wepaon.ShootingType == ShootingType.Shootable)
             {
-                //LineRenderer lineRenderer = Instantiate(ProjectileBeamPrefab, Vector3.zero, Quaternion.identity).GetComponent<LineRenderer>();
-                //Particle lineRendererParticle = lineRenderer.GetComponent<Particle>();
-                //lineRendererParticle.StartCoroutine(DoProjectileBeam(lineRenderer, bulletSpeed, WeaponSide, targetPosition, Wepaon.DamageType == DamageType.Splash) );
-                Particle projectileBeamParticle = ProjectileBeamPoolManager.Pool.Get(BeforeSpawnProjectileBeamParticle);
+                if (projectileBeamParticlePool == null && ProjectileBeamPrefab != null)
+                    projectileBeamParticlePool = this.CreateProjectileBeamPool<Particle>(ProjectileBeamPrefab, 60);
+
+                Particle projectileBeamParticle = projectileBeamParticlePool.Get();
 
                 if (projectileBeamParticle == null)
                     return;
@@ -264,9 +256,20 @@ namespace Towers
             }
             else if (Wepaon.ShootingType == ShootingType.Throwable)
             {
-                PathCreator throwPath = Instantiate(ThrowPathPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathCreator>();
-                Particle throwPathParticle = throwPath.GetComponent<Particle>();
-                throwPathParticle.StartCoroutine(DoThrowPath(throwPath, WeaponSide, target, Wepaon.DamageType == DamageType.Splash) );
+                //PathCreator throwPath = Instantiate(ThrowPathPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathCreator>();
+                ////Particle throwPathParticle = throwPath.GetComponent<Particle>();
+                ////throwPathParticle.StartCoroutine(DoThrowPath(throwPath, WeaponSide, target, Wepaon.DamageType == DamageType.Splash) );
+                ////throwPath.GetComponent<Particle>().StartCoroutine(DoThrowPath(throwPath, WeaponSide, target, Wepaon.DamageType == DamageType.Splash) );
+                //DoThrowPath(throwPath, WeaponSide, target, Wepaon.DamageType == DamageType.Splash);
+                if (throwPathParticlePool == null && ThrowPathPrefab != null)
+                    throwPathParticlePool = this.CreateThrowPathPool<Particle>(ThrowPathPrefab, 20);
+
+                Particle throwPathParticle = throwPathParticlePool.Get();
+
+                if (throwPathParticle == null)
+                    return;
+
+                DoThrowPath(throwPathParticle, WeaponSide, target, Wepaon.DamageType == DamageType.Splash);
             }
         }
 
@@ -311,7 +314,7 @@ namespace Towers
                 await Task.Delay(Mathf.RoundToInt(Time.deltaTime / bulletSpeed / 4f / 4f * 1000));
             }
 
-            ProjectileBeamPoolManager.Pool.Release(projectileBeamParticle);
+            projectileBeamParticlePool.Realese(projectileBeamParticle);
             //lineRenderer.positionCount = 0;
             //Destroy(lineRenderer.gameObject);
 
@@ -321,20 +324,24 @@ namespace Towers
             
         }
 
-        IEnumerator DoThrowPath(PathCreator throwPath, Side WeaponSide, EnemyController EnemyController, bool playExplosionAnimation)
+
+        //async void DoThrowPath(PathCreator throwPath, Side WeaponSide, EnemyController EnemyController, bool playExplosionAnimation)
+        async void DoThrowPath(Particle particle, Side WeaponSide, EnemyController EnemyController, bool playExplosionAnimation)
         {
+            PathCreator throwPath = particle.GetComponent<PathCreator>();
+
             Transform target = EnemyController.transform;
             Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
-            
+
             // PathCreator throwPath = Instantiate(ThrowPathPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathCreator>();
-            
+
             BezierPath bezierPath = throwPath.bezierPath;
 
             GameObject throwedObject = Instantiate(ThrowedObjectPrefab, Vector3.zero, Quaternion.identity);
 
 
             Vector3 startPosition = muzzle.position;
-            Vector3 heightPosition = ( (startPosition + target.position) / 2 ) + new Vector3(0, ObjectMaxHeight, 0);
+            Vector3 heightPosition = ((startPosition + target.position) / 2) + new Vector3(0, ObjectMaxHeight, 0);
 
             // Setup Bezier Path
             bezierPath.SetPoint(0, startPosition);  // start point
@@ -343,14 +350,16 @@ namespace Towers
 
             bezierPath.ControlPointMode = BezierPath.ControlMode.Aligned;
 
-            yield return new WaitForEndOfFrame();
+            await Task.Yield();
+            //yield return new WaitForEndOfFrame();
 
             bezierPath.ControlPointMode = BezierPath.ControlMode.Automatic;
             throwPath.TriggerPathUpdate();
 
-            yield return new WaitForSeconds(0.2f); // animation time
+            await Task.Delay(200);
+            //yield return new WaitForSeconds(0.2f); // animation time
 
-            
+
             // Simulate Throw Trajectory
             float distanceTravelled = 0;
 
@@ -364,57 +373,117 @@ namespace Towers
                 throwedObject.transform.position = throwPath.path.GetPointAtDistance(distanceTravelled);
                 throwedObject.transform.rotation = Quaternion.Euler(throwedObject.transform.eulerAngles + new Vector3(Time.deltaTime * 10, 0, Time.deltaTime * 30));
 
-
                 if (target != null)
                     bezierPath.SetPoint(6, target.position);
 
-                yield return new WaitForSeconds(1f / 100f);
+                //yield return new WaitForSeconds(1f / 100f);
+                await Task.Delay(10);
 
                 throwPath.TriggerPathUpdate();
 
             }
 
-            Destroy( throwedObject );
-            Destroy( throwPath.gameObject );
-            
-            if(playExplosionAnimation)
+            Destroy(throwedObject);
+            //Destroy(throwPath.gameObject);
+
+            if (playExplosionAnimation)
                 OnBulletHitEnemy?.Invoke(target.position);
         }
 
-        IEnumerator DoFireStream(ParticleSystem fireStreamParticle, float fireSpeed, Side WeaponSide, EnemyController enemy)
+        //IEnumerator DoThrowPath(PathCreator throwPath, Side WeaponSide, EnemyController EnemyController, bool playExplosionAnimation)
+        //{
+        //    Transform target = EnemyController.transform;
+        //    Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
+
+        //    // PathCreator throwPath = Instantiate(ThrowPathPrefab, Vector3.zero, Quaternion.identity).GetComponent<PathCreator>();
+
+        //    BezierPath bezierPath = throwPath.bezierPath;
+
+        //    GameObject throwedObject = Instantiate(ThrowedObjectPrefab, Vector3.zero, Quaternion.identity);
+
+
+        //    Vector3 startPosition = muzzle.position;
+        //    Vector3 heightPosition = ( (startPosition + target.position) / 2 ) + new Vector3(0, ObjectMaxHeight, 0);
+
+        //    // Setup Bezier Path
+        //    bezierPath.SetPoint(0, startPosition);  // start point
+        //    bezierPath.SetPoint(3, heightPosition); // highest Point
+        //    bezierPath.SetPoint(6, target.position);         // end Point
+
+        //    bezierPath.ControlPointMode = BezierPath.ControlMode.Aligned;
+
+        //    yield return new WaitForEndOfFrame();
+
+        //    bezierPath.ControlPointMode = BezierPath.ControlMode.Automatic;
+        //    throwPath.TriggerPathUpdate();
+
+        //    yield return new WaitForSeconds(0.2f); // animation time
+
+
+        //    // Simulate Throw Trajectory
+        //    float distanceTravelled = 0;
+
+        //    float distance = throwPath.path.length;
+        //    float time = 0.3f;
+        //    float velocity = distance / time;
+
+        //    while (distanceTravelled < distance)
+        //    {
+        //        distanceTravelled += velocity / 100f;
+        //        throwedObject.transform.position = throwPath.path.GetPointAtDistance(distanceTravelled);
+        //        throwedObject.transform.rotation = Quaternion.Euler(throwedObject.transform.eulerAngles + new Vector3(Time.deltaTime * 10, 0, Time.deltaTime * 30));
+
+
+        //        if (target != null)
+        //            bezierPath.SetPoint(6, target.position);
+
+        //        yield return new WaitForSeconds(1f / 100f);
+
+        //        throwPath.TriggerPathUpdate();
+
+        //    }
+
+        //    Destroy( throwedObject );
+        //    Destroy( throwPath.gameObject );
+
+        //    if(playExplosionAnimation)
+        //        OnBulletHitEnemy?.Invoke(target.position);
+        //}
+
+        async void DoFireStream(Particle fireStreamParticle, float fireSpeed, Side WeaponSide, EnemyController enemy)
         {
-            ParticleSystem hotterStreamParticle = fireStreamParticle.transform.GetChild(0).GetComponent<ParticleSystem>();
+            ParticleSystem fireStreamParticleSystem = fireStreamParticle.GetComponent<ParticleSystem>();
+            ParticleSystem hotterStreamParticle = fireStreamParticleSystem.transform.GetChild(0).GetComponent<ParticleSystem>();
             
             Transform muzzle = GetMuzzleByWeaponSide(WeaponSide).transform;
             Vector3 enemyPosition = enemy.transform.position;
-            
-            // ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, muzzle.transform.position, this.transform.rotation).GetComponent<ParticleSystem>();
-            fireStreamParticle.transform.position = muzzle.transform.position;
-            fireStreamParticle.transform.rotation = Quaternion.LookRotation(enemy.transform.position - this.transform.position);
 
-            var fireStreamMain = fireStreamParticle.main;
+            // ParticleSystem fireStreamParticle = Instantiate(FireStreamPrefab, muzzle.transform.position, this.transform.rotation).GetComponent<ParticleSystem>();
+            fireStreamParticleSystem.transform.position = muzzle.transform.position;
+            fireStreamParticleSystem.transform.rotation = Quaternion.LookRotation(enemy.transform.position - this.transform.position);
+
+            var fireStreamMain = fireStreamParticleSystem.main;
             float multiplier = 3f;
-            fireStreamMain.startLifetime =  (Vector3.Distance(this.transform.position, enemy.transform.position) + 1f) / fireStreamParticle.velocityOverLifetime.z.constant / multiplier ;
+            fireStreamMain.startLifetime =  (Vector3.Distance(this.transform.position, enemy.transform.position) + 1f) / fireStreamParticleSystem.velocityOverLifetime.z.constant / multiplier ;
             
             var hotterStreamMain = hotterStreamParticle.main;
             hotterStreamMain.startLifetime = fireStreamMain.startLifetime;
-            
-            
-            fireStreamParticle.Play();
+
+
+            fireStreamParticleSystem.Play();
 
             float time = 0.5f + fireStreamMain.startLifetime.constant;
             while (time >= 0)
             {
-                fireStreamParticle.transform.position = muzzle.transform.position;
-                fireStreamParticle.transform.rotation = Quaternion.LookRotation(enemy.transform.position - this.transform.position);
-                
-                yield return new WaitForSeconds(Time.deltaTime);
+                fireStreamParticleSystem.transform.position = muzzle.transform.position;
+                fireStreamParticleSystem.transform.rotation = Quaternion.LookRotation(enemy.transform.position - this.transform.position);
+
+                //yield return new WaitForSeconds(Time.deltaTime);
+                await Task.Delay(Mathf.RoundToInt(Time.deltaTime * 1000));
                 time -= Time.deltaTime;
             }
-            
-            Destroy(fireStreamParticle.gameObject);
-            
-            yield return null;
+
+            fireStreamParticlePool.Realese(fireStreamParticle);
         }
         
 #endregion

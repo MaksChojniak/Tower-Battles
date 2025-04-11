@@ -7,7 +7,7 @@
 
     public class Pool<ObjectType> where ObjectType : UnityEngine.Object
     {
-        readonly public int ObjectsLimit;
+        readonly public uint ObjectsLimit;
 
         List<ObjectType> objectsInUse;
 #region In Use
@@ -53,7 +53,7 @@
 
         Action<ObjectType> resetObjectFunction;
 
-        public Pool(Func<ObjectType> createFunction, Action<ObjectType> destroyFunction, Action<ObjectType> resetObjectFunction, int objectsLimit)
+        public Pool(Func<ObjectType> createFunction, Action<ObjectType> destroyFunction, Action<ObjectType> resetObjectFunction, uint objectsLimit)
         {
             this.ObjectsLimit = objectsLimit;
 

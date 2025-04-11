@@ -88,9 +88,9 @@ namespace MMK.Towers
         {
             if (LevelUpAudio.AudioClip == null)
                 throw new NullReferenceException("LevelUpAudio Clip doesn't exist  [value = null]");
-            
+
             LevelUpAudio.AudioSource.Play();
-            
+
         }
         
         
@@ -98,9 +98,9 @@ namespace MMK.Towers
         {
             if (OnTowerClickedAudio.AudioClip == null)
                 throw new NullReferenceException("OnTowerClickedAudio Clip doesn't exist  [value = null]");
-            
+
             OnTowerClickedAudio.AudioSource.Play();
-            
+
         }
 
         protected void PlayPlaceTowerAudio()
@@ -126,7 +126,7 @@ namespace MMK.Towers
             LevelUpAudio.SetupAudio(audioParent.transform);
             RemoveTowerAudio.SetupAudio(audioParent.transform);
             PlaceTowerAudio.SetupAudio(audioParent.transform);
-            
+
         }
 
 

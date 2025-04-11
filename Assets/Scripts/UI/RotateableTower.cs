@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Xml.Schema;
 using MMK.ScriptableObjects;
 using MMK.Towers;
 using Towers;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -28,95 +32,188 @@ namespace DefaultNamespace
         Vector3 _startMousePosition;
 
 
-
-        private void Awake()
+        void Awake()
         {
-            SpawnTowerProcess += OnSpawnTowerProcess;
+            //TowerInventory.OnSelectTile += SpawnTowerOnPlatform;
+            SpawnTowerProcess += SpawnTowerOnPlatform;
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
-            SpawnTowerProcess -= OnSpawnTowerProcess;
+            SpawnTowerProcess -= SpawnTowerOnPlatform;
+            //TowerInventory.OnSelectTile -= SpawnTowerOnPlatform;
         }
 
         void OnEnable()
         {
-            //Debug.Log($"OnEnable");
-            TowerInventory.OnSelectTile += OnSelectTile;           
-            
-            if(Tower == null)
-                return;
-            
-            Tower.Rotate(BaseRotation);
+            TowerInventory.OnSelectTile += SpawnTowerOnPlatform;
+            //SpawnTowerProcess += SpawnTowerOnPlatform;
         }
 
         void OnDisable()
         {
-            //Debug.Log($"OnEnable");
-            TowerInventory.OnSelectTile -= OnSelectTile;
+            //SpawnTowerProcess -= SpawnTowerOnPlatform;
+            TowerInventory.OnSelectTile -= SpawnTowerOnPlatform;
+
+            RemoveTowerFromPlatform();
         }
 
-        
-        void OnSelectTile(int index, GameObject tileUI, bool isUnlocked, Tower tower)
-        {
-            Debug.Log($"OnSelectTile");
 
-            if(tower == null)
+        void SpawnTowerOnPlatform(int index, GameObject tileUI, bool isUnlocked, Tower tower) => SpawnTowerOnPlatform(tower);
+
+
+        void SpawnTowerOnPlatform(Tower tower, TowerSkin skin = null)
+        {
+            RemoveTowerFromPlatform();
+
+            if (tower == null)
+            {
+                //Debug.LogException(new Exception("tower to spawn on platform is null"));
                 return;
-
-            // Tower tower = TowerInventory.TowerData.GetAllTowerInventoryData()[index].towerSO;
-            // GameObject towerPrefab = tower.CurrentSkin.TowerPrefab;
-            // Vector3 towerOffset = tower.OriginPointOffset;
-            // SpawnTower(towerPrefab, towerOffset);
-            SpawnTower(tower.CurrentSkin.TowerPrefab, tower.OriginPointOffset);
-            
-        }
-
-        void OnSpawnTowerProcess(Tower tower, TowerSkin skin = null)
-        {
-            Debug.Log($"OnSpawnTowerProcess");
+            }
 
             if (skin == null)
                 skin = tower.CurrentSkin;
-            
+
             SpawnTower(skin.TowerPrefab, tower.OriginPointOffset);
-            
         }
-        
 
-        void SpawnTower(GameObject towerPrefab, Vector3 offset)
+
+        async void SpawnTower(GameObject towerToSpawn, Vector3 originOffset)
         {
-            if (Tower != null)
-            {
-                Destroy(Tower.gameObject);
-            }
-            
-            var towerObject = Instantiate(towerPrefab, TowerContainer);
+            while(!this.gameObject.activeInHierarchy)
+                await Task.Yield();
 
-            Destroy(towerObject.GetComponent<TowerController>());
+            Debug.Log("Spawn Tower");
 
-            Transform towerModel = towerObject.transform.GetChild(0).GetChild(0);
+            Tower = Instantiate(towerToSpawn, TowerContainer).transform;
+            Debug.Log(Tower.name);
+
+            Transform towerModel = Tower.transform.GetChild(0).GetChild(0);
             towerModel.gameObject.layer = LayerMask.NameToLayer("Tower");
-            foreach(Transform towerModelChild in towerModel.transform)
-            {
+            foreach (Transform towerModelChild in towerModel.transform)
                 towerModelChild.gameObject.layer = LayerMask.NameToLayer("Tower");
-            }
 
-            if (towerObject.transform.TryGetComponent<SoldierAnimation>(out var soldierAnimation))
-            {
-                soldierAnimation.UpdateController.Invoke(0);
-                soldierAnimation.ShootAnimation(Side.Right);
-            }
-            
+            Animation();
+
+            foreach (var component in Tower.GetComponents<MonoBehaviour>())
+                Destroy(component);
+
+            ResetPositionAndRotation(originOffset);
+        }
 
 
-            Tower = towerObject.transform;
+        void ResetPositionAndRotation(Vector3 offset)
+        {
 
             RotatablePlatform.localPosition = -Vector3.up + offset;
             Tower.localPosition = Vector3.zero + offset;
             Tower.localRotation = Quaternion.Euler(BaseRotation);
         }
-        
+
+        void RemoveTowerFromPlatform()
+        {
+            if (Tower == null)
+                return;
+
+            Destroy(Tower.gameObject);
+            Tower = null;
+        }
+
+
+        async void Animation()
+        {
+            if (Tower.TryGetComponent<SoldierAnimation>(out var soldierAnimation))
+            {
+                //soldierAnimation.UpdateController.Invoke(0);
+                soldierAnimation.ShootAnimation(Side.Right);
+            }
+        }
+
+        //private void Awake()
+        //{
+        //    SpawnTowerProcess += OnSpawnTowerProcess;
+        //}
+
+        //private void OnDestroy()
+        //{
+        //    SpawnTowerProcess -= OnSpawnTowerProcess;
+        //}
+
+        //void OnEnable()
+        //{
+        //    //Debug.Log($"OnEnable");
+        //    TowerInventory.OnSelectTile += OnSelectTile;           
+
+        //    if(Tower == null)
+        //        return;
+
+        //    Tower.Rotate(BaseRotation);
+        //}
+
+        //void OnDisable()
+        //{
+        //    //Debug.Log($"OnEnable");
+        //    TowerInventory.OnSelectTile -= OnSelectTile;
+        //}
+
+
+        //void OnSelectTile(int index, GameObject tileUI, bool isUnlocked, Tower tower)
+        //{
+        //    Debug.Log($"OnSelectTile");
+
+        //    if(tower == null)
+        //        return;
+
+        //    SpawnTower(tower.CurrentSkin.TowerPrefab, tower.OriginPointOffset);
+
+        //}
+
+        //void OnSpawnTowerProcess(Tower tower, TowerSkin skin = null)
+        //{
+        //    Debug.Log($"OnSpawnTowerProcess");
+
+        //    if (skin == null)
+        //        skin = tower.CurrentSkin;
+
+        //    SpawnTower(skin.TowerPrefab, tower.OriginPointOffset);
+
+        //}
+
+
+        //void SpawnTower(GameObject towerPrefab, Vector3 offset)
+        //{
+        //    if (Tower != null)
+        //    {
+        //        Destroy(Tower.gameObject);
+        //    }
+
+        //    var towerObject = Instantiate(towerPrefab, TowerContainer);
+
+        //    Destroy(towerObject.GetComponent<TowerController>());
+
+        //    Transform towerModel = towerObject.transform.GetChild(0).GetChild(0);
+        //    towerModel.gameObject.layer = LayerMask.NameToLayer("Tower");
+        //    foreach(Transform towerModelChild in towerModel.transform)
+        //    {
+        //        towerModelChild.gameObject.layer = LayerMask.NameToLayer("Tower");
+        //    }
+
+        //    if (towerObject.transform.TryGetComponent<SoldierAnimation>(out var soldierAnimation))
+        //    {
+        //        soldierAnimation.UpdateController.Invoke(0);
+        //        soldierAnimation.ShootAnimation(Side.Right);
+        //    }
+
+
+
+        //    Tower = towerObject.transform;
+
+        //    RotatablePlatform.localPosition = -Vector3.up + offset;
+        //    Tower.localPosition = Vector3.zero + offset;
+        //    Tower.localRotation = Quaternion.Euler(BaseRotation);
+        //}
+
 
 
 
@@ -159,4 +256,6 @@ namespace DefaultNamespace
             coroutine = null;
         }
     }
+
+
 }

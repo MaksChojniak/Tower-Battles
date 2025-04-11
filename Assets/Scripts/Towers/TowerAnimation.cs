@@ -27,6 +27,8 @@ namespace MMK.Towers
         
         protected virtual void Awake()
         {
+            Debug.Log("Virtual Awake");
+
             TowerController = this.GetComponent<TowerController>();
             
             if (this.TryGetComponent<Animator>(out var animator))
@@ -34,7 +36,6 @@ namespace MMK.Towers
             else
                 Debug.LogException(new Exception("Enemy doesn't have Animator"));
 
-            
             RegisterHandlers();
         }
 

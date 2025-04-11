@@ -199,8 +199,11 @@ namespace MMK.Towers
 
         public delegate TowerInformations GetTowerInformationsDelegate();
         public GetTowerInformationsDelegate GetTowerInformations;
-            
         
+        public delegate void OnPlaceTowerDelegate();
+        public OnPlaceTowerDelegate OnPlaceTower;
+
+
 
         [Range(0, 4)]
         [SerializeField] protected int Level;
@@ -329,9 +332,18 @@ namespace MMK.Towers
         protected virtual void RemoveTowerProcess()
         {
             // Destroy Tower
-            Destroy(this.gameObject);
-
             OnRemoveTower?.Invoke();
+
+
+            Dead(this.gameObject);
+            async static void Dead(GameObject obj)
+            {
+                Destroy(obj.GetComponent<TowerController>());
+                obj.SetActive(false);
+                await Task.Delay(10);
+
+                Destroy(obj);
+            }
         }
 
 
@@ -339,11 +351,13 @@ namespace MMK.Towers
         {
             if (tower != this)
                 return;
-            
+
             IsPlaced = true;
             
             UploadNewData();
             LevelComponent.SetActive(true);
+
+            OnPlaceTower?.Invoke();
         }
         
         

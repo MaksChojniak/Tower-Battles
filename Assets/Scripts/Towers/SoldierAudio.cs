@@ -54,6 +54,7 @@ namespace Towers
         {
             base.RegisterHandlers();
             
+            SoldierController.OnPlaceTower += PlayPlaceTowerAudio;
             SoldierController.OnRemoveTower += PlayRemoveTowerAudio;
             SoldierController.OnLevelUp += PlayLevelUpAudio;
             SoldierController.InputHandlerCmponent.OnClicked += PlayOnTowerClickedAudio;
@@ -71,6 +72,7 @@ namespace Towers
             SoldierController.InputHandlerCmponent.OnClicked -= PlayOnTowerClickedAudio;
             SoldierController.OnLevelUp -= PlayLevelUpAudio;
             SoldierController.OnRemoveTower -= PlayRemoveTowerAudio;
+            SoldierController.OnPlaceTower -= PlayPlaceTowerAudio;
             
         }
         
@@ -83,9 +85,9 @@ namespace Towers
         {
             if (ShootAudio.AudioClip == null)
                 throw new NullReferenceException("ShootAudio Clip doesn't exist  [value = null]");
-            
+
             ShootAudio.AudioSource.Play();
-            
+
         }
 
 
@@ -101,7 +103,7 @@ namespace Towers
             Transform audioParent = GetAudioParent().transform;
             
             ShootAudio.SetupAudio(audioParent);
-            
+
         }
         
 #endregion

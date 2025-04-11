@@ -136,10 +136,13 @@ namespace UI
         
         void OnShow(string content, Action<Func<Task>> onAccept, Tower tower, TowerSkin skin)
         {
-            if(RotateableTower != null)
-                RotateableTower.SpawnTowerProcess?.Invoke(tower, skin);
-            
             OnShow(content, onAccept);
+
+            if (RotateableTower != null)
+            {
+                RotateableTower.gameObject.SetActive(true);
+                RotateableTower.SpawnTowerProcess?.Invoke(tower, skin);
+            }
         }
         
         
@@ -155,7 +158,10 @@ namespace UI
         {
             ClosePanelAnimationUI.PlayAnimation();
             await Task.Delay( Mathf.RoundToInt(ClosePanelAnimationUI.animationLenght * 1000) );
-            
+
+            if (RotateableTower != null)
+                RotateableTower.gameObject.SetActive(false);
+
             // Destroy(this.gameObject); 
         }
 

@@ -13,27 +13,10 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using Random = UnityEngine.Random;
 
-// namespace Enemy
-// {
+
 public class EnemyAnimation : MonoBehaviour
 {
-    static ParticlePoolManager BloodPoolManager;
-    Particle CreateBloodParticle() => Instantiate(BloodParticlePrefab, BloodPoolManager.transform).GetComponent<Particle>();
-    void DestroyBloodParticle(Particle particle) => Destroy(particle);
-    void ResetBloodParticle(Particle particle)
-    {
-        particle.gameObject.SetActive(false);
-        particle.transform.position = Vector3.zero;
-    }
-    void BeforeSpawnBloodParticle(Particle particle)
-    {
-        particle.transform.position = this.transform.position;
-        particle.gameObject.SetActive(true);
-    }
-
-
-
-
+    static BloodParticlePool<Particle> bloodParticlePool;
 
     public delegate void SetSelectedAnimationDelegate(bool state);
     public SetSelectedAnimationDelegate SetSelectedAnimation;
@@ -68,13 +51,6 @@ public class EnemyAnimation : MonoBehaviour
 
     void Awake()
     {
-        if (BloodPoolManager == null)
-        {
-            BloodPoolManager = ParticlePoolManager.InitParticlePool("Blood Pool");
-            BloodPoolManager.Pool = new Pool<Particle>(CreateBloodParticle, DestroyBloodParticle, ResetBloodParticle, 40);
-        }
-
-
         EnemyController = this.GetComponent<EnemyController>();
 
         if (this.TryGetComponent<Animator>(out var animator))
@@ -87,7 +63,8 @@ public class EnemyAnimation : MonoBehaviour
         RegisterHandlers();
 
 
-
+        if (bloodParticlePool == null && BloodParticlePrefab != null)
+            bloodParticlePool = this.CreateBloodPool<Particle>(BloodParticlePrefab, 60);
     }
 
     void OnDestroy()
@@ -274,10 +251,8 @@ public class EnemyAnimation : MonoBehaviour
     {
         if (!IsBurning)
         {
-            //Particle bloodParticle = Instantiate(BloodParticlePrefab, this.transform.position, this.transform.rotation).GetComponent<Particle>();
-            //bloodParticle.StartCoroutine(PlayBloodAnimation(bloodParticle.gameObject));
-            Particle bloodParticle = BloodPoolManager.Pool.Get(BeforeSpawnBloodParticle);
-            
+            Particle bloodParticle = bloodParticlePool.Get( (particle) => particle.transform.position = this.transform.position );
+
             if (bloodParticle == null)
                 return;
 
@@ -296,7 +271,7 @@ public class EnemyAnimation : MonoBehaviour
         while (bloodParticleSystem != null && bloodParticleSystem.isPlaying)
             await Task.Yield();
 
-        BloodPoolManager.Pool.Release(bloodParticle);
+        bloodParticlePool.Realese(bloodParticle);
     }
     
 

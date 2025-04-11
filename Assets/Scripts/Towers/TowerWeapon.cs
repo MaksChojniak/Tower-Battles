@@ -212,8 +212,8 @@ namespace Towers
 
         void SingleShootInSpread()
         {
-            SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread, out int count, out EnemyController[] enemies);
-            if(count <= 0)
+            EnemyController[] enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread).ToArray();
+            if(enemies.Length <= 0)
             {
                 result.Status = ShootStatus.Canceled;
                 result.GivenDamage = 0;
@@ -247,7 +247,7 @@ namespace Towers
             int givenDamage = 0;
             int damageValue = Weapon.Damage;
                 
-            for (int i = 0 ; i < count; i++)
+            for (int i = 0 ; i < enemies.Length; i++)
             {
                 if(i >= Weapon.MaxEnemiesInSpread)
                     break;
@@ -280,8 +280,8 @@ namespace Towers
         void SingleShootInSplash()
         {
             //(EnemyController[] enemies, int count) enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
-            SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread, out int count, out EnemyController[] enemies);
-            if(count <= 0)
+            EnemyController[] enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread).ToArray();
+            if(enemies.Length <= 0)
             {
                 result.Status = ShootStatus.Canceled;
                 result.GivenDamage = 0;
@@ -315,7 +315,7 @@ namespace Towers
             int givenDamage = 0;
             int damageValue = Weapon.Damage;
                 
-            for (int i = 0 ; i < count; i++)
+            for (int i = 0 ; i < enemies.Length; i++)
             {
                 if(i >= Weapon.MaxEnemiesInSpread)
                     break;
@@ -402,8 +402,8 @@ namespace Towers
 
 
             //(EnemyController[] enemies, int count) enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread);
-            SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread, out int count, out EnemyController[] enemies);
-            if (count <= 0)
+            EnemyController[] enemies = SoldierController.ViewRangeComponent.GetEnemiesInSpreadByMode(SoldierController.TargetMode, Weapon.SplashDamageSpread).ToArray();
+            if (enemies.Length <= 0)
             {
                 result.Status = ShootStatus.Canceled;
                 result.GivenDamage = 0;
@@ -434,7 +434,7 @@ namespace Towers
                 int givenDamage = 0;
                 int damageValue = Weapon.Damage;
 
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < enemies.Length; i++)
                 {
                     if (i >= Weapon.MaxEnemiesInSpread)
                         break;
