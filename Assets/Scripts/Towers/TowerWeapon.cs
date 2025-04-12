@@ -8,6 +8,7 @@ using MMK.Extensions;
 using MMK.ScriptableObjects;
 using MMK.Towers;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Towers
 {
@@ -246,7 +247,7 @@ namespace Towers
             
             int givenDamage = 0;
             int damageValue = Weapon.Damage;
-                
+
             for (int i = 0 ; i < enemies.Length; i++)
             {
                 if(i >= Weapon.MaxEnemiesInSpread)
