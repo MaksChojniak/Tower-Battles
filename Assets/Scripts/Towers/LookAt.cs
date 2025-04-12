@@ -137,7 +137,7 @@ namespace MMK.Towers
             while (Quaternion.Angle(towerTransform.rotation, targetRotation) > 1f)
             {
                 //towerTransform.rotation = Quaternion.RotateTowards(towerTransform.rotation, targetRotation, 180 * Time.deltaTime);
-                towerTransform.rotation = Quaternion.Slerp(towerTransform.rotation, Quaternion.LookRotation(directionToTarget, Vector3.up), 5 * Time.fixedDeltaTime);
+                towerTransform.rotation = Quaternion.Slerp(towerTransform.rotation, Quaternion.LookRotation(directionToTarget, Vector3.up), 10 * Time.fixedDeltaTime);
 
                 yield return null;
             }
