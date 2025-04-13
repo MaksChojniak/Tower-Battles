@@ -91,8 +91,8 @@ namespace MMK.Settings
     
     public enum FontAsset : int
     {
-        Liberation_Sans = 0,
-        ZCOOL_Sans = 1
+        ZCOOL_Sans = 0,
+        Liberation_Sans = 1,
 
     }
     

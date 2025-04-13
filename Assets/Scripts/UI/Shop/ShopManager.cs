@@ -21,8 +21,6 @@ using Reward = UI.Shop.Daily_Rewards.Reward;
 using RewardType = UI.Shop.Daily_Rewards.Scriptable_Objects.RewardType;
 using Task = System.Threading.Tasks.Task;
 using System.Collections;
-using Unity.VisualScripting;
-using UnityEditor.VersionControl;
 
 
 namespace UI.Shop

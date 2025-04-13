@@ -89,11 +89,11 @@ namespace Promocodes
                 {
                     case RewardType.Coins:
                         PlayerData.ChangeCoinsBalance?.Invoke((long)reward.Coins);
-                        messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{reward.Coins}", });
+                        messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{StringFormatter.GetCoinsText((long)reward.Coins, true, "66%")}", });
                         break;
                     case RewardType.Gems:
                         PlayerData.ChangeGemsBalance?.Invoke((long)reward.Gems);
-                        messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{reward.Gems}", });
+                        messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{StringFormatter.GetGemsText((long)reward.Gems, true, "66%")}", });
                         break;
                     case RewardType.Skin:
                         TowerSkin skin = TowerSkin.GetTowerSkinByID(reward.Skin.ID);

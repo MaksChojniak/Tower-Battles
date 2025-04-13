@@ -31,7 +31,14 @@ namespace Player
 
         public Dictionary<ulong,string> Payements;
         public int PayementsCount => Payements != null ? Payements.Count : 0;
-        
+        public WalletData(ulong Coins, ulong Gems)
+        {
+            this.Coins = Coins;
+            this.Gems = Gems;
+
+            Payements = new Dictionary<ulong,string>();
+        }
+
     }
     
     [Serializable]
@@ -129,7 +136,7 @@ namespace Player
         public uint XP => GetXPByTotalXP(TotalExperiencePoins);
         public ulong TotalExperiencePoins = 0;
 
-        public WalletData WalletData = new WalletData();
+        public WalletData WalletData = new WalletData(100, 30);
 
         public PlayerGamesData PlayerGamesData = new PlayerGamesData();
 
@@ -139,7 +146,6 @@ namespace Player
         public TowerSerializable[] DeckSerializable = new TowerSerializable[5] {new TowerSerializable(), new TowerSerializable(), new TowerSerializable(), new TowerSerializable(), new TowerSerializable()};
 
         [NonSerialized] public ObservableValue<Tower>[] Deck;
-
 
 
         public PlayerData()
@@ -168,8 +174,10 @@ namespace Player
                 UnlockedTowers.Add(towerSerializable);
             }
 
-            
 
+            InitDeck();
+
+            RegisterEvents();
         }
         
         public PlayerData(PlayerData sourceData)
@@ -214,6 +222,12 @@ namespace Player
 
             RegisterEvents();
             
+        }
+
+
+        ~PlayerData()
+        {
+            Debug.Log("Destroy Old Data");
         }
 
 
@@ -278,6 +292,7 @@ namespace Player
         {
             ChangeCoinsBalance += (value) =>
             {
+                Debug.Log("Change Balance");
                 WalletData.Coins = (ulong)((long)WalletData.Coins + value);
                 
                 OnChangeCoinsBalance?.Invoke(WalletData.Coins);
