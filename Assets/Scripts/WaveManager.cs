@@ -41,13 +41,11 @@ public class WaveManager : MonoBehaviour
     [SerializeField] bool skipWave;
 
 
-    Action StartNextWave;
 
 
     void Awake()
     {
         GameResult.OnEndGame += OnEndGame;
-        StartNextWave += UpdateWaves;
 
         ActualyWeveIndex = -1;
         
@@ -55,14 +53,13 @@ public class WaveManager : MonoBehaviour
 
     void OnDestroy()
     {
-        StartNextWave -= UpdateWaves;
         GameResult.OnEndGame -= OnEndGame;
         
     }
 
     void Start()
     {
-        PrepareWaves();
+        StartCoroutine(PrepareWaves());
     }
 
     
@@ -77,7 +74,7 @@ public class WaveManager : MonoBehaviour
     
     
 
-    async void PrepareWaves()
+    IEnumerator PrepareWaves()
     {
         SetActiveIndicator(true);
 
@@ -89,22 +86,22 @@ public class WaveManager : MonoBehaviour
 
             UpdateCountdown?.Invoke(Mathf.RoundToInt(time));
 
-            await Task.Delay(Mathf.RoundToInt(delay * 1000));
+            yield return new WaitForSeconds(delay);
         }
         UpdateCountdown?.Invoke(-1);
 
         SetActiveIndicator(false);
 
-        //UpdateWaves();
-        StartNextWave?.Invoke();
+        yield return UpdateWaves();
     }
 
-    
-    async void UpdateWaves()
+
+    IEnumerator UpdateWaves()
     {
         if (ActualyWeveIndex + 1 < Waves.Length)
         {
-            await StartWave();
+            //await StartWave();
+            yield return StartWave();
         }
         else
         {
@@ -115,17 +112,18 @@ public class WaveManager : MonoBehaviour
     
     
 
-    async Task StartWave()
+    IEnumerator StartWave()
     {
         OnStartWave?.Invoke();
         ActualyWeveIndex += 1;
         UpdateWaveCount?.Invoke(ActualyWeveIndex);
 
-        await ProcessWave(Waves[ActualyWeveIndex]);
+        //await ProcessWave(Waves[ActualyWeveIndex]);
+        yield return ProcessWave(Waves[ActualyWeveIndex]);
     }
     
     
-    async Task ProcessWave(WaveData wave)
+    IEnumerator ProcessWave(WaveData wave)
     {
         bool isLastWave = ActualyWeveIndex + 1 >= Waves.Length;
 
@@ -138,22 +136,18 @@ public class WaveManager : MonoBehaviour
             {
                 GameObject enemy = Instantiate(stageData.enemy.EnemyPrefab, Vector3.one * -1000, Quaternion.identity, enemyStorage);
 
-                //yield return new WaitForSeconds(stageData.sleepTime);
-                await Task.Delay(Mathf.RoundToInt(stageData.sleepTime * 1000));
+                yield return new WaitForSeconds(stageData.sleepTime);
             }
 
-            //yield return new WaitForSeconds(stage.stageSleepTime);
-            await Task.Delay(Mathf.RoundToInt(stage.stageSleepTime * 1000));
+            yield return new WaitForSeconds(stage.stageSleepTime);
         }
 
         // if(skipWavePanel != null && !isLastWave)
         //     skipWavePanel.SetActive(true);
         if (!isLastWave)
-            StartCoroutine(ShowSkipWave());
+            yield return ShowSkipWave();
 
-
-        //yield return new WaitUntil(new Func<bool>(() => IsReadyToNextWave() ));
-        await TaskUtility.WaitUntil(new Func<bool>(() => IsReadyToNextWave()));
+        yield return new WaitUntil(new Func<bool>(() => IsReadyToNextWave() ));
 
         skipWave = false;
         if (skiWavePanelOpened)
@@ -170,9 +164,8 @@ public class WaveManager : MonoBehaviour
 
         if (isLastWave)
         {
-            //UpdateWaves();
-            StartNextWave?.Invoke();
-            return;
+            yield return UpdateWaves();
+            yield break;
         }
 
         uint waveReward = wave.waveReward;
@@ -181,13 +174,11 @@ public class WaveManager : MonoBehaviour
 
         SetActiveIndicator(true);
 
-        //yield return new WaitForSeconds(wave.waveSleepTime);
-        await Task.Delay(Mathf.RoundToInt(wave.waveSleepTime * 1000));
+        yield return new WaitForSeconds(wave.waveSleepTime);
 
         SetActiveIndicator(false);
 
-        //UpdateWaves();
-        StartNextWave?.Invoke();
+        yield return UpdateWaves();
     }
 
 

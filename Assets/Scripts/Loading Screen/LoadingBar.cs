@@ -9,7 +9,6 @@ using Player;
 using TMPro;
 using UI.Battlepass;
 using UI.Shop;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
@@ -53,16 +52,16 @@ namespace Loading_Screen
         void Start()
         {
             
-            LoadingBarProcess();
+            StartCoroutine(LoadingBarProcess());
 
-            UpdateLoadingText();
-            UpdateProgressText();
+            StartCoroutine(UpdateLoadingText());
+            StartCoroutine(UpdateProgressText());
         }
 
 
         int dotsCount = 0;
         readonly int maxDotsCount = 3;
-        async void UpdateLoadingText()
+        IEnumerator UpdateLoadingText()
         {
             while (true)
             {
@@ -72,105 +71,129 @@ namespace Loading_Screen
                 if (dotsCount > maxDotsCount)
                     dotsCount = 0;
 
-                await Task.Delay(450);
+                //await Task.Delay(450);
+                yield return new WaitForSeconds(0.45f);
             }
             
         }
-        
-        async void UpdateProgressText()
+
+        IEnumerator UpdateProgressText()
         {
             while (true)
             {
                 LoadingProgressText.text = $"{Mathf.RoundToInt(progressValue)}%";
 
-                await Task.Yield();
+                //await Task.Yield();
+                yield return null;
             }
             
         }
-        
 
-        async void LoadingBarProcess()
+
+        IEnumerator LoadingBarProcess()
         {
-            List<Task> taksToPlay = new List<Task>();
+            //List<Task> taksToPlay = new List<Task>();
 
 
-            taksToPlay = new List<Task>()
-            {
-                FirebaseCheckDependencies.CheckAndFixDependencies(),
-                GoogleAds.CheckAndFixDependencies(),
-                ServerDate.GetDateFromSerer(),
-            };
-            await Task.WhenAll(taksToPlay);
+            //taksToPlay = new List<Task>()
+            //{
+            //    FirebaseCheckDependencies.CheckAndFixDependencies(),
+            //    GoogleAds.CheckAndFixDependencies(),
+            //    ServerDate.GetDateFromSerer(),
+            //};
+            //await Task.WhenAll(taksToPlay);
 
-            await Task.Yield();
+            //await Task.Yield();
 
-            await StartLoadingAnimation();
+            //await StartLoadingAnimation();
 
-            taksToPlay = new List<Task>()
-            {
-                LoginProcess(),
-                LoadingAnimation(40f),
-            };
-            await Task.WhenAll(taksToPlay);
-            
-            
-            taksToPlay = new List<Task>()
-            {
-                LoadBattlepassRewards(),
-                LoadingAnimation(60f),
-            };
-            await Task.WhenAll(taksToPlay);
-            
-            taksToPlay = new List<Task>()
-            {
-                LoadShopOfferts(),
-                LoadingAnimation(70f),
-            };
-            await Task.WhenAll(taksToPlay);
+            //taksToPlay = new List<Task>()
+            //{
+            //    LoginProcess(),
+            //    LoadingAnimation(40f),
+            //};
+            //await Task.WhenAll(taksToPlay);
 
-            
-            
+
+            //taksToPlay = new List<Task>()
+            //{
+            //    LoadBattlepassRewards(),
+            //    LoadingAnimation(60f),
+            //};
+            //await Task.WhenAll(taksToPlay);
+
+            //taksToPlay = new List<Task>()
+            //{
+            //    LoadShopOfferts(),
+            //    LoadingAnimation(70f),
+            //};
+            //await Task.WhenAll(taksToPlay);
+
+            yield return FirebaseCheckDependencies.CheckAndFixDependencies();
+            yield return GoogleAds.CheckAndFixDependencies();
+            yield return ServerDate.GetDateFromSerer();
+
+            yield return null;
+
+            yield return StartLoadingAnimation();
+
+            yield return LoginProcess();
+            yield return LoadingAnimation(40f);
+
+            yield return LoadBattlepassRewards();
+            yield return LoadingAnimation(60f);
+
+            yield return LoadShopOfferts();
+            yield return LoadingAnimation(70f);
+
+
             AsyncOperation loadinsSceneOperation = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings().mainMenuScene);
             loadinsSceneOperation.allowSceneActivation = false;
 
-            
-            
-            taksToPlay = new List<Task>()
-            {
-                LoadScene(loadinsSceneOperation),
-                LoadingAnimation(100f),
-            };
-            await Task.WhenAll(taksToPlay);
-            
 
 
-            taksToPlay = new List<Task>()
-            {
-                EndLoadingAnimation(),
-            };
-            await Task.WhenAll(taksToPlay);
+            //taksToPlay = new List<Task>()
+            //{
+            //    LoadScene(loadinsSceneOperation),
+            //    LoadingAnimation(100f),
+            //};
+            //await Task.WhenAll(taksToPlay);
 
-            
+
+
+            //taksToPlay = new List<Task>()
+            //{
+            //    EndLoadingAnimation(),
+            //};
+            //await Task.WhenAll(taksToPlay);
+
+            yield return LoadScene(loadinsSceneOperation);
+            yield return LoadingAnimation(100f);
+
+            yield return EndLoadingAnimation();
+
+
             loadinsSceneOperation.allowSceneActivation = true;
 
         }
 
 
 
-        
-#region Animation
-        
-        
-        async Task StartLoadingAnimation()
+
+        #region Animation
+
+
+        IEnumerator StartLoadingAnimation()
         {
             animator.Play(startAnimationClip.name);
-            await Task.Delay( Mathf.RoundToInt(startAnimationClip.length * 1000) );
+            //await Task.Delay( Mathf.RoundToInt(startAnimationClip.length * 1000) );
+            yield return new WaitForSeconds(startAnimationClip.length);
         }
 
         float progressValue;
         float speed = 0.05f;
         float bulletSpeed => speed * 20f;
-        async Task LoadingAnimation(float _progressValue)
+        IEnumerator LoadingAnimation(float _progressValue)
         {
            
             animator.SetFloat(SPEED_ANIMATION_KEY, speed);
@@ -189,7 +212,8 @@ namespace Loading_Screen
                 (lineRenderer.GetPosition(1) - bulletStartPosition).magnitude < ( (bulletEndPosition - bulletStartPosition).magnitude * _progressValue / 100f) )
             {
                 lineRenderer.SetPosition(1, lineRenderer.GetPosition(1) + bulletDirection.normalized * Time.deltaTime * bulletSpeed);
-                await Task.Yield();
+                //await Task.Yield();
+                yield return null;
 
                 progressValue = (lineRenderer.GetPosition(1) - bulletStartPosition).magnitude / (bulletEndPosition - bulletStartPosition).magnitude * 100f;
             }
@@ -198,8 +222,8 @@ namespace Loading_Screen
             progressValue = _progressValue;
 
         }
-        
-        async Task EndLoadingAnimation()
+
+        IEnumerator EndLoadingAnimation()
         {
             animator.Play(endAnimationClip.name);
 
@@ -208,25 +232,29 @@ namespace Loading_Screen
             while ((lineRenderer.GetPosition(1) - lineRenderer.GetPosition(0)).magnitude > 0.1f)
             {
                 lineRenderer.SetPosition(0, lineRenderer.GetPosition(0) + bulletDirection.normalized * Time.deltaTime * bulletSpeed * 20f);
-                await Task.Yield();
+                //await Task.Yield();
+                yield return null;
             }
             lineRenderer.positionCount = 0;
 
             while ( (DateTime.Now - startTime).TotalMilliseconds < Mathf.RoundToInt(endAnimationClip.length * 1000) )
-                await Task.Yield();
+                yield return null;
+                //await Task.Yield();
 
 
-            await Task.Delay(1500);
+            //await Task.Delay(1500);
+            yield return new WaitForSeconds(1.5f);
         }
 
 
-#endregion
+        #endregion
 
 
 
-        async Task LoginProcess()
+        IEnumerator LoginProcess()
         {
-            await Task.Delay(300);
+            //await Task.Delay(300);
+            yield return new WaitForSeconds(0.3f);
 
             PlayerController player = null;
 
@@ -240,31 +268,38 @@ namespace Loading_Screen
             {
                 player = PlayerController.GetLocalPlayer?.Invoke();
 
-                await Task.Yield();
+                //await Task.Yield();
+                yield return null;
             }
 
             
             
             Task login = player.Login();
 
-            await Task.WhenAll(login);
+            //await Task.WhenAll(login);
 
         }
 
 
-        async Task LoadShopOfferts() => await ShopManager.DownloadDataFromServer();
-        
-        
-        async Task LoadBattlepassRewards() => await BattlepassManager.DownloadDataFromServer();
-        
+        IEnumerator LoadShopOfferts() 
+        {
+            yield return ShopManager.DownloadDataFromServer();
+        }// await ShopManager.DownloadDataFromServer();
 
 
-        async Task LoadScene(AsyncOperation loadinsSceneOperation)
+        IEnumerator LoadBattlepassRewards() 
+        {
+            yield return BattlepassManager.DownloadDataFromServer();
+        }// await BattlepassManager.DownloadDataFromServer();
+
+
+
+        IEnumerator LoadScene(AsyncOperation loadinsSceneOperation)
         {
             DateTime startTime = DateTime.Now;
 
             while (loadinsSceneOperation.progress < 0.9f && (DateTime.Now - startTime).TotalSeconds < 5f )
-                await Task.Yield();
+                yield return null;
 
         }
 

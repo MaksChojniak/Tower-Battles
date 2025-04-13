@@ -251,7 +251,7 @@ public class EnemyAnimation : MonoBehaviour
     {
         if (!IsBurning)
         {
-            Particle bloodParticle = bloodParticlePool.Get( (particle) => particle.transform.position = this.transform.position );
+            Particle bloodParticle = bloodParticlePool.Get( (particle) => particle.transform.position = this.transform.position);
 
             if (bloodParticle == null)
                 return;

@@ -16,6 +16,8 @@
         protected ParticlePool(string name)
         {
             this.container = new GameObject(name);
+            UnityEngine.Object.DontDestroyOnLoad(this.container);
+
             this.container.transform.position = Vector3.zero;
             this.container.transform.rotation  = Quaternion.identity;
         }

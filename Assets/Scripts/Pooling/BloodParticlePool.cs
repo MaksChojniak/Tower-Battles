@@ -28,7 +28,6 @@
 
         public void PrepareParticle(T obj)
         {
-            obj.transform.localPosition = Vector3.zero;
             obj.gameObject.SetActive(true);
         }
 
@@ -40,7 +39,7 @@
 
 
         public T Get() => this.Pool.Get(PrepareParticle);
-        public T Get(Action<T> prepareAction) => this.Pool.Get(prepareAction);
+        public T Get(Action<T> prepareAction) => this.Pool.Get( (obj) => { PrepareParticle(obj);  prepareAction.Invoke(obj); });
 
         public void Realese(T obj) => this.Pool.Release(obj);
 

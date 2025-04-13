@@ -98,7 +98,7 @@ namespace UI.Battlepass
             RegisterHandlers();
             
             UpdatePagesBttonsUI();
-            GetDataFromServer();
+            StartCoroutine(GetDataFromServer());
         }
         
         void OnDisable()
@@ -119,7 +119,7 @@ namespace UI.Battlepass
         {
 
             if (hasFocus)
-                GetDataFromServer();
+                StartCoroutine(GetDataFromServer());
 
         }
         
@@ -142,25 +142,25 @@ namespace UI.Battlepass
         
         
         
-        async void GetDataFromServer()
+        IEnumerator GetDataFromServer()
         {
             UpdateBattlapassUI();
 
-            await DownloadDataFromServer();
+            yield return DownloadDataFromServer();
 
             UpdateBattlapassUI();
-            
-                
-            await Task.Yield();
+
+
+            yield return null;
 
         }
         
 
-        public async static Task DownloadDataFromServer()
+        public static IEnumerator DownloadDataFromServer()
         {
             BattlepassRewards = Resources.Load<BattlepassRewards>("Battlepass Rewards");
             
-            await GetPlayerProgress();
+            yield return GetPlayerProgress();
         }
 
 

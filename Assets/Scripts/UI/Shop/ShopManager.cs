@@ -20,6 +20,9 @@ using Random = Unity.Mathematics.Random;
 using Reward = UI.Shop.Daily_Rewards.Reward;
 using RewardType = UI.Shop.Daily_Rewards.Scriptable_Objects.RewardType;
 using Task = System.Threading.Tasks.Task;
+using System.Collections;
+using Unity.VisualScripting;
+using UnityEditor.VersionControl;
 
 
 namespace UI.Shop
@@ -104,7 +107,7 @@ namespace UI.Shop
         {
             RegisterHandlers();
 
-            GetDataFromServer();
+            StartCoroutine(GetDataFromServer());
             
         }
         
@@ -138,7 +141,7 @@ namespace UI.Shop
         {
 
             if (hasFocus)
-                GetDataFromServer();
+                StartCoroutine(GetDataFromServer());
 
         }
 
@@ -202,38 +205,42 @@ namespace UI.Shop
 
             scrollRect.verticalNormalizedPosition = targetPosition;
         }
-        
-        
-#endregion
 
 
-        
-        
-        
-#region Get Offerts From Server
-        
-        
-        async void GetDataFromServer()
+        #endregion
+
+
+
+
+
+        #region Get Offerts From Server
+
+
+        IEnumerator GetDataFromServer()
         {
             UpdateUI();
 
-            await DownloadDataFromServer();
+            yield return DownloadDataFromServer();
             
             UpdateUI();
 
-            await Task.Yield();
+            yield return null;
 
         }
 
-        public async static Task DownloadDataFromServer()
+        public static IEnumerator DownloadDataFromServer()
         {
             AvaiableSkins = Resources.Load<AvaiableTowerSkins>("Avaiable Tower Skins");
             AvaiableDailyRewards = Resources.Load<AvaiableDailyRewards>("Avaiable Daily Rewards");
             AvaiableAdRewards = Resources.Load<AvaiableAdRewards>("Avaiable Ad Rewards");
-            
-            await Task.Run(async () => await GetSkinsForSaleFromServerAsync() );
-            await Task.Run(async () => await GetDailyRewardsFromServerAsync() );
-            await Task.Run(async () => await GetAdsRewardsFromServerAsync() );
+
+            yield return GetSkinsForSaleFromServerAsync();
+            yield return GetDailyRewardsFromServerAsync();
+            yield return GetAdsRewardsFromServerAsync();
+
+            //await Task.Run(async () => await GetSkinsForSaleFromServerAsync() );
+            //await Task.Run(async () => await GetDailyRewardsFromServerAsync() );
+            //await Task.Run(async () => await GetAdsRewardsFromServerAsync() );
         }
         
         void UpdateUI()
@@ -258,7 +265,7 @@ namespace UI.Shop
     #region Get Data From Server
 
 
-        async static Task GetSkinsForSaleFromServerAsync()
+        static async Task GetSkinsForSaleFromServerAsync()
         {
             var result = await Database.GET<SkinsForSale>();
 
@@ -278,7 +285,7 @@ namespace UI.Shop
 
     #region Calculate New Offerts
     
-        async static Task<SkinsForSale> CalculateNewSkinsForSale(SkinsForSale oldOfferts = null)
+        static async Task<SkinsForSale> CalculateNewSkinsForSale(SkinsForSale oldOfferts = null)
         {
             Random random = new Random((uint)new System.Random().Next(1, 100));
             
@@ -444,7 +451,7 @@ namespace UI.Shop
 
     #region Get Data From Server
         
-        async static Task GetDailyRewardsFromServerAsync()
+        static async Task GetDailyRewardsFromServerAsync()
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;
 
@@ -772,19 +779,19 @@ namespace UI.Shop
             }
             
         }
-        
-        
-#endregion
+
+
+        #endregion
 
 
 
-#region Ad Offerts
-        
-        
-        
-    #region Get Data From Server
-    
-        async static Task GetAdsRewardsFromServerAsync()
+        #region Ad Offerts
+
+
+
+        #region Get Data From Server
+
+        static async Task GetAdsRewardsFromServerAsync()
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;
          
@@ -890,13 +897,14 @@ namespace UI.Shop
                 adRewardsPanels[i].gameObject.SetActive(false);
             }
             
-            
-            if(adsRewards == null || adsRewards.rewards.Count <= 0)
+            if(adsRewards == null)
                 return;
 
-
             adsCounterText.text = $"Videos Watched: {DAILY_ADS_LIMIT-adsRewards.rewards.Count}/{DAILY_ADS_LIMIT}";
-            
+
+            if (adsRewards.rewards.Count <= 0)
+                return;
+
             currentAdReward.gameObject.SetActive(true);
             currentAdReward.UpdateUI(adsRewards.rewards[0], 0);
             
