@@ -177,7 +177,7 @@ namespace Player
 
             InitDeck();
 
-            RegisterEvents();
+            //RegisterEvents();
         }
         
         public PlayerData(PlayerData sourceData)
@@ -220,7 +220,7 @@ namespace Player
                 }
             }
 
-            RegisterEvents();
+            //RegisterEvents();
             
         }
 
@@ -257,7 +257,7 @@ namespace Player
 
 #region Register Events
 
-        void RegisterEvents()
+        public void RegisterEvents()
         {
             RegisterWalletEvents();
             RegisterExperienceEvents();

@@ -143,8 +143,9 @@ namespace Player
   
             
             playerData.ID = PlayerData.ID;
-            // PlayerData = new PlayerData(playerData);
             PlayerData = playerData;
+
+            PlayerData.RegisterEvents();
 
             await UpdateTowersLockstate();
             

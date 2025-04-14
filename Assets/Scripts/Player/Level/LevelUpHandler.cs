@@ -65,10 +65,13 @@ namespace UI
             if (LevelsRewards.LevelExist(Level))
             {
                 reward = LevelsRewards.GetRewardByLevel(Level);
-                    await ShowLevelUpPanel();
+                await ShowLevelUpPanel();
             }
             else
-                reward = null;
+            {
+                reward = new LevelsReward() { Level = Level };
+                await ShowLevelUpPanel();
+            }
 
         }
 
@@ -117,7 +120,10 @@ namespace UI
                     
                 prperties.Add(new MessageProperty(){Name = "Gems", Value = $"{StringFormatter.GetGemsText(reward.GemsRewards, true, "66%")}"});
             }
-                
+
+            if (prperties.Count <= 0)
+                return;
+
             MessageQueue.AddMessageToQueue?.Invoke(new Message()
             {
                 MessageType = MessageType.Normal,
