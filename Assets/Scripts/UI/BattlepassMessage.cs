@@ -55,5 +55,16 @@ namespace UI
             Fillbar.fillAmount = newFillAmount;
 
         }
+
+
+        public void GoToBattlepass()
+        {
+            MenuAnimations menuAnimations = GameObject.FindObjectOfType<MenuAnimations>();
+            if (menuAnimations == null)
+                return;
+
+            menuAnimations.OpenBattlepass();
+        }
+
     }
 }
