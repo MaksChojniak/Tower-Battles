@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Firebase;
 using Firebase.Analytics;
+using Firebase.Auth;
+using UnityEditor;
+using Firebase.Extensions;
 
 public class FirebaseCheckDependencies : MonoBehaviour
 {
@@ -17,22 +20,48 @@ public class FirebaseCheckDependencies : MonoBehaviour
 
 
 
-	public async static Task CheckAndFixDependencies()
+	public static IEnumerator CheckAndFixDependencies()
 	{
 		while (!IsCheckedOrFixed)
 		{
-			var task = FirebaseApp.CheckAndFixDependenciesAsync();
-			await Task.WhenAll(task);
+			FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(AnalizeResult);
 
-			if (!task.IsFaulted && !task.IsCanceled)
+
+			while(!IsCheckedOrFixed)
+				yield return null;
+
+
+			yield return null;
+
+			void AnalizeResult(Task<DependencyStatus> task)
 			{
-				FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
-				IsCheckedOrFixed = true;
+
+				var dependencyStatus = task.Result;
+				if (dependencyStatus == DependencyStatus.Available)
+				{
+					Debug.Log("Dependency fixed and checked");
+				}
+				else
+				{
+					Debug.LogError($"Could not resolve all Firebase dependencies: {dependencyStatus}");
+
+				}
+
+                IsCheckedOrFixed = true;
 			}
 
-			await Task.Yield();
-			
-		}
+			//var task = FirebaseApp.CheckAndFixDependenciesAsync();
+			//yield return new WaitUntil( () => task.IsCompleted || task.IsCanceled || task.IsFaulted );
+
+   //         //if (!task.IsFaulted && !task.IsCanceled)
+   //         //{
+   //         //	//FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
+   //         //	IsCheckedOrFixed = true;
+   //         //}
+
+   //         IsCheckedOrFixed = true;
+
+        }
 
 	}
 	

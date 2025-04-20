@@ -12,13 +12,14 @@ namespace Promocodes
         
         public async static Task<Dictionary<string, Promocode>> GetExistingCodes()
         {
-            var callback =  await Database.GET<Dictionary<string, Promocode>>();
+            ////var callback =  await Database.GET<Dictionary<string, Promocode>>();
 
-            if (callback.Status != DatabaseStatus.Success)
-                return new Dictionary<string, Promocode>();
-            // throw new Exception("GET function occurred error");
+            //if (callback.Status != DatabaseStatus.Success)
+            //    return new Dictionary<string, Promocode>();
+            //// throw new Exception("GET function occurred error");
 
-            return callback.Data;
+            //return callback.Data;
+            return null;
         }
         
         

@@ -64,7 +64,7 @@ namespace Promocodes
             if (!properties.CodeIsValid(ServerDate.SimulatedDateOnServerUTC()))
             {
                 promocodes.Remove(code);
-                await Database.POST<Dictionary<string, Promocode>>(promocodes);
+                //await Database.POST<Dictionary<string, Promocode>>(promocodes);
                 
                 await OnRedeemError();
                 
@@ -115,7 +115,7 @@ namespace Promocodes
                     promocodes.Remove(code);
             }
             
-            await Database.POST<Dictionary<string, Promocode>>(promocodes);
+            //await Database.POST<Dictionary<string, Promocode>>(promocodes);
 
             await OnRedeemComplete();
             

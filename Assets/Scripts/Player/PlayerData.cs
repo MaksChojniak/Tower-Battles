@@ -13,6 +13,7 @@ using UI.Battlepass;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static UnityEngine.Rendering.DebugUI;
 
 namespace Player
 {
@@ -158,13 +159,11 @@ namespace Player
                 {
                     if (skin.Rarity == SkinRarity.Default)
                     {
-                        // skin.UnlockSkin();
                         TowerSkinSerializable skinSerializable = new TowerSkinSerializable(skin);
                         UnlockedTowersSkins.Add(skinSerializable);
                     }
                 }
             }
-
 
             Tower baseTower = Tower.GetTowerBySkinID("0001");
             if (baseTower != null)
@@ -174,10 +173,8 @@ namespace Player
                 UnlockedTowers.Add(towerSerializable);
             }
 
-
             InitDeck();
 
-            //RegisterEvents();
         }
         
         public PlayerData(PlayerData sourceData)
@@ -196,14 +193,6 @@ namespace Player
             UnlockedTowersSkins = sourceData.UnlockedTowersSkins;
             
             DeckSerializable = sourceData.DeckSerializable;
-            
-            
-            // foreach (var towerSerializable in UnlockedTowers)
-            // {
-            //     Tower tower = Tower.GetTowerBySkinID(towerSerializable.ID);
-            //     tower.BaseProperties.IsUnlocked = towerSerializable.IsUnlocked;
-            //
-            // }
 
 
             InitDeck();
@@ -219,8 +208,6 @@ namespace Player
                         Deck[index].Value = tower;
                 }
             }
-
-            //RegisterEvents();
             
         }
 
@@ -267,100 +254,137 @@ namespace Player
             
         }
 
+        public void UnRegisterEvents()
+        {
+            UnRegisterWalletEvents();
+            UnRegisterExperienceEvents();
+            UnRegisterTowerUnlockEvent();
+            UnRegisterSkinUnlockEvent();
+            UnRegisterWinsAndDefeatsEvents();
+
+        }
+
+
 
         void RegisterExperienceEvents()
         {
-            ChangeExperience += async (value) =>
-            {
-                uint oldLevel = Level;
-                
-                TotalExperiencePoins = (ulong)((long)TotalExperiencePoins + value);
-
-                if (Level > oldLevel)
-                    OnLevelUp?.Invoke(Level);
-                    
-                OnChangeExperience?.Invoke(Level, XP);
-
-                await BattlepassManager.AddBattlepassExperienceProgress(value);
-            };
-            GetExperience += () => TotalExperiencePoins;
-            
+            ChangeExperience += OnExperienceChanged;
+            GetExperience += OnGetExperience;
         }
-        
-        
+        void UnRegisterExperienceEvents()
+        {
+            ChangeExperience -= OnExperienceChanged;
+            GetExperience -= OnGetExperience;
+        }
+        async void OnExperienceChanged(long value)
+        {
+            uint oldLevel = Level;
+
+            TotalExperiencePoins = (ulong)((long)TotalExperiencePoins + value);
+
+            if (Level > oldLevel)
+                OnLevelUp?.Invoke(Level);
+            OnChangeExperience?.Invoke(Level, XP);
+
+            await BattlepassManager.AddBattlepassExperienceProgress(value);
+        }
+        ulong OnGetExperience() => TotalExperiencePoins;
+
+
         void RegisterWalletEvents()
         {
-            ChangeCoinsBalance += (value) =>
-            {
-                Debug.Log("Change Balance");
-                WalletData.Coins = (ulong)((long)WalletData.Coins + value);
-                
-                OnChangeCoinsBalance?.Invoke(WalletData.Coins);
-            };
-            GetCoinsBalance += () => WalletData.Coins;
-            
-            
-            ChangeGemsBalance += (value) =>
-            {
-                WalletData.Gems = (ulong)((long)WalletData.Gems + value);
-                
-                OnChangeGemsBalance?.Invoke(WalletData.Gems);
-            };
-            GetGemsBalance += () => WalletData.Gems;
+            ChangeCoinsBalance += OnCoinsBalanceChanged;
+            GetCoinsBalance += OnGetCoinsBalance;
 
-            
-            
+
+            ChangeGemsBalance += OnGemsBalanceChanged;
+            GetGemsBalance += OnGetGemsBalance;
+
         }
-        
+        void UnRegisterWalletEvents()
+        {
+            ChangeCoinsBalance -= OnCoinsBalanceChanged;
+            GetCoinsBalance -= OnGetCoinsBalance;
+
+
+            ChangeGemsBalance -= OnGemsBalanceChanged;
+            GetGemsBalance -= OnGetGemsBalance;
+
+        }
+        void OnCoinsBalanceChanged(long value)
+        {
+            Debug.Log("Change Balance");
+            WalletData.Coins = (ulong)((long)WalletData.Coins + value);
+
+            OnChangeCoinsBalance?.Invoke(WalletData.Coins);
+        }
+        ulong OnGetCoinsBalance() => WalletData.Coins;
+
+        void OnGemsBalanceChanged(long value)
+        {
+            WalletData.Gems = (ulong)((long)WalletData.Gems + value);
+
+            OnChangeGemsBalance?.Invoke(WalletData.Gems);
+        }
+        ulong OnGetGemsBalance() => WalletData.Gems;
+
+
         void RegisterTowerUnlockEvent()
         {
-            Tower.OnUnlockTower += (tower) =>
-            {
-                // if(UnlockedTowers.Any(unlockedTower => unlockedTower.ID == tower.ID))
-                //     return;
-                UnlockedTowers.RemoveWhere(_tower => _tower.ID == tower.ID);
-                
-                UnlockedTowers.Add(new TowerSerializable(tower));
-            };
-            
+            Tower.OnUnlockTower += OnTowerUnlocked;
+        }
+        void UnRegisterTowerUnlockEvent()
+        {
+            Tower.OnUnlockTower -= OnTowerUnlocked;
+        }
+        void OnTowerUnlocked(Tower tower)
+        {
+            UnlockedTowers.RemoveWhere(_tower => _tower.ID == tower.ID);
+
+            UnlockedTowers.Add(new TowerSerializable(tower));
         }
         
+
         void RegisterSkinUnlockEvent()
         {
-            TowerSkin.OnUnlockSkin += (skin) =>
-            {
-                // if(UnlockedTowers.Any(unlockedTower => unlockedTower.ID == tower.ID))
-                //     return;
-                UnlockedTowersSkins.RemoveWhere(_skin => _skin.ID == skin.ID);
-                
-                UnlockedTowersSkins.Add(new TowerSkinSerializable(skin));
-            };
-            
+            TowerSkin.OnUnlockSkin += OnSkinUnlocked;
+        }
+        void UnRegisterSkinUnlockEvent()
+        {
+            TowerSkin.OnUnlockSkin -= OnSkinUnlocked;
+        }
+        void OnSkinUnlocked(TowerSkin skin)
+        {
+            UnlockedTowersSkins.RemoveWhere(_skin => _skin.ID == skin.ID);
+
+            UnlockedTowersSkins.Add(new TowerSkinSerializable(skin));
         }
         
 
         void RegisterWinsAndDefeatsEvents()
         {
-            AddGameResult += (result) =>
+            AddGameResult += OnGameResult;
+        }
+        void UnRegisterWinsAndDefeatsEvents()
+        {
+            AddGameResult -= OnGameResult;
+        }
+        void OnGameResult(GameResult result)
+        {
+            switch (result)
             {
-                switch (result)
-                {
-                    case GameResult.Survival:
-                        PlayerGamesData.Survival_GamesCount += 1;
-                        break;
-                    case GameResult.PVP_Win:
-                        PlayerGamesData.DefeatsCount += 1;
-                        OnChangeDefeatsCount?.Invoke(PlayerGamesData.DefeatsCount);
-                        break;
-                    case GameResult.PVP_Defeat:
-                        PlayerGamesData.WinsCount += 1;
-                        OnChangeWinsCount?.Invoke(PlayerGamesData.WinsCount);
-                        break;
-                }
-                
-            };
-
-            
+                case GameResult.Survival:
+                    PlayerGamesData.Survival_GamesCount += 1;
+                    break;
+                case GameResult.PVP_Win:
+                    PlayerGamesData.DefeatsCount += 1;
+                    OnChangeDefeatsCount?.Invoke(PlayerGamesData.DefeatsCount);
+                    break;
+                case GameResult.PVP_Defeat:
+                    PlayerGamesData.WinsCount += 1;
+                    OnChangeWinsCount?.Invoke(PlayerGamesData.WinsCount);
+                    break;
+            }
         }
 
 #endregion

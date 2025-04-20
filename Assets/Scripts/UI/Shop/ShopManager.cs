@@ -263,17 +263,27 @@ namespace UI.Shop
     #region Get Data From Server
 
 
-        static async Task GetSkinsForSaleFromServerAsync()
+        static IEnumerator GetSkinsForSaleFromServerAsync()
         {
-            var result = await Database.GET<SkinsForSale>();
+            bool taskCompleted = false;
+            Database.GET<SkinsForSale>(OnGetData);
 
-            if (result.Status == DatabaseStatus.Error)
-                skinsForSale = await CalculateNewSkinsForSale(); // Calculate new offerts
-            else if ((ServerDate.SimulatedDateOnServerUTC() - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
-                skinsForSale = await CalculateNewSkinsForSale(result.Data); // Calculate new offerts
-            else
-                skinsForSale = result.Data;
+            while (!taskCompleted)
+                yield return null;
 
+            async void OnGetData(GET_Callback<SkinsForSale> result)
+            {
+                Debug.Log("[BATTLEPASS] OnGetData callback");
+                if (result.Status == DatabaseStatus.Error)
+                    skinsForSale = await CalculateNewSkinsForSale(); // Calculate new offerts
+                else if ((ServerDate.SimulatedDateOnServerUTC() - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
+                    skinsForSale = await CalculateNewSkinsForSale(result.Data); // Calculate new offerts
+                else
+                    skinsForSale = result.Data;
+
+                taskCompleted = true;
+            }
+            
         }
         
         
@@ -297,14 +307,19 @@ namespace UI.Shop
                 CreateDateUTCTicks = createDateUTC.Ticks 
             };
             List<SkinOffert> offerts = null;
-            
-            var result = await Database.GET<SkinOffert[]>();
+
+            GET_Callback<SkinOffert[]> result = new GET_Callback<SkinOffert[]>();
+            bool taskCopleted = false;
+            Database.GET<SkinOffert[]>(_result => { result = _result; taskCopleted = true; });
+
+            while (!taskCopleted)
+                await Task.Yield();
 
             if (result.Status == DatabaseStatus.Error)
             {
                 List<SkinOffert> generatedOfferts = GenerateAllSkins().ToList();
                 
-                await Database.POST<SkinOffert[]>(generatedOfferts.ToArray());
+                Database.POST<SkinOffert[]>(generatedOfferts.ToArray());
 
                 await Task.Yield();
 
@@ -337,7 +352,7 @@ namespace UI.Shop
             }
 
             
-            await Database.POST<SkinsForSale>(_skinsForSale);
+            Database.POST<SkinsForSale>(_skinsForSale);
             
             
             return _skinsForSale;
@@ -449,18 +464,27 @@ namespace UI.Shop
 
     #region Get Data From Server
         
-        static async Task GetDailyRewardsFromServerAsync()
+        static IEnumerator GetDailyRewardsFromServerAsync()
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;
 
-            var result = await Database.GET<DailyRewards>(playerID);
+            bool taskCompleted = false;
+            Database.LocalUser.GET<DailyRewards>(OnGetData);
 
-            if (result.Status == DatabaseStatus.Error)
-                dailyRewards = await CalculateNewDailyRewards(true);
-            else if (result.Data.LastCalimedRewardIndex + 1 >= DAILY_REWARDS_COUNT)
-                dailyRewards = await CalculateNewDailyRewards();
-            else
-                dailyRewards = result.Data;
+            while (!taskCompleted)
+                yield return null;
+
+            async void OnGetData(GET_Callback<DailyRewards> result)
+            {
+                if (result.Status == DatabaseStatus.Error)
+                    dailyRewards = await CalculateNewDailyRewards(true);
+                else if (result.Data.LastCalimedRewardIndex + 1 >= DAILY_REWARDS_COUNT)
+                    dailyRewards = await CalculateNewDailyRewards();
+                else
+                    dailyRewards = result.Data;
+
+                taskCompleted = true;
+            }            
 
         }
 
@@ -537,7 +561,7 @@ namespace UI.Shop
 
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
-            await Database.POST<DailyRewards>(rewards, playerID);
+            Database.LocalUser.POST<DailyRewards>(rewards);
             
 
             return rewards;
@@ -569,7 +593,7 @@ namespace UI.Shop
             
             
             string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
-            await Database.POST<DailyRewards>(dailyRewards, playerID);
+            Database.LocalUser.POST<DailyRewards>(dailyRewards);
 
 
 
@@ -789,18 +813,27 @@ namespace UI.Shop
 
         #region Get Data From Server
 
-        static async Task GetAdsRewardsFromServerAsync()
+        static IEnumerator GetAdsRewardsFromServerAsync()
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;
-         
-            var result = await Database.GET<AdsRewards>(playerID);
 
-            if (result.Status == DatabaseStatus.Error)
-                adsRewards = await CalculateNewAdsRewards(); // Calculate new ads rewards
-            else if ((ServerDate.SimulatedDateOnServerUTC() - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
-                adsRewards = await CalculateNewAdsRewards(); // Calculate new ads rewards
-            else
-                adsRewards = result.Data;
+            bool taskCompleted = false;
+            Database.LocalUser.GET<AdsRewards>(OnGetData);
+
+            while (!taskCompleted)
+                yield return null;
+
+            async void OnGetData(GET_Callback<AdsRewards> result)
+            {
+                if (result.Status == DatabaseStatus.Error)
+                    adsRewards = await CalculateNewAdsRewards(); // Calculate new ads rewards
+                else if ((ServerDate.SimulatedDateOnServerUTC() - new DateTime(result.Data.CreateDateUTCTicks)).TotalDays >= 1)
+                    adsRewards = await CalculateNewAdsRewards(); // Calculate new ads rewards
+                else
+                    adsRewards = result.Data;
+
+                taskCompleted = true;
+            }
             
         }
         
@@ -847,7 +880,7 @@ namespace UI.Shop
 
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
-            await Database.POST<AdsRewards>(_adsRewards, playerID);
+            Database.LocalUser.POST<AdsRewards>(_adsRewards);
             
             
             
@@ -880,7 +913,7 @@ namespace UI.Shop
             adsRewards.rewards.RemoveAt(0);
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
-            await Database.POST<AdsRewards>(adsRewards, playerID);
+            Database.LocalUser.POST<AdsRewards>(adsRewards);
 
 
             UpdateAdsRewardsOffertsUI();
@@ -929,6 +962,11 @@ namespace UI.Shop
 #endregion
 
 
+
+        public void BuyTest75Gems()
+        {
+            StorePayment.Purchase(StoreProduct.Test);
+        }
 
         
     }

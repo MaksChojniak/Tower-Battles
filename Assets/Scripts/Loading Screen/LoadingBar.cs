@@ -91,44 +91,8 @@ namespace Loading_Screen
 
 
         IEnumerator LoadingBarProcess()
-        {
-            //List<Task> taksToPlay = new List<Task>();
-
-
-            //taksToPlay = new List<Task>()
-            //{
-            //    FirebaseCheckDependencies.CheckAndFixDependencies(),
-            //    GoogleAds.CheckAndFixDependencies(),
-            //    ServerDate.GetDateFromSerer(),
-            //};
-            //await Task.WhenAll(taksToPlay);
-
-            //await Task.Yield();
-
-            //await StartLoadingAnimation();
-
-            //taksToPlay = new List<Task>()
-            //{
-            //    LoginProcess(),
-            //    LoadingAnimation(40f),
-            //};
-            //await Task.WhenAll(taksToPlay);
-
-
-            //taksToPlay = new List<Task>()
-            //{
-            //    LoadBattlepassRewards(),
-            //    LoadingAnimation(60f),
-            //};
-            //await Task.WhenAll(taksToPlay);
-
-            //taksToPlay = new List<Task>()
-            //{
-            //    LoadShopOfferts(),
-            //    LoadingAnimation(70f),
-            //};
-            //await Task.WhenAll(taksToPlay);
-
+        { 
+            
             yield return FirebaseCheckDependencies.CheckAndFixDependencies();
             yield return GoogleAds.CheckAndFixDependencies();
             yield return ServerDate.GetDateFromSerer();
@@ -137,35 +101,19 @@ namespace Loading_Screen
 
             yield return StartLoadingAnimation();
 
-            yield return LoginProcess();
             yield return LoadingAnimation(40f);
+            yield return LoginProcess();
 
-            yield return LoadBattlepassRewards();
             yield return LoadingAnimation(60f);
+            yield return LoadBattlepassRewards();
 
-            yield return LoadShopOfferts();
             yield return LoadingAnimation(70f);
+            yield return LoadShopOfferts();
 
 
             AsyncOperation loadinsSceneOperation = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings().mainMenuScene);
             loadinsSceneOperation.allowSceneActivation = false;
 
-
-
-            //taksToPlay = new List<Task>()
-            //{
-            //    LoadScene(loadinsSceneOperation),
-            //    LoadingAnimation(100f),
-            //};
-            //await Task.WhenAll(taksToPlay);
-
-
-
-            //taksToPlay = new List<Task>()
-            //{
-            //    EndLoadingAnimation(),
-            //};
-            //await Task.WhenAll(taksToPlay);
 
             yield return LoadScene(loadinsSceneOperation);
             yield return LoadingAnimation(100f);
@@ -208,8 +156,7 @@ namespace Loading_Screen
             }
 
 
-            while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < loadingAnimationClip.length * _progressValue / 100f ||
-                (lineRenderer.GetPosition(1) - bulletStartPosition).magnitude < ( (bulletEndPosition - bulletStartPosition).magnitude * _progressValue / 100f) )
+            while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < loadingAnimationClip.length * _progressValue / 100f || (lineRenderer.GetPosition(1) - bulletStartPosition).magnitude < ( (bulletEndPosition - bulletStartPosition).magnitude * _progressValue / 100f) )
             {
                 lineRenderer.SetPosition(1, lineRenderer.GetPosition(1) + bulletDirection.normalized * Time.deltaTime * bulletSpeed);
                 //await Task.Yield();
@@ -237,12 +184,10 @@ namespace Loading_Screen
             }
             lineRenderer.positionCount = 0;
 
-            while ( (DateTime.Now - startTime).TotalMilliseconds < Mathf.RoundToInt(endAnimationClip.length * 1000) )
+            while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < loadingAnimationClip.length)
                 yield return null;
-                //await Task.Yield();
 
 
-            //await Task.Delay(1500);
             yield return new WaitForSeconds(1.5f);
         }
 
@@ -253,9 +198,6 @@ namespace Loading_Screen
 
         IEnumerator LoginProcess()
         {
-            //await Task.Delay(300);
-            yield return new WaitForSeconds(0.3f);
-
             PlayerController player = null;
 
             if (PlayerController.GetLocalPlayer?.Invoke() == null)
@@ -268,15 +210,10 @@ namespace Loading_Screen
             {
                 player = PlayerController.GetLocalPlayer?.Invoke();
 
-                //await Task.Yield();
                 yield return null;
             }
-
             
-            
-            Task login = player.Login();
-
-            //await Task.WhenAll(login);
+            yield return player.Login();
 
         }
 

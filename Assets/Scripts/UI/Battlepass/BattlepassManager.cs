@@ -169,26 +169,34 @@ namespace UI.Battlepass
 
         TimeSpan TimeToEndBattlepass => BattlepassRewards.CreatedDateUTC.AddDays(BattlepassRewards.DaysDuration) - ServerDate.SimulatedDateOnServerUTC();
 
-        async static Task GetPlayerProgress()
+        static IEnumerator GetPlayerProgress()
         {
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
             // playerProgress = null;
-            
-            
-            var result = await Database.GET<BattlepassProgress>(playerID);
-            
-            if (result.Status == DatabaseStatus.Error)
-            {
-                playerProgress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
-                
-                await Database.POST<BattlepassProgress>(playerProgress, playerID);
-            }
-            else
-                playerProgress = result.Data;
-            
 
-            await GetBattlepassRewards();
+            bool taskComplete = false;
+            Database.LocalUser.GET<BattlepassProgress>(OnGetData);
+            
+            while(!taskComplete)
+                yield return null;
+
+            async void OnGetData(GET_Callback<BattlepassProgress> result)
+            {
+                if (result.Status == DatabaseStatus.Error)
+                {
+                    playerProgress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
+
+                    Database.LocalUser.POST<BattlepassProgress>(playerProgress);
+                }
+                else
+                    playerProgress = result.Data;
+
+
+                await GetBattlepassRewards();
+
+                taskComplete = true;
+            }
 
         }
         
@@ -516,7 +524,7 @@ namespace UI.Battlepass
             // TODO give reward to player
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
-            await Database.POST<BattlepassProgress>(playerProgress, playerID);
+            Database.LocalUser.POST<BattlepassProgress>(playerProgress);
             
             
             UpdateBattlapassUI();
@@ -707,7 +715,7 @@ namespace UI.Battlepass
                 PlayerData.ChangeGemsBalance(-price);
                 
                 playerProgress.HasPremiumBattlepass = true;
-                await Database.POST<BattlepassProgress>(playerProgress, playerID);
+                Database.LocalUser.POST<BattlepassProgress>(playerProgress);
 
                 await Task.Yield();
                 
@@ -726,20 +734,23 @@ namespace UI.Battlepass
             string playerID = PlayerController.GetLocalPlayerData().ID;
             BattlepassProgress progress;
             
-            var result = await Database.GET<BattlepassProgress>(playerID);
+            Database.LocalUser.GET<BattlepassProgress>(OnGetData);
             
-            // TODO chekc when is new event
-            if (result.Status == DatabaseStatus.Error)
-                progress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
-            else
-                progress = result.Data;
+            async void OnGetData(GET_Callback<BattlepassProgress> result)
+            {
+                // TODO chekc when is new event
+                if (result.Status == DatabaseStatus.Error)
+                    progress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
+                else
+                    progress = result.Data;
 
-            await ShowBattlepassMessage(progress, XP);
+                await ShowBattlepassMessage(progress, XP);
 
-            progress.ExperienceCollected += XP;
-            // progress.UpdateUnlockedTiers();
+                progress.ExperienceCollected += XP;
+                // progress.UpdateUnlockedTiers();
 
-            await Database.POST<BattlepassProgress>(progress, playerID);
+                Database.LocalUser.POST<BattlepassProgress>(progress);
+            }
         }
 
         async static Task ShowBattlepassMessage(BattlepassProgress progress, long XP)
@@ -770,19 +781,23 @@ namespace UI.Battlepass
             string playerID = PlayerController.GetLocalPlayerData().ID;
             BattlepassProgress progress;
             
-            var result = await Database.GET<BattlepassProgress>(playerID);
+            Database.LocalUser.GET<BattlepassProgress>(OnGetData);
             
-            // TODO chekc when is new event
-            if (result.Status == DatabaseStatus.Error)
-                progress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
-            else
-                progress = result.Data;
+            void OnGetData(GET_Callback<BattlepassProgress> result)
+            {
+                // TODO chekc when is new event
+                if (result.Status == DatabaseStatus.Error)
+                    progress = new BattlepassProgress() { ExperienceCollected = 0, ClaimedRewards = new List<BattlepassReward>(), HasPremiumBattlepass = false, };
+                else
+                    progress = result.Data;
 
-            // progress.LastTierUnlocked += TiersCount;
-            progress.ExperienceCollected += TiersCount * BattlepassProgress.BATTLEPASS_TIER_XP_VALUE;
-            // progress.UpdateUnlockedTiers();
+                // progress.LastTierUnlocked += TiersCount;
+                progress.ExperienceCollected += TiersCount * BattlepassProgress.BATTLEPASS_TIER_XP_VALUE;
+                // progress.UpdateUnlockedTiers();
+
+                Database.LocalUser.POST<BattlepassProgress>(progress);
+            }
             
-            await Database.POST<BattlepassProgress>(progress, playerID);
         }
         
         

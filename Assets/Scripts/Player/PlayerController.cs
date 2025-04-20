@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using MMK.ScriptableObjects;
 using Newtonsoft.Json;
 using Player.Database;
 using UnityEngine;
+using static UnityEngine.Application;
 
 namespace Player
 {
@@ -32,24 +34,20 @@ namespace Player
         bool isLoggedIn => !string.IsNullOrEmpty(PlayerData.ID);
 
 
-        
-        public async Task Login()
+
+
+        public IEnumerator Login()
         {
-            
-            LoginCallback callback;
-            do
-            {
-                Login login = new Login();
 
-                callback = await login.LoginProcess();
+            Login login = new Login();
+            login.LoginProcess();
 
-                await Task.Yield();
-            } 
-            while (callback.Status != LoginStatus.Success);
+            while (login.callback.Status != LoginStatus.Success)
+                yield return null;
 
-            
-            PlayerData = callback.Data;
-            Debug.Log($"Player LoggedIn Successfully at {callback.Date.ToString()}");
+
+            PlayerData = login.callback.Data;
+            Debug.Log($"Player LoggedIn Successfully at {login.callback.Date.ToString()}");
 
             this.gameObject.name = $"Player [ID:{PlayerData.ID}]";
 
@@ -57,9 +55,7 @@ namespace Player
         }
 
 
-        
-        
-        
+
         void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
@@ -127,27 +123,32 @@ namespace Player
             if (!isLoggedIn)
                 return;
                     
-            await Database.Database.POST<PlayerData>(PlayerData, PlayerData.ID);
+            //await Database.Database.POST<PlayerData>(PlayerData, PlayerData.ID);
+            Database.Database.LocalUser.POST<PlayerData>(PlayerData);
 
         }
 
         async void OnLoad()
         {
             // PlayerData playerData = await Database.Database.GET<PlayerData>(PlayerData.ID);
-            GET_Callback<PlayerData> playerDataCallback = await Database.Database.GET<PlayerData>(PlayerData.ID);
+            //GET_Callback<PlayerData> playerDataCallback = await Database.Database.GET<PlayerData>(PlayerData.ID);
+            Database.Database.LocalUser.GET<PlayerData>(OnGetData);
 
-            PlayerData playerData = new PlayerData();
-            
-            if (playerDataCallback.Status == DatabaseStatus.Success)
-                playerData = new PlayerData(playerDataCallback.Data);
-  
-            
-            playerData.ID = PlayerData.ID;
-            PlayerData = playerData;
+            async void OnGetData(GET_Callback<PlayerData> callback)
+            {
+                PlayerData playerData = new PlayerData();
 
-            PlayerData.RegisterEvents();
+                if (callback.Status == DatabaseStatus.Success)
+                    playerData = new PlayerData(callback.Data);
 
-            await UpdateTowersLockstate();
+
+                playerData.ID = PlayerData.ID;
+                PlayerData = playerData;
+
+                PlayerData.RegisterEvents();
+
+                await UpdateTowersLockstate();
+            }
             
         }
         

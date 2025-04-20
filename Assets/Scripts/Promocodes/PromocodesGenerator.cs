@@ -106,7 +106,7 @@ namespace Promocodes
         {
             string debugLog = "Promocodes \n";
             
-            await FirebaseCheckDependencies.CheckAndFixDependencies();
+            //await FirebaseCheckDependencies.CheckAndFixDependencies();
 
             promocodes = await PromocodeUtils.GetExistingCodes();
 
@@ -150,7 +150,7 @@ namespace Promocodes
             }
             Debug.Log(debugLog);
 
-            await Database.POST<Dictionary<string, Promocode>>( promocodes );
+            //await Database.POST<Dictionary<string, Promocode>>( promocodes );
 
 
             ClearProperties();
