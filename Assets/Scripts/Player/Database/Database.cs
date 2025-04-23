@@ -108,32 +108,20 @@ namespace Player.Database
                 return;
             }
 
-            //reference.GetBytesAsync(maxAllowedSize).ContinueWithOnMainThread(
-            //    task => 
-            //    {
-            //        if (task.IsFaulted || task.IsCanceled)
-            //        {
-            //            Debug.LogError($"Error GET: {task.Exception.ToString()}");
-            //            callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
-            //        }
-            //        else
-            //        {
-            //            Debug.Log("[GET] invoke callback");
-            //            byte[] fileContentBytes = task.Result;
-            //            string fileContent = Encoding.UTF8.GetString(fileContentBytes);
-            //            callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Success, Data = JsonConvert.DeserializeObject<T>(fileContent) });
-            //        }
-            //    }
-            //);
-
             reference.GetBytesAsync(maxAllowedSize).ContinueWithOnMainThread(OnGetBytes);
 
             void OnGetBytes(Task<byte[]> task)
             {
-                if (task.IsFaulted || task.IsCanceled)
+                if (task.IsFaulted)
                 {
                     Debug.LogError($"Error GET: {task.Exception.ToString()}");
-                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    user.GET(callbak);
+                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                }
+                else if(task.IsCanceled){
+                    Debug.LogError($"Canceled GET: {task.Exception.ToString()}");
+                    user.GET(callbak);
+                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
                 }
                 else
                 {
@@ -166,10 +154,17 @@ namespace Player.Database
 
             void OnGetBytes(Task<byte[]> task)
             {
-                if (task.IsFaulted || task.IsCanceled)
+                if (task.IsFaulted)
                 {
                     Debug.LogError($"Error GET: {task.Exception.ToString()}");
-                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    GET(callbak);
+                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                }
+                else if (task.IsCanceled)
+                {
+                    Debug.LogError($"Canceled GET: {task.Exception.ToString()}");
+                    GET(callbak);
+                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
                 }
                 else
                 {
@@ -211,9 +206,15 @@ namespace Player.Database
 
             void OnUploadBytes(Task<StorageMetadata> task)
             {
-                if (task.IsFaulted || task.IsCanceled)
+                if (task.IsFaulted)
                 {
                     Debug.LogError($"Error POST: {task.Exception.ToString()}");
+                    user.POST(data);
+                }
+                else if(task.IsCanceled)
+                {
+                    Debug.LogError($"Canceled POST: {task.Exception.ToString()}");
+                    user.POST(data);
                 }
                 else
                 {
@@ -241,9 +242,15 @@ namespace Player.Database
 
             void OnUploadBytes(Task<StorageMetadata> task)
             {
-                if (task.IsFaulted || task.IsCanceled)
+                if (task.IsFaulted)
                 {
                     Debug.LogError($"Error POST: {task.Exception.ToString()}");
+                    POST(data);
+                }
+                else if (task.IsCanceled)
+                {
+                    Debug.LogError($"Canceled POST: {task.Exception.ToString()}");
+                    POST(data);
                 }
                 else
                 {

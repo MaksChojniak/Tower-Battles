@@ -34,12 +34,21 @@ namespace Player
         bool isLoggedIn => !string.IsNullOrEmpty(PlayerData.ID);
 
 
+        //private void OnGUI()
+        //{
+        //    Rect rect = new Rect(1000, 250, 2000, 1000);
 
+        //    if (login == null)
+        //        return;
+
+        //    GUI.TextArea(rect, login.message);
+        //}
+        Login login;
 
         public IEnumerator Login()
         {
 
-            Login login = new Login();
+            login = new Login();
             login.LoginProcess();
 
             while (login.callback.Status != LoginStatus.Success)
@@ -53,7 +62,6 @@ namespace Player
 
             Load?.Invoke();
         }
-
 
 
         void Awake()

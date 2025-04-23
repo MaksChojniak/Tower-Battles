@@ -101,13 +101,13 @@ namespace Loading_Screen
 
             yield return StartLoadingAnimation();
 
-            yield return LoadingAnimation(40f);
+            yield return LoadingAnimation(20f);
             yield return LoginProcess();
 
-            yield return LoadingAnimation(60f);
+            yield return LoadingAnimation(40f);
             yield return LoadBattlepassRewards();
 
-            yield return LoadingAnimation(70f);
+            yield return LoadingAnimation(55f);
             yield return LoadShopOfferts();
 
 
@@ -120,6 +120,8 @@ namespace Loading_Screen
 
             yield return EndLoadingAnimation();
 
+
+            yield return new WaitForSeconds(1.5f);
 
             loadinsSceneOperation.allowSceneActivation = true;
 
@@ -174,9 +176,7 @@ namespace Loading_Screen
         {
             animator.Play(endAnimationClip.name);
 
-
-            DateTime startTime = DateTime.Now;
-            while ((lineRenderer.GetPosition(1) - lineRenderer.GetPosition(0)).magnitude > 0.1f)
+            while ((lineRenderer.GetPosition(1) - lineRenderer.GetPosition(0)).magnitude > 0.5f)
             {
                 lineRenderer.SetPosition(0, lineRenderer.GetPosition(0) + bulletDirection.normalized * Time.deltaTime * bulletSpeed * 20f);
                 //await Task.Yield();
@@ -187,8 +187,6 @@ namespace Loading_Screen
             while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < loadingAnimationClip.length)
                 yield return null;
 
-
-            yield return new WaitForSeconds(1.5f);
         }
 
 
@@ -233,11 +231,8 @@ namespace Loading_Screen
 
         IEnumerator LoadScene(AsyncOperation loadinsSceneOperation)
         {
-            DateTime startTime = DateTime.Now;
-
-            while (loadinsSceneOperation.progress < 0.9f && (DateTime.Now - startTime).TotalSeconds < 5f )
+            while (Mathf.Abs(loadinsSceneOperation.progress - 0.9f) >= 0.05f)
                 yield return null;
-
         }
 
 

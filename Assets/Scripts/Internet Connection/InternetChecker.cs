@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using UI.Animations;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,19 +9,8 @@ namespace MMK.Internet_Connection
 {
     public class InternetChecker : MonoBehaviour
     {
-        public delegate void OnNetworkConnectionLostDelegate();
-        public static event OnNetworkConnectionLostDelegate OnNetworkConnectionLost;
-        
-        public delegate void OnNetworkConnectionFindDelegate();
-        public static event OnNetworkConnectionFindDelegate OnNetworkConnectionFind;
-
-        public delegate void OnChangeConnectionStateDelegate();
-        event OnChangeConnectionStateDelegate OnChangeConnectionState;
-        
-        
-        static InternetChecker Instance;
-
-
+        [SerializeField] UIAnimation OpenInternetLostPanel;
+        [SerializeField] UIAnimation CloseInternetLostPanel;
 
         [SerializeField] float checkInterval;
         
@@ -30,25 +21,17 @@ namespace MMK.Internet_Connection
         
         void Awake()
         {
-            if (Instance != null)
-            {
-                Destroy(this.gameObject);
-                return;
-            }
-
-            Instance = this;
             DontDestroyOnLoad(this.gameObject);
-            
-            RegisterHanlders();
+
+            this.connectionState = NetworkReachability.NotReachable;
         }
 
         void OnDestroy()
         {
-            if(Instance != this)
-                return;
-            
-            UnregisterHanlders();
+
         }
+
+
 
         void Start()
         {
@@ -58,50 +41,59 @@ namespace MMK.Internet_Connection
 
 
 
-
-#region Register & Unregister Handlers
-
-        void RegisterHanlders()
-        {
-            OnChangeConnectionState += OnConnectionStateChanged;
-
-        }
-
-        void UnregisterHanlders()
-        {
-            OnChangeConnectionState += OnConnectionStateChanged;
-
-        }
-        
-#endregion
-
-        
         IEnumerator SimulatedUpdate()
         {
-            while (true)
+            while (Application.internetReachability != NetworkReachability.NotReachable)
             {
-                yield return new WaitForSeconds(1f / checkInterval);
-
-                NetworkReachability currentConnectionState = Application.internetReachability;
-                if (currentConnectionState != connectionState)
-                {
-                    connectionState = currentConnectionState;
-                    OnChangeConnectionState?.Invoke();
-                }
-                
+                yield return new WaitForSecondsRealtime(checkInterval);
+                Debug.Log("[InternetChecker] Internet Connected");
             }
+
+            StartCoroutine(OnConnectionLost());
             
         }
 
 
-        void OnConnectionStateChanged()
+        IEnumerator OnConnectionLost()
         {
-            
+            Debug.Log("[InternetChecker] Lost Internet Connection");
+
+            yield return OpenPanelAnimation();
+
+            StartCoroutine(RetryFindConnection());
+
+            Time.timeScale = 0;
+        }
+
+        IEnumerator RetryFindConnection()
+        {
+            while(Application.internetReachability == NetworkReachability.NotReachable)
+            {
+                yield return new WaitForSecondsRealtime(checkInterval);
+                Debug.Log("[InternetChecker] Retry");
+            }
+
+            Time.timeScale = 1;
+
+            yield return ClosePanelAnimation();  
+
+            StartCoroutine(SimulatedUpdate());
         }
 
 
 
 
+        IEnumerator OpenPanelAnimation() => PlayAnimation(OpenInternetLostPanel);
+        IEnumerator ClosePanelAnimation() => PlayAnimation(CloseInternetLostPanel);
+
+        IEnumerator PlayAnimation(UIAnimation anim)
+        {
+            if (anim == null)
+                yield break;
+
+            anim.PlayAnimation();
+            yield return new WaitForSecondsRealtime(anim.animationLenght);
+        }
 
 
     }

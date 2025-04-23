@@ -7,6 +7,7 @@ using Firebase.Auth;
 using UnityEngine;
 using Unity.Services.Core;
 using Firebase;
+using Unity.VisualScripting;
 
 namespace Player
 {
@@ -48,10 +49,14 @@ namespace Player
                 Date = DateTime.Now
             };
 
+            message = "ctor \n";
 
             PlayGamesPlatform.Activate();
             Debug.Log("[Game Play Auth] Activate");
+            message += "Activate \n";
         }
+
+        public string message;
 
 
         //public async Task<LoginCallback> LoginProcess()
@@ -95,6 +100,7 @@ namespace Player
             return;
 #endif
 
+            //Social.localUser.Authenticate((status) =>
             PlayGamesPlatform.Instance.Authenticate((status) =>
             {
                 if (status == SignInStatus.Success)
@@ -105,7 +111,8 @@ namespace Player
                 else
                 {
                     Debug.LogError($"[Game Play Auth] Athenticate Error");
-                    OnFailureCallback();
+                    message += "Auth Error \n";
+                    LoginManuallyProcess();
                 }
             });
 
@@ -123,7 +130,7 @@ namespace Player
 
         void LogInGooglePlay(FirebaseAuth auth, Credential credential)
         {
-
+            message += "try manual Authenticate Error\n";
             auth.SignInAndRetrieveDataWithCredentialAsync(credential).ContinueWith(OnSignIn);
 
             void OnSignIn(Task<AuthResult> task)
@@ -131,18 +138,19 @@ namespace Player
                 if (task.IsCanceled)
                 {
                     Debug.LogError("[Game Play Auth] SignInAndRetrieveDataWithCredentialAsync was canceled.");
-                    OnFailureCallback();
+                    message += "SignInAndRetrieveDataWithCredentialAsync was canceled. \n";
                     return;
                 }
                 if (task.IsFaulted)
                 {
-                    Debug.LogError("[Game Play Auth] SignInAndRetrieveDataWithCredentialAsync encountered an error: " + task.Exception);
-                    OnFailureCallback();
+                    Debug.LogError($"[Game Play Auth] SignInAndRetrieveDataWithCredentialAsync encountered an error: {task.Exception}");
+                    message += $"SignInAndRetrieveDataWithCredentialAsync encountered an error: {task.Exception} \n";
                     return;
                 }
 
                 AuthResult result = task.Result;
                 Debug.Log($"[Game Play Auth] Athenticate Success [id: {result.User.UserId}]");
+                message += "Login Success \n";
 
                 Database.Database.LocalUser = result.User;
 
@@ -161,28 +169,26 @@ namespace Player
 
 
 
-        void OnFailureCallback()
+        void LoginManuallyProcess()
         {
-            Debug.Log("Next try with login :)");
+            //PlayGamesPlatform.Instance.SignOut();
 
-            //PlayGamesPlatform.Instance.ManuallyAuthenticate((status) =>
-            //{
-            //    if (status == SignInStatus.Success)
-            //    {
-            //        Debug.Log("[Game Play Auth] Manual Athenticate Success");
-            //        PlayGamesPlatform.Instance.RequestServerSideAccess(true, AuthWithFirebase);
-            //    }
-            //    else
-            //    {
-            //        Debug.LogError($"[Game Play Auth] Manual Athenticate Error");
-            //        OnFailureCallback();
-            //    }
-            //});
+            PlayGamesPlatform.Instance.ManuallyAuthenticate((status) =>
+            {
+                if (status == SignInStatus.Success)
+                {
+                    Debug.Log("[Game Play Auth] Manualy Athenticate Success");
+                    PlayGamesPlatform.Instance.RequestServerSideAccess(true, AuthWithFirebase);
+                }
+                else
+                {
+                    Debug.LogError($"[Game Play Auth] Manually Athenticate Error");
+                    message += "Manually Auth Error \n";
+                    LoginManuallyProcess();
+                }
+            });
 
-            LoginProcess();
         }
-
-
 
 
         void LoginInEditor()
