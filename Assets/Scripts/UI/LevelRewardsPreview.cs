@@ -53,7 +53,8 @@ namespace UI
         public async void ClosePanel()
         {
             ClosePanelAnimation.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt( ClosePanelAnimation.animationLenght * 1000 ) );
+            await ClosePanelAnimation.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt( ClosePanelAnimation.animationLenght * 1000 ) );
 
             await Task.Yield();
             

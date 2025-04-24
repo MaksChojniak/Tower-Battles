@@ -183,8 +183,8 @@ namespace Ads
         async Task LoadAd(string adUnitID)
         {
             unitySynchronizationContext.Post( _ => OpenBackgroundAniation.PlayAnimation(), null);
-            // OpenBackgroundAniation.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(OpenBackgroundAniation.animationLenght * 1000) );
+            await OpenBackgroundAniation.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(OpenBackgroundAniation.animationLenght * 1000) );
 
             // Debug.Log("Loading the rewarded  ad.");
 

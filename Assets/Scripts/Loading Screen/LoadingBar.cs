@@ -7,6 +7,7 @@ using Mirror;
 using MMK;
 using Player;
 using TMPro;
+using UI.Animations;
 using UI.Battlepass;
 using UI.Shop;
 using UnityEngine;
@@ -137,7 +138,9 @@ namespace Loading_Screen
         {
             animator.Play(startAnimationClip.name);
             //await Task.Delay( Mathf.RoundToInt(startAnimationClip.length * 1000) );
-            yield return new WaitForSeconds(startAnimationClip.length);
+            //yield return new WaitForSeconds(startAnimationClip.length);
+            while (animator.Time() < startAnimationClip.length)
+                yield return null;
         }
 
         float progressValue;
@@ -158,7 +161,8 @@ namespace Loading_Screen
             }
 
 
-            while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < loadingAnimationClip.length * _progressValue / 100f || (lineRenderer.GetPosition(1) - bulletStartPosition).magnitude < ( (bulletEndPosition - bulletStartPosition).magnitude * _progressValue / 100f) )
+            //while (animator.Time() < loadingAnimationClip.length * _progressValue / 100f ||
+            while((lineRenderer.GetPosition(1) - bulletStartPosition).magnitude < ( (bulletEndPosition - bulletStartPosition).magnitude * _progressValue / 100f) )
             {
                 lineRenderer.SetPosition(1, lineRenderer.GetPosition(1) + bulletDirection.normalized * Time.deltaTime * bulletSpeed);
                 //await Task.Yield();
@@ -184,7 +188,7 @@ namespace Loading_Screen
             }
             lineRenderer.positionCount = 0;
 
-            while (animator.GetCurrentAnimatorStateInfo(0).normalizedTime < loadingAnimationClip.length)
+            while (animator.Time() < loadingAnimationClip.length)
                 yield return null;
 
         }

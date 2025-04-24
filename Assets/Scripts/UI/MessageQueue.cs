@@ -156,7 +156,8 @@ namespace UI
             
             OpenMessagePanel.PlayAnimation();
 
-            await Task.Delay(Mathf.RoundToInt(OpenMessagePanel.animationLenght * 1000));
+            await OpenMessagePanel.WaitAsync();
+            //await Task.Delay(Mathf.RoundToInt(OpenMessagePanel.animationLenght * 1000));
 
 
             await Task.Delay(Mathf.RoundToInt(2.5f * 1000));
@@ -164,7 +165,8 @@ namespace UI
 
             CloseMessagePanel.PlayAnimation();
 
-            await Task.Delay(Mathf.RoundToInt(CloseMessagePanel.animationLenght * 1000));
+            await CloseMessagePanel.WaitAsync();
+            //await Task.Delay(Mathf.RoundToInt(CloseMessagePanel.animationLenght * 1000));
         }
 
 

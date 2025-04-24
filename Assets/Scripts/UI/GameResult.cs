@@ -182,7 +182,8 @@ namespace UI
 
             animator.PlayAnimation();
 
-            await Task.Delay(Mathf.RoundToInt(animator.animationLenght * 1000));
+            await animator.WaitAsync();
+            //await Task.Delay(Mathf.RoundToInt(animator.animationLenght * 1000));
 
             
             isTimePassed = false;

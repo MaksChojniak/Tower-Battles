@@ -89,12 +89,14 @@ namespace UI
 
             
             OpenPanelAnimation.PlayAnimation();
-            await Task.Delay(Mathf.RoundToInt(OpenPanelAnimation.animationLenght * 1000));
+            await OpenPanelAnimation.WaitAsync();
+            //await Task.Delay(Mathf.RoundToInt(OpenPanelAnimation.animationLenght * 1000));
             
             StarAudioSource.Play();
             
             LevelUpAnimation.PlayAnimation();
-            await Task.Delay(Mathf.RoundToInt(LevelUpAnimation.animationLenght * 1000));
+            await LevelUpAnimation.WaitAsync();
+            //await Task.Delay(Mathf.RoundToInt(LevelUpAnimation.animationLenght * 1000));
 
             await Task.Delay(3000);
             
@@ -136,7 +138,8 @@ namespace UI
         public async void Close()
         {
             ClosePanelAnimation.PlayAnimation();
-            await Task.Delay(Mathf.RoundToInt(ClosePanelAnimation.animationLenght * 1000));
+            await ClosePanelAnimation.WaitAsync();
+            //await Task.Delay(Mathf.RoundToInt(ClosePanelAnimation.animationLenght * 1000));
 
             GiveRewards();
         }

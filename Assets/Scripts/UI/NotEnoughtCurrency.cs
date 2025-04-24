@@ -123,7 +123,8 @@ namespace UI
             
             
             OpenPanelAnimationUI.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(OpenPanelAnimationUI.animationLenght * 1000) );
+            await OpenPanelAnimationUI.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(OpenPanelAnimationUI.animationLenght * 1000) );
         }
         
         
@@ -132,7 +133,8 @@ namespace UI
         public async void Close()
         {
             ClosePanelAnimationUI.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(ClosePanelAnimationUI.animationLenght * 1000) );
+            await ClosePanelAnimationUI.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(ClosePanelAnimationUI.animationLenght * 1000) );
         }
         
         

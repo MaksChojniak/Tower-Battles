@@ -46,7 +46,7 @@ namespace MMK.Internet_Connection
             while (Application.internetReachability != NetworkReachability.NotReachable)
             {
                 yield return new WaitForSecondsRealtime(checkInterval);
-                Debug.Log("[InternetChecker] Internet Connected");
+                //Debug.Log("[InternetChecker] Internet Connected");
             }
 
             StartCoroutine(OnConnectionLost());
@@ -56,7 +56,7 @@ namespace MMK.Internet_Connection
 
         IEnumerator OnConnectionLost()
         {
-            Debug.Log("[InternetChecker] Lost Internet Connection");
+            //Debug.Log("[InternetChecker] Lost Internet Connection");
 
             yield return OpenPanelAnimation();
 
@@ -70,7 +70,7 @@ namespace MMK.Internet_Connection
             while(Application.internetReachability == NetworkReachability.NotReachable)
             {
                 yield return new WaitForSecondsRealtime(checkInterval);
-                Debug.Log("[InternetChecker] Retry");
+                //Debug.Log("[InternetChecker] Retry");
             }
 
             Time.timeScale = 1;
@@ -92,7 +92,8 @@ namespace MMK.Internet_Connection
                 yield break;
 
             anim.PlayAnimation();
-            yield return new WaitForSecondsRealtime(anim.animationLenght);
+            yield return anim.Wait();
+            //yield return new WaitForSecondsRealtime(anim.animationLenght);
         }
 
 

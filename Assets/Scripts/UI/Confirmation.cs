@@ -123,7 +123,8 @@ namespace UI
 
 
             OpenPanelAnimationUI.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(OpenPanelAnimationUI.animationLenght * 1000) );
+            await OpenPanelAnimationUI.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(OpenPanelAnimationUI.animationLenght * 1000) );
 
             void xd()
             {
@@ -157,7 +158,8 @@ namespace UI
         async void Close()
         {
             ClosePanelAnimationUI.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(ClosePanelAnimationUI.animationLenght * 1000) );
+            await ClosePanelAnimationUI.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(ClosePanelAnimationUI.animationLenght * 1000) );
 
             if (RotateableTower != null)
                 RotateableTower.gameObject.SetActive(false);
@@ -179,7 +181,8 @@ namespace UI
                 await Task.Yield();
             
             EndLoadingAnimationUI.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(EndLoadingAnimationUI.animationLenght * 1000) );
+            await EndLoadingAnimationUI.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(EndLoadingAnimationUI.animationLenght * 1000) );
 
             await Task.Delay( 500 );
 

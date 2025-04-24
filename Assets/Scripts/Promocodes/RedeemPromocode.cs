@@ -47,7 +47,8 @@ namespace Promocodes
                 return;
             
             StartLoadingAnimation.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(StartLoadingAnimation.animationLenght * 1000) );
+            await StartLoadingAnimation.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(StartLoadingAnimation.animationLenght * 1000) );
 
             Dictionary<string, Promocode> promocodes = await PromocodeUtils.GetExistingCodes();
             string playerID =  PlayerController.GetLocalPlayerData?.Invoke().ID;
@@ -135,7 +136,8 @@ namespace Promocodes
         async Task OnRedeemError()
         {
             ErrorAnimation.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(ErrorAnimation.animationLenght * 1000) );
+            await ErrorAnimation.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(ErrorAnimation.animationLenght * 1000) );
             // throw new Exception("promocode not exist");
 
             ClosePanel();
@@ -146,7 +148,8 @@ namespace Promocodes
         async Task OnRedeemComplete()
         {
             CompleteAnimation.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(CompleteAnimation.animationLenght * 1000) );
+            await CompleteAnimation.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(CompleteAnimation.animationLenght * 1000) );
             
         }
 
@@ -155,7 +158,8 @@ namespace Promocodes
         public async void ClosePanel()
         {
             ClosePanelAnimation.PlayAnimation();
-            await Task.Delay( Mathf.RoundToInt(ClosePanelAnimation.animationLenght * 1000) );
+            await ClosePanelAnimation.WaitAsync();
+            //await Task.Delay( Mathf.RoundToInt(ClosePanelAnimation.animationLenght * 1000) );
             
             Destroy(this.gameObject);
             
