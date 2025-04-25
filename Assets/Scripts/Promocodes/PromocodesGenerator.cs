@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using MMK;
 using MMK.ScriptableObjects;
+using Player;
 using Player.Database;
+using UI;
 using UI.Battlepass;
 using UnityEngine;
 
@@ -70,10 +72,6 @@ namespace Promocodes
         // }
         
         
-        [Space(18)]
-        [Header("Existing Codes")]
-        [SerializeField] Dictionary<string, Promocode> promocodes = new Dictionary<string, Promocode>();
-
         [Space(28)]
         [SerializeField] bool Generate;
         [Space(12)]
@@ -105,17 +103,13 @@ namespace Promocodes
         async void GenerateCodes()
         {
             string debugLog = "Promocodes \n";
-            
-            //await FirebaseCheckDependencies.CheckAndFixDependencies();
-
-            promocodes = await PromocodeUtils.GetExistingCodes();
 
             PromocodeReward reward = new PromocodeReward()
             {
                 Type = Type,
                 Coins = Coins,
                 Gems = Gems,
-                Skin = (Type == RewardType.Skin ? new TowerSkinSerializable(Skin) : new TowerSkinSerializable() )
+                Skin = (Type == RewardType.Skin ? new TowerSkinSerializable(Skin) : new TowerSkinSerializable())
             };
             PromocodeProperties properties = new PromocodeProperties()
             {
@@ -125,36 +119,52 @@ namespace Promocodes
                 CreateCodeDateUTC = ServerDate.SimulatedDateOnServerUTC().Ticks
             };
 
-            for (int i = 0; i < CodesCount; i++)
+            Database.FilesName(Promocode.PROMOCODES_PATH, OnGetFilesName);
+
+            async void OnGetFilesName(List<string> filesName)
             {
-                string code = "";
-                if (!string.IsNullOrEmpty(CustomName) && !string.IsNullOrWhiteSpace(CustomName))
+                if(!string.IsNullOrEmpty(CustomName) && !string.IsNullOrWhiteSpace(CustomName))
                 {
-                    code = CustomName;
-                    i = CodesCount - 1;
+                    if (filesName.WithoutExtension().Contains(CustomName))
+                        throw new Exception("Code exist in database");
+                    else
+                    {
+                        string code = CustomName;
+                        Promocode promocode = new Promocode()
+                        {
+                            Reward = reward,
+                            Properties = properties,
+                        };
+
+                        debugLog += $"code: {code}   |  reward: {reward.Type}" + "\n";
+
+                        Database.POST($"{Promocode.PROMOCODES_PATH}/{code}.txt", promocode);
+                    }
                 }
                 else
-                    await PromocodeUtils.GenerateCodesAsync(promocodes.Keys, CodeLenght);
-                
-                Promocode promocode = new Promocode()
                 {
-                    Reward = reward,
-                    Properties = properties,
-                };
-                
-                promocodes.Add(code, promocode);
+                    for(int i = 0; i < CodesCount; i++)
+                    {
+                        string code = await PromocodeUtils.GenerateCodesAsync(filesName, CodeLenght);
+                        Promocode promocode = new Promocode()
+                        {
+                            Reward = reward,
+                            Properties = properties,
+                        };
 
-                debugLog += $"code: {code}   |  reward: {reward.Type}" + "\n";
+                        debugLog += $"code: {code}   |  reward: {reward.Type}" + "\n";
 
-                await Task.Yield();
+                        Database.POST($"{Promocode.PROMOCODES_PATH}/{code}.txt", promocode);
+                    }
+                }
+
+                Debug.Log(debugLog);
+
+                ClearProperties();
+
             }
-            Debug.Log(debugLog);
-
-            //await Database.POST<Dictionary<string, Promocode>>( promocodes );
 
 
-            ClearProperties();
-            
         }
 
 
@@ -175,8 +185,6 @@ namespace Promocodes
             Coins = 0;
             Gems = 0;
             Skin = null;
-
-            promocodes = new Dictionary<string, Promocode>();
 
         }
         

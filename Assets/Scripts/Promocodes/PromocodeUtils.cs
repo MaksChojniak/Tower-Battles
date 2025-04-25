@@ -3,43 +3,12 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using Player.Database;
+using System.IO;
 
 namespace Promocodes
 {
     public static class PromocodeUtils
     {
-        
-        
-        public async static Task<Dictionary<string, Promocode>> GetExistingCodes()
-        {
-            ////var callback =  await Database.GET<Dictionary<string, Promocode>>();
-
-            //if (callback.Status != DatabaseStatus.Success)
-            //    return new Dictionary<string, Promocode>();
-            //// throw new Exception("GET function occurred error");
-
-            //return callback.Data;
-
-            bool taskCompleted = false;
-            Database.GET<Dictionary<string, Promocode>>(OnGetData);
-
-            while (!taskCompleted)
-                await Task.Yield();
-
-            Dictionary<string, Promocode> result = null;
-            void OnGetData(GET_Callback<Dictionary<string, Promocode>> callback)
-            {
-                result = callback.Data;
-
-                taskCompleted = true;
-            }
-
-            if (result == null)
-                return new Dictionary<string, Promocode>();
-
-            return result;
-        }
-        
         
         public async static Task<string> GenerateCodesAsync(ICollection<string> codes, int codeLenght = 10)
         {
@@ -61,12 +30,13 @@ namespace Promocodes
                 
                 await Task.Yield();
                 
-            } while (codes.Contains(code));
+            } while (codes.WithoutExtension().Contains(code) );
 
             
             return code;
-        } 
-        
+        }
+
+        public static IEnumerable<string> WithoutExtension(this IEnumerable<string> src) => src.Select(el => Path.GetFileNameWithoutExtension(el) );
         
     }
 }

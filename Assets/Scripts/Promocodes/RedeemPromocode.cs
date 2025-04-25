@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +19,6 @@ namespace Promocodes
     
     public class RedeemPromocode : MonoBehaviour
     {
-
         [SerializeField] UIAnimation StartLoadingAnimation;
         [Space]
         [SerializeField] UIAnimation CompleteAnimation;
@@ -43,90 +43,114 @@ namespace Promocodes
         
         public async void RedeemCode()
         {
-            if(string.IsNullOrEmpty(code))
+            var playerID = PlayerController.GetLocalPlayerData?.Invoke().ID;
+
+            if (string.IsNullOrEmpty(code))
                 return;
             
             StartLoadingAnimation.PlayAnimation();
             await StartLoadingAnimation.WaitAsync();
-            //await Task.Delay( Mathf.RoundToInt(StartLoadingAnimation.animationLenght * 1000) );
 
-            Dictionary<string, Promocode> promocodes = await PromocodeUtils.GetExistingCodes();
-            string playerID =  PlayerController.GetLocalPlayerData?.Invoke().ID;
+            Database.FilesName(Promocode.PROMOCODES_PATH, OnGetFilesName);
 
-            if (!promocodes.Keys.Contains(code))
+
+            async void OnGetFilesName(IEnumerable<string> filesName)
             {
-                await OnRedeemError();
-                
-                return;
-            }
-
-            PromocodeProperties properties = promocodes[code].Properties;
-
-            if (!properties.CodeIsValid(ServerDate.SimulatedDateOnServerUTC()))
-            {
-                promocodes.Remove(code);
-                //await Database.POST<Dictionary<string, Promocode>>(promocodes);
-                
-                await OnRedeemError();
-                
-                return;
-            }
-            
-            if (properties.IsPlayersRedeemedCode(playerID))
-            {
-                await OnRedeemError();
-                
-                return;
-            }
-            
-            
-            PromocodeReward[] rewards = promocodes[code].Reward.GetSplittedRewards();
-
-            List<MessageProperty> messageProperties = new List<MessageProperty>();   
-            
-            foreach (PromocodeReward reward in rewards)
-            {
-                switch (reward.Type)
+                if (filesName.Count() <= 0)
                 {
-                    case RewardType.Coins:
-                        PlayerData.ChangeCoinsBalance?.Invoke((long)reward.Coins);
-                        messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{StringFormatter.GetCoinsText((long)reward.Coins, true, "66%")}", });
-                        break;
-                    case RewardType.Gems:
-                        PlayerData.ChangeGemsBalance?.Invoke((long)reward.Gems);
-                        messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{StringFormatter.GetGemsText((long)reward.Gems, true, "66%")}", });
-                        break;
-                    case RewardType.Skin:
-                        TowerSkin skin = TowerSkin.GetTowerSkinByID(reward.Skin.ID);
-                        Tower tower = Tower.GetTowerBySkinID(skin.ID);
-                        skin.UnlockSkin();
-                        messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{StringFormatter.GetSkinText(skin)} {StringFormatter.GetTowerText(tower)}", }); 
-                        break;       
+                    await OnRedeemError();
+                    return;
+                }
+
+                if (!filesName.WithoutExtension().Contains(code))
+                {
+                    await OnRedeemError();
+                    return;
+                }
+
+                string fileName = filesName.WithoutExtension().First(name => name == code);
+                string filePath = $"{Promocode.PROMOCODES_PATH}/{fileName}.txt";
+
+                Database.GET<Promocode>(filePath, OnGetData);
+
+                async void OnGetData(GET_Callback<Promocode> result)
+                {
+                    if (result.Status != DatabaseStatus.Success)
+                    {
+                        await OnRedeemError();
+                        return;
+                    }
+
+                    Promocode promocode = result.Data;
+
+                    if (!promocode.Properties.CodeIsValid(ServerDate.SimulatedDateOnServerUTC()))
+                    {
+                        Database.DELETE(filePath);
+
+                        await OnRedeemError();
+
+                        return;
+                    }
+
+                    if (promocode.Properties.IsPlayersRedeemedCode(playerID))
+                    {
+                        await OnRedeemError();
+
+                        return;
+                    }
+                    promocode.Properties.PlayersRedeemedCode.Add(playerID);
+
+
+                    PromocodeReward[] rewards = promocode.Reward.GetSplittedRewards();
+
+                    List<MessageProperty> messageProperties = new List<MessageProperty>();
+
+                    foreach (PromocodeReward reward in rewards)
+                    {
+                        switch (reward.Type)
+                        {
+                            case RewardType.Coins:
+                                PlayerData.ChangeCoinsBalance?.Invoke((long)reward.Coins);
+                                messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{StringFormatter.GetCoinsText((long)reward.Coins, true, "66%")}", });
+                                break;
+                            case RewardType.Gems:
+                                PlayerData.ChangeGemsBalance?.Invoke((long)reward.Gems);
+                                messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{StringFormatter.GetGemsText((long)reward.Gems, true, "66%")}", });
+                                break;
+                            case RewardType.Skin:
+                                TowerSkin skin = TowerSkin.GetTowerSkinByID(reward.Skin.ID);
+                                Tower tower = Tower.GetTowerBySkinID(skin.ID);
+                                skin.UnlockSkin();
+                                messageProperties.Add(new MessageProperty() { Name = $"{reward.Type}", Value = $"{StringFormatter.GetSkinText(skin)} {StringFormatter.GetTowerText(tower)}", });
+                                break;
+                        }
+
+                    }
+
+                    if (!promocode.Properties.TimeLimitedCode)
+                    {
+                        promocode.Properties.UsesLeft -= 1;
+                        if (promocode.Properties.UsesLeft <= 0)
+                            Database.DELETE(filePath);
+                        else
+                            Database.POST(filePath, promocode);
+                    }
+                    else
+                        Database.POST(filePath, promocode);
+
+                    await OnRedeemComplete();
+
+                    MessageQueue.AddMessageToQueue?.Invoke(new Message()
+                    {
+                        MessageType = MessageType.Normal,
+                        Tittle = "Promocode Rewards",
+                        Properties = messageProperties,
+                    });
+
                 }
 
             }
-
-            
-            // promocodes.Remove(code);
-            promocodes[code].Properties.PlayersRedeemedCode.Add(playerID);
-            if (!promocodes[code].Properties.TimeLimitedCode)
-            {
-                promocodes[code].Properties.UsesLeft -= 1;
-                if (promocodes[code].Properties.UsesLeft <= 0)
-                    promocodes.Remove(code);
-            }
-            
-            //await Database.POST<Dictionary<string, Promocode>>(promocodes);
-
-            await OnRedeemComplete();
-            
-            MessageQueue.AddMessageToQueue?.Invoke(new Message()
-            {
-                MessageType = MessageType.Normal,
-                Tittle = "Promocode Rewards",
-                Properties = messageProperties,
-            });
-                        
+    
         }
 
 
