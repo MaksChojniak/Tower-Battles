@@ -31,7 +31,7 @@ namespace Promocodes
 
 
         
-        async void Awake()
+        void Awake()
         {
 
         }
@@ -126,9 +126,7 @@ namespace Promocodes
                 Tittle = "Promocode Rewards",
                 Properties = messageProperties,
             });
-            
-            ClosePanel();
-            
+                        
         }
 
 
@@ -136,8 +134,8 @@ namespace Promocodes
         async Task OnRedeemError()
         {
             ErrorAnimation.PlayAnimation();
-            await ErrorAnimation.WaitAsync();
-            //await Task.Delay( Mathf.RoundToInt(ErrorAnimation.animationLenght * 1000) );
+            //await ErrorAnimation.WaitAsync();
+            await Task.Delay( Mathf.RoundToInt(ErrorAnimation.animationLenght * 1000) );
             // throw new Exception("promocode not exist");
 
             ClosePanel();
@@ -148,9 +146,10 @@ namespace Promocodes
         async Task OnRedeemComplete()
         {
             CompleteAnimation.PlayAnimation();
-            await CompleteAnimation.WaitAsync();
-            //await Task.Delay( Mathf.RoundToInt(CompleteAnimation.animationLenght * 1000) );
-            
+            //await CompleteAnimation.WaitAsync();
+            await Task.Delay( Mathf.RoundToInt(CompleteAnimation.animationLenght * 1000) );
+
+            ClosePanel();
         }
 
 
@@ -158,8 +157,8 @@ namespace Promocodes
         public async void ClosePanel()
         {
             ClosePanelAnimation.PlayAnimation();
-            await ClosePanelAnimation.WaitAsync();
-            //await Task.Delay( Mathf.RoundToInt(ClosePanelAnimation.animationLenght * 1000) );
+            //await ClosePanelAnimation.WaitAsync();
+            await Task.Delay( Mathf.RoundToInt(ClosePanelAnimation.animationLenght * 1000) );
             
             Destroy(this.gameObject);
             

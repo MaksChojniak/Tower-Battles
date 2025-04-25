@@ -19,7 +19,25 @@ namespace Promocodes
             //// throw new Exception("GET function occurred error");
 
             //return callback.Data;
-            return null;
+
+            bool taskCompleted = false;
+            Database.GET<Dictionary<string, Promocode>>(OnGetData);
+
+            while (!taskCompleted)
+                await Task.Yield();
+
+            Dictionary<string, Promocode> result = null;
+            void OnGetData(GET_Callback<Dictionary<string, Promocode>> callback)
+            {
+                result = callback.Data;
+
+                taskCompleted = true;
+            }
+
+            if (result == null)
+                return new Dictionary<string, Promocode>();
+
+            return result;
         }
         
         
