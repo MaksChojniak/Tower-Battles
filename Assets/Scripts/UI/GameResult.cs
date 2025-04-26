@@ -265,16 +265,13 @@ namespace UI
         public void PlayAd()
         {
             isPlayingAd = true;
-            // StopAllCoroutines();
+             StopAllCoroutines();
 
-            Debug.Log("Start Add");
-                    
-            GoogleAds.ShowAd(RewardType.None);
-            
+            Debug.Log("Start Add");            
             
             GoogleAds.OnGetReward += () =>
             {
-                StopAllCoroutines();
+                //StopAllCoroutines();
             
                 withRewardMultiplier = true;
                 AddTimeFillBar.fillAmount = 0;
@@ -290,6 +287,8 @@ namespace UI
                 
                 Debug.Log("End Add");
             };
+
+            GoogleAds.ShowAd(RewardType.None);
 
         }
         

@@ -891,7 +891,7 @@ namespace UI.Shop
         
         
         
-        public async void ShowAd()
+        public void ShowAd()
         {
             if(adsRewards == null)
                 return;
@@ -900,13 +900,12 @@ namespace UI.Shop
                 return;
 
             AdReward reward = adsRewards.rewards[0];
-            
-            
-            GoogleAds.ShowAd(reward.Type,reward.Amount);
+
             GoogleAds.OnGetReward += OnGetAdReward;
+            GoogleAds.ShowAd(reward.Type,reward.Amount);
         }
 
-        async void OnGetAdReward()
+        void OnGetAdReward()
         {
             GoogleAds.OnGetReward -= OnGetAdReward;
             
@@ -963,10 +962,12 @@ namespace UI.Shop
 
 
 
-        public void BuyTest75Gems()
-        {
-            StorePayment.Purchase(StoreProduct.Test);
-        }
+        public void BuyTest_Gems75() => StorePayment.Purchase(StoreProduct.Gems75);
+        public void BuyTest_Gems175() => StorePayment.Purchase(StoreProduct.Gems175);
+        public void BuyTest_Gems425() => StorePayment.Purchase(StoreProduct.Gems425);
+        public void BuyTest_Gems750() => StorePayment.Purchase(StoreProduct.Gems750);
+        public void BuyTest_Gems1200() => StorePayment.Purchase(StoreProduct.Gems1200);
+        
 
         
     }

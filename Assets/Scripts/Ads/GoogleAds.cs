@@ -94,7 +94,7 @@ namespace Ads
             else if (Type == RewardType.Experience) {}
             else
                 adUnit = REWARDABLE_FULLSCREEN_NONE;
-            
+
 #if UNITY_EDITOR
             adUnit = TEST_UNIT;
 #endif
@@ -109,8 +109,6 @@ namespace Ads
         [SerializeField] UIAnimation CloseBackgroundAniation;
 
 
-        
-        SynchronizationContext unitySynchronizationContext;
         
         RewardedInterstitialAd   _rewardedInterstitialAd;
 
@@ -145,7 +143,7 @@ namespace Ads
         
         void Start()
         {
-            unitySynchronizationContext = SynchronizationContext.Current;
+
         }
 
 
@@ -172,18 +170,18 @@ namespace Ads
 #region Load & Show Ads
 
         
-        async void ShowAdProcess(RewardType type = RewardType.None, long amount = 0)
+        void ShowAdProcess(RewardType type = RewardType.None, long amount = 0)
         {
             string adUnitID = GetAdUnitID(type, amount);
             
-            await LoadAd(adUnitID);
+            StartCoroutine(LoadAd(adUnitID));
         }
         
         
-        async Task LoadAd(string adUnitID)
+        IEnumerator LoadAd(string adUnitID)
         {
-            unitySynchronizationContext.Post( _ => OpenBackgroundAniation.PlayAnimation(), null);
-            await OpenBackgroundAniation.WaitAsync();
+            OpenBackgroundAniation.PlayAnimation();
+            yield return OpenBackgroundAniation.Wait();
             //await Task.Delay( Mathf.RoundToInt(OpenBackgroundAniation.animationLenght * 1000) );
 
             // Debug.Log("Loading the rewarded  ad.");
@@ -223,21 +221,25 @@ namespace Ads
             if (_rewardedInterstitialAd != null && _rewardedInterstitialAd.CanShowAd())
             {
                 // Debug.Log("Showing rewarded ad.");
-                _rewardedInterstitialAd.Show( (Reward reward) =>
-                {
-                    if (!Enum.TryParse<RewardType>(reward.Type, out var type))
-                        type = RewardType.None;
-
-                    long amount = (long)reward.Amount;
-                    
-                    unitySynchronizationContext.Post( _ => GiveReward(type, amount), null);
-                });
+                _rewardedInterstitialAd.Show(OnAdWatched);
             }
             else
             {
                 Debug.LogError("Interstitial ad is not ready yet.");
             }
             
+
+            void OnAdWatched(Reward reward)
+            {
+                if (!Enum.TryParse<RewardType>(reward.Type, out var type))
+                    type = RewardType.None;
+
+                long amount = (long)reward.Amount;
+
+                //unitySynchronizationContext.Post( _ => GiveReward(type, amount), null);
+                GiveReward(type, amount);
+            }
+
         }
 
 
@@ -318,15 +320,19 @@ namespace Ads
             // Raised when the ad closed full screen content.
             ad.OnAdFullScreenContentClosed += () =>
             {
-                unitySynchronizationContext.Post(_ =>
-                {
-                    CloseBackground();
+                //unitySynchronizationContext.Post(_ =>
+                //{
+                //    CloseBackground();
 
-                    OnCloseAd?.Invoke();
+                //    OnCloseAd?.Invoke();
 
-                },null);
+                //},null);
 
-                
+                CloseBackground();
+
+                OnCloseAd?.Invoke();
+
+
                 UnloadOrDestroyOldAd();
             };
 
