@@ -137,9 +137,8 @@ namespace Loading_Screen
         IEnumerator StartLoadingAnimation()
         {
             animator.Play(startAnimationClip.name);
-            //await Task.Delay( Mathf.RoundToInt(startAnimationClip.length * 1000) );
-            //yield return new WaitForSeconds(startAnimationClip.length);
-            while (animator.Time() < startAnimationClip.length)
+
+            while (animator.IsPlaying())
                 yield return null;
         }
 
@@ -188,7 +187,7 @@ namespace Loading_Screen
             }
             lineRenderer.positionCount = 0;
 
-            while (animator.Time() < loadingAnimationClip.length)
+            while (animator.IsPlaying())
                 yield return null;
 
         }
