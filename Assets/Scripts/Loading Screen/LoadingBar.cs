@@ -18,7 +18,6 @@ namespace Loading_Screen
 {
     public class LoadingBar : MonoBehaviour
     {
-
         [Space]
         [SerializeField] GameObject PlayerPrefab;
 
@@ -42,7 +41,6 @@ namespace Loading_Screen
 
         const string SPEED_ANIMATION_KEY = "_speed";
 
-
         void Awake()
         {
             progressValue = 0f;
@@ -52,30 +50,8 @@ namespace Loading_Screen
 
         void Start()
         {
-            
             StartCoroutine(LoadingBarProcess());
-
-            StartCoroutine(UpdateLoadingText());
             StartCoroutine(UpdateProgressText());
-        }
-
-
-        int dotsCount = 0;
-        readonly int maxDotsCount = 3;
-        IEnumerator UpdateLoadingText()
-        {
-            while (true)
-            {
-                LoadingTittleText.text = $"Loading {new string('.', dotsCount)}";
-
-                dotsCount += 1;
-                if (dotsCount > maxDotsCount)
-                    dotsCount = 0;
-
-                //await Task.Delay(450);
-                yield return new WaitForSeconds(0.45f);
-            }
-            
         }
 
         IEnumerator UpdateProgressText()
@@ -89,7 +65,6 @@ namespace Loading_Screen
             }
             
         }
-
 
         IEnumerator LoadingBarProcess()
         { 
@@ -128,12 +103,7 @@ namespace Loading_Screen
 
         }
 
-
-
-
         #region Animation
-
-
         IEnumerator StartLoadingAnimation()
         {
             animator.Play(startAnimationClip.name);
@@ -218,46 +188,21 @@ namespace Loading_Screen
 
         }
 
-
         IEnumerator LoadShopOfferts() 
         {
             yield return ShopManager.DownloadDataFromServer();
         }// await ShopManager.DownloadDataFromServer();
-
 
         IEnumerator LoadBattlepassRewards() 
         {
             yield return BattlepassManager.DownloadDataFromServer();
         }// await BattlepassManager.DownloadDataFromServer();
 
-
-
         IEnumerator LoadScene(AsyncOperation loadinsSceneOperation)
         {
             while (Mathf.Abs(loadinsSceneOperation.progress - 0.9f) >= 0.05f)
                 yield return null;
         }
-
-
-
-        // string debugText;
-        // void OnGUI()
-        // {
-        //     Rect rect = new Rect(50, 50, 550, 250);
-        //
-        //     GUI.TextArea(rect, debugText);
-        // }
-
-
-
-
-
-        
-
-
-
-
-
 
     }
 }
