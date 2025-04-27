@@ -30,14 +30,14 @@ namespace Player
         public ulong Coins;
         public ulong Gems;
 
-        public Dictionary<ulong,string> Payements;
+        public Dictionary<string,string> Payements;
         public int PayementsCount => Payements != null ? Payements.Count : 0;
         public WalletData(ulong Coins, ulong Gems)
         {
             this.Coins = Coins;
             this.Gems = Gems;
 
-            Payements = new Dictionary<ulong,string>();
+            Payements = new Dictionary<string,string>();
         }
 
     }
@@ -71,10 +71,16 @@ namespace Player
 
         public delegate ulong GetCoinsBalanceDelegate();
         public static GetCoinsBalanceDelegate GetCoinsBalance;
-        
+
         #endregion
-        
-        
+
+        #region Payements Events
+
+        public delegate void AddPayementDataDelegate(string transactionID, string itemID);
+        public static AddPayementDataDelegate AddPayementData;
+
+        #endregion
+
         #region Gems Events
 
         public delegate void OnChangeGemsBalanceDelegate(ulong value);
@@ -300,6 +306,8 @@ namespace Player
             ChangeGemsBalance += OnGemsBalanceChanged;
             GetGemsBalance += OnGetGemsBalance;
 
+            AddPayementData += OnAddPayementData;
+
         }
         void UnRegisterWalletEvents()
         {
@@ -310,7 +318,15 @@ namespace Player
             ChangeGemsBalance -= OnGemsBalanceChanged;
             GetGemsBalance -= OnGetGemsBalance;
 
+            AddPayementData -= OnAddPayementData;
+
         }
+        void OnAddPayementData(string transactionID, string itemID) 
+        {
+            if (!this.WalletData.Payements.TryAdd(transactionID, itemID))
+                Debug.LogError("this payement id is exist");
+        }
+
         void OnCoinsBalanceChanged(long value)
         {
             Debug.Log("Change Balance");

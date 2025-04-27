@@ -58,6 +58,9 @@ public class GoogleStore : IDetailedStoreListener
 
         Debug.Log("[Payments] process payement complete");
 
+        Debug.Log(purchaseEvent.purchasedProduct.receipt);
+        Debug.Log(purchaseEvent.purchasedProduct.transactionID);
+
         return PurchaseProcessingResult.Complete;
     }
 

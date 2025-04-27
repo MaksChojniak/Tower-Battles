@@ -17,6 +17,9 @@ namespace Social_Medias
 
     public class SocialMedia : MonoBehaviour
     {
+        [SerializeField] bool canBeRemoved;
+
+        [Space]
         [SerializeField] SocialMediaType mediaType;
 
 
@@ -41,6 +44,8 @@ namespace Social_Medias
             
             Application.OpenURL(url);
 
+            if (!canBeRemoved)
+                return;
 
             PlayerPrefs.SetInt(mediaType.ToString(), 1);
             PlayerPrefs.Save();
