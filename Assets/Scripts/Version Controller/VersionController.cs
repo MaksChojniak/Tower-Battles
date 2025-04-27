@@ -38,9 +38,9 @@ public class VersionController : MonoBehaviour
 
     private void Start()
     {
-//#if !UNITY_EDITOR
+#if !UNITY_EDITOR
         Database.GET<ApplicationVersion>(VERSION_PATH, OnGetApplicationVersion);
-//#endif
+#endif
     }
 
     void OnGetApplicationVersion(GET_Callback<ApplicationVersion> result)
@@ -59,7 +59,6 @@ public class VersionController : MonoBehaviour
 
     IEnumerator OpenPanel()
     {
-        yield break;
         OpenPanelAnimation.PlayAnimation();
         yield return OpenPanelAnimation.Wait(); 
     }
