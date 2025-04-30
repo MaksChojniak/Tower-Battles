@@ -515,13 +515,27 @@ namespace UI.Battlepass
         
 #region Collect Rewards
 
-        public async void ClaimReward()
+        public void ClaimReward()
         {
             if (lastSelectedRewardIsNull)
                 return;
 
             playerProgress.ClaimedRewards.Add(lastSelectedReward);
             // TODO give reward to player
+
+            switch (lastSelectedReward.Type)
+            {
+                case RewardType.Coins:
+                    PlayerData.ChangeCoinsBalance?.Invoke((long)lastSelectedReward.Coins);
+                    break;
+                case RewardType.Gems:
+                    PlayerData.ChangeGemsBalance?.Invoke((long)lastSelectedReward.Gems);
+                    break;
+                case RewardType.Skin:
+                    TowerSkin skin = TowerSkin.GetTowerSkinByID(lastSelectedReward.Skin.ID);
+                    skin.UnlockSkin();
+                    break;
+            }
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
             Database.LocalUser.POST<BattlepassProgress>(playerProgress);
@@ -655,47 +669,6 @@ namespace UI.Battlepass
         public async void BuyPremiumBatlepass(int price)
         {
             string playerID = PlayerController.GetLocalPlayerData().ID;
-            
-            // Confirmation confirmation = Instantiate(ConfirmationPrefab).GetComponent<Confirmation>();
-            //
-            // bool onCloseConfirmationPanel = false;
-            // bool pausePayements = false;
-            // confirmation.ShowOffert(
-            //     $"Would You Like to Buy \n{StringFormatter.GetColoredText("Premium Battlepass", Color.white)} \nfor {StringFormatter.GetGemsText(price, true, "66%")}?",
-            //     () =>
-            //     {
-            //         onCloseConfirmationPanel = true;
-            //         confirmation.StartLoadingAnimation();
-            //     },
-            //     () =>
-            //     {
-            //         onCloseConfirmationPanel = true;
-            //         pausePayements = true;
-            //     }
-            // );
-            //
-            // while (!onCloseConfirmationPanel)
-            //     await Task.Yield();
-            //
-            // if (pausePayements)
-            //     return;
-            //         
-            // while(playerProgress == null)
-            //     await Task.Yield();
-            //
-            //
-            // PlayerData.ChangeGemsBalance(-price);
-            //
-            // playerProgress.HasPremiumBattlepass = true;
-            // await Database.POST<BattlepassProgress>(playerProgress, playerID);
-            // // await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
-            //
-            // await Task.Yield();
-            //
-            // confirmation.StopLoadingAnimation();
-            //
-            //
-            // UpdateBattlapassUI();
 
             long balance = (long)PlayerController.GetLocalPlayerData.Invoke().WalletData.Gems;
             if (balance < price)
@@ -715,11 +688,12 @@ namespace UI.Battlepass
                 PlayerData.ChangeGemsBalance(-price);
                 
                 playerProgress.HasPremiumBattlepass = true;
+
+                UpdateBattlapassUI();
+
                 Database.LocalUser.POST<BattlepassProgress>(playerProgress);
 
                 await Task.Yield();
-                
-                UpdateBattlapassUI();
             }
             
         }

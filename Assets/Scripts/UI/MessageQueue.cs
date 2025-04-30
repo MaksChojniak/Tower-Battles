@@ -151,7 +151,7 @@ namespace UI
         
         async Task ShowMessage(Message message)
         {
-            await MessagePanelByType(message);
+            MessagePanelByType(message);
             
             
             OpenMessagePanel.PlayAnimation();
@@ -170,7 +170,7 @@ namespace UI
         }
 
 
-        async Task MessagePanelByType(Message message)
+        void MessagePanelByType(Message message)
         {
             foreach (var panels in MessagesPanels)
                 panels.SetActive(false);
@@ -178,13 +178,13 @@ namespace UI
             switch (message.MessageType)
             {
                 case MessageType.Normal:
-                    await SetupMessage(NormalMessage, message);
+                    SetupMessage(NormalMessage, message);
                     break;
                 case MessageType.BattlepassProgress:
-                    await SetupBattlepassMessage(BattlepassProgressMessage, message);
+                    SetupBattlepassMessage(BattlepassProgressMessage, message);
                     break;
                 case MessageType.GameReward:
-                    await SetupMessage(GameRewardMessage, message);
+                    SetupMessage(GameRewardMessage, message);
                     break;
                 default:
                     throw new NullReferenceException($"Don't have that message type");
@@ -192,9 +192,9 @@ namespace UI
             
         }
 
-        
-        
-        async Task SetupMessage(MessageObjectUI messageObjectUI, Message message)
+
+
+        void SetupMessage(MessageObjectUI messageObjectUI, Message message)
         {
             string tittle = message.Tittle;
             string content = "";
@@ -216,7 +216,7 @@ namespace UI
             
             bool hasInteractivity = message.OnClickAction != null;
             
-            await RegisterOnClick(messageObjectUI.ExtendedMessagePanel, messageObjectUI.MessageButton, hasInteractivity, message.OnClickAction);
+            RegisterOnClick(messageObjectUI.ExtendedMessagePanel, messageObjectUI.MessageButton, hasInteractivity, message.OnClickAction);
             
             messageObjectUI.MessageObject.SetActive(true);
 
@@ -225,7 +225,7 @@ namespace UI
         }
 
 
-        async Task SetupBattlepassMessage(GameObject messageObjectUI, Message message)
+        void SetupBattlepassMessage(GameObject messageObjectUI, Message message)
         {
             messageObjectUI.GetComponent<BattlepassMessage>().ShowMessage(message, OpenMessagePanel);
 
@@ -233,7 +233,7 @@ namespace UI
         }
 
 
-        async Task RegisterOnClick(GameObject extendedMessage, Button button, bool hasInteractivity, Action onClick = null)
+        void RegisterOnClick(GameObject extendedMessage, Button button, bool hasInteractivity, Action onClick = null)
         {
             extendedMessage.SetActive(hasInteractivity);
 
