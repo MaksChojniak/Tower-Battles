@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UI.Animations;
 using UnityEngine;
 
 public class ChangeLog : MonoBehaviour
 {
     public delegate void OpenLogDelegate(ApplicationVersion version);
     public static OpenLogDelegate OpenLog;
+
+
+    [SerializeField] UIAnimation OpenPanelAnimation;
 
 
     private void Awake()
@@ -33,6 +37,8 @@ public class ChangeLog : MonoBehaviour
     void ShowLog()
     {
         Debug.Log("Show Log");
+        this.gameObject.SetActive(true);
+        OpenPanelAnimation.PlayAnimation();
     }
 
 

@@ -21,6 +21,7 @@ using Reward = UI.Shop.Daily_Rewards.Reward;
 using RewardType = UI.Shop.Daily_Rewards.Scriptable_Objects.RewardType;
 using Task = System.Threading.Tasks.Task;
 using System.Collections;
+using GoogleMobileAds.Api;
 
 
 namespace UI.Shop
@@ -603,7 +604,6 @@ namespace UI.Shop
 
         void GiveDailyReward(Reward reward)
         {
-            
             switch (reward.Type)
             {
                 case RewardType.Coins:
@@ -613,7 +613,66 @@ namespace UI.Shop
                     PlayerData.ChangeExperience((long)reward.XP);
                     break;
             }
+
+            //var properties = new List<MessageProperty>();
+            //switch (reward.Type)
+            //{
+            //    case RewardType.Coins:
+            //        properties.Add(new MessageProperty() { Name = $"Coins", Value = $"{StringFormatter.GetCoinsText((long)reward.CoinsBalance)}" });
+            //        break;
+            //    case RewardType.Experience:
+            //        Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor((ulong)PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
+            //        string amount = $@"{StringFormatter.GetColoredText($"{(long)reward.XP}", levelColor)}{StringFormatter.GetSpriteText(new SpriteTextData()
+            //        { SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}", WithColor = true, Color = levelColor, Size = "50%", WithSpaces = true, SpacesCount = 1 })}";
+            //        properties.Add(new MessageProperty() { Name = $"XP", Value = $"{amount}", });
+            //        break;
+            //}
             
+
+            //MessageQueue.AddMessageToQueue?.Invoke(new Message()
+            //{
+            //    MessageType = MessageType.Normal,
+            //    Tittle = "Daily Reward",
+            //    Properties = properties
+            //});
+
+
+
+            List<MessageProperty> properties = new List<MessageProperty>();
+
+            switch (reward.Type)
+            {
+                case RewardType.Coins:
+                    properties.Add(new MessageProperty() { Name = "Coins", Value = $"{StringFormatter.GetCoinsText((long)reward.CoinsBalance, true, "66%")}" });
+                    break;
+                case RewardType.Experience:
+                    Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor(PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
+                    string sprite = StringFormatter.GetSpriteText(
+                        new SpriteTextData()
+                        {
+                            SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}",
+                            WithColor = true,
+                            Color = levelColor,
+                            Size = "50%",
+                            WithSpaces = true,
+                            SpacesCount = 1
+                        }
+                    );
+                    string value = $@"{StringFormatter.GetColoredText($"{reward.XP}", levelColor)}{sprite}";
+                    properties.Add(new MessageProperty() { Name = "XP", Value = $"{value}" });
+                    break;
+            }
+
+            Message message = new Message()
+            {
+                MessageType = MessageType.Normal,
+                Tittle = "Daily Rewards",
+                Properties = properties,
+            };
+            
+            //MessageQueue.AddMessageToQueue?.Invoke(message);
+
+
         }
         
         
@@ -901,18 +960,50 @@ namespace UI.Shop
 
             AdReward reward = adsRewards.rewards[0];
 
-            GoogleAds.OnGetReward += OnGetAdReward;
-            GoogleAds.ShowAd(reward.Type,reward.Amount);
+            GoogleAds.ShowAd(reward.Type, reward.Amount, OnGetAdReward);
         }
 
-        void OnGetAdReward()
-        {
-            GoogleAds.OnGetReward -= OnGetAdReward;
-            
+        void OnGetAdReward(Ads.Reward reward)
+        {            
             adsRewards.rewards.RemoveAt(0);
             
             string playerID = PlayerController.GetLocalPlayerData().ID;
             Database.LocalUser.POST<AdsRewards>(adsRewards);
+
+
+            List<MessageProperty> properties = new List<MessageProperty>();
+
+            switch (reward.Type)
+            {
+                case RewardType.Coins:
+                    properties.Add(new MessageProperty() { Name = "Coins", Value = $"{StringFormatter.GetCoinsText(reward.Amount, true, "66%")}" });
+                    break;
+                case RewardType.Experience:
+                    Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor(PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
+                    string sprite = StringFormatter.GetSpriteText(
+                        new SpriteTextData()
+                        {
+                            SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}",
+                            WithColor = true,
+                            Color = levelColor,
+                            Size = "50%",
+                            WithSpaces = true,
+                            SpacesCount = 1
+                        }
+                    );
+                    string value = $@"{StringFormatter.GetColoredText($"{reward.Amount}", levelColor)}{sprite}";
+                    properties.Add(new MessageProperty() { Name = "XP", Value = $"{value}" });
+                    break;
+            }
+
+            Message message = new Message()
+            {
+                MessageType = MessageType.Normal,
+                Tittle = "Ad Rewards",
+                Properties = properties,
+            };
+
+            MessageQueue.AddMessageToQueue?.Invoke(message);
 
 
             UpdateAdsRewardsOffertsUI();

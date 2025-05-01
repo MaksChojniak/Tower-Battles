@@ -2,22 +2,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using MMK.ScriptableObjects;
 using Newtonsoft.Json;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Storage;
-using Promocodes;
 using UI.Battlepass;
 using UI.Shop;
 using UI.Shop.Daily_Rewards;
 using UnityEngine;
 using System.Collections;
 using Firebase.Auth;
-using Unity.VisualScripting;
 using UnityEngine.Networking;
 using System.IO;
 
@@ -117,14 +113,14 @@ namespace Player.Database
                 if (task.IsFaulted)
                 {
                     Debug.LogError($"Error GET: {task.Exception.ToString()}");
-                    user.GET(callbak);
-                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    //user.GET(callbak);
+                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
                 }
                 else if (task.IsCanceled)
                 {
                     Debug.LogError($"Canceled GET: {task.Exception.ToString()}");
-                    user.GET(callbak);
-                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    //user.GET(callbak);
+                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
                 }
                 else
                 {
@@ -161,14 +157,14 @@ namespace Player.Database
                 if (task.IsFaulted)
                 {
                     Debug.LogError($"Error GET: {task.Exception.ToString()}");
-                    GET(callbak);
-                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    //GET(callbak);
+                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
                 }
                 else if (task.IsCanceled)
                 {
                     Debug.LogError($"Canceled GET: {task.Exception.ToString()}");
-                    GET(callbak);
-                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    //GET(callbak);
+                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
                 }
                 else
                 {
@@ -207,14 +203,14 @@ namespace Player.Database
                 if (task.IsFaulted)
                 {
                     Debug.LogError($"Error GET: {task.Exception.ToString()}");
-                    GET(callbak);
-                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    //GET(callbak);
+                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
                 }
                 else if (task.IsCanceled)
                 {
                     Debug.LogError($"Canceled GET: {task.Exception.ToString()}");
-                    GET(callbak);
-                    //callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    //GET(callbak);
+                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
                 }
                 else
                 {
@@ -260,12 +256,12 @@ namespace Player.Database
                 if (task.IsFaulted)
                 {
                     Debug.LogError($"Error POST: {task.Exception.ToString()}");
-                    user.POST(data);
+                    //user.POST(data);
                 }
                 else if (task.IsCanceled)
                 {
                     Debug.LogError($"Canceled POST: {task.Exception.ToString()}");
-                    user.POST(data);
+                    //user.POST(data);
                 }
                 else
                 {
@@ -296,12 +292,12 @@ namespace Player.Database
                 if (task.IsFaulted)
                 {
                     Debug.LogError($"Error POST: {task.Exception.ToString()}");
-                    POST(data);
+                    //POST(data);
                 }
                 else if (task.IsCanceled)
                 {
                     Debug.LogError($"Canceled POST: {task.Exception.ToString()}");
-                    POST(data);
+                    //POST(data);
                 }
                 else
                 {
@@ -336,12 +332,12 @@ namespace Player.Database
                 if (task.IsFaulted)
                 {
                     Debug.LogError($"Error POST: {task.Exception.ToString()}");
-                    POST(data);
+                    //POST(data);
                 }
                 else if (task.IsCanceled)
                 {
                     Debug.LogError($"Canceled POST: {task.Exception.ToString()}");
-                    POST(data);
+                    //POST(data);
                 }
                 else
                 {
@@ -377,12 +373,12 @@ namespace Player.Database
                 if (task.IsFaulted)
                 {
                     Debug.LogError($"Error DELETE: {task.Exception.ToString()}");
-                    user.DELETE<T>();
+                    //user.DELETE<T>();
                 }
                 else if (task.IsCanceled)
                 {
                     Debug.LogError($"Canceled DELETE: {task.Exception.ToString()}");
-                    user.DELETE<T>();
+                    //user.DELETE<T>();
                 }
                 else
                 {
@@ -408,12 +404,12 @@ namespace Player.Database
                 if (task.IsFaulted)
                 {
                     Debug.LogError($"Error DELETE: {task.Exception.ToString()}");
-                    DELETE<T>();
+                    //DELETE<T>();
                 }
                 else if (task.IsCanceled)
                 {
                     Debug.LogError($"Canceled DELETE: {task.Exception.ToString()}");
-                    DELETE<T>();
+                    //DELETE<T>();
                 }
                 else
                 {
@@ -443,12 +439,12 @@ namespace Player.Database
                 if (task.IsFaulted)
                 {
                     Debug.LogError($"Error DELETE: {task.Exception.ToString()}");
-                    DELETE(fullPath);
+                    //DELETE(fullPath);
                 }
                 else if (task.IsCanceled)
                 {
                     Debug.LogError($"Canceled DELETE: {task.Exception.ToString()}");
-                    DELETE(fullPath);
+                    //DELETE(fullPath);
                 }
                 else
                 {

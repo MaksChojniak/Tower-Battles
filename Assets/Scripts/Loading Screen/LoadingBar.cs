@@ -18,131 +18,105 @@ namespace Loading_Screen
 {
     public class LoadingBar : MonoBehaviour
     {
-        [Space]
+        [Header("Player Settings")]
         [SerializeField] GameObject PlayerPrefab;
 
-        [Space(8)]
         [Header("UI Properties (Maks Loading Bar)")]
         [SerializeField] Animator animator;
         [SerializeField] LineRenderer lineRenderer;
-
-        [Space]
         [SerializeField] TMP_Text LoadingTittleText;
         [SerializeField] TMP_Text LoadingProgressText;
-        [Space]
+
+        [Header("Bullet Settings")]
         [SerializeField] Vector3 bulletStartPosition;
         [SerializeField] Vector3 bulletEndPosition;
-        Vector3 bulletDirection => bulletEndPosition - bulletStartPosition;
-        [Space]
+
+        [Header("Animation Clips")]
         [SerializeField] AnimationClip startAnimationClip;
         [SerializeField] AnimationClip loadingAnimationClip;
         [SerializeField] AnimationClip endAnimationClip;
-        //[SerializeField] TMP_Text fillAmountText;
 
         const string SPEED_ANIMATION_KEY = "_speed";
+        const float SPEED = 0.5f;
+        const float BULLET_SPEED = SPEED * 50f;
+        float progressValue;
 
         void Awake()
         {
             progressValue = 0f;
-            lineRenderer.positionCount = 0;
-
+            LoadingProgressText.text = $"{Mathf.RoundToInt(progressValue)}%";
+            LoadingTittleText.text = "Starting..";
         }
 
         void Start()
         {
             StartCoroutine(LoadingBarProcess());
-            StartCoroutine(UpdateProgressText());
-        }
-
-        IEnumerator UpdateProgressText()
-        {
-            while (true)
-            {
-                LoadingProgressText.text = $"{Mathf.RoundToInt(progressValue)}%";
-
-                //await Task.Yield();
-                yield return null;
-            }
-            
         }
 
         IEnumerator LoadingBarProcess()
-        { 
-            
-            yield return FirebaseCheckDependencies.CheckAndFixDependencies();
-            yield return GoogleAds.CheckAndFixDependencies();
-            yield return ServerDate.GetDateFromSerer();
-
-            yield return null;
-
+        {
             yield return StartLoadingAnimation();
 
-            yield return LoadingAnimation(20f);
-            yield return LoginProcess();
+            yield return TrackProgress(Prerequisites(), "Dependencies..", 0f, 10f);
+            yield return TrackProgress(LoginProcess(), "User..", 10f, 25f);
+            yield return TrackProgress(LoadShopOfferts(), "Special Offers..", 25f, 40f);
+            yield return TrackProgress(LoadBattlepassRewards(), "Battlepass..", 40f, 55f);
 
-            yield return LoadingAnimation(40f);
-            yield return LoadBattlepassRewards();
-
-            yield return LoadingAnimation(55f);
-            yield return LoadShopOfferts();
-
-
-            AsyncOperation loadinsSceneOperation = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings().mainMenuScene);
-            loadinsSceneOperation.allowSceneActivation = false;
-
-
-            yield return LoadScene(loadinsSceneOperation);
-            yield return LoadingAnimation(100f);
+            AsyncOperation mainMenuSceneOperation = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings().mainMenuScene);
+            mainMenuSceneOperation.allowSceneActivation = false;
+            yield return TrackProgress(LoadScene(mainMenuSceneOperation), "Finishing..", 55f, 100f);
 
             yield return EndLoadingAnimation();
 
-
-            yield return new WaitForSeconds(1.5f);
-
-            loadinsSceneOperation.allowSceneActivation = true;
-
+            mainMenuSceneOperation.allowSceneActivation = true;
         }
 
-        #region Animation
+        IEnumerator TrackProgress(IEnumerator task, String taskName, float startProgress, float endProgress)
+        {
+            float taskProgress = 0f;
+
+            LoadingTittleText.text = taskName;
+
+            Coroutine taskCoroutine = StartCoroutine(task);
+
+            while (taskProgress < 1f)
+            {
+                taskProgress += Time.deltaTime; // Adjust this to match the task's duration
+
+                progressValue = Mathf.Lerp(startProgress, endProgress, taskProgress);
+
+                float lineRendererProgress = progressValue / 100f;
+                Vector3 newPosition = Vector3.Lerp(bulletStartPosition, bulletEndPosition, lineRendererProgress);
+                lineRenderer.SetPosition(1, newPosition);
+
+                LoadingProgressText.text = $"{Mathf.RoundToInt(progressValue)}%";
+
+                yield return null;
+            }
+
+            yield return taskCoroutine;
+        }
+
+        IEnumerator Prerequisites()
+        {
+            yield return FirebaseCheckDependencies.CheckAndFixDependencies();
+            yield return GoogleAds.CheckAndFixDependencies();
+            yield return ServerDate.GetDateFromSerer();
+        }
+
         IEnumerator StartLoadingAnimation()
         {
             animator.Play(startAnimationClip.name);
-            //await Task.Delay( Mathf.RoundToInt(startAnimationClip.length * 1000) );
-            //yield return new WaitForSeconds(startAnimationClip.length);
-            while (animator.Time() < startAnimationClip.length)
-                yield return null;
-        }
 
-        float progressValue;
-        float speed = 0.05f;
-        float bulletSpeed => speed * 20f;
-        IEnumerator LoadingAnimation(float _progressValue)
-        {
-           
-            animator.SetFloat(SPEED_ANIMATION_KEY, speed);
-
-            if (progressValue <= 0)
-            {
-                animator.Play(loadingAnimationClip.name);
-                
-                lineRenderer.positionCount = 2;
-                lineRenderer.SetPosition(0, bulletStartPosition);
-                lineRenderer.SetPosition(1, bulletStartPosition);
-            }
-
-
-            //while (animator.Time() < loadingAnimationClip.length * _progressValue / 100f ||
-            while((lineRenderer.GetPosition(1) - bulletStartPosition).magnitude < ( (bulletEndPosition - bulletStartPosition).magnitude * _progressValue / 100f) )
-            {
-                lineRenderer.SetPosition(1, lineRenderer.GetPosition(1) + bulletDirection.normalized * Time.deltaTime * bulletSpeed);
-                //await Task.Yield();
+            while (animator.IsPlaying())
                 yield return null;
 
-                progressValue = (lineRenderer.GetPosition(1) - bulletStartPosition).magnitude / (bulletEndPosition - bulletStartPosition).magnitude * 100f;
-            }
-
-                        
-            progressValue = _progressValue;
+            // pull the trigger
+            animator.SetFloat(SPEED_ANIMATION_KEY, SPEED);
+            animator.Play(loadingAnimationClip.name);
+            lineRenderer.positionCount = 2;
+            lineRenderer.SetPosition(0, bulletStartPosition);
+            lineRenderer.SetPosition(1, bulletStartPosition);
 
         }
 
@@ -150,23 +124,22 @@ namespace Loading_Screen
         {
             animator.Play(endAnimationClip.name);
 
-            while ((lineRenderer.GetPosition(1) - lineRenderer.GetPosition(0)).magnitude > 0.5f)
+            while ((lineRenderer.GetPosition(1) - lineRenderer.GetPosition(0)).sqrMagnitude > 0.5f)
             {
-                lineRenderer.SetPosition(0, lineRenderer.GetPosition(0) + bulletDirection.normalized * Time.deltaTime * bulletSpeed * 20f);
-                //await Task.Yield();
+                Vector3 newPosition = Vector3.MoveTowards(
+                    lineRenderer.GetPosition(0),
+                    lineRenderer.GetPosition(1),
+                    BULLET_SPEED * Time.deltaTime
+                );
+                lineRenderer.SetPosition(0, newPosition);
+
                 yield return null;
             }
             lineRenderer.positionCount = 0;
 
-            while (animator.Time() < loadingAnimationClip.length)
-                yield return null;
+            while (animator.IsPlaying()) yield return null;
 
         }
-
-
-        #endregion
-
-
 
         IEnumerator LoginProcess()
         {
@@ -177,24 +150,24 @@ namespace Loading_Screen
                 GameObject playerObject = Instantiate(PlayerPrefab, Vector3.zero, Quaternion.identity);
                 DontDestroyOnLoad(playerObject);
             }
-            
+
             while (player == null)
             {
                 player = PlayerController.GetLocalPlayer?.Invoke();
 
                 yield return null;
             }
-            
+
             yield return player.Login();
 
         }
 
-        IEnumerator LoadShopOfferts() 
+        IEnumerator LoadShopOfferts()
         {
             yield return ShopManager.DownloadDataFromServer();
         }// await ShopManager.DownloadDataFromServer();
 
-        IEnumerator LoadBattlepassRewards() 
+        IEnumerator LoadBattlepassRewards()
         {
             yield return BattlepassManager.DownloadDataFromServer();
         }// await BattlepassManager.DownloadDataFromServer();

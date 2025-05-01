@@ -59,7 +59,7 @@ namespace UI.Animations
                 yield return null;
         }
 
-        public bool IsPlaying { get => _animator != null ? Mathf.Abs(_animator.Time() - animationLenght) > 0.1f : false; }
+        public bool IsPlaying { get => _animator != null ? _animator.IsPlaying() : false; }
         
     }
 
@@ -68,7 +68,15 @@ namespace UI.Animations
 
     public static class AnimationExtension
     {
-        public static float Time(this Animator animator, int layerIndex = 0)
+
+        public static bool IsPlaying(this Animator animator, int layerIndex = 0)
+        {
+            AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(layerIndex);
+
+            return Mathf.Abs(1 - stateInfo.normalizedTime) > 0.05f;
+        }
+
+        static float Time(this Animator animator, int layerIndex = 0)
         {
             AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(layerIndex);
             AnimatorClipInfo[] clipsInfo = animator.GetCurrentAnimatorClipInfo(layerIndex);

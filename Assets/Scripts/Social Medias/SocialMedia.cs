@@ -25,7 +25,7 @@ namespace Social_Medias
 
         void Awake()
         {
-            if (IsVisited(this.mediaType))
+            if (IsVisited(this.mediaType) && canBeRemoved)
                 Hide();
         }
 

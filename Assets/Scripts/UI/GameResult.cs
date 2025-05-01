@@ -18,17 +18,17 @@ using Task = System.Threading.Tasks.Task;
 
 namespace UI
 {
-    
-    
+
+
     public class GameResult : MonoBehaviour
     {
         public delegate void OnEndGameDelegate();
         public static event OnEndGameDelegate OnEndGame;
-        
+
         public delegate void ExitFromGameDelegate();
         public static ExitFromGameDelegate ExitFromGame;
-        
-        
+
+
         [Space(8)]
         [SerializeField] UIAnimation OpenWinPanel;
         [SerializeField] UIAnimation OpenLosePanel;
@@ -49,7 +49,7 @@ namespace UI
         void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
-            
+
             RegisterHandlers();
 
             wavesCount = 0;
@@ -60,30 +60,30 @@ namespace UI
         void OnDestroy()
         {
             UnregisterHandlers();
-            
+
         }
 
-        
+
         void Start()
         {
-            
+
         }
 
-        
+
         void Update()
         {
-            
+
         }
 
 
 
-#region Register & Unregister Handlers
+        #region Register & Unregister Handlers
 
         void RegisterHandlers()
         {
             GamePlayerInformation.OnDie += LoseProcess;
             WaveManager.OnEndAllWaves += WinProces;
-            
+
             WaveManager.OnEndWave += OnEndWave;
 
             WaveManager.OnStartWave += OnStartWave;
@@ -95,21 +95,21 @@ namespace UI
         void UnregisterHandlers()
         {
             ExitFromGame -= OnExitFromGame;
-            
+
             WaveManager.OnEndWave -= OnEndWave;
-            
+
             WaveManager.OnEndAllWaves -= WinProces;
             GamePlayerInformation.OnDie -= LoseProcess;
-            
+
         }
-        
-#endregion
+
+        #endregion
 
 
-        
+
         void OnEndWave(uint waveReward) => wavesCount += 1;
 
-        
+
 
         async void LoseProcess() => await OpenResultPanel(OpenLosePanel);
         // async void LoseProcess() => StartCoroutine(OpenResultPanel(OpenLosePanel));
@@ -170,7 +170,7 @@ namespace UI
         async Task OpenResultPanel(UIAnimation animator)
         {
             GameReward reward = new GameReward(wavesCount);
-            
+
             OnEndGame?.Invoke();
 
             GameInfoText.text = $"Waves: {wavesCount}" + "    " + $"Time: {(DateTime.Now - gameStartDate).ToString(@"mm\:ss")}";
@@ -185,7 +185,7 @@ namespace UI
             await animator.WaitAsync();
             //await Task.Delay(Mathf.RoundToInt(animator.animationLenght * 1000));
 
-            
+
             isTimePassed = false;
             adRewardDelivered = false;
 
@@ -193,10 +193,10 @@ namespace UI
 
             while (!isTimePassed && !adRewardDelivered)
                 await Task.Yield();
-            
+
             AdButton.interactable = false;
             AdButton.gameObject.SetActive(false);
-            
+
             await Task.Delay(1000);
 
             await LoadMenuScene();
@@ -215,8 +215,8 @@ namespace UI
             while (time >= 0)
             {
                 if (isPlayingAd)
-                    yield return new WaitUntil( () => !isPlayingAd );
-                
+                    yield return new WaitUntil(() => !isPlayingAd);
+
                 AddTimeFillBar.fillAmount = Mathf.Clamp01(time / 3f);
 
                 yield return new WaitForSeconds(Time.deltaTime);
@@ -228,7 +228,7 @@ namespace UI
             isTimePassed = true;
         }
 
-        
+
 
 
         async Task LoadMenuScene()
@@ -236,12 +236,12 @@ namespace UI
             var openScene = SceneManager.LoadSceneAsync(GlobalSettingsManager.GetGlobalSettings.Invoke().mainMenuScene);
             while (!openScene.isDone)
                 await Task.Yield();
-            
+
             for (int i = 0; i < this.transform.childCount; i++)
             {
                 Destroy(this.transform.GetChild(i).gameObject);
             }
-            
+
             await Task.Delay(1000);
 
         }
@@ -261,56 +261,66 @@ namespace UI
 
         bool isPlayingAd;
         bool adRewardDelivered;
-        
+
         public void PlayAd()
         {
-            isPlayingAd = true;
-             StopAllCoroutines();
+            AdButton.interactable = false;
+            AdButton.gameObject.SetActive(false);
 
-            Debug.Log("Start Add");            
-            
-            GoogleAds.OnGetReward += () =>
-            {
-                //StopAllCoroutines();
-            
-                withRewardMultiplier = true;
-                AddTimeFillBar.fillAmount = 0;
-                
-                adRewardDelivered = true;
-                
-                Debug.Log("Add Reward Delivered");
-            };
+            isPlayingAd = true;
+            StopAllCoroutines();
+
+            Debug.Log("Start Add");
+
+            //GoogleAds.OnGetReward += (type, amount) =>
+            //{
+            //    withRewardMultiplier = true;
+            //    AddTimeFillBar.fillAmount = 0;
+
+            //    adRewardDelivered = true;
+
+            //    Debug.Log("Add Reward Delivered");
+            //};
 
             GoogleAds.OnCloseAd += () =>
             {
                 isPlayingAd = false;
-                
+
                 Debug.Log("End Add");
             };
 
-            GoogleAds.ShowAd(RewardType.None);
+            GoogleAds.ShowAd(RewardType.None, 0, OnGetAdReward);
 
+            void OnGetAdReward(Ads.Reward reward)
+            {
+                withRewardMultiplier = true;
+                AddTimeFillBar.fillAmount = 0;
+
+                adRewardDelivered = true;
+
+                Debug.Log("Add Reward Delivered");
+
+            }
         }
-        
-        
+
         void OpenRewardMessage(GameReward reward)
         {
             List<MessageProperty> properties = new List<MessageProperty>();
-            
+
             string bonusCoinsText = "";
-            if(reward.BonusCoins > 0)
+            if (reward.BonusCoins > 0)
                 bonusCoinsText = $" + {StringFormatter.GetCoinsText(reward.BonusCoins, true, "66%")}";
-            if(reward.Coins > 0)
-                properties.Add(new MessageProperty(){ Name = "Coins", Value = $"{StringFormatter.GetCoinsText(reward.Coins, true, "66%")}{bonusCoinsText}"});
+            if (reward.Coins > 0)
+                properties.Add(new MessageProperty() { Name = "Coins", Value = $"{StringFormatter.GetCoinsText(reward.Coins, true, "66%")}{bonusCoinsText}" });
 
             if (reward.XP > 0)
             {
                 Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor((ulong)PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
                 string value = $@"{StringFormatter.GetColoredText($"{reward.XP}", levelColor)}{StringFormatter.GetSpriteText(new SpriteTextData()
-                    {SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}", WithColor = true, Color = levelColor, Size = "50%", WithSpaces = true, SpacesCount = 1 })}";
-                properties.Add(new MessageProperty(){ Name = "XP", Value = $"{value}"});
+                { SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}", WithColor = true, Color = levelColor, Size = "50%", WithSpaces = true, SpacesCount = 1 })}";
+                properties.Add(new MessageProperty() { Name = "XP", Value = $"{value}" });
             }
-            
+
             Message message = null;
 
             if (properties.Count > 0)
@@ -321,11 +331,11 @@ namespace UI
                 message.Tittle = "Game Rewards";
                 message.Properties = properties;
             }
-            
-            if(message != null)
+
+            if (message != null)
                 MessageQueue.AddMessageToQueue?.Invoke(message);
-            
-            
+
+
             if (reward.Coins > 0)
                 PlayerData.ChangeCoinsBalance(reward.Coins + reward.BonusCoins);
             if (reward.XP > 0)
@@ -337,11 +347,11 @@ namespace UI
 
 
 
-        
+
         void OnStartWave()
         {
             WaveManager.OnStartWave -= OnStartWave;
-            
+
             gameStartDate = DateTime.Now;
         }
 
@@ -363,7 +373,7 @@ namespace UI
         public GameReward(int waveCount, bool withRewardMultiplier = false)
         {
             Coins = waveCount * 5;
-            
+
             if (waveCount >= 5)
                 Coins += 5;
             if (waveCount >= 10)
@@ -379,43 +389,43 @@ namespace UI
 
             XP = Coins * 2;
 
-            
+
             if (withRewardMultiplier)
                 RewardMultiplier = 2f;
             else
                 RewardMultiplier = 1f;
 
-            
-            BonusCoins = Mathf.RoundToInt(Coins * (RewardMultiplier - 1) );
+
+            BonusCoins = Mathf.RoundToInt(Coins * (RewardMultiplier - 1));
             // BonusXP = Mathf.RoundToInt(XP * (rewardMultiplier - 1) );
-            
+
             // TODO calcuate rewards for pvp
         }
 
         public GameReward()
         {
-            
+
         }
-        
+
 
         public GameReward HalfReward()
         {
             Coins = Mathf.RoundToInt((float)Coins / 2);
             Coins -= Coins % 5;
-            
+
             XP = Coins * 2;
-            
+
             return new GameReward()
             {
                 Coins = Coins,
                 XP = XP
             };
         }
-        
-        
+
+
     }
-    
-    
-    
-    
+
+
+
+
 }
