@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -53,8 +54,8 @@ namespace UI
         public delegate void AddMessageToQueueDelegate(params Message[] values);
         public static AddMessageToQueueDelegate AddMessageToQueue;
 
-        public delegate void OnEnqueueMessageDelegate();
-        public event OnEnqueueMessageDelegate OnEnqueueMessage;
+        public delegate IEnumerator OnEnqueueMessageDelegate();
+        public OnEnqueueMessageDelegate OnEnqueueMessage;
 
 
         [SerializeField] UIAnimation OpenMessagePanel;
@@ -117,30 +118,31 @@ namespace UI
                 messagesQueue.Enqueue(value);
             }
 
-            OnEnqueueMessage?.Invoke();
+            StartCoroutine(OnEnqueueMessage?.Invoke());
 
         }
 
 
         bool activeMessage;
-        async void OnAddMessageToQueue()
+        IEnumerator OnAddMessageToQueue()
         {
+            yield return null;
+
             if (activeMessage)
-                return;
+                yield break;
 
             activeMessage = true;
 
             Message message = messagesQueue.Peek();
             
-            await ShowMessage(message);
-
+            yield return ShowMessage(message);
 
             messagesQueue.Dequeue();
 
             activeMessage = false;
 
             if (messagesQueue.Count > 0)
-                OnEnqueueMessage?.Invoke();
+                StartCoroutine(OnEnqueueMessage?.Invoke());
 
         }
 
@@ -149,23 +151,24 @@ namespace UI
 #region Show Message
 
         
-        async Task ShowMessage(Message message)
+        IEnumerator ShowMessage(Message message)
         {
             MessagePanelByType(message);
             
             
             OpenMessagePanel.PlayAnimation();
 
-            await OpenMessagePanel.WaitAsync();
+            yield return OpenMessagePanel.Wait();
             //await Task.Delay(Mathf.RoundToInt(OpenMessagePanel.animationLenght * 1000));
 
 
-            await Task.Delay(Mathf.RoundToInt(2.5f * 1000));
+            // await Task.Delay(Mathf.RoundToInt(2.5f * 1000));
+            yield return new WaitForSeconds(2.5f);
 
 
             CloseMessagePanel.PlayAnimation();
 
-            await CloseMessagePanel.WaitAsync();
+            yield return CloseMessagePanel.Wait();
             //await Task.Delay(Mathf.RoundToInt(CloseMessagePanel.animationLenght * 1000));
         }
 
