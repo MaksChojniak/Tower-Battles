@@ -25,14 +25,14 @@ namespace Ads
         public RewardedAd(RewardType type, long amount, GiveRewardDelegate? giveReward)
         {
             this.reward = new Reward(type, amount);
-            this.UnitID = GetAdUnitID(this.reward);
+            this.UnitID = GetAdUnitID();
 
             this.giveReward = giveReward;
         }
         public RewardedAd(Reward reward, GiveRewardDelegate? giveReward)
         {
             this.reward = new Reward(reward);
-            this.UnitID = GetAdUnitID(this.reward);
+            this.UnitID = GetAdUnitID();
 
             this.giveReward = giveReward;
         }
