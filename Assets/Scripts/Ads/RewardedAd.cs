@@ -38,9 +38,10 @@ namespace Ads
         }
 
 
-        public RewardedAd()
+        ~RewardedAd()
         {
-            this.interstitialAd.Destroy();
+            if(this.interstitialAd != null)
+                this.interstitialAd.Destroy();
         }
 
         public void GiveReward() => this.giveReward?.Invoke(reward);
