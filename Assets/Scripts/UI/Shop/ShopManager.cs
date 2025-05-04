@@ -422,6 +422,13 @@ namespace UI.Shop
             {
                 PlayerData.ChangeCoinsBalance(-(long)skin.UnlockPrice);
                 skin.UnlockSkin();
+
+                MessageQueue.AddMessageToQueue?.Invoke(new Message()
+                {
+                    MessageType = MessageType.Normal,
+                    Tittle = "Skin Offert",
+                    Properties = GetMessageProperties(tower, skin),
+                });
                 
                 await Task.Yield();
                 
@@ -596,8 +603,6 @@ namespace UI.Shop
             string playerID = PlayerController.GetLocalPlayerData?.Invoke()?.ID;
             Database.LocalUser.POST<DailyRewards>(dailyRewards);
 
-
-
             UpdateDailyRewardsUI();
 
         }
@@ -614,64 +619,13 @@ namespace UI.Shop
                     break;
             }
 
-            //var properties = new List<MessageProperty>();
-            //switch (reward.Type)
-            //{
-            //    case RewardType.Coins:
-            //        properties.Add(new MessageProperty() { Name = $"Coins", Value = $"{StringFormatter.GetCoinsText((long)reward.CoinsBalance)}" });
-            //        break;
-            //    case RewardType.Experience:
-            //        Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor((ulong)PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
-            //        string amount = $@"{StringFormatter.GetColoredText($"{(long)reward.XP}", levelColor)}{StringFormatter.GetSpriteText(new SpriteTextData()
-            //        { SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}", WithColor = true, Color = levelColor, Size = "50%", WithSpaces = true, SpacesCount = 1 })}";
-            //        properties.Add(new MessageProperty() { Name = $"XP", Value = $"{amount}", });
-            //        break;
-            //}
-            
 
-            //MessageQueue.AddMessageToQueue?.Invoke(new Message()
-            //{
-            //    MessageType = MessageType.Normal,
-            //    Tittle = "Daily Reward",
-            //    Properties = properties
-            //});
-
-
-
-            List<MessageProperty> properties = new List<MessageProperty>();
-
-            switch (reward.Type)
-            {
-                case RewardType.Coins:
-                    properties.Add(new MessageProperty() { Name = "Coins", Value = $"{StringFormatter.GetCoinsText((long)reward.CoinsBalance, true, "66%")}" });
-                    break;
-                case RewardType.Experience:
-                    Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor(PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
-                    string sprite = StringFormatter.GetSpriteText(
-                        new SpriteTextData()
-                        {
-                            SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}",
-                            WithColor = true,
-                            Color = levelColor,
-                            Size = "50%",
-                            WithSpaces = true,
-                            SpacesCount = 1
-                        }
-                    );
-                    string value = $@"{StringFormatter.GetColoredText($"{reward.XP}", levelColor)}{sprite}";
-                    properties.Add(new MessageProperty() { Name = "XP", Value = $"{value}" });
-                    break;
-            }
-
-            Message message = new Message()
+            MessageQueue.AddMessageToQueue?.Invoke(new Message()
             {
                 MessageType = MessageType.Normal,
-                Tittle = "Daily Rewards",
-                Properties = properties,
-            };
-            
-            //MessageQueue.AddMessageToQueue?.Invoke(message);
-
+                Tittle = "Daily Reward",
+                Properties = GetMessageProperties(reward),
+            });
 
         }
         
@@ -742,6 +696,13 @@ namespace UI.Shop
                 PlayerData.ChangeGemsBalance(-exchangeOffert.GemsPrice);
                 PlayerData.ChangeCoinsBalance(exchangeOffert.CoinsReward);
                 
+                MessageQueue.AddMessageToQueue?.Invoke(new Message()
+                {
+                    MessageType = MessageType.Normal,
+                    Tittle = "Exchange Gems",
+                    Properties = GetMessageProperties(exchangeOffert),
+                });
+                
                 await Task.Yield();
                 
                 UpdateExchangeOffertsUI();
@@ -767,16 +728,11 @@ namespace UI.Shop
 #region Gems Offerts
 
         
-        public void BuyGemsOffert(int offertIndex)
-        {
-            
-        }
-
-
-        void UpdateGemsOffertsUI()
-        {
-            
-        }
+        public void BuyTest_Gems75() => StorePayment.Purchase(StoreProduct.Gems75);
+        public void BuyTest_Gems175() => StorePayment.Purchase(StoreProduct.Gems175);
+        public void BuyTest_Gems425() => StorePayment.Purchase(StoreProduct.Gems425);
+        public void BuyTest_Gems750() => StorePayment.Purchase(StoreProduct.Gems750);
+        public void BuyTest_Gems1200() => StorePayment.Purchase(StoreProduct.Gems1200);
         
         
 #endregion
@@ -798,42 +754,6 @@ namespace UI.Shop
                 battlepassTicketsPanels[offertIndex].gameObject.GetComponent<NotEnoughtCurrencyInvoker>().ShowWarningPanel(price, balance);
                 return;
             }
-
-            
-            // bool onCloseConfirmationPanel = false;
-            // bool pausePayements = false;
-            // Confirmation confirmation = Instantiate(ConfirmationOffertPrefab).GetComponent<Confirmation>();
-            // confirmation.ShowOffert(
-            //     $"Would You Like To Buy {StringFormatter.GetColoredText($"{ticketOffert.TiersCount} Battlepass Tickets", Color.white)} For {StringFormatter.GetGemsText(ticketOffert.GemsPrice, true, "66%" )}",
-            //     () =>
-            //     {
-            //         onCloseConfirmationPanel = true;
-            //         confirmation.StartLoadingAnimation();
-            //     },
-            //     () =>
-            //     {
-            //         onCloseConfirmationPanel = true;
-            //         pausePayements = true;
-            //     }
-            //     );
-            //
-            // while (!onCloseConfirmationPanel)
-            //     await Task.Yield();
-            //
-            // if (pausePayements)
-            //     return;
-            //         
-            //
-            //
-            // PlayerData.ChangeGemsBalance(-ticketOffert.GemsPrice);
-            // await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
-            //
-            // await Task.Yield();
-            //
-            // confirmation.StopLoadingAnimation();
-            //
-            //
-            // UpdateBattlepassTicketsOffertsUI();
 
             Color TicketColor() 
             {
@@ -861,6 +781,13 @@ namespace UI.Shop
                 PlayerData.ChangeGemsBalance(-ticketOffert.GemsPrice);
                 await BattlepassManager.AddBattlepassTierProgress(ticketOffert.TiersCount);
 
+                MessageQueue.AddMessageToQueue?.Invoke(new Message()
+                {
+                    MessageType = MessageType.Normal,
+                    Tittle = "Battlepass Tickets",
+                    Properties = GetMessageProperties(ticketOffert),
+                });
+
                 UpdateBattlepassTicketsOffertsUI();
             }
 
@@ -882,7 +809,7 @@ namespace UI.Shop
 
 
 
-        #region Ad Offerts
+#region Ad Offerts
 
 
 
@@ -986,41 +913,12 @@ namespace UI.Shop
             string playerID = PlayerController.GetLocalPlayerData().ID;
             Database.LocalUser.POST<AdsRewards>(adsRewards);
 
-
-            List<MessageProperty> properties = new List<MessageProperty>();
-
-            switch (reward.Type)
-            {
-                case RewardType.Coins:
-                    properties.Add(new MessageProperty() { Name = "Coins", Value = $"{StringFormatter.GetCoinsText(reward.Amount, true, "66%")}" });
-                    break;
-                case RewardType.Experience:
-                    Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor(PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
-                    string sprite = StringFormatter.GetSpriteText(
-                        new SpriteTextData()
-                        {
-                            SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}",
-                            WithColor = true,
-                            Color = levelColor,
-                            Size = "50%",
-                            WithSpaces = true,
-                            SpacesCount = 1
-                        }
-                    );
-                    string value = $@"{StringFormatter.GetColoredText($"{reward.Amount}", levelColor)}{sprite}";
-                    properties.Add(new MessageProperty() { Name = "XP", Value = $"{value}" });
-                    break;
-            }
-
-            Message message = new Message()
+            MessageQueue.AddMessageToQueue?.Invoke(new Message()
             {
                 MessageType = MessageType.Normal,
-                Tittle = "Ad Rewards",
-                Properties = properties,
-            };
-
-            MessageQueue.AddMessageToQueue?.Invoke(message);
-
+                Tittle = "Ad Reward",
+                Properties = GetMessageProperties(reward),
+            });
 
             UpdateAdsRewardsOffertsUI();
         }
@@ -1066,15 +964,73 @@ namespace UI.Shop
         
         
 #endregion
-
-
-
-        public void BuyTest_Gems75() => StorePayment.Purchase(StoreProduct.Gems75);
-        public void BuyTest_Gems175() => StorePayment.Purchase(StoreProduct.Gems175);
-        public void BuyTest_Gems425() => StorePayment.Purchase(StoreProduct.Gems425);
-        public void BuyTest_Gems750() => StorePayment.Purchase(StoreProduct.Gems750);
-        public void BuyTest_Gems1200() => StorePayment.Purchase(StoreProduct.Gems1200);
         
+
+        static List<MessageProperty> GetMessageProperties(Tower tower, TowerSkin skin)
+        {
+            return new List<MessageProperty>() {  new MessageProperty() { Name = $"{StringFormatter.GetTowerText(tower)}", Value = $"{StringFormatter.GetSkinText(skin)}" } };
+        }
+                
+        static List<MessageProperty> GetMessageProperties(Reward reward)
+        {
+            if(reward.Type == RewardType.Coins)
+                return new List<MessageProperty>() { new MessageProperty() { Name = "Coins", Value = $"{StringFormatter.GetCoinsText((long)reward.CoinsBalance, true, "66%")}" } };
+            if(reward.Type == RewardType.Experience)
+            {
+                Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor(PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
+                string sprite = StringFormatter.GetSpriteText(
+                        new SpriteTextData()
+                        {
+                            SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}",
+                            WithColor = true,
+                            Color = levelColor,
+                            Size = "50%",
+                            WithSpaces = true,
+                            SpacesCount = 1
+                        }
+                    );
+                string value = $@"{StringFormatter.GetColoredText($"{reward.XP}", levelColor)}{sprite}";
+                return new List<MessageProperty>() { new MessageProperty() { Name = "XP", Value = $"{value}" } };
+            }
+
+            return new List<MessageProperty>();
+        }
+        
+        static List<MessageProperty> GetMessageProperties(GemsExchange exchangeOffert)
+        {
+            return new List<MessageProperty>() {  new MessageProperty() { Name = "Coins", Value = $"{StringFormatter.GetCoinsText(exchangeOffert.CoinsReward, true, "66%")}" } };
+        }
+
+        static List<MessageProperty> GetMessageProperties(Ads.Reward reward)
+        {
+            if(reward.Type == RewardType.Coins)
+                return new List<MessageProperty>() { new MessageProperty() { Name = "Coins", Value = $"{StringFormatter.GetCoinsText(reward.Amount, true, "66%")}" } };
+            if(reward.Type == RewardType.Experience)
+            {
+                Color levelColor = GlobalSettingsManager.GetGlobalSettings.Invoke().GetCurrentLevelColor(PlayerController.GetLocalPlayer.Invoke().PlayerData.Level);
+                string sprite = StringFormatter.GetSpriteText(
+                        new SpriteTextData()
+                        {
+                            SpriteName = $"{GlobalSettingsManager.GetGlobalSettings?.Invoke().LevelIconName}",
+                            WithColor = true,
+                            Color = levelColor,
+                            Size = "50%",
+                            WithSpaces = true,
+                            SpacesCount = 1
+                        }
+                    );
+                string value = $@"{StringFormatter.GetColoredText($"{reward.Amount}", levelColor)}{sprite}";
+                return new List<MessageProperty>() { new MessageProperty() { Name = "XP", Value = $"{value}" } };
+            }
+
+            return new List<MessageProperty>();
+        }
+        
+        static List<MessageProperty> GetMessageProperties(BattlepassTicket ticketOffert)
+        {
+            return new List<MessageProperty>() { new MessageProperty() { Name = "Battlepass Tickets", Value = $"{ticketOffert.TiersCount/*StringFormatter.GetCoinsText(ticketOffert.TiersCount, true, "66%")*/}" } };
+        }
+
 
         
     }

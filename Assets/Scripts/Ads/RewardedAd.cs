@@ -80,7 +80,7 @@ namespace Ads
                             break;
                     }
 
-                    this.giveReward?.Invoke(this.reward);
+                    this.giveReward?.Invoke(this.reward); 
                     
                 }
             );
