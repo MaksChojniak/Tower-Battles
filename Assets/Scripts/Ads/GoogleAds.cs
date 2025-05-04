@@ -113,8 +113,7 @@ namespace Ads
         {
             if (error != null || ad == null)
             {
-                Debug.LogError($"Rewarded ad failed to load an ad with error : {error}");
-                //LoadAd(ad.GetAdUnitID());
+                Debug.LogError($"Rewarded ad failed to load an ad with error [id:{rewardedAd.UnitID}] : {error}");
                 return;
             }
 

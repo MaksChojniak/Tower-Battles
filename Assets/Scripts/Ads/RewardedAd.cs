@@ -92,7 +92,7 @@ namespace Ads
 
         #region Unit IDs
 
-        const string TEST_UNIT = "ca-app-pub-3940256099942544/5354046379";
+        const string TEST_UNIT = "ca-app-pub-3940256099942544/5354046379"; //ca-app-pub-3940256099942544/5224354917
 
         const string REWARDABLE_FULLSCREEN_NONE = "ca-app-pub-6306325732760549/9560036764";
         const string REWARDABLE_FULLSCREEN_5_COINS = "ca-app-pub-6306325732760549/3493321869";
@@ -108,6 +108,8 @@ namespace Ads
 
         private string GetAdUnitID(Reward reward)
         {
+            return TEST_UNIT;
+            
             string adUnit = REWARDABLE_FULLSCREEN_NONE;
 
             if (reward.Type == RewardType.Coins)
