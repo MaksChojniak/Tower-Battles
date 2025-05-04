@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using System;
+using Newtonsoft.Json;
 using UnityEngine.Purchasing.Extension;
 using UnityEngine.Purchasing;
 using System.Linq;
+using Player;
 
 public class GoogleStore : IDetailedStoreListener
 {
@@ -45,21 +47,48 @@ public class GoogleStore : IDetailedStoreListener
         throw new NotImplementedException();
     }
 
+    [Serializable]
+    public class ReceiptData
+    {
+        public string Payload;
+    }
+    [Serializable]
+    public class PayloadData
+    {
+        public string json;
+    }
+    [Serializable]
+    public class Receipt
+    {
+        public string title;
+        public int quantity;
+        public double price;
+    }
+
     PurchaseProcessingResult IStoreListener.ProcessPurchase(PurchaseEventArgs purchaseEvent)
     {
         Debug.Log("[Payments] process payement");
-
         StoreProduct product = StoreProduct.AllProducts.First(p => p.ID == purchaseEvent.purchasedProduct.definition.id);
 
         if (product == null)
             return PurchaseProcessingResult.Pending;
 
-        product.Process();
+        ReceiptData receiptData = JsonConvert.DeserializeObject<ReceiptData>(purchaseEvent.purchasedProduct.receipt);
+        PayloadData payloadData = JsonConvert.DeserializeObject<PayloadData>(receiptData.Payload);
+        Receipt receipt = JsonConvert.DeserializeObject<Receipt>(payloadData.json);
+        #if UNITY_EDITOR
+        receipt.quantity = 1;
+        #endif
+        for(int i = 0; i < receipt.quantity; i++)
+            product.Process();
 
         Debug.Log("[Payments] process payement complete");
 
+        Debug.Log(receipt.quantity);
         Debug.Log(purchaseEvent.purchasedProduct.receipt);
         Debug.Log(purchaseEvent.purchasedProduct.transactionID);
+
+        PlayerData.AddPayementData?.Invoke(purchaseEvent.purchasedProduct.transactionID, JsonConvert.SerializeObject(receipt));
 
         return PurchaseProcessingResult.Complete;
     }
