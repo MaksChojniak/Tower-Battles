@@ -60,6 +60,7 @@ public class GoogleStore : IDetailedStoreListener
     [Serializable]
     public class Receipt
     {
+        public string productId;
         public string title;
         public int quantity;
         public double price;
