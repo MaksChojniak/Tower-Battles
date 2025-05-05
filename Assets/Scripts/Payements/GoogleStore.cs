@@ -74,14 +74,15 @@ public class GoogleStore : IDetailedStoreListener
         if (product == null)
             return PurchaseProcessingResult.Pending;
 
+        #if UNITY_EDITOR
+        Receipt receipt = new Receipt();
+        receipt.quantity = 1;
+        #else
         ReceiptData receiptData = JsonConvert.DeserializeObject<ReceiptData>(purchaseEvent.purchasedProduct.receipt);
         PayloadData payloadData = JsonConvert.DeserializeObject<PayloadData>(receiptData.Payload);
         Receipt receipt = JsonConvert.DeserializeObject<Receipt>(payloadData.json);
-        #if UNITY_EDITOR
-        receipt.quantity = 1;
         #endif
-        for(int i = 0; i < receipt.quantity; i++)
-            product.Process();
+        product.Process(receipt.quantity);
 
         Debug.Log("[Payments] process payement complete");
 
