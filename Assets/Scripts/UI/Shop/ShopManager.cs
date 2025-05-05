@@ -887,6 +887,8 @@ namespace UI.Shop
 
             AdReward reward = adsRewards.rewards[0];
 
+            currentAdReward.GetComponent<Button>().interactable = false;
+            GoogleAds.OnCloseAd += OnCloseAd;
             GoogleAds.ShowAd(reward.Type, reward.Amount, OnGetAdReward);
         }
 
@@ -905,6 +907,12 @@ namespace UI.Shop
             });
 
             UpdateAdsRewardsOffertsUI();
+        }
+
+        void OnCloseAd()
+        {
+            GoogleAds.OnCloseAd -= OnCloseAd;
+            currentAdReward.GetComponent<Button>().interactable = true;
         }
         
 

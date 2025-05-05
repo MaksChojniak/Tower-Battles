@@ -114,6 +114,7 @@ namespace Ads
             if (error != null || ad == null)
             {
                 Debug.LogError($"Rewarded ad failed to load an ad with error [id:{rewardedAd.UnitID}] : {error}");
+                Close();
                 return;
             }
 
@@ -133,6 +134,7 @@ namespace Ads
             rewardedAd.interstitialAd.OnAdFullScreenContentFailed += (AdError error) =>
             {
                 Debug.LogError($"Rewarded interstitial ad failed to open full screen content with error : {error}");
+                Close();
                 //LoadAd(ad.GetAdUnitID());
             };
 
@@ -143,26 +145,18 @@ namespace Ads
 
             rewardedAd.interstitialAd.OnAdFullScreenContentClosed += () =>
             {
-                CloseBackground();
-
-                OnCloseAd?.Invoke();
-
-
+                Close();
                 //UnloadOrDestroyOldAd();
             };
 
         }
 
 
-
-        void CloseBackground()
-        {
+        void Close(){
             CloseBackgroundAniation.PlayAnimation();
 
+            OnCloseAd?.Invoke();
         }
-
-
-
 
 
     }
