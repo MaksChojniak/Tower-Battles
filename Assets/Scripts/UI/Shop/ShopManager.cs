@@ -687,7 +687,7 @@ namespace UI.Shop
             
             
             this.gameObject.GetComponent<ConfirmationInvoker>().ShowConfirmation(
-                $"Would You Like To Exchange {StringFormatter.GetGemsText(exchangeOffert.GemsPrice, true, "66%" )} For {StringFormatter.GetCoinsText(exchangeOffert.CoinsReward, true, "66%" )}",
+                $"Would You Like To Exchange\n {StringFormatter.GetGemsText(exchangeOffert.GemsPrice, true, "66%" )} For {StringFormatter.GetCoinsText(exchangeOffert.CoinsReward, true, "66%" )}",
                 OnAccept );
 
             
@@ -755,8 +755,24 @@ namespace UI.Shop
                 return;
             }
 
+            Color TicketColor() 
+            {
+                switch (ticketOffert.TiersCount) 
+                {
+                    case 1:
+                        return new Color(0.4862745f, 0.2705882f, 0.1490196f, 1);
+                    case 3:
+                        return new Color(0.6705883f, 0.6705883f, 0.6705883f, 1);
+                    case 10:
+                        return new Color(0.7686275f, 0.5607843f, 0.2392157f, 1);
+                    default:
+                        return Color.white;
+                           
+                }
+            }
+            
             this.gameObject.GetComponent<ConfirmationInvoker>().ShowConfirmation(
-                $"Would You Like To Buy {StringFormatter.GetColoredText($"{ticketOffert.TiersCount} Battlepass Tickets", Color.white)} For {StringFormatter.GetGemsText(ticketOffert.GemsPrice, true, "66%" )}",
+                $"Would You Like To Buy\n {StringFormatter.GetColoredText($"{ticketOffert.TiersCount} Battlepass {(ticketOffert.TiersCount == 1 ? "Ticket" : "Tickets")}", TicketColor())}\n For {StringFormatter.GetGemsText(ticketOffert.GemsPrice, true, "66%" )}",
                 OnAccept);
 
 

@@ -15,7 +15,7 @@ namespace UI.Shop
         public void UpdateUI(BattlepassTicket ticketOffert)
         {
 
-            TicketsCountText.text = $"{ticketOffert.TiersCount} Tickets";
+            TicketsCountText.text = $"{ticketOffert.TiersCount} {(ticketOffert.TiersCount == 1 ? "Ticket" : "Tickets")}";
             GemsPriceText.text = $"{StringFormatter.GetGemsText(ticketOffert.GemsPrice, true, "80%")}";
 
         }

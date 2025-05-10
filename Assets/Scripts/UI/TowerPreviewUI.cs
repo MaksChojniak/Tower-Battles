@@ -20,11 +20,9 @@ public class TowerPreviewUI : MonoBehaviour
     [SerializeField] RotateableTower rotateableTower;
 
 
-    [Space(8)]
     [Header("Prefabs")]
     [SerializeField] GameObject SkinChangerWindow;
 
-    [Space(18)]
     [Header("Properties UI")]
     [SerializeField] TMP_Text towerNameText;
     [SerializeField] TMP_Text skinNameText;
@@ -36,6 +34,7 @@ public class TowerPreviewUI : MonoBehaviour
     [SerializeField] Image damageImage;
     [SerializeField] Image firerateImage;
     [SerializeField] Image rangeImage;
+    [SerializeField] TMP_Text incomeText;
     [SerializeField] TMP_Text placementText;
 
     [Space(8)]
@@ -46,15 +45,23 @@ public class TowerPreviewUI : MonoBehaviour
     [SerializeField] GameObject unlockedPanel;
     TMP_Text unlockedPrice => unlockedPanel.transform.GetChild(0).GetChild(0).GetComponent<TMP_Text>();
 
-    [Space(16)]
     [Header("Animations UI")]
     [SerializeField] UIAnimation OpenTowerPreview;
     [SerializeField] UIAnimation CloseTowerPreview;
 
-    [Space(18)]
     [SerializeField] GameObject skinChangeButton;
-
     [SerializeField] Color[] colors;
+
+    [Header("Max Tower Stats")]
+    [SerializeField] float maxDamage;
+    [SerializeField] float maxFirerate;
+    [SerializeField] float maxViewrange;
+
+    [Header("Tower Stats")]
+    [SerializeField] GameObject damagePanel;
+    [SerializeField] GameObject fireratePanel;
+    [SerializeField] GameObject viewrangePanel;
+    [SerializeField] GameObject incomePanel;
 
     public int lastSelectedTowerIndex { get; private set; }
     Tower lastSelectedTower => lastSelectedTowerIndex < 0 ? null : inventory.TowerData.GetAllTowerInventoryData()[lastSelectedTowerIndex].towerSO;
@@ -133,19 +140,44 @@ public class TowerPreviewUI : MonoBehaviour
         if(tower.TryGetData<Soldier>(out var soldier))
         {
             damageTypeText.text = soldier.GetWeapon(0).DamageType.ToString();
+;
+            damagePanel.transform.GetChild(0).gameObject.SetActive(true);
+            damagePanel.transform.GetChild(1).gameObject.SetActive(true);
+            fireratePanel.SetActive(true);
+            incomePanel.SetActive(false);
+            viewrangePanel.transform.GetChild(0).gameObject.SetActive(true);
+            viewrangePanel.transform.GetChild(1).gameObject.SetActive(true);
+
+            damageImage.fillAmount = FillAmountStats(Stats.Damage, tower);
+            UpdateImageColor(damageImage);
+            firerateImage.fillAmount = FillAmountStats(Stats.Firerate, tower);
+            UpdateImageColor(firerateImage);
+            rangeImage.fillAmount = FillAmountStats(Stats.Viewrange, tower);
+            UpdateImageColor(rangeImage);
         }
-        else
+        else if (tower.TryGetData<Farm>(out var farm))
         {
             damageTypeText.text = "None";
+
+            damagePanel.transform.GetChild(0).gameObject.SetActive(false);
+            damagePanel.transform.GetChild(1).gameObject.SetActive(false);
+            fireratePanel.SetActive(false);
+            incomePanel.SetActive(true);
+            viewrangePanel.transform.GetChild(0).gameObject.SetActive(false);
+            viewrangePanel.transform.GetChild(1).gameObject.SetActive(false);
+
+            incomeText.text = $"{farm.GetWaveIncome(0)} {StringFormatter.GetSpriteText(new SpriteTextData() { SpriteName = GlobalSettingsManager.GetGlobalSettings().CashIconName })}";
         }
 
-        float[] fillAmounts = new[] { 0.2f, 0.4f, 0.6f, 0.8f, 1f };
-        damageImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
-        UpdateImageColor(damageImage);
-        firerateImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
-        UpdateImageColor(firerateImage);
-        rangeImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
-        UpdateImageColor(rangeImage);
+        //float[] fillAmounts = new[] { 0.2f, 0.4f, 0.6f, 0.8f, 1f };
+        //damageImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
+        //UpdateImageColor(damageImage);
+        //firerateImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
+        //UpdateImageColor(firerateImage);
+        //rangeImage.fillAmount = fillAmounts[Random.Range(0, fillAmounts.Length)];
+        //UpdateImageColor(rangeImage);
+
+
 
         placementText.text = $"{tower.PlacementType}";//"Ground/Cliff";
 
@@ -169,6 +201,43 @@ public class TowerPreviewUI : MonoBehaviour
         
         
         lastSelectedTowerIndex = index;
+    }
+    enum Stats
+    {
+        Damage,
+        Firerate,
+        Viewrange
+    }
+    float FillAmountStats(Stats statType, Tower tower)
+    {
+        float damage;
+        float firerate;
+        float viewrange;
+        if (tower.TryGetData<Soldier>(out var soldier))
+        {
+            damage = soldier.GetWeapon(0).Damage;
+            firerate = 60f/soldier.GetWeapon(0).Firerate;
+            viewrange = soldier.ViewRanges[0];
+        }
+        else
+        {
+            damage = 0;
+            firerate = 0;
+            viewrange = 0;
+        }
+
+
+        switch (statType) 
+        {
+            case Stats.Damage:
+                return Mathf.Ceil((damage / maxDamage) / 0.2f) * 0.2f;
+            case Stats.Firerate:
+                return Mathf.Ceil((firerate / maxFirerate) / 0.2f) * 0.2f;
+            case Stats.Viewrange:
+                return Mathf.Ceil((viewrange / maxViewrange) / 0.2f) * 0.2f;
+            default:
+                return 0f;
+        }
     }
 
     
@@ -230,7 +299,7 @@ public class TowerPreviewUI : MonoBehaviour
         
 
         this.gameObject.GetComponent<ConfirmationInvoker>().ShowConfirmation(
-            $"Would You Like To Buy\n{StringFormatter.GetTowerText(lastSelectedTower)} Tower For {StringFormatter.GetCoinsText( (long)lastSelectedTower.BaseProperties.UnlockPrice, true,"66%" )}",
+            $"Would You Like To Buy\n{StringFormatter.GetTowerText(lastSelectedTower)} Tower For\n {StringFormatter.GetCoinsText( (long)lastSelectedTower.BaseProperties.UnlockPrice, true,"66%" )}",
             lastSelectedTower,
             OnAccept);
 
