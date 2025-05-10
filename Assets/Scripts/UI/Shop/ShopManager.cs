@@ -83,6 +83,7 @@ namespace UI.Shop
         [SerializeField] AdRewardUI[] adRewardsPanels;
         [SerializeField] AdRewardUI currentAdReward;
         [SerializeField] TMP_Text adsCounterText;
+        [SerializeField] GameObject adsCounterMask;
         [Header("   Gems Exchange UI")]
         [SerializeField] GemsExchangeUI[] gemsExchangePanels;
         [Header("   Battlepass Tickets UI")]
@@ -934,6 +935,7 @@ namespace UI.Shop
 
         public void UpdateAdsRewardsOffertsUI()
         {
+            adsCounterMask.SetActive(false);
             currentAdReward.gameObject.SetActive(false);
             for (int i = 0; i < adRewardsPanels.Length; i++)
             {
@@ -945,8 +947,15 @@ namespace UI.Shop
 
             adsCounterText.text = $"Videos Watched: {DAILY_ADS_LIMIT-adsRewards.rewards.Count}/{DAILY_ADS_LIMIT}";
 
+            DateTime createTimeUTC = new DateTime(adsRewards.CreateDateUTCTicks);
+            TimeSpan offsetToNextOfferts = createTimeUTC.AddDays(1) - ServerDate.SimulatedDateOnServerUTC();
+
             if (adsRewards.rewards.Count <= 0)
+            {
+                adsCounterText.text = $"Next ADs in: {offsetToNextOfferts.Hours}h {offsetToNextOfferts.Minutes}min";
+                adsCounterMask.SetActive(true);
                 return;
+            }
 
             currentAdReward.gameObject.SetActive(true);
             currentAdReward.UpdateUI(adsRewards.rewards[0], 0);
