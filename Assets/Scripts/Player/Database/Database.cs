@@ -474,7 +474,7 @@ namespace Player.Database
 
         async static void GetFilesName_Internal(string fullPath, Action<List<string>> callback)
         {
-            string url = $"https://firebasestorage.googleapis.com/v0/b/{RootStorageReference.Bucket}/o?prefix={UnityWebRequest.EscapeURL(fullPath)}";
+            string url = $"https://firebasestorage.googleapis.com/v0/b/{RootStorageReference.Bucket}/o?prefix={UnityWebRequest.EscapeURL(fullPath)}/";
 
             UnityWebRequest request = UnityWebRequest.Get(url);
 
