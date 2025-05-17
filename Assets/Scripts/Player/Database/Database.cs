@@ -178,15 +178,13 @@ namespace Player.Database
         }
         public static void GET<T>(string fullPath, Action<GET_Callback<T>> callbak)
         {
-            string[] path = fullPath.Split('/');
+            string[] path = fullPath.Replace('\\', '/').Replace("//", "/").Split('/');
             if (path.Length <= 0)
             {
                 callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
                 return;
             }
-
             StorageReference reference = RootStorageReference;
-
             foreach (string pathItem in path)
             {
                 if (!reference.TryGetReference(pathItem, out reference))

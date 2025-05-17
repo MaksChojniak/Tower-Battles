@@ -104,7 +104,6 @@ namespace Promocodes
                     PromocodeReward[] rewards = promocode.Reward.GetSplittedRewards();
 
                     List<MessageProperty> messageProperties = new List<MessageProperty>();
-
                     foreach (PromocodeReward reward in rewards)
                     {
                         switch (reward.Type)
@@ -126,7 +125,6 @@ namespace Promocodes
                         }
 
                     }
-
                     if (!promocode.Properties.TimeLimitedCode)
                     {
                         promocode.Properties.UsesLeft -= 1;
@@ -137,7 +135,6 @@ namespace Promocodes
                     }
                     else
                         Database.POST(filePath, promocode);
-
                     await OnRedeemComplete();
 
                     MessageQueue.AddMessageToQueue?.Invoke(new Message()
