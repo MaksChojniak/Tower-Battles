@@ -38,6 +38,7 @@ namespace Editor
 
         GameObject prefab;
         Quaternion prefab_rotation;
+        Vector3 prefab_offset;
 
         Vector2Int photoSize;
         bool removeGreenScreen;
@@ -62,7 +63,7 @@ namespace Editor
 
             visualTree.CloneTree(root);
 
-            BindVisualElements(out TextField pathName_TextField, out TextElement fullPath_Text, out ObjectField prefab_ObjectField, out Vector3Field prefabRotation_Vector3Field,
+            BindVisualElements(out TextField pathName_TextField, out TextElement fullPath_Text, out ObjectField prefab_ObjectField, out Vector3Field prefabRotation_Vector3Field, out Vector3Field prefabOffset_Vector3Field,
             out ObjectField sceneAsset_ObjectField, out Vector2IntField photoSize_Vector2IntField, out Toggle removeGreenScreen_Toggle, out Button start_Button);
 
             OnChangeAnyValue += UpdateStartButton;
@@ -73,6 +74,7 @@ namespace Editor
 
             prefab_ObjectField.RegisterValueChangedCallback(OnPrefabChanged);
             prefabRotation_Vector3Field.RegisterValueChangedCallback(OnPrefabRotationChanged);
+            prefabOffset_Vector3Field.RegisterValueChangedCallback(OnPrefabOffsetChanged); // Register callback for offset
 
             sceneAsset_ObjectField.RegisterValueChangedCallback(OnSceneChanged);
 
@@ -90,6 +92,9 @@ namespace Editor
 
             prefab_rotation = Quaternion.Euler(prefabRotation_Vector3Field.value);
             prefabRotation_Vector3Field.value = prefab_rotation.eulerAngles;
+
+            prefab_offset = prefabOffset_Vector3Field.value; // Initialize offset
+            prefabOffset_Vector3Field.value = prefab_offset;
 
             photoSize = photoSize_Vector2IntField.value;
             photoSize_Vector2IntField.value = photoSize;
@@ -119,6 +124,12 @@ namespace Editor
                 OnChangeAnyValue?.Invoke();
             }
 
+            void OnPrefabOffsetChanged(ChangeEvent<Vector3> callback) // Handle offset changes
+            {
+                prefab_offset = callback.newValue;
+                OnChangeAnyValue?.Invoke();
+            }
+
             void OnSceneChanged(ChangeEvent<UnityEngine.Object> callback)
             {
                 greenScreenScene = ((SceneAsset)callback.newValue);
@@ -143,7 +154,7 @@ namespace Editor
 
         }
 
-        void BindVisualElements(out TextField pathName_TextField, out TextElement fullPath_Text, out ObjectField prefab_ObjectField, out Vector3Field prefabRotation_Vector3Field,
+        void BindVisualElements(out TextField pathName_TextField, out TextElement fullPath_Text, out ObjectField prefab_ObjectField, out Vector3Field prefabRotation_Vector3Field, out Vector3Field prefabOffset_Vector3Field,
             out ObjectField sceneAsset_ObjectField, out Vector2IntField photoSize_Vector2IntField, out Toggle removeGreenScreen_Toggle, out Button start_Button)
         {
             // Define names for all elements from root
@@ -155,6 +166,7 @@ namespace Editor
 
             const string PREFAB_OBJECTFIELD_NAME = "OBJECTFIELD_Prefab";
             const string PREFAB_ROTATION_VECTOR3FIELD_NAME = "VECTOR3FIELD_PrefabRotation";
+            const string PREFAB_OFFSET_VECTOR3FIELD_NAME = "VECTOR3FIELD_PrefabOffset"; // Add offset field name
 
             const string SCENE_OBJECTFIELD_NAME = "OBJECTFIELD_GeenScreenScene";
             const string PHOTO_SIZE_VECTOR2FIELD_NAME = "VECTOR2FIELD_PhotoSize";
@@ -172,6 +184,7 @@ namespace Editor
 
             prefab_ObjectField = body_L_VisualElement.Q<ObjectField>(PREFAB_OBJECTFIELD_NAME);
             prefabRotation_Vector3Field = body_L_VisualElement.Q<Vector3Field>(PREFAB_ROTATION_VECTOR3FIELD_NAME);
+            prefabOffset_Vector3Field = body_L_VisualElement.Q<Vector3Field>(PREFAB_OFFSET_VECTOR3FIELD_NAME); // Bind offset field
 
             sceneAsset_ObjectField = body_L_VisualElement.Q<ObjectField>(SCENE_OBJECTFIELD_NAME);
             photoSize_Vector2IntField = body_L_VisualElement.Q<Vector2IntField>(PHOTO_SIZE_VECTOR2FIELD_NAME);
@@ -185,34 +198,34 @@ namespace Editor
 
         async void TakePhoto()
         {
-            string path = Path.Combine("Assets", "Prefabs", "Towers", "Soldiers");
-            string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { path });
-            Debug.Log("Total Prefabs Found: " + guids.Length);
-            foreach (string guid in guids)
-            {
-                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+            // string path = Path.Combine("Assets", "Prefabs", "Towers", "Soldiers");
+            // string[] guids = AssetDatabase.FindAssets("t:Prefab", new[] { path });
+            // Debug.Log("Total Prefabs Found: " + guids.Length);
+            // foreach (string guid in guids)
+            //{
+                string assetPath = AssetDatabase.GetAssetPath(prefab);
 
                 if (!assetPath.Contains("Prefabs/Towers/Soldiers") && !assetPath.Contains("Prefabs\\Towers\\Soldiers"))
                 {
                     Debug.Log($"wrong path\t {assetPath}");
-                    continue;
+                    // continue;
                 }
 
                 // Load the prefab at the given path
-                GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                // GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
 
                 if (prefab == null)
                 {
                     // Log the prefab's name to the console
                     Debug.Log("Found Prefab: " + prefab.name + " at path: " + assetPath);
-                    continue;
+                    // continue;
                 }
 
 
                 await TakePhotosForAllPrefab(prefab, assetPath, prefab.name);
 
                 await Task.Yield();
-            }
+            //}
 
 
 
@@ -227,7 +240,7 @@ namespace Editor
 
             await OpenScene(AssetDatabase.GetAssetPath(greenScreenScene));
 
-            GameObject prefab_root = Instantiate(prefab, Vector3.zero, prefab_rotation);
+            GameObject prefab_root = Instantiate(prefab, prefab_offset, prefab_rotation);
             GameObject[] prefabs = new GameObject[5];
             for (int i = 0; i < 5; i++)
             {

@@ -27,6 +27,8 @@ namespace DefaultNamespace
         [SerializeField] TowerInventory TowerInventory;
         [SerializeField] Vector3 BaseRotation;
 
+        public float rotationSpeed = 50f;
+
         public float rotateSensitivity = 0.003f;
         
         Vector3 _startMousePosition;
@@ -36,6 +38,15 @@ namespace DefaultNamespace
         {
             //TowerInventory.OnSelectTile += SpawnTowerOnPlatform;
             SpawnTowerProcess += SpawnTowerOnPlatform;
+        }
+
+        void Update()
+        {
+            if (Tower != null)
+            {
+                // Rotate the Tower around the Y-axis
+                Tower.Rotate(0, rotationSpeed * Time.deltaTime, 0); // Adjust the speed (50) as needed
+            }
         }
 
         void OnDestroy()
@@ -79,9 +90,10 @@ namespace DefaultNamespace
         }
 
 
+        Quaternion _lastTowerRotation = Quaternion.identity; // Store the last tower's rotation
         async void SpawnTower(GameObject towerToSpawn, Vector3 originOffset)
         {
-            while(!this.gameObject.activeInHierarchy)
+            while (!this.gameObject.activeInHierarchy)
                 await Task.Yield();
 
             Debug.Log("Spawn Tower");
@@ -100,6 +112,9 @@ namespace DefaultNamespace
                 Destroy(component);
 
             ResetPositionAndRotation(originOffset);
+
+            // Apply the last tower's rotation to the new tower
+            Tower.localRotation = _lastTowerRotation;
         }
 
 
@@ -116,6 +131,7 @@ namespace DefaultNamespace
             if (Tower == null)
                 return;
 
+            _lastTowerRotation = Tower.localRotation; // Save the current tower's rotation
             Destroy(Tower.gameObject);
             Tower = null;
         }

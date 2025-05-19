@@ -172,6 +172,11 @@ namespace UI
             GameReward reward = new GameReward(wavesCount);
 
             OnEndGame?.Invoke();
+            
+            PlayerController.GetLocalPlayerData.Invoke().PlayerGamesData.Survival_GamesCount += 1; 
+
+            if (PlayerController.GetLocalPlayerData.Invoke().PlayerGamesData.MaxWaveCount < (ulong)wavesCount)
+                PlayerController.GetLocalPlayerData.Invoke().PlayerGamesData.MaxWaveCount = (ulong)wavesCount;   
 
             GameInfoText.text = $"Waves: {wavesCount}" + "    " + $"Time: {(DateTime.Now - gameStartDate).ToString(@"mm\:ss")}";
 

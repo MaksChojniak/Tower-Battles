@@ -70,12 +70,13 @@ namespace MMK
         public string DiscordIconName = "discord";
         public string StarIconName = "star";
         public string TrophyIconName = "trophy";
+        public string ZombieIconName = "zombie";
 
 #endregion
-        
-        
-        
-#region Colors
+
+
+
+        #region Colors
 
         public Color NormalColor = Color($"#FFFFFF");                    //  NORMAL_COLOR_HEX = "#FFFFFF";
 
@@ -293,7 +294,7 @@ namespace MMK
 
         public int vetoScene = 2;
 
-        public List<int> gameScenes = new List<int>() {3, 4, 5, 6, 7};
+        public List<int> gameScenes = new List<int>() {3, 4, 5, 6, 7, 8, 9};
         
 #endregion
 

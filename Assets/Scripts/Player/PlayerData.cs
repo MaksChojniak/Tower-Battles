@@ -41,19 +41,19 @@ namespace Player
         }
 
     }
-    
+
     [Serializable]
     public struct PlayerGamesData
     {
         public ulong WinsCount;
         public ulong DefeatsCount;
-        
+
         public ulong GamesCount => PVP_GamesCount + Survival_GamesCount;
 
         public ulong PVP_GamesCount => WinsCount + DefeatsCount;
         public ulong Survival_GamesCount;
         
-        
+        public ulong MaxWaveCount;
     }
     
     [Serializable]
@@ -137,7 +137,7 @@ namespace Player
 #endregion
         
         public string ID = "0";
-        public string Nickname = "Unknown";
+        public string Nickname = "Enter name...";
         
         public uint Level => GetLevelByTotalXP(TotalExperiencePoins);
         public uint XP => GetXPByTotalXP(TotalExperiencePoins);
