@@ -39,7 +39,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 1507020728}
-  m_IndirectSpecularColor: {r: 0.070327856, g: 0.4619955, b: 0.65799004, a: 1}
+  m_IndirectSpecularColor: {r: 0.070379056, g: 0.46223158, b: 0.6577408, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2649,7 +2649,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &60381773
 MonoBehaviour:
@@ -3342,7 +3342,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 126, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &65994671
 MonoBehaviour:
@@ -18601,10 +18601,11 @@ AudioSource:
   m_GameObject: {fileID: 310743678}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 1843531258042250305, guid: fc259dfb114c18e4aa07b60a6eb19de3,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 451b12b0c431212449154742f63940a1, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 0
+  m_Volume: 0.15
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -18701,7 +18702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 310743680}
-  mutePercentage: 0.2
+  mutePercentage: 80
   fadeDuration: 5
   isMusicStarted: 0
 --- !u!1 &312913565
@@ -28114,7 +28115,7 @@ PrefabInstance:
     - target: {fileID: 3466533648822989317, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3466533648822989317, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
@@ -28294,7 +28295,7 @@ PrefabInstance:
     - target: {fileID: 3466533649047269159, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3466533649047269159, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
@@ -28410,7 +28411,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &494824519
 MonoBehaviour:
@@ -31203,7 +31204,7 @@ PrefabInstance:
     - target: {fileID: 3466533648822989317, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3466533648822989317, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
@@ -31273,7 +31274,7 @@ PrefabInstance:
     - target: {fileID: 3466533649047269159, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3466533649047269159, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
@@ -34970,7 +34971,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 126, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &655315585
 MonoBehaviour:
@@ -42641,7 +42642,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &827221374
 MonoBehaviour:
@@ -43071,7 +43072,7 @@ PrefabInstance:
     - target: {fileID: 3466533648822989317, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3466533648822989317, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
@@ -43251,7 +43252,7 @@ PrefabInstance:
     - target: {fileID: 3466533649047269159, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3466533649047269159, guid: e963a53751321c44cbc6033c60cf34c3,
         type: 3}
@@ -49273,7 +49274,7 @@ PrefabInstance:
     - target: {fileID: 5274118219227040320, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5274118219227040320, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
@@ -49313,7 +49314,7 @@ PrefabInstance:
     - target: {fileID: 5274118219964311031, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5274118219964311031, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
@@ -49733,7 +49734,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 126, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &927646449
 MonoBehaviour:
@@ -65635,7 +65636,7 @@ PrefabInstance:
     - target: {fileID: 5274118219227040320, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5274118219227040320, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
@@ -65677,7 +65678,7 @@ PrefabInstance:
     - target: {fileID: 5274118219964311031, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5274118219964311031, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
@@ -67982,7 +67983,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 1
+  m_MatchWidthOrHeight: 0.96153843
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -68750,8 +68751,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1335632728}
   m_HandleRect: {fileID: 1335632727}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.99999994
+  m_Value: -0.00005432716
+  m_Size: 0.99864644
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -69534,7 +69535,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1286342162
 MonoBehaviour:
@@ -77572,7 +77573,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 126, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1407775380
 MonoBehaviour:
@@ -79852,7 +79853,7 @@ PrefabInstance:
     - target: {fileID: 5274118219227040320, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5274118219227040320, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
@@ -79892,7 +79893,7 @@ PrefabInstance:
     - target: {fileID: 5274118219964311031, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 64
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5274118219964311031, guid: ad306f7455910834e804941a4eb13e84,
         type: 3}
@@ -82357,7 +82358,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 126, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1477497086
 MonoBehaviour:
@@ -92848,7 +92849,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 976068107}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.14565825
+  m_Size: 0.14565827
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -93669,7 +93670,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1681472383
 MonoBehaviour:
@@ -113071,7 +113072,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2060353035
 MonoBehaviour:

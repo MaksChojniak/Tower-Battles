@@ -109,7 +109,10 @@ void Awake()
                     break;
             }
             value /= 100;
-
+            // Set the AudioMixer parameter using the key and value
+            if(value == 0)
+                AudioMixer.SetFloat(key, -80);
+            else
             AudioMixer.SetFloat(key, Mathf.Log10(value) * 20);
 
             UpdateUI();

@@ -9,11 +9,13 @@ using UnityEngine.SceneManagement;
 public class GameSoundtrack : MonoBehaviour
 {
     [SerializeField] AudioSource audioSource;
-    [SerializeField] float mutePercentage = 0.2f;
+
+    [Range(0, 100)]
+    [SerializeField] float mutePercentage = 80f;
     [SerializeField] float fadeDuration = 5f;
 
     public bool isMusicStarted = false;
-    private float StartVolume = 0f;
+    private float StartVolume = 1f;
 
     private void Awake()
     {
@@ -40,11 +42,10 @@ public class GameSoundtrack : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         var gameScenes = GlobalSettingsManager.GetGlobalSettings?.Invoke().gameScenes;
-        StartVolume = GameObject.FindObjectOfType<SettingsManager>().Settings.AudioSettings.MusicVolume / 100f;
 
         if (gameScenes.Contains(scene.buildIndex))
         {
-            StartCoroutine(LerpVolume(StartVolume * mutePercentage, fadeDuration));
+            StartCoroutine(LerpVolume(StartVolume * (1 - (mutePercentage / 100)), fadeDuration));
         }
         else if (scene.buildIndex == 1 && !isMusicStarted) // Assuming 1 is the main menu scene
         {
