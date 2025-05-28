@@ -192,16 +192,19 @@ namespace MMK
                 return;
             }
             
-            
+            TowerInformationsUI.TargetModePanel.SetActive(false);
             CurrentClickedTower = Info;
 
-
+            TowerInformationsUI.TargetModeButtonPanel.SetActive(true);
             if (Info.TryGetInfo<Soldier, SoldierController>(out var soldierData, out var soldierController))
                 ShowSoldierInfo(soldierData, soldierController);
             else if (Info.TryGetInfo<Booster, BoosterController>(out var boosterData, out var boosterController))
                 ShowBoosterInfo(boosterData, boosterController);
             else if (Info.TryGetInfo<Farm, FarmController>(out var farmData, out var farmController))
+            {
                 ShowFarmInfo(farmData, farmController);
+                TowerInformationsUI.TargetModeButtonPanel.SetActive(false);
+            }
             // else if (Info.TryGetInfo<Spawner, SpawnerController>(out var spawnerData, out var spawnerController))
             //     ShowSpawnerInfo(spawnerData, spawnerController);
         }
