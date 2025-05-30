@@ -181,6 +181,7 @@ namespace Player
 
             InitDeck();
 
+            Deck[0].Value = baseTower;
         }
         
         public PlayerData(PlayerData sourceData)
