@@ -251,7 +251,7 @@ namespace MMK.Settings
             
             
             // Font Settings
-            FontAsset font = FontAsset.Liberation_Sans;
+            FontAsset font = FontAsset.ZCOOL_Sans;
             if (Enum.TryParse<FontAsset>(PlayerPrefs.GetString(nameof(settings.Font)), out FontAsset fontAsset))
                 font = fontAsset;
             settings.Font = font;
