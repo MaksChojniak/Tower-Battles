@@ -11,12 +11,11 @@ public class LightManager : MonoBehaviour
     [SerializeField] float dayTime = 1.5f;
     [SerializeField] float transitionTime = 120f;
     private float currentIntensity;
-    public float startingIntensity = 1.0f;
+    float startingIntensity = 1.0f;
     private Color currentColor;
-    public Color startingColor = new Color(1, 0.9568627f, 0.8392157f, 1); // Default color for day light
+    Color startingColor = new Color(1, 0.9568627f, 0.8392157f, 1); // Default color for day light
     private bool wasDayTime = true;
     private float timePassed = 0.0f;
-    private int cycles = 0;
 
     [Space(10)]
     [Header("Color Settings")]
@@ -27,8 +26,9 @@ public class LightManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        SetLightColor(currentColor);
-        SetLightIntensity(currentIntensity);
+        // startingIntensity = UnityEngine.Random.Range(nightTime, dayTime);
+        // startingColor = nightColor + (startingIntensity / (dayTime - nightTime) * (dayColor - nightColor));
+        timePassed = UnityEngine.Random.Range(0f, 1f) * transitionTime;
     }
     void Update()
     {
@@ -36,14 +36,13 @@ public class LightManager : MonoBehaviour
         {
             wasDayTime = !wasDayTime;
             timePassed = 0.0f;
-            cycles += 1;
         }
         if (wasDayTime && (timePassed < transitionTime))
         {
             timePassed += Time.deltaTime;
 
-            currentIntensity = Mathf.Lerp(cycles>0 ? dayTime:startingIntensity, nightTime, timePassed / transitionTime);
-            currentColor = Color.Lerp(cycles>0 ? dayColor:startingColor, nightColor, timePassed / transitionTime);
+            currentIntensity = Mathf.Lerp(dayTime, nightTime, timePassed / transitionTime);
+            currentColor = Color.Lerp(dayColor, nightColor, timePassed / transitionTime);
         }
         else if (!wasDayTime && (timePassed < transitionTime))
         {
