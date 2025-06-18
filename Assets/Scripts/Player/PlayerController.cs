@@ -46,7 +46,7 @@ namespace Player
         Login login;
 
         public IEnumerator Login()
-        {
+        { 
 
             login = new Login();
             login.LoginProcess();
@@ -132,6 +132,7 @@ namespace Player
                 return;
                     
             //await Database.Database.POST<PlayerData>(PlayerData, PlayerData.ID);
+            // Database.Database.LocalUser.POST<PlayerData>(PlayerData);
             Database.Database.LocalUser.POST<PlayerData>(PlayerData);
 
         }
