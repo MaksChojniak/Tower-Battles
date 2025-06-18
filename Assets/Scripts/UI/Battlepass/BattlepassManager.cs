@@ -773,9 +773,12 @@ namespace UI.Battlepass
             }
             
         }
-        
-        
 
+
+        public static void SaveData()
+        {
+            Database.LocalUser.POST<BattlepassProgress>(playerProgress);
+        }
 
     }
 }

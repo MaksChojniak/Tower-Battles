@@ -1049,7 +1049,10 @@ namespace UI.Shop
         }
 
 
-        
+        public static void SaveData()
+        {
+            Database.LocalUser.POST<DailyRewards>(dailyRewards);
+        }
     }
     
     
