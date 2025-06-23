@@ -93,6 +93,7 @@ using PathCreation;
 
         void OnDie()
         {
+            DailyQuests.KillEnemiesQuest.AddKill?.Invoke();
             MovementComponent.enabled = false;
             // Destroy(this.gameObject);
             
