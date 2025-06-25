@@ -9,7 +9,8 @@ namespace Ads
 {
     public  interface IRewardedAd
     {
-        public void Load(Action<RewardedInterstitialAd, LoadAdError> callback);
+        public void Load(Action<GoogleMobileAds.Api.RewardedAd, LoadAdError> callback);
+        // public void Load(Action<RewardedInterstitialAd, LoadAdError> callback);
         public void Show();
 
     }

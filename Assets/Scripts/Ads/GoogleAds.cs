@@ -109,7 +109,8 @@ namespace Ads
         }
 
 
-        void OnLoadAd(RewardedInterstitialAd ad, LoadAdError error)
+        // void OnLoadAd(RewardedInterstitialAd ad, LoadAdError error)
+        void OnLoadAd(GoogleMobileAds.Api.RewardedAd ad, LoadAdError error)
         {
             if (error != null || ad == null)
             {
@@ -145,9 +146,29 @@ namespace Ads
 
             rewardedAd.interstitialAd.OnAdFullScreenContentClosed += () =>
             {
+                Debug.Log("OnAdFullScreenContentClosed");
                 Close();
                 //UnloadOrDestroyOldAd();
             };
+
+
+            // Raised when an impression is recorded for an ad.
+            rewardedAd.interstitialAd.OnAdImpressionRecorded += () =>
+            {
+                Debug.Log("Rewarded ad recorded an impression.");
+            };
+            // Raised when a click is recorded for an ad.
+            rewardedAd.interstitialAd.OnAdClicked += () =>
+            {
+                Debug.Log("Rewarded ad was clicked.");
+            };
+            // Raised when an ad opened full screen content.
+            rewardedAd.interstitialAd.OnAdFullScreenContentOpened += () =>
+            {
+                Debug.Log("Rewarded ad full screen content opened.");
+            };
+
+
 
         }
 

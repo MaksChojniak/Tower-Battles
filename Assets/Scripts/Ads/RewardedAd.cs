@@ -20,7 +20,8 @@ namespace Ads
         readonly Reward reward;
 
         public readonly string UnitID;
-        public RewardedInterstitialAd interstitialAd { get; private set; }
+        public GoogleMobileAds.Api.RewardedAd  interstitialAd { get; private set; }
+        // public RewardedInterstitialAd interstitialAd { get; private set; }
 
         public RewardedAd(RewardType type, long amount, GiveRewardDelegate? giveReward)
         {
@@ -48,10 +49,25 @@ namespace Ads
 
 
 
-        public void Load(Action<RewardedInterstitialAd, LoadAdError> callback)
+        // public void Load(Action<RewardedInterstitialAd, LoadAdError> callback)
+        // {
+        //     var adRequest = new AdRequest();
+        //     Debug.Log(this.UnitID);
+        //     RewardedInterstitialAd.Load(this.UnitID, adRequest,
+        //         (ad, error) =>
+        //         {
+        //             this.interstitialAd = ad;
+        //             callback?.Invoke(ad, error);
+        //         }
+        //     );
+
+        // }
+        public void Load(Action<GoogleMobileAds.Api.RewardedAd, LoadAdError> callback)
         {
             var adRequest = new AdRequest();
-            RewardedInterstitialAd.Load(this.UnitID, adRequest,
+
+            Debug.Log(this.UnitID);
+            GoogleMobileAds.Api.RewardedAd.Load(this.UnitID, adRequest,
                 (ad, error) =>
                 {
                     this.interstitialAd = ad;
@@ -66,7 +82,7 @@ namespace Ads
             if (this.interstitialAd == null || !this.interstitialAd.CanShowAd())
                 throw new Exception("Ad Can't be showed");
 
-            this.interstitialAd.Show( (reward) =>
+            this.interstitialAd.Show((reward) =>
                 {
 
                     Debug.Log($"Give Reward [{this.reward.Type} {this.reward.Amount}]");
@@ -81,8 +97,8 @@ namespace Ads
                             break;
                     }
 
-                    this.giveReward?.Invoke(this.reward); 
-                    
+                    this.giveReward?.Invoke(this.reward);
+
                 }
             );
 
@@ -95,15 +111,17 @@ namespace Ads
         const string TEST_UNIT = "ca-app-pub-3940256099942544/5354046379";
 
         const string REWARDABLE_FULLSCREEN = "ca-app-pub-6306325732760549/8243137278";
+        const string REWARDABLE_FULLSCREEN_NONE = "ca-app-pub-6306325732760549/9560036764";
+        const string REWARDABLE_NONE = "ca-app-pub-6306325732760549/5995798176";
 
         private string GetAdUnitID()
         {
-            return TEST_UNIT; // For Tests time (closed and internal testing)
+            // return TEST_UNIT; // For Tests time (closed and internal testing)
 
-#if UNITY_EDITOR
-            return TEST_UNIT;
-#endif
-            return REWARDABLE_FULLSCREEN;
+            // #if UNITY_EDITOR
+            //             return TEST_UNIT;
+            // #endif
+            return REWARDABLE_NONE;
         }
 
         #endregion
