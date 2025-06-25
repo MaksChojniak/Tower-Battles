@@ -44,7 +44,7 @@ namespace Player.Database
 
     public static class Database
     {
-        public static FirebaseUser LocalUser;
+        public static IUser LocalUser;
 
         const long maxAllowedSize = 100 * 1024 * 1024;
 
@@ -76,9 +76,51 @@ namespace Player.Database
         }
 
 
+        // public static void GET<T>(this IUser user, Action<GET_Callback<T>> callbak)
+        // {
+        //     ((dynamic)user).POST<T>(callbak);
+        // }
+        public static void GET<T>(this IUser user, Action<GET_Callback<T>> callbak)
+        {
+            switch (user)
+            {
+                case LocalUser localUser:
+                    GET<T>(localUser, callbak);
+                    break;
+                case PlayGamesUser playGamesUser:
+                    GET<T>(playGamesUser, callbak);
+                    break;
+                default:
+                    Debug.LogError("Unsupported user type for GET operation.");
+                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    break;
+            }
+        }
+        public static void GET<T>(this LocalUser user, Action<GET_Callback<T>> callbak)
+        {
+            DatabaseReference databaseReference;
+            if (!TryGetReferenceByType<T>(out databaseReference))
+            {
+                Debug.LogError($"Error GET: wrong send type [type: {typeof(T).Name}]");
+                callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                return;
+            }
 
+            string key = $"{databaseReference.DataReference}";
 
-        public static void GET<T>(this FirebaseUser user, Action<GET_Callback<T>> callbak)
+            if (!PlayerPrefs.HasKey(key))
+            {
+                Debug.LogError($"Error GET: key doesn't exist in PlayerPrefs [key: {key}]");
+                callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                return;
+            }
+
+            string json = PlayerPrefs.GetString(key);
+            PlayerPrefs.Save();
+            callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Success, Data = JsonConvert.DeserializeObject<T>(json) });
+            Debug.Log($"GET successfully");
+        }
+        public static void GET<T>(this PlayGamesUser user, Action<GET_Callback<T>> callbak)
         {
             if (user == null || string.IsNullOrEmpty(user.UserId))
             {
@@ -226,8 +268,38 @@ namespace Player.Database
 
 
 
+        public static void POST<T>(this IUser user, T data)
+        {
+            switch (user)
+            {
+                case LocalUser localUser:
+                    POST(localUser, data);
+                    break;
+                case PlayGamesUser playGamesUser:
+                    POST(playGamesUser, data);
+                    break;
+                default:
+                    Debug.LogError("Unsupported user type for POST operation.");
+                    break;
+            }
+        }
+        public static void POST<T>(this LocalUser user, T data)
+        {
+            DatabaseReference databaseReference;
+            if (!TryGetReferenceByType<T>(out databaseReference))
+            {
+                Debug.LogError($"Error POST: wrong send type [type: {typeof(T).Name}]");
+                return;
+            }
 
-        public static void POST<T>(this FirebaseUser user, T data)
+            string key = $"{databaseReference.DataReference}";
+
+            string json = JsonConvert.SerializeObject(data);
+            PlayerPrefs.SetString(key, json);
+            PlayerPrefs.Save();
+            Debug.Log($"POST successfully");
+        }
+        public static void POST<T>(this PlayGamesUser user, T data)
         {
             if (user == null || string.IsNullOrEmpty(user.UserId))
                 return;
@@ -348,7 +420,44 @@ namespace Player.Database
 
 
 
-        public static void DELETE<T>(this FirebaseUser user)
+
+        public static void DELETE<T>(this IUser user)
+        { 
+            switch (user)
+            {
+                case LocalUser localUser:
+                    DELETE<T>(localUser);
+                    break;
+                case PlayGamesUser playGamesUser:
+                    DELETE<T>(playGamesUser);
+                    break;
+                default:
+                    Debug.LogError("Unsupported user type for DELETE operation.");
+                    break;
+            }
+        }
+        public static void DELETE<T>(this LocalUser user)
+        {
+            DatabaseReference databaseReference;
+            if (!TryGetReferenceByType<T>(out databaseReference))
+            {
+                Debug.LogError($"Error DELETE: wrong send type [type: {typeof(T).Name}]");
+                return;
+            }
+
+            string key = $"{databaseReference.DataReference}";
+
+            if (!PlayerPrefs.HasKey(key))
+            {
+                Debug.LogError($"Error DELETE: key doesn't exist in PlayerPrefs [key: {key}]");
+                return;
+            }
+
+            PlayerPrefs.DeleteKey(key);
+            PlayerPrefs.Save();
+            Debug.Log($"DELETE successfully");
+        }
+        public static void DELETE<T>(this PlayGamesUser user)
         {
             if (user == null || string.IsNullOrEmpty(user.UserId))
                 return;
