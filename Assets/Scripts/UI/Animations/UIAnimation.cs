@@ -47,10 +47,14 @@ namespace UI.Animations
 
             _animator.Play(animationName + directionText);
         }
+        public void StopAnimation()
+        {
+            _animator.Play(animationName, 0, 0f);
+        }
 
         public async Task WaitAsync()
         {
-            while(IsPlaying)
+            while (IsPlaying)
                 await Task.Yield();
         }
         public IEnumerator Wait()

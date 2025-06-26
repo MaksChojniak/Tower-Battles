@@ -29,9 +29,14 @@ public class FloatingBannerManager : MonoBehaviour
 
     void Start()
     {
+        if(banners.Length != pageCounter.transform.childCount)
+        {
+            Debug.LogError("Number of banners does not match the number of page buttons in FloatingBannerManager.");
+            return;
+        }
         if (banners.Length > 0)
         {
-            currentPage = 0;
+            currentPage = -1;
 
             float l = pageCounter.GetComponent<HorizontalLayoutGroup>().padding.left;
             float r = pageCounter.GetComponent<HorizontalLayoutGroup>().padding.right;
@@ -42,18 +47,10 @@ public class FloatingBannerManager : MonoBehaviour
 
             // Instantiate page buttons
             pageCounters = new GameObject[banners.Length];
-            pageCounters[0] = pageCounter.transform.GetChild(0).gameObject;
-            pageCounters[0].gameObject.GetComponent<CanvasGroup>().alpha = 0.2f;
-            for (int i = 1; i < banners.Length; i++)
-                pageCounters[i] = Instantiate(pageCounters[0], pageCounter.transform);
-
-
-            // Add listeners for all page buttons
             for (int i = 0; i < banners.Length; i++)
             {
-                int pageIndex = i; // Capture the correct index
-                pageCounters[i].GetComponent<Button>().onClick.RemoveAllListeners();
-                pageCounters[i].gameObject.GetComponent<Button>().onClick.AddListener(() => OnPageButtonClick(pageIndex));
+                pageCounters[i] = pageCounter.transform.GetChild(i).gameObject;
+                pageCounters[i].gameObject.GetComponent<CanvasGroup>().alpha = 0.2f;
             }
 
             // Deactivate all banners first
@@ -66,6 +63,7 @@ public class FloatingBannerManager : MonoBehaviour
         else
         {
             Debug.LogWarning("No page buttons assigned in FloatingBannerManager.");
+            return;
         }
     }
     // Update is called once per frame
@@ -102,26 +100,34 @@ public class FloatingBannerManager : MonoBehaviour
         if (pageIndex < 0 || pageIndex >= banners.Length)
         {
             Debug.LogWarning("Invalid page index: " + pageIndex);
-            currentPage = 0;
+            currentPage = -1;
             yield break;
         }
 
+        if (pageIndex == currentPage)
+        {
+            // Handle double-click on the same page
+            if (bannerAnimations[currentPage] != null && bannerAnimations[currentPage].fadeInAnimation != null)
+            {
+                Debug.Log("Double-click detected on page: " + pageIndex);
+                yield break;
+            }
+        }
 
-        pageCounters[currentPage].gameObject.GetComponent<CanvasGroup>().alpha = 0.2f;
+        
+        if (currentPage != -1)
+        {
+            pageCounters[currentPage].gameObject.GetComponent<CanvasGroup>().alpha = 0.2f;
+            bannerAnimations[currentPage].fadeOutAnimation.PlayAnimation();
+            // yield return bannerAnimations[currentPage].fadeOutAnimation.Wait();
+            banners[currentPage].SetActive(false);
+        }
+
         pageCounters[pageIndex].gameObject.GetComponent<CanvasGroup>().alpha = 1f;
-
-        Debug.Log(bannerAnimations[currentPage]);
-        Debug.Log(bannerAnimations[currentPage].fadeOutAnimation);
-        Debug.Log(bannerAnimations[currentPage].fadeOutAnimation.animationName);
-
-        bannerAnimations[currentPage].fadeOutAnimation.PlayAnimation();
-        // yield return bannerAnimations[currentPage].fadeOutAnimation.Wait();
-        banners[currentPage].SetActive(false);
-
-
         banners[pageIndex].SetActive(true);
         bannerAnimations[pageIndex].fadeInAnimation.PlayAnimation();
         // yield return bannerAnimations[pageIndex].fadeInAnimation.Wait();
+
 
         currentPage = pageIndex;
     }
