@@ -461,13 +461,13 @@ public class DailyQuests : MonoBehaviour
         foreach (var quest in displayedQuests)
             quest.Init();
 
-        // Calculate next 12:00 PM (noon)
-        DateTime now = DateTime.Now;
-        DateTime nextReset = new DateTime(now.Year, now.Month, now.Day, 12, 0, 0);
-        if (now >= nextReset)
+        // Calculate next 12:00 PM (noon) UTC using server time
+        DateTime nowUtc = ServerDate.SimulatedDateOnServerUTC();
+        DateTime nextReset = new DateTime(nowUtc.Year, nowUtc.Month, nowUtc.Day, 12, 0, 0, DateTimeKind.Utc);
+        if (nowUtc >= nextReset)
             nextReset = nextReset.AddDays(1); // If it's past noon, set to next day's noon
 
-        PlayerPrefs.SetString("NextDailyQuestReset", nextReset.ToString("yyyy-MM-dd HH:mm"));
+        PlayerPrefs.SetString("NextDailyQuestReset", nextReset.ToString("yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture));
         PlayerPrefs.Save();
 
         // Update the UI
