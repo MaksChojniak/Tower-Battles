@@ -228,7 +228,7 @@ namespace Towers
 
             Vector3[] points = { pointA, pointB, pointC, pointD };
 
-            GameObject ground = null;
+            // GameObject ground = null;
             
             for(int i = 0; i < points.Length; i++)
             {
@@ -240,17 +240,17 @@ namespace Towers
                 
                 colliders = colliders.ToList().GetRange(0, collidersCount).ToArray();
 
-                // if ( !colliders.Any(_collider => _collider.TryGetComponent<Ground>( out var _ground) ) )
-                //     return false;
+                if ( !colliders.Any(_collider => _collider.TryGetComponent<Ground>( out var _ground) ) )
+                    return false;
                 
-                Collider groundCollider = colliders.FirstOrDefault(_collider => _collider.TryGetComponent<Ground>(out var _ground));
-                if (groundCollider == null)
-                    return false;
+                // Collider groundCollider = colliders.FirstOrDefault(_collider => _collider.TryGetComponent<Ground>(out var _ground));
+                // if (groundCollider == null)
+                //     return false;
 
-                if (ground == null)
-                    ground = groundCollider.gameObject;
-                else if (groundCollider.gameObject != ground)
-                    return false;
+                // if (ground == null)
+                //     ground = groundCollider.gameObject;
+                // else if (groundCollider.gameObject != ground)
+                //     return false;
                 
             }
 
