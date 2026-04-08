@@ -308,11 +308,13 @@ namespace Towers
                 case VisibilityMode.Active:
                     ViewRangeObject.SetActive(true);
                     ViewRangeImage.color = ViewRangeActive;
+                    LineRenderer.materials[0].SetColor("_Color", Color.white);
                     OnDrawRing();
                     break;
                 case VisibilityMode.Inactive:
                     ViewRangeObject.SetActive(true);
                     ViewRangeImage.color = ViewRangeInactive;
+                    LineRenderer.materials[0].SetColor("_Color", ViewRangeInactive);
                     OnDrawRing();
                     break;
                 case VisibilityMode.Hidden:
