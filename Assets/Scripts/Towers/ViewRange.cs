@@ -90,6 +90,8 @@ namespace Towers
         {
             TowerController = this.GetComponent<TowerController>();
 
+            grid = GridWrapper.Instance;
+
             RegisterHandlers();
 
         }
