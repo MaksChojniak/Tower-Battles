@@ -16,7 +16,7 @@ namespace Towers
     {
         [Header("Properties UI")]
         [SerializeField] GameObject SpawnRangeObject;
-        [SerializeField] MeshRenderer SpawnRangeRenderer => SpawnRangeObject.GetComponent<MeshRenderer>();
+        MeshRenderer SpawnRangeRenderer => SpawnRangeObject.GetComponent<MeshRenderer>();
 
         [Header("Properties")]
         [SerializeField] Material RedMaterial;

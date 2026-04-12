@@ -31,8 +31,8 @@ using UnityEngine.UI;
         [Space(18)]
         [Header("Properties UI")]
         [SerializeField] RectTransform HealthBarObject;
-        [SerializeField] RectTransform HealthBar => HealthBarObject.transform.GetChild(0).GetComponent<RectTransform>();
-        [SerializeField] Image HealthBarImage => HealthBar.GetComponent<Image>();
+        RectTransform HealthBar => HealthBarObject.transform.GetChild(0).GetComponent<RectTransform>();
+        Image HealthBarImage => HealthBar.GetComponent<Image>();
         
         [Header("Stats")]
         [SerializeField] int HealthValue;

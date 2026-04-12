@@ -48,8 +48,8 @@ namespace Towers
 
         [Header("UI Properties")]
         [SerializeField] GameObject ViewRangeObject;
-        [SerializeField] RectTransform ViewRangeRectTransform => ViewRangeObject.GetComponent<RectTransform>();
-        [SerializeField] Image ViewRangeImage => ViewRangeObject.transform.GetChild(0).GetComponent<Image>();
+        RectTransform ViewRangeRectTransform => ViewRangeObject.GetComponent<RectTransform>();
+        Image ViewRangeImage => ViewRangeObject.transform.GetChild(0).GetComponent<Image>();
         [SerializeField] LineRenderer LineRenderer;
 
         [Space(12)]

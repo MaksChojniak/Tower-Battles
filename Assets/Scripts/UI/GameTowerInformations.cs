@@ -43,7 +43,7 @@ namespace MMK
         public TowerInformationsUI TowerInformationsUI;
 
         
-        [SerializeField] TowerInformations CurrentClickedTower
+        TowerInformations CurrentClickedTower
         {
             get
             {
@@ -64,7 +64,7 @@ namespace MMK
             }
         }
         TowerInformations currentClickedTower;
-        [SerializeField] bool IsSomeTowerClicked => CurrentClickedTower != null;
+        bool IsSomeTowerClicked => CurrentClickedTower != null;
 
 
         [Space(18)]

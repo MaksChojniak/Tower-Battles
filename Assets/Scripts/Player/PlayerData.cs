@@ -10,10 +10,7 @@ using MMK.ScriptableObjects;
 using Newtonsoft.Json;
 using UI;
 using UI.Battlepass;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace Player
 {
