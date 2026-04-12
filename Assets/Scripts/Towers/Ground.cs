@@ -209,7 +209,7 @@ namespace MMK
         {
             highlighted = state;
 
-            float scaleValue = highlighted ? 1.04f : 0f;
+            float scaleValue = 0; //highlighted ? 1.04f : 0f;
             float emissionPowerValue = highlighted ? 0.4f : 0f;
 
             if (this.TryGetComponent<MeshRenderer>(out var renderer))

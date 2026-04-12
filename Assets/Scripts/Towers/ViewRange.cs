@@ -51,6 +51,7 @@ namespace Towers
         RectTransform ViewRangeRectTransform => ViewRangeObject.GetComponent<RectTransform>();
         Image ViewRangeImage => ViewRangeObject.transform.GetChild(0).GetComponent<Image>();
         [SerializeField] LineRenderer LineRenderer;
+        [SerializeField] Grid grid;
 
         [Space(12)]
         [Header("Properties")]
@@ -74,7 +75,7 @@ namespace Towers
         [SerializeField] VisibilityMode _visibilityMode;
 
 
-        const float VIEW_RANGE_OFFSET = 0.8f;
+        const float VIEW_RANGE_OFFSET = 0.2f;
         const float RADIUS_OFFSET = 0.125f;
 
         Material ringMaterial;
@@ -89,6 +90,8 @@ namespace Towers
         {
             TowerController = this.GetComponent<TowerController>();
 
+            grid = GridWrapper.Instance;
+
             RegisterHandlers();
 
         }
@@ -101,7 +104,7 @@ namespace Towers
 
         void Start()
         {
-
+            grid = GridWrapper.Instance;
         }
 
         void Update()
@@ -308,11 +311,13 @@ namespace Towers
                 case VisibilityMode.Active:
                     ViewRangeObject.SetActive(true);
                     ViewRangeImage.color = ViewRangeActive;
+                    LineRenderer.materials[0].SetColor("_Color", Color.white);
                     OnDrawRing();
                     break;
                 case VisibilityMode.Inactive:
                     ViewRangeObject.SetActive(true);
                     ViewRangeImage.color = ViewRangeInactive;
+                    LineRenderer.materials[0].SetColor("_Color", ViewRangeInactive);
                     OnDrawRing();
                     break;
                 case VisibilityMode.Hidden:
@@ -334,7 +339,9 @@ namespace Towers
         {
             ViewRangeRectTransform.sizeDelta = new Vector2(ViewRangeValue * 2, ViewRangeValue * 2);
 
-            float PosY = Ground.GroundPosY + 1 - VIEW_RANGE_OFFSET;
+            float PosY = grid.transform.position.y + VIEW_RANGE_OFFSET;
+            
+
             Vector3 rectPosition = ViewRangeRectTransform.position;
             rectPosition.y = PosY;
             ViewRangeRectTransform.position = rectPosition;

@@ -50,8 +50,8 @@ public class TowerSpawner : MonoBehaviour
     TowerController[] towers;
     // ViewRange[] viewRanges;
     // SpawnRange[] spawnRanges;
-    
-    
+
+    [SerializeField] private Grid grid;
 
     void Awake()
     {
@@ -147,7 +147,8 @@ public class TowerSpawner : MonoBehaviour
 
         if (DetectGround(index, SelectedBuilidng, out PosibilityOfPlace, out var Position))
         {
-            SelectedBuilidng.transform.position = Position;
+            Vector3Int gridPosition = grid.WorldToCell(Position);
+            SelectedBuilidng.transform.position = grid.CellToWorld(gridPosition); //+ new Vector3(0, 1f, 0);
 
             // selectedBuilidng.GetComponent<TowerController>().SpawnRangeComponent.SetState(posibilityOfPlace);
             // selectedBuilidng.GetComponent<TowerController>().ViewRangeComponent.SetState(posibilityOfPlace);
