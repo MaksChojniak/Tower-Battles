@@ -110,13 +110,14 @@ public class DailyQuests : MonoBehaviour
             DateTime nextReset;
             if (DateTime.TryParse(nextResetStr, out nextReset))
             {
-                if (DateTime.Now >= nextReset)
+                if (DateTime.UtcNow >= nextReset)
                 {
+                    Debug.Log($"ResetAndRandomizeDailyQuests - Next Reset Time: {nextReset} (UTC: {DateTime.UtcNow})");
                     ResetAndRandomizeDailyQuests();
                 }
                 else if (resetTimeText != null)
                 {
-                    TimeSpan timeLeft = nextReset - DateTime.Now;
+                    TimeSpan timeLeft = nextReset - DateTime.UtcNow;
                     resetTimeText.text = $"New quests in: {timeLeft.Hours:D2}h {timeLeft.Minutes:D2}min";
                 }
             }
@@ -231,7 +232,7 @@ public class DailyQuests : MonoBehaviour
 
             ResetProgress();
         }
-        
+
 
     };
 
@@ -474,7 +475,7 @@ public class DailyQuests : MonoBehaviour
         UpdateQuestUI(displayedQuests);
     }
 
-    public  static Color QuestRarityColor(QuestTier tier)
+    public static Color QuestRarityColor(QuestTier tier)
     {
         switch (tier)
         {
