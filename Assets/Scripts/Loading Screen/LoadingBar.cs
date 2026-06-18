@@ -57,7 +57,8 @@ namespace Loading_Screen
         {
             yield return StartLoadingAnimation();
 
-            yield return TrackProgress(Prerequisites(), "Dependencies..", 0f, 10f);
+            yield return TrackProgress(InAppUpdateHandler.CheckForUpdate(), "Version Check..", 0f, 5f);
+            yield return TrackProgress(Prerequisites(), "Dependencies..", 5f, 10f);
             yield return TrackProgress(LoginProcess(), "User..", 10f, 25f);
             yield return TrackProgress(LoadShopOfferts(), "Special Offers..", 25f, 40f);
             yield return TrackProgress(LoadBattlepassRewards(), "Battlepass..", 40f, 55f);
