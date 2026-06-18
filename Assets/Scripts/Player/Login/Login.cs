@@ -40,19 +40,20 @@ namespace Player
 
         public Login()
         {
-            if (!PlayerPrefs.HasKey("is_linked_account"))
-                PlayerPrefs.SetInt("is_linked_account", 0);
+            // if (!PlayerPrefs.HasKey("is_linked_account"))
+            //     PlayerPrefs.SetInt("is_linked_account", 0);
 
-            bool isLinkedAccount = PlayerPrefs.GetInt("is_linked_account") == 1;
+            // bool isLinkedAccount = PlayerPrefs.GetInt("is_linked_account") == 1;
 
-            if (isLinkedAccount)
+            try
             {
                 PlayGamesPlatform.Activate();
                 Debug.Log("[Game Play Auth] Activate");
                 loginProvider = new PlayGamesLogin();
             }
-            else
+            catch
             {
+                Debug.Log("[Game Play Auth] Not Activate");
                 loginProvider = new AnonymousLogin();
             }
 

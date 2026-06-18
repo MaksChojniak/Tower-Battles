@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
-using Firebase.Auth;
 using UnityEngine;
 
 namespace Player
@@ -12,6 +11,9 @@ namespace Player
     {
         public LoginCallback callback { get; private set; }
 
+        event Action OnAuthenticateSuccess;
+        event Action OnAuthenticateFailure;
+
         public PlayGamesLogin()
         {
             callback = new LoginCallback()
@@ -20,22 +22,31 @@ namespace Player
                 Data = new PlayerData(),
                 Date = DateTime.Now
             };
+
+            OnAuthenticateSuccess += AuthenticationSuccess;
+            OnAuthenticateFailure += AuthenticationError;
+        }
+
+        ~PlayGamesLogin()
+        {
+            OnAuthenticateFailure -= AuthenticationError;
+            OnAuthenticateSuccess -= AuthenticationSuccess;
         }
 
 
         public void Login()
         {
-            //Social.localUser.Authenticate((status) =>
             PlayGamesPlatform.Instance.Authenticate((status) =>
             {
                 if (status == SignInStatus.Success)
                 {
-                    Debug.Log("[Game Play Auth] Athenticate Success");
-                    PlayGamesPlatform.Instance.RequestServerSideAccess(true, AuthWithFirebase);
+                    Debug.Log($"[Game Play Auth] Athenticate Success");
+                    OnAuthenticateSuccess?.Invoke();
                 }
                 else
                 {
-                    Debug.LogError($"[Game Play Auth] Athenticate Error");
+                    Debug.LogError($"[Game Play Auth] Athenticate Error {status}");
+                    OnAuthenticateFailure?.Invoke();
                     LoginManuallyProcess();
                 }
             });
@@ -43,71 +54,53 @@ namespace Player
         }
 
 
-        void AuthWithFirebase(string code)
+        void LoginManuallyProcess()
         {
-            Debug.Log("[Game Play Auth] Get creadential code");
-            FirebaseAuth auth = FirebaseAuth.DefaultInstance;
+            PlayGamesPlatform.Instance.ManuallyAuthenticate((status) =>
+            {
+                if (status == SignInStatus.Success)
+                {
+                    Debug.Log("[Game Play Auth] Manualy Athenticate Success");
+                    OnAuthenticateSuccess?.Invoke();
+                }
+                else
+                {
+                    Debug.LogError($"[Game Play Auth] Manually Athenticate Error {status}");
+                    OnAuthenticateFailure?.Invoke();
+                    LoginManuallyProcess();
+                }
+            });
 
-            Credential credential = PlayGamesAuthProvider.GetCredential(code);
-
-            LogInGooglePlay(auth, credential);
         }
 
 
-        void LogInGooglePlay(FirebaseAuth auth, Credential credential) =>
-            auth.SignInAndRetrieveDataWithCredentialAsync(credential).ContinueWith(OnSignIn);
-    
-
-        void OnSignIn(Task<AuthResult> task)
+        void AuthenticationSuccess()
         {
-            if (task.IsCanceled)
-            {
-                Debug.LogError("[Game Play Auth] SignInAndRetrieveDataWithCredentialAsync was canceled.");
-                return;
-            }
-            if (task.IsFaulted)
-            {
-                Debug.LogError($"[Game Play Auth] SignInAndRetrieveDataWithCredentialAsync encountered an error: {task.Exception}");
-                return;
-            }
+            string userdId = PlayGamesPlatform.Instance.GetUserId();
+            string username = PlayGamesPlatform.Instance.GetUserDisplayName();
 
-            AuthResult result = task.Result;
-            Debug.Log($"[Game Play Auth] Athenticate Success [id: {result.User.UserId}]");
-
-            Database.Database.LocalUser = new PlayGamesUser(result.User);
+            Debug.Log($"[Game Play Auth] User Info - UserId: {userdId}, UserName: {username}");
+            
+            Database.Database.LocalUser = new PlayGamesUser(userdId, DateTime.Now);
 
             callback = new LoginCallback()
             {
                 Status = LoginStatus.Success,
                 Data = new PlayerData()
                 {
-                    ID = result.User.UserId,
-                    Nickname = result.User.DisplayName
+                    ID = userdId,
+                    Nickname = username
                 },
                 Date = DateTime.Now
             };
+
         }
 
-
-        void LoginManuallyProcess()
+        void AuthenticationError() => callback = new LoginCallback()
         {
-            //PlayGamesPlatform.Instance.SignOut();
-
-            PlayGamesPlatform.Instance.ManuallyAuthenticate((status) =>
-            {
-                if (status == SignInStatus.Success)
-                {
-                    Debug.Log("[Game Play Auth] Manualy Athenticate Success");
-                    PlayGamesPlatform.Instance.RequestServerSideAccess(true, AuthWithFirebase);
-                }
-                else
-                {
-                    Debug.LogError($"[Game Play Auth] Manually Athenticate Error");
-                    LoginManuallyProcess();
-                }
-            });
-
-        }
+            Status = LoginStatus.Error,
+            Date = DateTime.Now
+        };
 
 
     }

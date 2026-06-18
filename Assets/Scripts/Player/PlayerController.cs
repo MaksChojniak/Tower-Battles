@@ -33,7 +33,6 @@ namespace Player
         public PlayerData PlayerData = new PlayerData();
         bool isLoggedIn => !string.IsNullOrEmpty(PlayerData.ID);
 
-
         //private void OnGUI()
         //{
         //    Rect rect = new Rect(1000, 250, 2000, 1000);
@@ -56,7 +55,7 @@ namespace Player
 
 
             PlayerData = login.callback.Data;
-            Debug.Log($"Player LoggedIn Successfully at {login.callback.Date.ToString()}");
+            Debug.Log($"Player LoggedIn Successfully at {login.callback.Date}");
 
             this.gameObject.name = $"Player [ID:{PlayerData.ID}]";
 
@@ -99,13 +98,11 @@ namespace Player
 
         void OnApplicationFocus(bool hasFocus)
         {
+            Debug.Log($"Application lost focus at {DateTime.Now}");
             if(!hasFocus)
                 Save?.Invoke();
                 
         }
-
-       
-
 
 
 
@@ -150,8 +147,8 @@ namespace Player
                 if (callback.Status == DatabaseStatus.Success)
                     playerData = new PlayerData(callback.Data);
 
-
                 playerData.ID = PlayerData.ID;
+                playerData.Nickname = PlayerData.Nickname;
                 PlayerData = playerData;
 
                 PlayerData.RegisterEvents();

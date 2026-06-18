@@ -5,17 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Firebase;
-using Firebase.Extensions;
-using Firebase.Storage;
 using UI.Battlepass;
 using UI.Shop;
 using UI.Shop.Daily_Rewards;
 using UnityEngine;
 using System.Collections;
-using Firebase.Auth;
 using UnityEngine.Networking;
 using System.IO;
+using Firebase.Storage;
+using Firebase.Extensions;
+using GooglePlayGames;
+using GooglePlayGames.BasicApi.SavedGame;
+using GooglePlayGames.BasicApi;
 
 namespace Player.Database
 {
@@ -64,9 +65,6 @@ namespace Player.Database
         }
 
 
-
-
-
         static StorageReference RootStorageReference { get => FirebaseStorage.DefaultInstance.RootReference; }
         static StorageReference GetReference(this StorageReference reference, string name) => reference.Child(name);
         static bool TryGetReference(this StorageReference reference, string name, out StorageReference result)
@@ -76,10 +74,27 @@ namespace Player.Database
         }
 
 
-        // public static void GET<T>(this IUser user, Action<GET_Callback<T>> callbak)
-        // {
-        //     ((dynamic)user).POST<T>(callbak);
-        // }
+        static void OpenSavedGame(string filename, Action<ISavedGameMetadata> OnSuccess, Action<SavedGameRequestStatus> OnFailure = null)
+        {
+            ISavedGameClient savedGameClient = PlayGamesPlatform.Instance.SavedGame;
+            savedGameClient.OpenWithAutomaticConflictResolution(filename, DataSource.ReadCacheOrNetwork, 
+                ConflictResolutionStrategy.UseLongestPlaytime, OnSavedGameOpened);
+
+            void OnSavedGameOpened(SavedGameRequestStatus status, ISavedGameMetadata metadata)
+            {
+                if (status == SavedGameRequestStatus.Success)
+                {
+                    OnSuccess?.Invoke(metadata);
+                }
+                else
+                {
+                    OnFailure?.Invoke(status);
+                }
+            }
+        }
+
+
+
         public static void GET<T>(this IUser user, Action<GET_Callback<T>> callbak)
         {
             switch (user)
@@ -117,8 +132,10 @@ namespace Player.Database
 
             string json = PlayerPrefs.GetString(key);
             PlayerPrefs.Save();
-            callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Success, Data = JsonConvert.DeserializeObject<T>(json) });
+
             Debug.Log($"GET successfully");
+            Debug.Log($"[DATABASE GET<{typeof(T).Name}>] content: {json}");
+            callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Success, Data = JsonConvert.DeserializeObject<T>(json) });
         }
         public static void GET<T>(this PlayGamesUser user, Action<GET_Callback<T>> callbak)
         {
@@ -135,41 +152,48 @@ namespace Player.Database
                 return;
             }
 
-            StorageReference reference;
-            if (!RootStorageReference.TryGetReference(user.UserId, out reference))
+            OpenSavedGame(databaseReference.DataReference, OnSavedGameSuccess, OnSavedGameFailure);
+
+            void OnSavedGameFailure(SavedGameRequestStatus status)
             {
+                Debug.LogError($"Error GET: Open Saved Game Failure with status {status}");
                 callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
-                return;
             }
 
-            if (!reference.TryGetReference(databaseReference.DataReference, out reference))
+            void OnSavedGameSuccess(ISavedGameMetadata metadata)
             {
-                callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
-                return;
-            }
+                PlayGamesPlatform.Instance.SavedGame.ReadBinaryData(metadata, OnReadBinaryData);
 
-            reference.GetBytesAsync(maxAllowedSize).ContinueWithOnMainThread(OnGetBytes);
+                void OnReadBinaryData (SavedGameRequestStatus status, byte[] data)
+                {
+                    if (status == SavedGameRequestStatus.Success) 
+                    {
+                        string fileContent = Encoding.UTF8.GetString(data);
 
-            void OnGetBytes(Task<byte[]> task)
-            {
-                if (task.IsFaulted)
-                {
-                    Debug.LogError($"Error GET: {task.Exception.ToString()}");
-                    //user.GET(callbak);
-                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
-                }
-                else if (task.IsCanceled)
-                {
-                    Debug.LogError($"Canceled GET: {task.Exception.ToString()}");
-                    //user.GET(callbak);
-                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
-                }
-                else
-                {
-                    byte[] fileContentBytes = task.Result;
-                    string fileContent = Encoding.UTF8.GetString(fileContentBytes);
-                    Debug.Log($"GET successfully");
-                    callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Success, Data = JsonConvert.DeserializeObject<T>(fileContent) });
+                        if (fileContent is null || string.IsNullOrEmpty(fileContent))
+                        {
+                            Debug.LogWarning($"GET Error: readed file content is empty");
+                            callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                            return;
+                        }
+
+                        Debug.Log($"GET successfully");
+                        Debug.Log($"[DATABASE GET<{typeof(T).Name}>] content: {fileContent}");
+                        try
+                        {
+                            Debug.Log($"[DATABASE GET<{typeof(T).Name}>] object: {JsonConvert.DeserializeObject<T>(fileContent) is null}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"Error deserializing GET data: {ex.Message}");
+                        }
+                        callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Success, Data = JsonConvert.DeserializeObject<T>(fileContent) });
+                    } 
+                    else 
+                    {
+                        Debug.LogError($"Error GET: {status}");
+                        callbak?.Invoke(new GET_Callback<T> { Status = DatabaseStatus.Error });
+                    }
                 }
 
             }
@@ -308,37 +332,58 @@ namespace Player.Database
             if (!TryGetReferenceByType<T>(out databaseReference))
                 return;
 
-            StorageReference reference;
-            if (!RootStorageReference.TryGetReference(user.UserId, out reference))
-                return;
-
-            if (!reference.TryGetReference(databaseReference.DataReference, out reference))
-                return;
-
             byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
             if (byteArray.Length > maxAllowedSize)
                 return;
 
-            reference.PutBytesAsync(byteArray).ContinueWith(OnUploadBytes);
+            
+            OpenSavedGame(databaseReference.DataReference, OnSavedGameSuccess);
 
-            void OnUploadBytes(Task<StorageMetadata> task)
+            void OnSavedGameSuccess(ISavedGameMetadata metadata)
             {
-                if (task.IsFaulted)
+                ISavedGameClient savedGameClient = PlayGamesPlatform.Instance.SavedGame;
+
+                SavedGameMetadataUpdate.Builder builder = new SavedGameMetadataUpdate.Builder();
+                builder = builder
+                    .WithUpdatedPlayedTime(user.SessionTime())
+                    .WithUpdatedDescription("Saved game at " + DateTime.Now);
+
+                SavedGameMetadataUpdate updatedMetadata = builder.Build();
+                savedGameClient.CommitUpdate(metadata, updatedMetadata, byteArray, OnWriteBinaryData);
+
+                void OnWriteBinaryData(SavedGameRequestStatus status, ISavedGameMetadata updatedMetadata)
                 {
-                    Debug.LogError($"Error POST: {task.Exception.ToString()}");
-                    //user.POST(data);
-                }
-                else if (task.IsCanceled)
-                {
-                    Debug.LogError($"Canceled POST: {task.Exception.ToString()}");
-                    //user.POST(data);
-                }
-                else
-                {
-                    StorageMetadata metadata = task.Result;
-                    Debug.Log($"POST successfully ...\tmd5 hash = {metadata.Md5Hash}");
+                    if (status == SavedGameRequestStatus.Success)
+                    {
+                        Debug.Log($"POST successfully {updatedMetadata.Filename}");
+                    }
+                    else
+                    {
+                        Debug.LogError($"Error POST: {status}");
+                    }
                 }
             }
+
+            // reference.PutBytesAsync(byteArray).ContinueWith(OnUploadBytes);
+
+            // void OnUploadBytes(Task<StorageMetadata> task)
+            // {
+            //     if (task.IsFaulted)
+            //     {
+            //         Debug.LogError($"Error POST: {task.Exception.ToString()}");
+            //         //user.POST(data);
+            //     }
+            //     else if (task.IsCanceled)
+            //     {
+            //         Debug.LogError($"Canceled POST: {task.Exception.ToString()}");
+            //         //user.POST(data);
+            //     }
+            //     else
+            //     {
+            //         StorageMetadata metadata = task.Result;
+            //         Debug.Log($"POST successfully ...\tmd5 hash = {metadata.Md5Hash}");
+            //     }
+            // }
 
         }
         public static void POST<T>(T data)
@@ -466,32 +511,34 @@ namespace Player.Database
             if (!TryGetReferenceByType<T>(out databaseReference))
                 return;
 
-            StorageReference reference;
-            if (!RootStorageReference.TryGetReference(user.UserId, out reference))
-                return;
 
-            if (!reference.TryGetReference(databaseReference.DataReference, out reference))
-                return;
+            OpenSavedGame(databaseReference.DataReference, OnSavedGameSuccess);
 
-            reference.DeleteAsync().ContinueWithOnMainThread(OnDeleteFile);
-
-            void OnDeleteFile(Task task)
+            void OnSavedGameSuccess(ISavedGameMetadata metadata)
             {
-                if (task.IsFaulted)
-                {
-                    Debug.LogError($"Error DELETE: {task.Exception.ToString()}");
-                    //user.DELETE<T>();
-                }
-                else if (task.IsCanceled)
-                {
-                    Debug.LogError($"Canceled DELETE: {task.Exception.ToString()}");
-                    //user.DELETE<T>();
-                }
-                else
-                {
-                    Debug.Log("DELETE successfully.");
-                }
+                ISavedGameClient savedGameClient = PlayGamesPlatform.Instance.SavedGame;
+                savedGameClient.Delete(metadata);
             }
+
+            // reference.DeleteAsync().ContinueWithOnMainThread(OnDeleteFile);
+
+            // void OnDeleteFile(Task task)
+            // {
+            //     if (task.IsFaulted)
+            //     {
+            //         Debug.LogError($"Error DELETE: {task.Exception.ToString()}");
+            //         //user.DELETE<T>();
+            //     }
+            //     else if (task.IsCanceled)
+            //     {
+            //         Debug.LogError($"Canceled DELETE: {task.Exception.ToString()}");
+            //         //user.DELETE<T>();
+            //     }
+            //     else
+            //     {
+            //         Debug.Log("DELETE successfully.");
+            //     }
+            // }
 
         }
         public static void DELETE<T>()

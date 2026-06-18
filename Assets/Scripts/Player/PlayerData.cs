@@ -2,15 +2,81 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Mirror;
 using MMK;
 using MMK.Extensions;
 using MMK.ScriptableObjects;
 using Newtonsoft.Json;
+using Player.Database;
 using UI;
 using UI.Battlepass;
 using UnityEngine;
+
+public static class ActionWrapper
+  {
+      // --------------------------------------------------------------------
+      // 1️⃣  Typed overloads for the built‑in Action families (unchanged)
+      // --------------------------------------------------------------------
+      public static Action Wrap(Action original, Action after)
+      {
+          return () =>
+          {
+              original?.Invoke();
+              after?.Invoke();
+          };
+      }
+
+      public static Action<T> Wrap<T>(Action<T> original, Action after)
+      {
+          return (arg) =>
+          {
+              original?.Invoke(arg);
+              after?.Invoke();
+          };
+      }
+
+      public static Action<T1, T2> Wrap<T1, T2>(Action<T1, T2> original, Action after)
+      {
+          return (a, b) =>
+          {
+              original?.Invoke(a, b);
+              after?.Invoke();
+          };
+      }
+
+      public static TDelegate Wrap<TDelegate>(TDelegate original, Action after)
+          where TDelegate : Delegate
+        {
+            if (original == null) return null;
+
+            // Grab the delegate’s Invoke method – this tells us the exact signature.
+            var invokeMethod = typeof(TDelegate).GetMethod("Invoke");
+            var paramInfos   = invokeMethod.GetParameters();
+
+            // Create a ParameterExpression for each argument of the custom delegate.
+            var parameters = paramInfos
+                .Select(p => Expression.Parameter(p.ParameterType, p.Name))
+                .ToArray();
+
+            // Call the *original* delegate with those parameters.
+            var callOriginal = Expression.Invoke(
+                Expression.Constant(original),
+                parameters);
+
+            // Call the after‑callback (no arguments).
+            var callAfter = Expression.Invoke(Expression.Constant(after));
+
+            // Build a block that runs the original then the after‑callback.
+            var body = Expression.Block(callOriginal, callAfter);
+
+            // Compile the lambda into the exact delegate type TDelegate.
+            var lambda = Expression.Lambda<TDelegate>(body, parameters);
+            return lambda.Compile();
+        }
+  }
+
 
 namespace Player
 {
@@ -65,6 +131,7 @@ namespace Player
         
         public delegate void ChangeCoinsBalanceDelegate(long value);
         public static ChangeCoinsBalanceDelegate ChangeCoinsBalance;
+        ChangeCoinsBalanceDelegate wrappedChangeCoinsBalance;
 
         public delegate ulong GetCoinsBalanceDelegate();
         public static GetCoinsBalanceDelegate GetCoinsBalance;
@@ -75,6 +142,7 @@ namespace Player
 
         public delegate void AddPayementDataDelegate(string transactionID, string itemID);
         public static AddPayementDataDelegate AddPayementData;
+        AddPayementDataDelegate wrappedAddPayementData;
 
         #endregion
 
@@ -85,6 +153,7 @@ namespace Player
         
         public delegate void ChangeGemsBalanceDelegate(long value);
         public static ChangeGemsBalanceDelegate ChangeGemsBalance;
+        ChangeGemsBalanceDelegate wrappedChangeGemsBalance;
 
         public delegate ulong GetGemsBalanceDelegate();
         public static GetGemsBalanceDelegate GetGemsBalance;
@@ -102,6 +171,7 @@ namespace Player
         
         public delegate void ChangeExperienceDelegate(long value);
         public static ChangeExperienceDelegate ChangeExperience;
+        ChangeExperienceDelegate wrappedChangeExperience;
 
         public delegate ulong GetExperienceDelegate();
         public static GetExperienceDelegate GetExperience;
@@ -246,6 +316,8 @@ namespace Player
         }
 
 
+        void SaveData() => Database.Database.LocalUser.POST<PlayerData>(this);
+
 #region Register Events
 
         public void RegisterEvents()
@@ -272,12 +344,13 @@ namespace Player
 
         void RegisterExperienceEvents()
         {
-            ChangeExperience += OnExperienceChanged;
+            wrappedChangeExperience = ActionWrapper.Wrap<ChangeExperienceDelegate>(OnExperienceChanged, SaveData);
+            ChangeExperience += wrappedChangeExperience;
             GetExperience += OnGetExperience;
         }
         void UnRegisterExperienceEvents()
         {
-            ChangeExperience -= OnExperienceChanged;
+            ChangeExperience -= wrappedChangeExperience;
             GetExperience -= OnGetExperience;
         }
         async void OnExperienceChanged(long value)
@@ -297,26 +370,30 @@ namespace Player
 
         void RegisterWalletEvents()
         {
-            ChangeCoinsBalance += OnCoinsBalanceChanged;
+            wrappedChangeCoinsBalance = ActionWrapper.Wrap<ChangeCoinsBalanceDelegate>(OnCoinsBalanceChanged, SaveData);
+            ChangeCoinsBalance += wrappedChangeCoinsBalance;
+
             GetCoinsBalance += OnGetCoinsBalance;
 
 
-            ChangeGemsBalance += OnGemsBalanceChanged;
+            wrappedChangeGemsBalance = ActionWrapper.Wrap<ChangeGemsBalanceDelegate>(OnGemsBalanceChanged, SaveData);
+            ChangeGemsBalance += wrappedChangeGemsBalance;
             GetGemsBalance += OnGetGemsBalance;
 
-            AddPayementData += OnAddPayementData;
+            wrappedAddPayementData = ActionWrapper.Wrap<AddPayementDataDelegate>(OnAddPayementData, SaveData);
+            AddPayementData += wrappedAddPayementData;
 
         }
         void UnRegisterWalletEvents()
         {
-            ChangeCoinsBalance -= OnCoinsBalanceChanged;
+            ChangeCoinsBalance -= wrappedChangeCoinsBalance;
             GetCoinsBalance -= OnGetCoinsBalance;
 
 
-            ChangeGemsBalance -= OnGemsBalanceChanged;
+            ChangeGemsBalance -= wrappedChangeGemsBalance;
             GetGemsBalance -= OnGetGemsBalance;
 
-            AddPayementData -= OnAddPayementData;
+            AddPayementData -= wrappedAddPayementData;
 
         }
         void OnAddPayementData(string transactionID, string itemID) 

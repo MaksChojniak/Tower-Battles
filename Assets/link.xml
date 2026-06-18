@@ -1,0 +1,23 @@
+<linker>
+  <!-- Keep the whole Newtonsoft.Json assembly -->
+  <assembly fullname="Newtonsoft.Json" preserve="all"/>
+
+  <!-- Keep our own serialization types -->
+  <assembly fullname="Assembly-CSharp">
+    <!-- Existing types -->
+    <type fullname="Player.PlayerData" preserve="all"/>
+    <type fullname="Player.WalletData" preserve="all"/>
+    <type fullname="Player.PlayerGamesData" preserve="all"/>
+    <type fullname="Player.CustomReadWrite" preserve="all"/>
+
+    <!-- New types used by Database serialization -->
+    <type fullname="UI.Shop.Daily_Rewards.DailyRewards" preserve="all"/>
+    <type fullname="UI.Shop.Daily_Rewards.SkinsForSale" preserve="all"/>
+    <type fullname="UI.Shop.SkinOffert" preserve="all"/>
+    <type fullname="UI.Battlepass.BattlepassProgress" preserve="all"/>
+    <type fullname="UI.Battlepass.BattlepassReward" preserve="all"/>
+    <type fullname="UI.Shop.AdsRewards" preserve="all"/>
+    <type fullname="UI.Shop.AdReward" preserve="all"/>
+    <!-- Add any other types that the JSON payload may contain -->
+  </assembly>
+</linker>

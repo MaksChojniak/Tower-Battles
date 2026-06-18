@@ -8,11 +8,15 @@ namespace Player
 
     public class PlayGamesUser : IUser
     {
+        public TimeSpan SessionTime() => DateTime.Now - sessionStartTime;
+        DateTime sessionStartTime;
+
         public string UserId { get; private set; }
 
-        public PlayGamesUser(FirebaseUser user)
+        public PlayGamesUser(string id, DateTime time)
         {
-            UserId = user.UserId;
+            UserId = id;
+            sessionStartTime = time;
         }
 
         public PlayGamesUser(LocalUser user)
