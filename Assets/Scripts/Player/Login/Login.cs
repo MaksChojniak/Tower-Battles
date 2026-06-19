@@ -48,6 +48,7 @@ namespace Player
             try
             {
                 PlayGamesPlatform.Activate();
+                PlayGamesPlatform.DebugLogEnabled = true;
                 Debug.Log("[Game Play Auth] Activate");
                 loginProvider = new PlayGamesLogin();
             }
