@@ -41,7 +41,24 @@ namespace Player
                 if (status == SignInStatus.Success)
                 {
                     Debug.Log($"[Game Play Auth] Athenticate Success");
-                    OnAuthenticateSuccess?.Invoke();
+                    // OnAuthenticateSuccess?.Invoke();
+
+                    PlayGamesPlatform.Instance.RequestServerSideAccess(true, ServerSideAccessResponse);
+
+                    void ServerSideAccessResponse(string code)
+                    {
+                        if (!string.IsNullOrEmpty(code))
+                        {
+                            Debug.Log("[Game Play Auth] ServerSideAccess Access Granted");
+                            OnAuthenticateSuccess?.Invoke();
+                        }
+                        else
+                        {
+                            Debug.LogError($"[Game Play Auth] ServerSideAccess Error with status {status}");
+                            OnAuthenticateFailure?.Invoke();
+                        }
+
+                    }
                 }
                 else
                 {
