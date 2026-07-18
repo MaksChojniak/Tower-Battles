@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UI;
 
 [System.Serializable]
 struct SpeedButton
@@ -15,6 +16,18 @@ public class FastForwardController : MonoBehaviour
     [SerializeField] GameObject speedControlPanel;
     [SerializeField] GameObject currentSpeedPanel;
     [SerializeField] List<SpeedButton> currentSpeedButtons;
+
+    public static FastForwardController Instance { get; private set; }
+    public float GetGameSpeed() => gameSpeed;
+
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+
+        //Return to normal speed when the game is finished
+        GameResult.OnEndGame += HandleEndGame;
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -27,6 +40,7 @@ public class FastForwardController : MonoBehaviour
     public void SetGameSpeed(float speed)
     {
         Time.timeScale = speed;
+        gameSpeed = speed;
     }
     
     public void ToggleSpeedControlPanel()
@@ -46,9 +60,18 @@ public class FastForwardController : MonoBehaviour
         }
 
     }
+
+    void HandleEndGame()
+    {
+        SetGameSpeed(1.0f);
+    }
     
     void OnDestroy()
     {
         SetGameSpeed(1.0f);
+
+        if (Instance == this) Instance = null;
+
+        GameResult.OnEndGame -= HandleEndGame;
     }
 }

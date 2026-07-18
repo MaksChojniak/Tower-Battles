@@ -18,7 +18,8 @@ public class EnemyMovement : MonoBehaviour
     public event OnMoveDelegate OnMove;
 
     
-    public float CurrentSpeed => SpeedMultiplier * Speed;
+    // public float CurrentSpeed => SpeedMultiplier * Speed;
+    public float CurrentSpeed => SpeedMultiplier * Speed * (ActiveBuffManager.Instance != null ? ActiveBuffManager.Instance.CurrentBuff.FrostSlowMultiplier : 1f);
     public float Speed;
     public float DistanceTravelled;
     

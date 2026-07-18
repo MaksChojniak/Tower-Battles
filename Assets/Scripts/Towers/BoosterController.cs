@@ -9,6 +9,8 @@ namespace DefaultNamespace
         public float FirerateBoost;
         public float SpwnIntervalBoost;
         public float IncomeBoost;
+        public float DamageBoost;          // NEW
+        public float FrostSlowMultiplier;  // NEW (1 = normal, <1 = slowed)
     }
 
     public class BoosterController : TowerController

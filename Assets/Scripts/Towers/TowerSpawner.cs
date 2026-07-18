@@ -18,6 +18,7 @@ using GameResult = UI.GameResult;
 
 public class TowerSpawner : MonoBehaviour
 {
+    public static TowerSpawner Instance { get; private set; }
     public static HandModeType HandMode;
     
     public delegate void OnStartPlacingTowerDelegate(TowerController Tower);
@@ -55,6 +56,9 @@ public class TowerSpawner : MonoBehaviour
 
     void Awake()
     {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+        
         // Deck = PlayerTowerInventory.Instance.TowerDeck;
         Deck = PlayerController.GetLocalPlayerData().Deck.Select(element => element.Value).ToArray();
         
@@ -63,8 +67,9 @@ public class TowerSpawner : MonoBehaviour
 
     void OnDestroy()
     {
+        if (Instance == this) Instance = null;
+
         UnregisterHandlers();
-        
     }
 
     void Start()

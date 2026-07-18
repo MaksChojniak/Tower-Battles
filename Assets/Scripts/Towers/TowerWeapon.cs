@@ -48,6 +48,7 @@ namespace Towers
         [SerializeField] Side WeaponSide;
 
         ShootResult result = new ShootResult();
+        int BoostedDamage => Mathf.RoundToInt(Weapon.Damage * TowerControllerUtility.GetBoosterData().DamageBoost);
 
         public SoldierController SoldierController { private set; get; }
 
@@ -196,7 +197,8 @@ namespace Towers
             int healthBeforeShoot = enemy.HealthComponent.GetHealth();
 
             OnShoot?.Invoke(enemy, new[] { WeaponSide }, true, Weapon);
-            enemy.HealthComponent.ChangeHealth(-Weapon.Damage);
+            // enemy.HealthComponent.ChangeHealth(-Weapon.Damage);
+            enemy.HealthComponent.ChangeHealth(-BoostedDamage, Health.DamageCause.Tower);
 
             int healthAfterShoot = enemy.HealthComponent.GetHealth();
 
@@ -246,7 +248,8 @@ namespace Towers
             // }
             
             int givenDamage = 0;
-            int damageValue = Weapon.Damage;
+            // int damageValue = Weapon.Damage;
+            int damageValue = BoostedDamage;
 
             for (int i = 0 ; i < enemies.Length; i++)
             {
@@ -258,7 +261,7 @@ namespace Towers
                 int healthBeforeShoot = enemy.HealthComponent.GetHealth();
 
                 OnShoot?.Invoke(enemy, new[] { WeaponSide }, i == 0, Weapon);
-                enemy.HealthComponent.ChangeHealth(-damageValue);
+                enemy.HealthComponent.ChangeHealth(-damageValue, Health.DamageCause.Tower);
 
                 int healthAfterShoot = enemy.HealthComponent.GetHealth();
 
@@ -314,7 +317,8 @@ namespace Towers
             //     step -= 1;
             // }
             int givenDamage = 0;
-            int damageValue = Weapon.Damage;
+            // int damageValue = Weapon.Damage;
+            int damageValue = BoostedDamage;
                 
             for (int i = 0 ; i < enemies.Length; i++)
             {
@@ -325,7 +329,7 @@ namespace Towers
                     
                 int healthBeforeShoot = enemy.HealthComponent.GetHealth();
                     
-                enemy.HealthComponent.ChangeHealth(-damageValue);
+                enemy.HealthComponent.ChangeHealth(-damageValue, Health.DamageCause.Tower);
 
                 int healthAfterShoot = enemy.HealthComponent.GetHealth();
 
@@ -362,7 +366,8 @@ namespace Towers
             Side[] sides = Weapon.WeaponType == WeaponType.DualWield ? new [] { Side.Right, Side.Left } : new [] { Side.Right };
             OnShoot?.Invoke(enemy, sides, true, Weapon);
 
-            enemy.StartCoroutine(FireDamage(enemy, Weapon.Damage, Weapon.BurningTime));
+            // enemy.StartCoroutine(FireDamage(enemy, Weapon.Damage, Weapon.BurningTime));
+            enemy.StartCoroutine(FireDamage(enemy, BoostedDamage, Weapon.BurningTime));
 
             //return new ShootResult()
             //{
@@ -382,7 +387,7 @@ namespace Towers
             {
                 int healthBeforeShoot = enemy.HealthComponent.GetHealth();
                 
-                enemy.HealthComponent.ChangeHealth(-damage);
+                enemy.HealthComponent.ChangeHealth(-damage, Health.DamageCause.Tower);
                 
                 int healthAfterShoot = enemy.HealthComponent.GetHealth();
                 
@@ -433,7 +438,8 @@ namespace Towers
             void ThrowDamage()
             {
                 int givenDamage = 0;
-                int damageValue = Weapon.Damage;
+                // int damageValue = Weapon.Damage;
+                int damageValue = BoostedDamage;
 
                 for (int i = 0; i < enemies.Length; i++)
                 {
@@ -444,7 +450,7 @@ namespace Towers
 
                     int healthBeforeShoot = enemy.HealthComponent.GetHealth();
 
-                    enemy.HealthComponent.ChangeHealth(-damageValue);
+                    enemy.HealthComponent.ChangeHealth(-damageValue, Health.DamageCause.Tower);
 
                     int healthAfterShoot = enemy.HealthComponent.GetHealth();
 

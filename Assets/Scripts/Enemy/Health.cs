@@ -7,6 +7,13 @@ using UnityEngine.UI;
 
     public class Health : MonoBehaviour
     {
+        public enum DamageCause
+        {
+            Unknown,
+            Tower,
+            EnemyReachedBase
+        }
+
         public delegate void OnTakeDamageDelegate(bool IsBurning);
         public event OnTakeDamageDelegate OnTakeDamage;
         
@@ -21,8 +28,9 @@ using UnityEngine.UI;
         public delegate void EndPathDelegate();
         public EndPathDelegate EndPath;
 
-        public delegate void ChangeHealthDelegate(int Value);
+        public delegate void ChangeHealthDelegate(int Value, DamageCause damageCause = DamageCause.Unknown);
         public ChangeHealthDelegate ChangeHealth;
+        public static event Action<int, DamageCause> OnAnyEnemyDamageTaken;
         
         public delegate void SetHealthDelegate(int Value);
         public SetHealthDelegate SetHealth;
@@ -111,7 +119,7 @@ using UnityEngine.UI;
 
         int OnGetHealth() => HealthValue;
 
-        void OnChangeHealth(int value)
+        void OnChangeHealth(int value, DamageCause damageCause = DamageCause.Unknown)
         {
             HealthValue += value;
             if (HealthValue <= 0)
@@ -119,13 +127,18 @@ using UnityEngine.UI;
             
             OnTakeDamage?.Invoke(EnemyController.IsBurning);
 
+            if (value < 0)
+            {
+                OnAnyEnemyDamageTaken?.Invoke(Mathf.Abs(value), damageCause);
+            }
+
             if (HealthValue <= 0 && !isDead)
             {
                 isDead = true;
                 OnDie?.Invoke();
             }
 
-            Debug.Log($"Change Health value  [value: {value}, health: {HealthValue}]");
+            Debug.Log($"Change Health value [value: {value}, health: {HealthValue}, cause: {damageCause}]");
 
             UpdateUI();
         }
@@ -134,7 +147,7 @@ using UnityEngine.UI;
         {
             EndPath -= OnEndPath;
 
-            OnChangeHealth(-BaseHealthValue);
+            OnChangeHealth(-BaseHealthValue, DamageCause.EnemyReachedBase);
         }
         
 

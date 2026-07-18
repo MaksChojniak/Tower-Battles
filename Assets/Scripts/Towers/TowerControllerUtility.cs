@@ -125,18 +125,34 @@ namespace MMK.Towers
 
    
 
+        // public static BoosterData GetBoosterData()
+        // {
+        //     BoosterController boosterController = GameObject.FindObjectOfType<BoosterController>();
+        //     // if (boosterController != null)
+        //     //     return boosterController.GetBoosterData();
+        
+        //     return new BoosterData()
+        //     {
+        //         UpgradeDiscount = 1f,
+        //         FirerateBoost = 1f,
+        //         SpwnIntervalBoost = 1f,
+        //         IncomeBoost = 1f
+        //     };
+        // }
         public static BoosterData GetBoosterData()
         {
-            BoosterController boosterController = GameObject.FindObjectOfType<BoosterController>();
-            // if (boosterController != null)
-            //     return boosterController.GetBoosterData();
-        
+            if (ActiveBuffManager.Instance != null)
+                return ActiveBuffManager.Instance.CurrentBuff;
+
+            // Neutral fallback (editor / no buff manager present)
             return new BoosterData()
             {
                 UpgradeDiscount = 1f,
                 FirerateBoost = 1f,
                 SpwnIntervalBoost = 1f,
-                IncomeBoost = 1f
+                IncomeBoost = 1f,
+                DamageBoost = 1f,
+                FrostSlowMultiplier = 1f
             };
         }
     }

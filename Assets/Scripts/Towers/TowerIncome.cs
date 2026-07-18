@@ -80,10 +80,13 @@ namespace MMK.Towers
             if(!FarmController.IsPlaced)
                 return;
 
-            GamePlayerInformation.ChangeBalance(WaveIncome);
-            TotalWaveIncome += WaveIncome;
-            
-            OnIncome?.Invoke(WaveIncome);
+            float incomeBoost = TowerControllerUtility.GetBoosterData().IncomeBoost;
+            long boostedIncome = Mathf.RoundToInt(WaveIncome * incomeBoost);
+
+            GamePlayerInformation.ChangeBalance(boostedIncome);
+            TotalWaveIncome += boostedIncome;
+
+            OnIncome?.Invoke(boostedIncome);
         }
         
 

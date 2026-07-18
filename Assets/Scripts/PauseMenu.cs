@@ -112,9 +112,25 @@ public class PauseMenu : MonoBehaviour
 
     void OnPauseStateChanged(bool pauseState)
     {
-        Time.timeScale = pauseState ? 0f : 1f;
-        
-        if(!pauseState)
+        if (pauseState)
+        {
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            // Resume to the current game speed as set by FastForwardController
+            var ff = FastForwardController.Instance;
+            if (ff != null)
+            {
+                Time.timeScale = ff.GetGameSpeed();
+            }
+            else
+            {
+                Time.timeScale = 1f;
+            }
+        }
+
+        if (!pauseState)
             Settings(false);
     }
 
